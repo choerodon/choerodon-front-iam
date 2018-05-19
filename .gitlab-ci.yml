@@ -1,0 +1,57 @@
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cifront:0.5.0
+
+stages:
+  - node_build
+  - docker_build
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+node_build_dev:
+  stage: node_build
+  script:
+    - node_config
+    - node_module iam
+    - ls
+    - node_build devbuild
+    - cache_dist
+  artifacts:
+    paths:
+    - .auto_devops.sh
+  only:
+    - /^release-.*$/
+    - /^hotfix-.*$/
+    - develop
+    - tags
+
+node_build:
+  stage: node_build
+  script:
+    - node_config
+    - node_module iam
+    - node_build build
+    - clean_cache
+  only:
+    - /^feature-.*$/
+
+docker_build:
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.5.0
+  stage: docker_build
+  script:
+    - docker_build
+    - clean_cache
+    - chart_build
+  only:
+    - develop
+    - /^release-.*$/
+    - /^hotfix-.*$/
+    - tags
+
+.auto_devops: &auto_devops |
+    curl -o .auto_devops.sh \
+        "${CHOERODON_URL}/devops/ci?token=${Token}&type=front"
+    source .auto_devops.sh
+    cat .auto_devops.sh
+
+before_script:
+  - *auto_devops

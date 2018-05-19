@@ -1,0 +1,65 @@
+.role-table {
+  display: flex;
+  &-list {
+    margin-right: 100px;
+  }
+}
+
+.text-disabled {
+  color: rgba(0, 0, 0, 0.36)
+}
+
+.add-other-role {
+  color: rgba(0, 0, 0, 0.36);
+  cursor: pointer;
+  font-size: 10px;
+  border-style: solid;
+  border-color: transparent !important;
+  > i.icon {
+    vertical-align: text-bottom;
+    color: rgba(0, 0, 0, 0.36);
+  }
+}
+
+.add-other-role.disabled {
+  color: rgba(0, 0, 0, 0.26);
+  cursor: none;
+}
+
+.delete-role {
+  margin-left: 15px;
+  cursor: pointer;
+  vertical-align: bottom;
+  > i.icon {
+    vertical-align: inherit;
+  }
+}
+
+.delete-role.disabled {
+  color: rgba(0, 0, 0, .36);
+  cursor: default;
+}
+
+.member-role-table tr td {
+  vertical-align: text-top;
+}
+
+.member-role-btns {
+  margin-bottom: 24px;
+  .text {
+    display: inline-block;
+    margin-right: 15px;
+  }
+  button.active {
+    background: rgba(140, 158, 255, 0.2);
+  }
+}
+
+.choice-has-error {
+  background-color: #d50000 !important;
+}
+
+.role-member-table tr.ant-table-expanded-row:focus > td,
+.role-member-table tr.ant-table-expanded-row:hover > td {
+  background: inherit;
+}

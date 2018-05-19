@@ -1,0 +1,21 @@
+.header-wrapper {
+  display: flex;
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid #d3d3d3;
+  align-items: center;
+  font-size: 12px;
+
+  .header-title {
+    flex-basis: 10%;
+  }
+
+  .header-text {
+    flex-basis: 20%;
+  }
+}
+
+.pagenation {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}

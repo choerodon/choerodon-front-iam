@@ -1,0 +1,29 @@
+$baseFontColor: rgba(0, 0, 0, 0.55);
+
+.table-pagination {
+  margin-top: 10px;
+  float: right;
+  display: block;
+}
+
+//.table-container {
+//  padding: 0 24px;
+//}
+
+.open-tab {
+  color: $baseFontColor;
+
+  &:hover {
+    color: #3f51b5;
+    text-decoration: underline;
+  }
+}
+
+.client-granttype-item {
+  background-color: rgba(0, 0, 0, 0.08);
+  display: inline-block;
+  border-radius: 100px;
+  padding: 0 12px;
+  margin: 0 5px;
+  line-height: 20px;
+}

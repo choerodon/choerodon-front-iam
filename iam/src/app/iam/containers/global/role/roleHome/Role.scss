@@ -1,0 +1,27 @@
+.choerodon-role {
+  .choerodon-loading {
+    display: inherit;
+    margin: 200px auto;
+    text-align: center;
+  }
+
+  .choerodon-pagination {
+    margin-top: 15px;
+    float: right;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .show {
+    display: block;
+  }
+}
+
+.tableName:hover {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+

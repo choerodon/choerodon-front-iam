@@ -1,0 +1,54 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: choerodon-front-iam
+spec:
+  template: 
+    metadata:
+      labels:
+        name: choerodon-front-iam
+    spec:
+      containers:
+      - name: choerodon-front-iam
+        image: registry.choerodon.com.cn/choerodon/choerodon-front-iam
+        imagePullPolicy: Always
+        env: 
+        - name: PRO_API_HOST
+          value: gateway.choerodon.com.cn
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      imagePullSecrets:
+        - name: gitlab-image-secret
+  replicas: 1
+  paused: false 
+  revisionHistoryLimit: 2
+  minReadySeconds: 0
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: choerodon-front-iam
+  name: choerodon-front-iam
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    name: choerodon-front-iam
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: choerodon-front-iam
+spec:
+  rules:
+  - host: choerodon.com.cn
+    http:
+      paths:
+      - backend:
+          serviceName: choerodon-front-iam
+          servicePort: 80
+

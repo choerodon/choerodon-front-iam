@@ -1,0 +1,51 @@
+.choerodon-roleDetail {
+  .choerodon-pagination {
+    margin-top: 10px;
+    float: right;
+  }
+
+  .mt-sm {
+    margin-top: 1rem;
+  }
+
+  .mt-xs {
+    margin-top: 0.5rem;
+  }
+}
+
+.page-container > .page-content {
+  margin: 20px 25px 0;
+}
+
+.pageFirstLine {
+  display: block;
+
+  .pageFirstLine_title {
+    font-size: 20px;
+    line-height: 28px;
+    margin-bottom: 10px;
+  }
+
+  .pageFirstLine_content {
+    font-size: 13px;
+    line-height: 20px;
+    max-width: 512px;
+    margin-bottom: 16px;
+
+    span {
+      color: #3f51b5;
+      cursor: pointer;
+    }
+
+    span.firstSpan {
+      text-decoration: underline;
+    }
+  }
+}
+
+.alreadyDes {
+  font-size: 18px;
+  color: #000;
+  line-height: 24px;
+}
+

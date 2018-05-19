@@ -1,0 +1,37 @@
+.userContainer {
+  .pageFirstLine {
+    margin: 0;
+
+    .pageFirstLine_title {
+      font-size: 20px;
+      line-height: 28px;
+      margin-bottom: 10px;
+    }
+
+    .pageFirstLine_content {
+      font-size: 13px;
+      line-height: 20px;
+      max-width: 512px;
+      margin-bottom: 24px;
+
+      span {
+        color: #3f51b5;
+      }
+
+      span.firstSpan {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .table-container {
+    .titleNameStyle {
+      color: #000;
+    }
+
+    .titleNameStyle:hover {
+      color: #3f51b5;
+      text-decoration: underline;
+    }
+  }
+}

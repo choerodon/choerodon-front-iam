@@ -1,0 +1,15 @@
+.ldapContainer {
+  .btnGroup {
+    margin-top: 65px;
+    margin-bottom: 14px;
+
+    > button:last-child {
+      margin-left: 12px;
+      color: #3f51b5;
+    }
+  }
+
+  .ldapRadioGroup > label:first-child {
+    margin-right: 52px;
+  }
+}

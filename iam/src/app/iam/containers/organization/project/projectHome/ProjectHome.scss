@@ -1,0 +1,41 @@
+.page-large {
+  display: block;
+  width: 100%;
+}
+
+.page-small {
+  display: inline-block;
+  width: 70%;
+}
+
+.pagenation-show {
+  margin-top: 10px;
+  float: right;
+}
+
+.col-wrapper {
+  margin-right: 10px;
+  float: left;
+}
+
+.pageFirstLine_title {
+  font-size: 20px;
+  line-height: 28px;
+  margin-bottom: 10px;
+}
+
+.pageFirstLine_content {
+  font-size: 13px;
+  line-height: 20px;
+  max-width: 512px;
+  margin-bottom: 24px;
+
+  span {
+    color: #3f51b5;
+    cursor: pointer;
+  }
+
+  span.firstSpan {
+    text-decoration: underline;
+  }
+}

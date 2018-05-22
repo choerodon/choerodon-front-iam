@@ -56,7 +56,7 @@ class memberRoleType {
     return `${this.title}“${this.data.name || 'Choerodon'}”的角色分配`;
   };
 
-  drawPageLink () {
+  drawPageLink() {
     const { type } = this.data;
     let link = '';
     switch (type) {
@@ -72,6 +72,7 @@ class memberRoleType {
     }
     return link;
   }
+
   //fetch分配角色（post）
   // body  array
   // {
@@ -348,8 +349,9 @@ class MemberRole extends Component {
   getRoleFormItems = () => {
     const { selectType, roleIds } = this.state;
     const { getFieldDecorator, getFieldValue } = this.props.form;
+    console.log(roleIds);
     const formItems = roleIds.map((id, index) => {
-      const key = `role_${id === undefined ? index : id}`;
+      const key = id === undefined ? `role-index-${index}` : String(id);
       return (<FormItem
         {...FormItemNumLayout}
         label={'添加角色'}
@@ -1060,6 +1062,7 @@ class MemberRole extends Component {
   getLink() {
 
   }
+
   render() {
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys } = this.state;
     const { AppState } = this.props;

@@ -1,32 +1,46 @@
-.iconBody {
-    display: none;
-    line-height: 1.5;
-    color: #000000;
-    margin: 0;
-    padding: 0;
-    background-color: #fff;
-    border-radius: 2px;
-    outline: none;
-    font-size: 14px;
-    -webkit-box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
-    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+.input-icon {
+  &-popover {
+    width: 512px;
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+  }
+  &-header {
+    background-color: #fafafa;
+    border-bottom: 1px solid rgba(0, 0, 0, .12);
+    padding: 17px;
+    .ant-input-underline {
+      display: none;
+    }
+  }
+  &-content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 11px 1px;
+  }
+  &-footer {
+    border-top: 1px solid rgba(0, 0, 0, .12);
+    padding: 8px;
+    text-align: right;
+  }
+  &-cell {
+    width: 88px;
+    line-height: 28px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 12px;
+    margin: 0 7px;
     cursor: pointer;
-}
-
-.c7n-active {
-  display: block;
-}
-
-.rowMargin {
-  margin: 5px 8px;
-}
-
-.iconbody {
-  padding-left: 20px;
+    &-active {
+      background-color: rgba(0, 0, 0, 0.06);
+      border-radius: 2px;
+    }
+  }
 }
 
 .blackGround {
-  background: rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 2px;
 }
 
@@ -34,25 +48,8 @@
   color: gray;
 }
 
-.searchtitle {
-  text-align: center;
-  margin: 20px 5px 10px 1px;
-}
-
-.iconTitleFont {
-  font-size: 13px;
-  color: #000000;
-  line-height: 20px;
-  // display: block;
-  // width: 100px;
-  // height: 100px;
-  .iconDirFont {
-    font-size: 18px;
-  }
-}
-
 .permissionListTitle {
-  background: rgba(0,0,0,0.08);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 100px;
   padding: 4px 12px;
 }

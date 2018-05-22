@@ -1,184 +1,167 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import ReactDOM from 'react-dom';
-import { Row, Col, Input, Form, Modal, message, Alert, Pagination, Tooltip, Select } from 'choerodon-ui';
-import cx from 'classnames';
-import { Observable } from 'rxjs';
+import { Icon, Input, Pagination, Popover, Spin, Tooltip } from 'choerodon-ui';
 import axios from 'Axios';
-import _ from 'lodash';
-import { observer, inject } from 'mobx-react';
+import cx from 'classnames';
 import './menuTree.scss';
 
-const Option = Select.Option;
-const FormItem = Form.Item;
-const Search = Input.Search;
+function noop() {
+}
 
-
-@inject('AppState')
-@observer
 class InputIcon extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      active: false,
+      loading: true,
+      visible: false,
       iconData: [],
-      selectedKey: [],
-      searchCode: null,
       totalPages: 0,
       totalElements: 0,
-      page: 0,
-      pageSize: 20,
-      selectIcon: null,
-      flag: true,
-      active: true,
-    }
+      page: props.page,
+      pageSize: props.pageSize,
+      filterText: props.filterText,
+      value: props.value,
+    };
   }
 
   componentWillMount() {
-    this.initIcon(this.state.page, this.state.pageSize);
+    this.initIcon();
   }
-  initIcon = (page, pageSize, code) => {
-    let url;
-    if (code) {
-      url = `/iam/v1/icons?code=${code}&page=${page}&size=${pageSize}`
-    } else {
-      url = `/iam/v1/icons?page=${page}&size=${pageSize}`
+
+  componentWillReceiveProps(nextProps) {
+    const { filterText, page, pageSize, value } = this.props;
+    const { filterText: newFilterText, page: newPage, pageSize: newPageSize, value: newValue } = nextProps;
+    const newState = {};
+    if (newValue !== value) {
+      newState.value = newValue;
     }
+    if (filterText !== newFilterText || page !== newPage || pageSize !== newPageSize) {
+      this.initIcon(newFilterText, newPage, newPageSize);
+    }
+    this.setState(newState);
+  }
+
+  initIcon = (code = this.state.filterText, page = this.state.page, pageSize = this.state.pageSize) => {
+    let url = `/iam/v1/icons?page=${page - 1}&size=${pageSize}`;
+    if (code) {
+      url += `&code=${code}`;
+    }
+    this.setState({
+      filterText: code,
+      loading: true,
+    });
     axios.get(url)
-      .then(value => {
+      .then(({ content, totalElements, size, number }) => {
         this.setState({
-          iconData: value.content,
-          totalPages: value.totalPages,
-          totalElements: value.totalElements
-        })
-      })
-  }
+          loading: false,
+          iconData: content,
+          totalElements,
+          pageSize: size,
+          page: number + 1,
+        });
+      });
+  };
 
-  iconDom() {
-    this.initIcon(this.state.page, this.state.pageSize)
-    const { IconTrasitationActive } = this.props;
-    IconTrasitationActive(true);
-  }
-
-  onBlurDom() {
-    const { IconTrasitationActive } = this.props;
-    IconTrasitationActive(false);
-  }
-  onSearchIcon = (value) => {
-    this.initIcon(this.state.page, this.state.pageSize, value)
+  handleFilterInput = ({ target: { value } }) => {
     this.setState({
-      searchCode: value,
-    })
-  }
+      filterText: value,
+    });
+  };
 
-  changePageSize = (current, pageSize) => {
-    this.initIcon(this.state.page, pageSize);
-    this.setState({
-      pageSize: pageSize
-    })
-  }
-  //显示多少字符
-  showString = (name, number) => {
-    return number < name.length ? name.slice(0, number) + '...' : name;
+  handleFilterChange = ({ target: { value } }) => {
+    const { onFilter = noop } = this.props;
+    this.initIcon(value);
+    onFilter(value);
   };
 
   iconCol = (value) => {
-    const row = _.chunk(value, 4);
-    return row.map(rowData => {
-      return (<Row type="flex" className={cx('rowMargin')}>
-        {rowData.map(colData => {
-          return (<Col span={6} order={1} className={cx('iconbody', {
-            blackGround: this.state.selectIcon === colData.code,
-          })} onDoubleClick={this.selectDoubleIcon.bind(this, colData.code)} onClick={this.selectIcon.bind(this, colData.code)}>
-            <Tooltip placement="right" title={colData.code}>
-              <span className={`icon-${colData.code}`} /> <span>{this.showString(colData.code, 6)}</span>
-            </Tooltip>
-          </Col>)
-        })}
-      </Row>)
-    });
-  }
-  selectDoubleIcon = (code) => {
-    const { IconTrasitationActive } = this.props;
-    IconTrasitationActive(false);
-    this.setState({
-      selectIcon: code,
-      // active: false,
-    });
-  }
+    return value.map(({ code }) => (
+      <Tooltip placement="right" title={code}>
+        <div
+          className={cx('input-icon-cell', { 'input-icon-cell-active': code === this.state.value })}
+          onClick={this.handleSelectIcon.bind(this, code)}
+        >
+          <span className={`icon-${code}`} /> {code}
+        </div>
+      </Tooltip>
+    ));
+  };
 
-  selectIcon = (code) => {
-    const { IconTrasitation } = this.props;
-    IconTrasitation(code);
+  handleSelectIcon(value) {
+    const { onChange = noop } = this.props;
+    onChange(value);
     this.setState({
-      selectIcon: code,
+      value,
+      visible: false,
     });
-  }
+  };
 
-  changePage = (page, pageSize) => {
-    if (this.state.searchCode) {
-      this.initIcon(page, pageSize, this.state.searchCode);
-    } else {
-      this.initIcon(page, pageSize);
-    }
-  }
+  handlePageChange = (page, pageSize) => {
+    const { onPageChange = noop } = this.props;
+    this.initIcon(this.state.filterText, page, pageSize);
+    onPageChange(page, pageSize);
+  };
 
-  enterIconType = () => {
+  handlePopoverVisibleChange = (visible) => {
     this.setState({
-      flag: false,
+      visible,
     });
-  }
+  };
 
-  leaveIconType = () => {
-    this.setState({
-      flag: true,
-    });
+  getIconList() {
+    const { loading, iconData, totalElements, pageSize, page, filterText } = this.state;
+    return (
+      <div>
+        <div className="input-icon-header">
+          <Input
+            placeholder={Choerodon.getMessage('输入查询ICON名称', 'please input search Icon Name')}
+            size="default"
+            prefix={<Icon type="search" />}
+            onPressEnter={this.handleFilterChange}
+            onBlur={this.handleFilterChange}
+            onChange={this.handleFilterInput}
+            value={filterText}
+          />
+        </div>
+        <Spin spinning={loading}>
+          <div className="input-icon-content">
+            {iconData ? this.iconCol(iconData) : null}
+          </div>
+        </Spin>
+        <div className="input-icon-footer">
+          <Pagination
+            total={totalElements}
+            onChange={this.handlePageChange}
+            pageSizeOptions={['20', '40', '80']}
+            pageSize={pageSize}
+            onShowSizeChange={this.handlePageChange}
+            current={page}
+          />
+        </div>
+      </div>
+    );
   }
 
   render() {
-    const { icon, iconActive } = this.props;
-    const prefixIcon = (<span className={`icon-${icon}`} style={{ color: "black" }} />);
+    const { props } = this;
+    const prefixIcon = (<span className={`icon-${props.value}`} style={{ color: 'black' }} />);
     return (
-      <div style={{ width: "512px" }}>
-        <Input placeholder="请选择一个图标"
-          label="图标"
+      <Popover
+        overlayClassName="input-icon-popover"
+        content={this.getIconList()}
+        onVisibleChange={this.handlePopoverVisibleChange}
+        placement="bottomLeft"
+        trigger="click"
+        visible={this.state.visible}
+      >
+        <Input
+          label="请选择一个图标"
           prefix={prefixIcon}
-          style={{ width: "512px" }} onClick={this.iconDom.bind(this)} value={icon} />
-        <div className={cx('iconBody', {
-          "c7n-active": this.state.flag ? iconActive : this.state.active,
-        })} onMouseEnter={this.enterIconType.bind(this)} onMouseLeave={this.leaveIconType.bind(this)}>
-          <div>
-            <Row>
-              <Col span={4} className="searchtitle">
-                <span>搜索:</span>
-              </Col>
-              <Col span={16} style={{ margin: "20px 5px 10px" }}>
-                <Search
-                  placeholder={Choerodon.getMessage('输入查询ICON名称', 'please input search Icon Name')}
-                  onSearch={this.onSearchIcon.bind(this)}
-                  style={{ width: 380 }}
-                />
-              </Col>
-            </Row>
-          </div>
-          <div>
-            {this.state.iconData ? this.iconCol(this.state.iconData): null}
-          </div>
-          <div>
-            <Pagination
-              total={this.state.totalElements}
-              // showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-              onChange={this.changePage.bind(this)}
-              pageSizeOptions={['20', '40', '80']}
-              pageSize={this.state.pageSize}
-              onShowSizeChange={this.changePageSize.bind(this)}
-              defaultCurrent={this.state.page}
-            />
-          </div>
-        </div>
-      </div>
-    )
+          {...props}
+        />
+      </Popover>
+    );
   }
 }
-export default withRouter(InputIcon);
+
+export default InputIcon;

@@ -16,7 +16,6 @@ import './menuTree.scss';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
-const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const inputWidth = 512;
 const formItemLayout = {
@@ -39,14 +38,15 @@ class MenuTree extends Component {
       active: null,
       menuData: [],
       dirAllData: [],
-      selectIcon: null,
       type: 'site',
       selectType: 'create',
       sidebar: false,
-      selectMenuDetail: null,
+      selectMenuDetail: {},
       dragtStart: null,
       dragEnd: null,
-      iconActive: false,
+      iconFilterText: null,
+      iconPage: 1,
+      iconPageSize: 20,
     };
   }
 
@@ -84,7 +84,9 @@ class MenuTree extends Component {
   closeSidebar = () => {
     this.setState({
       sidebar: false,
-      iconActive: false,
+      iconPage: 1,
+      iconPageSize: 20,
+      iconFilterText: null,
     });
   };
   //创建目录，弹出sidebar
@@ -94,7 +96,6 @@ class MenuTree extends Component {
     this.setState({
       selectType: 'create',
       sidebar: true,
-      selectIcon: null,
     });
   };
   //查看细节，弹出sidebar,设置选中的菜单或目录
@@ -113,7 +114,6 @@ class MenuTree extends Component {
       selectType: 'edit',
       sidebar: true,
       selectMenuDetail: record,
-      selectIcon: record.icon,
     });
   };
   //删除菜单
@@ -123,42 +123,57 @@ class MenuTree extends Component {
     this.setState({
       menuData: centerMenu,
     });
-    Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
+    Choerodon.prompt(Choerodon.getMessage('删除成功，请点击保存。', 'Success'));
     // this.hideModal();
   };
   //创建添加的状态请求
-  handleOk = () => {
-    const { getFieldValue } = this.props.form;
-    let centerMenu;
-    switch (this.state.selectType) {
-      case 'create':
-        const menuBody = {
-          'code': getFieldValue('code'),
-          'default': false,
-          'icon': this.state.selectIcon,
-          'level': this.state.type,
-          'name': getFieldValue('name'),
-          'type': 'dir',
-          'parentId': 0,
-          'subMenus': null,
-        };
-        centerMenu = this.state.menuData;
-        centerMenu.push(menuBody);
+  handleOk = (e) => {
+    const { validateFields } = this.props.form;
+    e.preventDefault();
+    validateFields((err, { code, name, icon, setName, setIcon }) => {
+      if (!err) {
+        const { selectType, menuData, selectMenuDetail } = this.state;
+        switch (selectType) {
+          case 'create':
+            const menuBody = {
+              'code': code,
+              'default': false,
+              'icon': icon,
+              'level': this.state.type,
+              'name': name,
+              'type': 'dir',
+              'parentId': 0,
+              'subMenus': null,
+            };
+            menuData.push(menuBody);
+            this.setState({
+              menuData,
+            });
+            Choerodon.prompt('创建目录成功，请点击保存。');
+            break;
+          case 'edit':
+            this.checkoutTreeIdObj(setName, menuData, selectMenuDetail.code, setIcon);
+            this.setState({
+              menuData,
+            });
+            Choerodon.prompt('修改目录成功，请点击保存。');
+            break;
+        }
         this.setState({
-          menuData: centerMenu,
+          sidebar: false,
         });
-        Choerodon.prompt('创建目录成功');
-        break;
-      case 'edit':
-        this.checkoutTreeIdObj(getFieldValue, this.state.menuData, this.state.selectMenuDetail.code);
-        this.setState({
-          menuData: this.state.menuData,
-        });
-        break;
-    }
+      }
+    });
+  };
+  handleIconPageChange = (iconPage, iconPageSize) => {
     this.setState({
-      sidebar: false,
-      iconActive: false,
+      iconPage,
+      iconPageSize,
+    });
+  };
+  handleIconFilter = (iconFilterText) => {
+    this.setState({
+      iconFilterText,
     });
   };
   // 创建目录的3个状态
@@ -196,7 +211,7 @@ class MenuTree extends Component {
 
   //创建3个状态的sidebar渲染
   getSidebarContent() {
-    const { selectType } = this.state;
+    const { selectType, selectMenuDetail: { name } } = this.state;
     let formDom, pageFirstLineTitle, FirstLineContent;
     switch (selectType) {
       case 'create':
@@ -205,28 +220,24 @@ class MenuTree extends Component {
         formDom = this.getDirNameDom();
         break;
       case 'edit':
-        pageFirstLineTitle = `对目录“${this.state.selectMenuDetail.name}”进行修改`;
+        pageFirstLineTitle = `对目录“${name}”进行修改`;
         FirstLineContent = '您可以在此修改目录名称、图标。';
         formDom = this.setDirNameDom();
         break;
       case 'detail':
-        pageFirstLineTitle = `查看菜单“${this.state.selectMenuDetail.name}”详情`;
+        pageFirstLineTitle = `查看菜单“${name}”详情`;
         FirstLineContent = '您可以在此查看菜单的名称、编码、层级、所属预置目录、权限。菜单是平台内置的，您不能创建、修改、删除菜单。';
         formDom = this.getDetailDom();
         break;
     }
     return (
-      <div onClick={this.toggleIcon.bind(this)}>
+      <div>
         <Content
           style={{ padding: 0 }}
           title={pageFirstLineTitle}
-          description={(<div>
-            {FirstLineContent}
-            <a href="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">
-              了解详情
-              <span className="icon-open_in_new" />
-            </a>
-          </div>)}>
+          description={FirstLineContent}
+          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
+        >
           {formDom}
         </Content>
       </div>);
@@ -235,7 +246,7 @@ class MenuTree extends Component {
   //修改目录详情
   setDirNameDom() {
     const { getFieldDecorator } = this.props.form;
-    const { selectType } = this.state;
+    const { selectMenuDetail: { name, code, icon }, iconFilterText, iconPage, iconPageSize } = this.state;
     return (
       <Form layout="vertical">
         <FormItem
@@ -247,7 +258,7 @@ class MenuTree extends Component {
               whitespace: true,
               message: Choerodon.getMessage('请输入目录名称', 'This field is required.'),
             }],
-            initialValue: this.state.selectMenuDetail.name,
+            initialValue: name,
           })(
             <Input
               size="default"
@@ -267,7 +278,7 @@ class MenuTree extends Component {
               whitespace: true,
               message: Choerodon.getMessage('请输入目录编码', 'This field is required.'),
             }],
-            initialValue: this.state.selectMenuDetail.code,
+            initialValue: code,
           })(
             <Input
               label="目录编码"
@@ -285,14 +296,19 @@ class MenuTree extends Component {
           {getFieldDecorator('setIcon', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('Icon必填', 'icon is required'),
+              message: Choerodon.getMessage('请选择一个图标', 'icon is required'),
             }],
-            validateTrigger: 'onBlur',
+            validateTrigger: 'onChange',
+            initialValue: icon,
           })(
-            <InputIcon IconTrasitation={this.transitation.bind(this)}
-              IconTrasitationActive={this.transitationActive.bind(this)}
-              icon={this.state.selectIcon}
-              iconActive={this.state.iconActive} />,
+            <InputIcon
+              onPageChange={this.handleIconPageChange}
+              onFilter={this.handleIconFilter}
+              filterText={iconFilterText}
+              page={iconPage}
+              pageSize={iconPageSize}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
       </ Form>);
@@ -301,12 +317,12 @@ class MenuTree extends Component {
   //查看详情
   getDetailDom() {
     const { getFieldDecorator } = this.props.form;
-    const { selectType } = this.state;
+    const { id, parentId, name, code, level } = this.state.selectMenuDetail;
     const selectPermissions = _.chunk(_.filter(this.state.dirAllData, (value) => {
-      return value.id === this.state.selectMenuDetail.id;
+      return value.id === id;
     })[0].permissions, 2);
     const selectParentMenu = _.filter(this.state.dirAllData, (value) => {
-      return value.id === this.state.selectMenuDetail.parentId;
+      return value.id === parentId;
     });
     return (
       <div>
@@ -320,7 +336,7 @@ class MenuTree extends Component {
                 whitespace: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
-              initialValue: this.state.selectMenuDetail.name,
+              initialValue: name,
             })(
               <Input
                 size="default"
@@ -341,7 +357,7 @@ class MenuTree extends Component {
                 whitespace: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
-              initialValue: this.state.selectMenuDetail.code,
+              initialValue: code,
             })(
               <Input
                 size="default"
@@ -362,7 +378,7 @@ class MenuTree extends Component {
                 whitespace: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
-              initialValue: this.state.selectMenuDetail.level,
+              initialValue: level,
             })(
               <Input
                 label="菜单层级"
@@ -413,7 +429,7 @@ class MenuTree extends Component {
   //created FormDom渲染
   getDirNameDom() {
     const { getFieldDecorator } = this.props.form;
-    const { selectType } = this.state;
+    const { iconFilterText, iconPage, iconPageSize } = this.state;
     return (
       <Form layout="vertical">
         <FormItem
@@ -444,8 +460,12 @@ class MenuTree extends Component {
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('请输入目录编码', 'This field is required.'),
+            }, {
+              pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])$/,
+              message: Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'This field is required.'),
             }],
             validateTrigger: 'onBlur',
+            validateFirst: true,
           })(
             <Input
               label="目录编码"
@@ -462,51 +482,23 @@ class MenuTree extends Component {
           {getFieldDecorator('icon', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('Icon必填', 'icon is required'),
+              message: Choerodon.getMessage('请选择一个图标', 'icon is required'),
             }],
-            // validateTrigger: 'onBlur',
+            validateTrigger: 'onChange',
           })(
-            <InputIcon IconTrasitation={this.transitation.bind(this)}
-              IconTrasitationActive={this.transitationActive.bind(this)}
-              icon={this.state.selectIcon}
-              iconActive={this.state.iconActive} />,
+            <InputIcon
+              onPageChange={this.handleIconPageChange}
+              onFilter={this.handleIconFilter}
+              filterText={iconFilterText}
+              page={iconPage}
+              pageSize={iconPageSize}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
       </ Form>);
   }
 
-  //展示icon列表
-  showIcon = (value) => {
-    this.setState({
-      iconActive: true,
-    });
-  };
-  //关闭icon列表
-  closeIcon = (value) => {
-    this.setState({
-      iconActive: false,
-    });
-  };
-  //父级传递selectIcon
-  transitation = (value) => {
-    this.setState({
-      selectIcon: value,
-    });
-  };
-  //父级传递iconActive
-  transitationActive = (value) => {
-    this.setState({
-      iconActive: value,
-    });
-  };
-
-  toggleIcon = () => {
-    if (this.state.iconActive == true) {
-      this.setState({
-        iconActive: false,
-      });
-    }
-  };
   //table展开行
   getRowKey = (record) => {
     return `${record.parentId} - ${record.id}`;
@@ -561,13 +553,13 @@ class MenuTree extends Component {
     }
   };
   //根据id查找对象
-  checkoutTreeIdObj = (getFieldValue, data, code) => {
+  checkoutTreeIdObj = (setName, data, code, setIcon) => {
     let index = _.findIndex(data, (value) => {
       return value.code == code;
     });
     if (index >= 0) {
-      data[index].name = getFieldValue('setName');
-      data[index].icon = this.state.selectIcon;
+      data[index].name = setName;
+      data[index].icon = setIcon;
     } else {
       data.map(value => {
         if (value.subMenus && !_.isNull(value.subMenus)) {

@@ -21,93 +21,58 @@ const Option = Select.Option;
 @inject('AppState')
 @observer
 class Role extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = this.getInitState();
+
+  componentDidMount() {
+    this.loadRole();
+  }
+
+  getInitState() {
+    return {
       open: false,
       id: '',
-      page: 0,
-      size: 10,
       visible: false,
-      role: [],
-      selectedRoleIds: [],
-      params: {},
-      flagRole: false,
-      centerSelectedRows: [],
+      selectedRoleIds: {},
+      params: [],
+      filters: {},
       pagination: {
         current: 1,
         pageSize: 10,
-        total: '',
+        total: 0,
       },
       sort: {
-        order: 'desc',
-        name: 'id',
+        columnKey: 'id',
+        order: 'descend',
       },
-      createVisible: false,
-      detailVisible: false,
-      editVisible: false,
       selectedData: '',
     };
   }
 
-  componentDidMount() {
-    this.loadRole(this.state.pagination, this.state.sort);
+  getSelectedRowKeys() {
+    return Object.keys(this.state.selectedRoleIds).map(id => Number(id));
   }
 
-  showModal = (ids) => {
+  showModal(ids) {
     this.props.history.push(`role/edit/${ids}`);
-  };
-  goDetail = (ids) => {
-    this.setState({
-      detailVisible: true,
-      selectedData: ids,
-    });
-  };
+  }
+
   goCreate = () => {
     RoleStore.setSelectedRolesPermission([]);
-    // this.setState({
-    //   createVisible: true,
-    // });
     this.props.history.push('role/create');
   };
-  handleOk = (e) => {
-    e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        const role = { ...values, objectVersionNumber: this.state.role.objectVersionNumber };
-        RoleStore.updateRoleById(this.state.id, role)
-          .then((data) => {
-            if (data) {
-              Choerodon.prompt(Choerodon.getMessage('保存成功', 'Success'));
-              this.loadRole(this.state.page, this.state.size, {
-                code: '',
-                input: '',
-              });
-              this.setState({
-                visible: false,
-              });
-            }
-          })
-          .catch((error) => {
-            Choerodon.handleResponseError(error);
-            this.setState({
-              visible: false,
-            });
-          });
-      }
-    });
-  };
-  handleCancel = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-  loadRole = (pagination, sort, body) => {
-    RoleStore.loadRole(pagination, sort, body)
+
+  loadRole(pagination = this.state.pagination,
+    sort = this.state.sort,
+    filters = this.state.filters,
+    params = this.state.params) {
+    RoleStore.loadRole(pagination, sort, filters, params)
       .then((data) => {
         RoleStore.setIsLoading(false);
         RoleStore.setRoles(data.content);
         this.setState({
+          sort,
+          filters,
+          params,
           pagination: {
             current: data.number + 1,
             pageSize: data.size,
@@ -118,22 +83,18 @@ class Role extends Component {
       .catch((error) => {
         Choerodon.handleResponseError(error);
       });
-  };
+  }
+
   linkToChange = (url) => {
-    const { AppState, history } = this.props;
-    const type = sessionStorage.type;
-    // const id = AppState.currentMenuType.id;
-    // const name = AppState.currentMenuType.name;
-    // if (type === 'global') {
-    //   history.push(`${url}`);
-    // } else if (type === 'organization') {
-    //   history.push(`${url}?type=${type}&id=${id}&name=${name}`);
-    // } else {
-    //   const organizationId = AppState.currentMenuType.organizationId;
-    //   history.push(`${url}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`);
-    // }
-    history.push(`${url}`);
+    this.props.history.push(`${url}`);
   };
+
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadRole();
+    });
+  };
+
   handleOpen = (ids) => {
     this.setState({ open: true, id: ids });
   };
@@ -151,7 +112,7 @@ class Role extends Component {
       const status = data.status;
       if (status === 204) {
         Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
-        this.loadRole(this.state.pagination, this.state.sort);
+        this.loadRole();
       } else {
         Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
       }
@@ -163,73 +124,49 @@ class Role extends Component {
     if (record.enabled) {
       RoleStore.disableRole(record.id).then(() => {
         Choerodon.prompt('已停用');
-        this.loadRole(this.state.pagination, this.state.sort);
+        this.loadRole();
       });
     } else {
       RoleStore.enableRole(record.id).then(() => {
         Choerodon.prompt('已启用');
-        this.loadRole(this.state.pagination, this.state.sort);
+        this.loadRole();
       });
     }
-  };
-  handleSearch = (state) => {
-    // const { RoleStore } = this.props;
-    this.setState({
-      params: state,
-      page: 0,
-    });
-    this.loadRole(0, this.state.size, this.state.params);
-    // RoleStore.queryRole(state);
   };
   changeSelects = (selectedRowKeys, selectedRows) => {
-    const centerSelectedZip = {
-      page: this.state.page + 1,
-      selectedRows,
-    };
-    _.remove(this.state.centerSelectedRows, n => n.page === centerSelectedZip.page);
-    this.state.centerSelectedRows.push(centerSelectedZip);
-    const selectArray = [];
-    this.state.centerSelectedRows.map(value => selectArray.push(...value.selectedRows));
-    const selectArrayId = [];
-    selectArray.map(value => selectArrayId.push({
-      id: value.id,
-      level: value.level,
-    }));
-    this.setState({
-      selectedRoleIds: selectArrayId,
+    const { selectedRoleIds } = this.state;
+    Object.keys(selectedRoleIds).forEach((id) => {
+      if (selectedRowKeys.indexOf(Number(id)) === -1) {
+        delete selectedRoleIds[id];
+      }
     });
-    if (selectedRowKeys.length > 0) {
-      this.setState({
-        flagRole: true,
-      });
-    } else {
-      this.setState({
-        flagRole: false,
-      });
-    }
+    selectedRows.forEach(({ id, level }) => {
+      selectedRoleIds[id] = level;
+    });
+    this.setState({
+      selectedRoleIds,
+    });
   };
 
-  handlePageChange(pagination, filters, sorter, params) {
-    const newSorter = {
-      name: sorter.columnKey || 'id',
-      order: 'desc',
-    };
-    const body = {
-      name: (filters.name && filters.name[0]) || '',
-      code: (filters.code && filters.code[0]) || '',
-      level: (filters.level && filters.level[0]) || '',
-      params: params || {},
-    };
-    const enabled = filters.enabled;
-    const builtIn = filters.builtIn;
-    if (enabled && enabled.length) {
-      body.enabled = enabled[0] === '启用';
+  handlePageChange = (pagination, filters, sort, params) => {
+    this.loadRole(pagination, sort, filters, params);
+  };
+
+  handleSideBarClose = () => {
+    this.setState({
+      visible: false,
+      selectedData: '',
+    });
+  };
+
+  handleSideBarOk = (e) => {
+    const { selectType } = this.state;
+    if (selectType === 'create') {
+      this.createRole.handleCreate(e);
+    } else if (selectType === 'edit') {
+      this.editRole.handleEdit(e);
     }
-    if (builtIn && builtIn.length) {
-      body.builtIn = builtIn[0] === '预定义';
-    }
-    this.loadRole(pagination, newSorter, body);
-  }
+  };
 
   createByThis(record) {
     RoleStore.getRoleById(record.id).then((data) => {
@@ -241,14 +178,8 @@ class Role extends Component {
   }
 
   createByMultiple = () => {
-    const selects = this.state.selectedRoleIds;
-    const levels = [];
-    _.forEach(selects, (item) => {
-      if (_.indexOf(levels, item.level) === -1) {
-        levels.push(item.level);
-      }
-    });
-    if (levels.length > 1) {
+    const levels = Object.values(this.state.selectedRoleIds);
+    if (levels.some((level, index) => levels[index + 1] && levels[index + 1] !== level)) {
       Choerodon.prompt('选择的角色具有不同层级的权限!');
     } else {
       this.createBased();
@@ -256,8 +187,7 @@ class Role extends Component {
   };
 
   createBased = () => {
-    const { selectedRoleIds } = this.state;
-    const ids = selectedRoleIds.map(role => role.id);
+    const ids = this.getSelectedRowKeys();
     RoleStore.getSelectedRolePermissions(ids).then((datas) => {
       RoleStore.setChosenLevel(datas[0].level);
       RoleStore.setSelectedRolesPermission(datas);
@@ -287,7 +217,8 @@ class Role extends Component {
   }
 
   renderSideBar() {
-    if (this.state.createVisible) {
+    const { selectType, selectedData } = this.state;
+    if (selectType === 'create') {
       return (
         <CreateRole
           onRef={(ref) => {
@@ -295,31 +226,31 @@ class Role extends Component {
           }}
           onSubmit={() => {
             this.setState({
-              createVisible: false,
+              visible: false,
             });
-            this.loadRole(this.state.pagination, this.state.sort);
+            this.loadRole();
           }}
         />
       );
-    } else if (this.state.detailVisible) {
-      return (
-        <DetailRole
-          id={this.state.selectedData}
-        />
-      );
-    } else if (this.state.editVisible) {
+    } else if (selectType === 'edit') {
       return (
         <EditRole
-          id={this.state.selectedData}
+          id={selectedData}
           onRef={(ref) => {
             this.editRole = ref;
           }}
           onSubmit={() => {
             this.setState({
-              editVisible: false,
+              visible: false,
             });
-            this.loadRole(this.state.pagination, this.state.sort);
+            this.loadRole();
           }}
+        />
+      );
+    } else if (selectType === 'detail') {
+      return (
+        <DetailRole
+          id={this.state.selectedData}
         />
       );
     } else {
@@ -336,14 +267,15 @@ class Role extends Component {
   }
 
   renderSideTitle() {
-    if (this.state.createVisible) {
-      return '创建角色';
-    } else if (this.state.detailVisible) {
-      return '角色详情';
-    } else if (this.state.editVisible) {
-      return '角色编辑';
-    } else {
-      return '';
+    switch (this.state.selectType) {
+      case 'create':
+        return '创建角色';
+      case 'detail':
+        return '角色详情';
+      case 'edit':
+        return '角色编辑';
+      default:
+        return '';
     }
   }
 
@@ -358,33 +290,31 @@ class Role extends Component {
   }
 
   render() {
+    const { sort: { columnKey, order }, pagination, filters, open, visible } = this.state;
+    const selectedRowKeys = this.getSelectedRowKeys();
     const { AppState } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
-    let type;
-    if (AppState.getType) {
-      type = AppState.getType;
-    } else if (sessionStorage.type) {
-      type = sessionStorage.type;
-    } else {
-      type = menuType.type;
-    }
-    const leftBtnBan = classNames({
-      'header-btn headRightBtn leftBtnBan2': !this.state.flagRole,
-      'header-btn headRightBtn leftBtn2': this.state.flagRole,
-    });
+    const { type, id: organizationId } = AppState.currentMenuType;
     const columns = [{
+      dataIndex: 'id',
+      key: 'id',
+      hidden: true,
+      sortOrder: columnKey === 'id' && order,
+    }, {
       title: Choerodon.getMessage('角色名称', 'role name'),
       dataIndex: 'name',
       key: 'name',
       filters: [],
-      sorter: (a, b) => (a.description > b.description ? 1 : 0),
+      sorter: true,
+      sortOrder: columnKey === 'name' && order,
+      filteredValue: filters.name || [],
     }, {
       title: Choerodon.getMessage('角色编码', 'role code'),
       dataIndex: 'code',
       key: 'code',
       filters: [],
-      sorter: (a, b) => (a.name > b.name ? 1 : 0),
+      sorter: true,
+      sortOrder: columnKey === 'code' && order,
+      filteredValue: filters.code || [],
     }, {
       title: Choerodon.getMessage('角色层级', 'role level'),
       dataIndex: 'level',
@@ -401,35 +331,41 @@ class Role extends Component {
           value: 'project',
         }],
       render: text => this.renderLevel(text),
-      sorter: (a, b) => (a.roleLevel > b.roleLevel ? 1 : 0),
+      sorter: true,
+      sortOrder: columnKey === 'level' && order,
+      filteredValue: filters.level || [],
     }, {
       title: Choerodon.getMessage('角色来源', 'is built-in'),
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{
         text: '预定义',
-        value: '预定义',
+        value: 'true',
       }, {
         text: '自定义',
-        value: '自定义',
+        value: 'false',
       }],
       render: (text, record) => this.renderBuiltIn(record),
-      sorter: (a, b) => a.builtIn - b.builtIn,
+      sorter: true,
+      sortOrder: columnKey === 'builtIn' && order,
+      filteredValue: filters.builtIn || [],
     }, {
       title: Choerodon.getMessage('启用状态', 'enabled'),
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{
         text: '启用',
-        value: '启用',
+        value: 'true',
       }, {
         text: '停用',
-        value: '停用',
+        value: 'false',
       }],
       render: text => (
         text ? '启用' : '停用'
       ),
-      sorter: (a, b) => a.enabled - b.enabled,
+      sorter: true,
+      sortOrder: columnKey === 'enabled' && order,
+      filteredValue: filters.enabled || [],
     }, {
       title: '',
       className: 'operateIcons',
@@ -468,22 +404,16 @@ class Role extends Component {
         return <Action data={actionDatas} />;
       },
     }];
-    const ids = [];
-    if (this.state.selectedRoleIds.length > 0) {
-      _.forEach(this.state.selectedRoleIds, (item) => {
-        ids.push(item.id);
-      });
-    }
     const rowSelection = {
-      selectedRowKeys: ids,
-      onChange: this.changeSelects.bind(this),
+      selectedRowKeys,
+      onChange: this.changeSelects,
     };
     return (
       <Page className="choerodon-role">
         <Remove
-          open={this.state.open}
+          open={open}
           handleCancel={this.handleClose}
-          handleConfirm={this.handleDelete.bind(this)}
+          handleConfirm={this.handleDelete}
         />
         <Header
           title={Choerodon.getMessage('角色管理', 'title')}
@@ -495,9 +425,7 @@ class Role extends Component {
           >
             <Button
               icon="playlist_add"
-              onClick={() => {
-                this.goCreate();
-              }}
+              onClick={this.goCreate}
             >
               {Choerodon.getMessage('创建角色', 'create')}
             </Button>
@@ -510,15 +438,13 @@ class Role extends Component {
             <Button
               icon="content_copy"
               onClick={this.createByMultiple}
-              disabled={!this.state.flagRole}
+              disabled={!selectedRowKeys.length}
             >
               {Choerodon.getMessage('基于所选角色创建', 'create role based on chosen roles')}
             </Button>
           </Permission>
           <Button
-            onClick={() => {
-              this.loadRole(this.state.pagination, this.state.sort);
-            }}
+            onClick={this.handleRefresh}
             icon="refresh"
           >
             {Choerodon.getMessage('刷新', 'Refresh')}
@@ -532,34 +458,18 @@ class Role extends Component {
           <Table
             columns={columns}
             dataSource={RoleStore.getRoles}
-            pagination={this.state.pagination}
+            pagination={pagination}
             rowSelection={rowSelection}
             rowKey={record => record.id}
-            onChange={this.handlePageChange.bind(this)}
+            onChange={this.handlePageChange}
             loading={RoleStore.getIsLoading}
             filterBarPlaceholder="过滤表"
           />
           <SideBar
             title={this.renderSideTitle()}
-            onClose={() => {
-              this.setState({
-                createVisible: false,
-                detailVisible: false,
-                editVisible: false,
-                selectedData: '',
-              });
-            }}
-            visible={this.state.createVisible ||
-            this.state.detailVisible ||
-            this.state.editVisible}
-            onOk={() => {
-              if (this.state.createVisible) {
-                this.createRole.handleCreate(event);
-              }
-              if (this.state.editVisible) {
-                this.editRole.handleEdit(event);
-              }
-            }}
+            onClose={this.handleSideBarClose}
+            visible={visible}
+            onOk={this.handleSideBarOk}
             showOkBth={this.renderShowOkBtn()}
           >
             {this.renderSideBar()}

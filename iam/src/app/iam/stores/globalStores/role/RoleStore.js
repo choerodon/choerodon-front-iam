@@ -10,7 +10,7 @@ class RoleStore {
   @observable roles = [];
   @observable isLoading = true;
   @observable totalPage;
-  @observable totalSize; 
+  @observable totalSize;
   @observable canChosePermission = {
     site: [],
     organization: [],
@@ -45,76 +45,98 @@ class RoleStore {
     this.totalSize = totalSize;
   }
 
-  @action setInitSelectedPermission(permission) {
+  @action
+  setInitSelectedPermission(permission) {
     this.initSelectedPermission = permission;
   }
-  @computed get getInitSelectedPermission() {
+
+  @computed
+  get getInitSelectedPermission() {
     return this.initSelectedPermission;
   }
 
 
-  @action setChosenLevel(data) {
+  @action
+  setChosenLevel(data) {
     this.chosenLevel = data;
   }
-  @computed get getChosenLevel() {
+
+  @computed
+  get getChosenLevel() {
     return this.chosenLevel;
   }
+
   getSelectedRolePermissionByLevel(level) {
     return this.selectedRolesPermission[level];
   }
 
-  @computed get getSelectedRolesPermission() {
+  @computed
+  get getSelectedRolesPermission() {
     return this.selectedRolesPermission;
   }
 
-  @action setSelectedRolesPermission(data) {
+  @action
+  setSelectedRolesPermission(data) {
     this.selectedRolesPermission = data;
   }
-  @action pushSelectedRolesPermission(level, data) {
+
+  @action
+  pushSelectedRolesPermission(level, data) {
     this.selectedRolesPermission[level].push(data);
   }
 
-  @computed get getRoles() {
+  @computed
+  get getRoles() {
     return this.roles.slice();
   }
 
-  @action setRoles(data) {
+  @action
+  setRoles(data) {
     this.roles = data;
   }
 
-  @computed get getIsLoading() {
+  @computed
+  get getIsLoading() {
     return this.isLoading;
   }
 
-  @action setIsLoading(flag) {
+  @action
+  setIsLoading(flag) {
     this.isLoading = flag;
   }
 
-  @computed get getTotalPage() {
+  @computed
+  get getTotalPage() {
     return this.totalPage;
   }
 
-  @action setTotalPage(totalPage) {
+  @action
+  setTotalPage(totalPage) {
     this.totalPage = totalPage;
   }
 
-  @computed get getTotalSize() {
+  @computed
+  get getTotalSize() {
     return this.totalSize;
   }
 
-  @action setTotalSize(totalSize) {
+  @action
+  setTotalSize(totalSize) {
     this.totalSize = totalSize;
   }
 
-  @computed get getCanChosePermission() {
+  @computed
+  get getCanChosePermission() {
     return this.canChosePermission;
   }
 
-  @action setPermissionPage(level, page) {
+  @action
+  setPermissionPage(level, page) {
     this.permissionPage[level] = page;
   }
 
-  @computed get getPermissionPage() {
+  @computed
+  get getPermissionPage() {
     return this.permissionPage;
   }
 
@@ -122,7 +144,8 @@ class RoleStore {
     return axios.get(`/iam/v1/public/role/name?name=${name}`);
   }
 
-  @action handleCanChosePermission(level, data) {
+  @action
+  handleCanChosePermission(level, data) {
     this.setCanChosePermission(level, data.content);
     this.setPermissionPage(level, {
       current: data.number + 1,
@@ -131,12 +154,14 @@ class RoleStore {
     });
   }
 
-  @action setCanChosePermission(level, data) {
+  @action
+  setCanChosePermission(level, data) {
     this.canChosePermission[level] = data;
   }
 
 
-  @action changePermissionCheckAllFalse(level, item) {
+  @action
+  changePermissionCheckAllFalse(level, item) {
     const data = this.canChosePermission;
     const data2 = _.difference(['site', 'organization', 'project'], [level]);
     for (let a = 0; a < data2.length; a += 1) {
@@ -154,7 +179,9 @@ class RoleStore {
     this.setCanChosePermission(data);
     // this.changePermissionCheck(level, item);
   }
-  @action changePermissionCheckAllFalse2(level, item) {
+
+  @action
+  changePermissionCheckAllFalse2(level, item) {
     const data = this.canChosePermission;
     const data2 = ['site', 'organization', 'project'];
     for (let a = 0; a < data2.length; a += 1) {
@@ -173,7 +200,9 @@ class RoleStore {
       this.changePermissionCheck(level, item[c]);
     }
   }
-  @action changePermissionCheckByValue(level, item, value) {
+
+  @action
+  changePermissionCheckByValue(level, item, value) {
     const data = this.canChosePermission[level];
     for (let a = 0; a < data.length; a += 1) {
       if (data[a].name === item.name) {
@@ -182,7 +211,9 @@ class RoleStore {
     }
     this.setCanChosePermission(level, data);
   }
-  @action changePermissionClear() {
+
+  @action
+  changePermissionClear() {
     const data = this.canChosePermission;
     const levels = ['organization', 'project', 'site'];
     _.forEach(levels, (item) => {
@@ -192,7 +223,9 @@ class RoleStore {
     });
     this.canChosePermission = data;
   }
-  @action changeChosenPermission(level, chosen) {
+
+  @action
+  changeChosenPermission(level, chosen) {
     const data = toJS(this.canChosePermission[level]);
     _.forEach(data, (item, index) => {
       let flag = 0;
@@ -210,7 +243,9 @@ class RoleStore {
     const datas = JSON.parse(JSON.stringify(data));
     this.setCanChosePermission(level, datas);
   }
-  @action changePermissionCheck(level, item) {
+
+  @action
+  changePermissionCheck(level, item) {
     const data = this.canChosePermission[level];
     for (let a = 0; a < data.length; a += 1) {
       if (data[a].code === item.code) {
@@ -220,19 +255,23 @@ class RoleStore {
     this.setCanChosePermission(level, data);
   }
 
-  @computed get getWholeService() {
+  @computed
+  get getWholeService() {
     return this.wholeServerAndType;
   }
 
-  @action setWholeService(data) {
+  @action
+  setWholeService(data) {
     this.wholeServerAndType = data;
   }
 
-  @computed get getLabel() {
+  @computed
+  get getLabel() {
     return this.allRoleLabel;
   }
 
-  @action setLabel(data) {
+  @action
+  setLabel(data) {
     this.allRoleLabel = data;
   }
 
@@ -249,35 +288,33 @@ class RoleStore {
     }).catch((error) => {
       window.console.log(error);
     });
+  };
+
+  loadRole({ current, pageSize },
+    { columnKey, order },
+    { name, code, level, enabled, builtIn }, params = []) {
+    const body = {
+      name: name && name[0],
+      code: code && code[0],
+      level: level && level[0],
+      enabled: enabled && enabled[0],
+      builtIn: builtIn && builtIn[0],
+      params,
+    };
+    const sorter = [];
+    if (columnKey) {
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+    }
+    this.setIsLoading(true);
+    return axios.post(
+      `/iam/v1/roles/search?page=${current - 1}&size=${pageSize}&sort=${sorter.join(',')}`,
+      JSON.stringify(body),
+    );
   }
 
-  loadRole = (page, sortParam = { name: 'id', order: 'desc' }, body = {}) => {
-    this.setIsLoading(true);
-    return axios.post(`/iam/v1/roles/search?page=${page.current - 1}&size=${page.pageSize}&sort=${sortParam.name},desc`, JSON.stringify(body));
-    // if (state.code === '') {
-    //   return axios.post(`iam/v1/roles/search?page=${page}&size=${size}`, {
-    //     param: state.input,
-    //   }).then((data) => {
-    //     if (data) {
-    //       this.setRoles(data.content);
-    //       this.setTotalPage(data.totalPages);
-    //       this.setTotalSize(data.totalElements);
-    //     }
-    //     this.setIsLoading(false);
-    //   });
-    // } else {
-    //   return axios.post(`iam/v1/roles/search?page=${page}&size=${size}`, {
-    //     [state.code]: state.input,
-    //   }).then((data) => {
-    //     if (data) {
-    //       this.setRoles(data.content);
-    //       this.setTotalPage(data.totalPages);
-    //       this.setTotalSize(data.totalElements);
-    //     }
-    //     this.setIsLoading(false);
-    //   });
-    // }
-  };
   queryRole = (state) => {
     if (state.code === '') {
       axios.get(`iam/v1/roles?param=${state.input}&page=0&size=10`).then((data) => {
@@ -288,7 +325,7 @@ class RoleStore {
         this.setRoles(data.content);
       });
     }
-  }
+  };
   getSelectedRolePermissions = ids => axios.post('iam/v1/permissions', ids);
 
   createRole = role => axios.post('iam/v1/roles', role);
@@ -298,12 +335,13 @@ class RoleStore {
   updateRoleById = (id, role) => axios.put(`/iam/v1/roles/${id}`, JSON.stringify(role));
 
   deleteRoleById = id => axios.delete(`/iam/v1/roles/${id}`);
-  
+
   editRoleByid = (id, data) => axios.put(`/iam/v1/roles/${id}`, data);
   enableRole = id => axios.put(`/iam/v1/roles/${id}/enable`);
   disableRole = id => axios.put(`/iam/v1/roles/${id}/disable`);
+
   queryDatas([page, size], value) {
-    let url = ''; 
+    let url = '';
     if (typeof value === 'string') {
       url = `&param=${value}`;
     } else if (typeof value === 'object') {

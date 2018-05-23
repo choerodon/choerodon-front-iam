@@ -349,7 +349,6 @@ class MemberRole extends Component {
   getRoleFormItems = () => {
     const { selectType, roleIds } = this.state;
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    console.log(roleIds);
     const formItems = roleIds.map((id, index) => {
       const key = id === undefined ? `role-index-${index}` : String(id);
       return (<FormItem
@@ -549,10 +548,10 @@ class MemberRole extends Component {
     validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
-        const body = roleIds.map((key, index) => {
+        const body = roleIds.map((roleId, index) => {
           return {
             memberType: 'user',
-            roleId: getFieldValue(`role_${key || index}`),
+            roleId,
             sourceId: sessionStorage.selectData.id || 0,
             sourceType: sessionStorage.type,
           };

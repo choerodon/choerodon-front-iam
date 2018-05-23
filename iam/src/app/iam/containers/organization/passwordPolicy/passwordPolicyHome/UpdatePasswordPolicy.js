@@ -55,7 +55,7 @@ class UpdatePasswordPolicy extends Component {
           minLength: parseInt(value.minLength, 10),
           name: value.name,
           notRecentCount: parseInt(value.notRecentCount, 10),
-          notUsername: value.notUsername === 'same',
+          notUsername: value.notUsername === 'different',
           objectVersionNumber: passwordPolicyStore.getPasswordPolicy.objectVersionNumber,
           organizationId: parseInt(value.organizationId, 10),
           originalPassword: value.originalPassword,

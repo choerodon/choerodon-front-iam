@@ -285,7 +285,7 @@ class Client extends Component {
                 title={`确认删除客户端${record.name}吗?`}
                 onConfirm={() => this.handleDelete(record)}
               >
-                <Button shape="circle" icon="delete" />
+                <Button shape="circle" icon="delete_forever" />
               </Popconfirm>
             </Permission>
           </div>),

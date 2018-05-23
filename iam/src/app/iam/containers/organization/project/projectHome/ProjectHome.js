@@ -258,13 +258,24 @@ class ProjectHome extends Component {
   /* 停用启用 */
   handleEnable = (record) => {
     const { ProjectStore, AppState } = this.props;
+    const userId = AppState.getUserId;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
-    ProjectStore.enableProject(orgId, record.id, record.enabled).then(() => {
+    ProjectStore.enableProject(orgId, record.id, record.enabled).then((value) => {
       const msg = record.enabled ? '停用成功' : '启用成功';
       Choerodon.prompt(Choerodon.getMessage(msg, 'Success'));
       const { pagination, sort } = this.state;
       this.loadProjects(pagination, sort);
+      HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
+        org[0].map(value => {
+          value.type = ORGANIZATION_TYPE;
+        })
+        org[1].map(value => {
+          value.type = PROJECT_TYPE;
+        })
+        HeaderStore.setProData(org[0]);
+        HeaderStore.setProData(org[1]);
+      })
     }).catch((error) => {
       Choerodon.prompt(`操作失败 ${error}`);
     });

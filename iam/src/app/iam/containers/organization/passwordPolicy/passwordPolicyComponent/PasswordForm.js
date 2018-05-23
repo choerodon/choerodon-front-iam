@@ -45,7 +45,7 @@ class PasswordForm extends Component {
     const passwordPolicy = passwordPolicyStore.getPasswordPolicy;
     const inputWidth = 300; // 输入框长度
     const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd';
-    const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'same' : 'different';
+    const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same';
     const organizationId = menuType.id;
     const type = menuType.type;
     const formItemNumLayout = {

@@ -114,15 +114,20 @@ class memberRoleType {
   loadRoleMemberData(roleData, { current }, { loginName, realName }) {
     const { type, id = 0 } = this.data;
     const { id: roleId, users, name } = roleData;
-    roleData.loading = true;
-    return axios.post(`/iam/v1/roles/${roleId}/${type}_level/users`, JSON.stringify(Object.assign({
+    const body = {
       loginName: loginName && loginName[0],
       realName: realName && realName[0],
-    }, {
-      page: current - 1,
-      size: pageSize,
-      source_id: id,
-    })))
+    };
+    const queryObj = { size: pageSize, page: current - 1 };
+    switch (type) {
+      case 'organization':
+      case 'project':
+        queryObj.source_id = id;
+        break;
+    }
+    roleData.loading = true;
+    return axios.post(`/iam/v1/roles/${roleId}/${type}_level/users?${querystring.stringify(queryObj)}`,
+      JSON.stringify(body))
       .then(({ content }) => {
         roleData.users = users.concat(content.map(member => {
           member.roleId = roleId;
@@ -141,11 +146,8 @@ class memberRoleType {
       roleName: roles && roles[0],
       realName: realName && realName[0],
     };
-    const queryObj = Object.assign(
-      { size, page: current - 1 },
-      { sort: 'id' },
-    );
-    let url = `/iam/v1/users/${type}_level/roles`;
+    const queryObj = { size, page: current - 1, sort: 'id' };
+
     switch (type) {
       case 'organization':
       case 'project':

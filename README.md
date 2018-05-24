@@ -87,7 +87,7 @@ The development is modeled on the i'm project structure (it is recommended that 
 ## Run via NodeJS
 
 ```
-$ git clone https://github.com/choerodon/choerodon-front-iam.git
+$ git clone https://github.com/choerodon/choerodon-front-iam.git --recursive
 $ cd ./choerodon-front-iam/boot
 $ npm install
 $ npm run gulp

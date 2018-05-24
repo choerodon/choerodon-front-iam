@@ -264,12 +264,18 @@ class MemberRole extends Component {
   //创建编辑角色 状态
   getOption = (current) => {
     const { roleData = [], roleIds } = this.state;
-    return roleData.reduce((options, { id, name, enabled }) => {
+    return roleData.reduce((options, { id, name, enabled, code }) => {
       if (roleIds.indexOf(id) === -1 || id === current) {
         if (enabled === false) {
           options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
         } else {
-          options.push(<Option value={id} key={id}>{name}</Option>);
+          options.push(
+            <Option value={id} key={id}>
+              <Tooltip title={code} placement="topLeft">
+                {name}
+              </Tooltip>
+            </Option>,
+          );
         }
       }
       return options;

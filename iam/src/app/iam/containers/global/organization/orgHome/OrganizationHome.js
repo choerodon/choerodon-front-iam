@@ -446,86 +446,77 @@ class OrganizationHome extends Component {
               </Button>
             </Popover>
           </Permission>
-          {(record.enabled ?
-            <Permission service={['iam-service.organization.disableOrganization']} type={type}>
-              <Popover
-                trigger="hover"
-                content='停用'
-                placement="bottom"
+          <Permission service={['iam-service.organization.disableOrganization', 'iam-service.organization.enableOrganization']} type={type}>
+            <Popover
+              trigger="hover"
+              content={record.enabled ? "停用" : "启用"}
+              placement="bottom"
+            >
+              <Button
+                shape="circle"
+                onClick={this.handleDisable.bind(this, record.enabled, record.id)}
               >
-                <Button
-                  shape="circle"
-                  onClick={this.handleDisable.bind(this, record.enabled, record.id)}
-                >
-                <span
-                  className={record.enabled ? 'icon-remove_circle_outline' : 'icon-finished'}
-                />
-                </Button>
-              </Popover>
-            </Permission> :
-            <Permission service={['iam-service.organization.enableOrganization']} type={type}>
-              <Popover
-                trigger="hover"
-                content='启用'
-                placement="bottom"
-              >
-                <Button
-                  shape="circle"
-                  onClick={this.handleDisable.bind(this, record.enabled, record.id)}
-                >
-                <span
-                  className={record.enabled ? 'icon-remove_circle_outline' : 'icon-finished'}
-                />
-                </Button>
-              </Popover>
-            </Permission>)}
+              <span
+                className={record.enabled ? 'icon-remove_circle_outline' : 'icon-finished'}
+              />
+              </Button>
+            </Popover>
+          </Permission>
         </div>
       )
     }];
     return (
-      <Page>
-        <Header title={Choerodon.languageChange('organization.title')}>
-          <Permission service={['organization-service.organization.create']} type={type}>
-            <Button
-              onClick={this.createOrg}
-              icon="playlist_add"
-            >
-              {Choerodon.getMessage('创建组织', 'create')}
-            </Button>
-          </Permission>
-          <Permission service={['iam-service.organization.list']} type={type}>
+      <Permission
+        service={[
+          'organization-service.organization.create',
+          'iam-service.organization.update',
+          'iam-service.organization.disableOrganization',
+          'iam-service.organization.enableOrganization'
+        ]}
+        type={type}
+      >
+        <Page>
+          <Header title={Choerodon.languageChange('organization.title')}>
+            <Permission service={['organization-service.organization.create']} type={type}>
+              <Button
+                onClick={this.createOrg}
+                icon="playlist_add"
+              >
+                {Choerodon.getMessage('创建组织', 'create')}
+              </Button>
+            </Permission>
             <Button
               onClick={this.refresh.bind(this, this.state.pagination, this.state.sort, undefined)}
               icon="refresh"
             >
               {Choerodon.languageChange('refresh')}
             </Button>
-          </Permission>
-        </Header>
-        <Content
-          title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的组织管理`}
-          description="组织是项目的上一级。通过组织您可以管理项目、用户。您可以创建组织，创建后平台默认您是这个组织的组织管理员。"
-        >
-          <Table
-            columns={columns}
-            dataSource={this.state.content}
-            pagination={this.state.pagination}
-            onChange={this.handlePageChange.bind(this)}
-            loading={this.state.loading}
-            filterBarPlaceholder="过滤表"
-          />
-          <Sidebar
-            title={this.renderSidebarTitle()}
-            visible={this.state.show !== ''}
-            onOk={this.handleSubmit.bind(this)}
-            onCancel={this.handleCancelFun.bind(this)}
-            okText={this.state.show === 'create' ? '创建' : '保存'}
-            cancelText="取消"
+          </Header>
+          <Content
+            title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的组织管理`}
+            description="组织是项目的上一级。通过组织您可以管理项目、用户。您可以创建组织，创建后平台默认您是这个组织的组织管理员。"
           >
-            {this.renderSidebarContent()}
-          </Sidebar>
-        </Content>
-      </Page>
+            <Table
+              columns={columns}
+              dataSource={this.state.content}
+              pagination={this.state.pagination}
+              onChange={this.handlePageChange.bind(this)}
+              loading={this.state.loading}
+              filterBarPlaceholder="过滤表"
+            />
+            <Sidebar
+              title={this.renderSidebarTitle()}
+              visible={this.state.show !== ''}
+              onOk={this.handleSubmit.bind(this)}
+              onCancel={this.handleCancelFun.bind(this)}
+              okText={this.state.show === 'create' ? '创建' : '保存'}
+              cancelText="取消"
+            >
+              {this.renderSidebarContent()}
+            </Sidebar>
+          </Content>
+        </Page>
+      </Permission>
     );
   }
 }

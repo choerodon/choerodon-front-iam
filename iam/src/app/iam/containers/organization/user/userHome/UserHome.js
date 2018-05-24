@@ -427,19 +427,13 @@ class User extends Component {
               {Choerodon.getMessage('创建用户', 'createUser')}
             </Button>
           </Permission>
-          <Permission
-            service={['iam-service.organization-user.list']}
-            type={type}
-            organizationId={organizationId}
+          <Button
+            funcType="flat"
+            onClick={() => this.loadUser()}
           >
-            <Button
-              funcType="flat"
-              onClick={() => this.loadUser()}
-            >
-              <Icon type="refresh" />
-              {Choerodon.getMessage('刷新', 'flush')}
-            </Button>
-          </Permission>
+            <Icon type="refresh" />
+            {Choerodon.getMessage('刷新', 'flush')}
+          </Button>
         </Header>
         <Content
           title={`组织“${orgname}”的用户管理`}

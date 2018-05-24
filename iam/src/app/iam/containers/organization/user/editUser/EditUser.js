@@ -226,7 +226,7 @@ class EditUser extends Component {
     const organizationName = menuType.name;
     const { getFieldDecorator } = this.props.form;
     const { userInfo } = this.state;
-    const { originalPassword } = CreateUserStore.getPasswordPolicy || {};
+    const { originalPassword, enablePassword } = CreateUserStore.getPasswordPolicy || {};
     const inputWidth = 512; // input框的长度
     const formItemLayout = {
       labelCol: {
@@ -345,7 +345,7 @@ class EditUser extends Component {
                     validator: this.validateToNextPassword,
                   },
                 ],
-                initialValue: originalPassword,
+                initialValue: enablePassword ? originalPassword : undefined,
                 validateFirst: true,
               })(
                 <Input
@@ -370,7 +370,7 @@ class EditUser extends Component {
                   }, {
                     validator: this.checkRepassword,
                   }],
-                initialValue: originalPassword,
+                initialValue: enablePassword ? originalPassword : undefined,
                 validateFirst: true,
               })(
                 <Input

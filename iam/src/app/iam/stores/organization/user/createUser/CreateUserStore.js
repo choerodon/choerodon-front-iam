@@ -51,11 +51,11 @@ class CreateUserStore {
   }
 
   checkUsername = (organizationId, loginName) => (
-    axios.post('/iam/v1/users/check', JSON.stringify({ organizationId, loginName }))
+    axios.post(`/iam/v1/organizations/${organizationId}/users/check`, JSON.stringify({ organizationId, loginName }))
   );
 
   checkEmailAddress = (organizationId, email) => (
-    axios.post('/iam/v1/users/check', JSON.stringify({ organizationId, email }))
+    axios.post(`/iam/v1/organizations/${organizationId}/users/check`, JSON.stringify({ organizationId, email }))
   );
 
   createUser = (user, id) => (

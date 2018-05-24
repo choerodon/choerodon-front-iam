@@ -78,10 +78,10 @@ class ProjectHome extends Component {
   };
 
   loadProjects = (pagination, sort, filters = {
-    name: '',
-    code: '',
-    enabled: '',
-  }) => {
+                    name: '',
+                    code: '',
+                    enabled: '',
+                  }) => {
     const { AppState, ProjectStore } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
@@ -166,34 +166,34 @@ class ProjectHome extends Component {
                 value.type = 'project';
                 HeaderStore.addProject(value);
               }
-              menuStore.loadMenuTypeDate().then((res) => {
-                const datas = res.organizations;
-                const projects = res.projects;
-                datas.map((item) => {
-                  const it = item;
-                  it.key = `organization${item.id}`;
-                  it.type = ORGANIZATION_TYPE;
-                  it.children = [];
-                  projects.map((project) => {
-                    const p = project;
-                    if (item.id === project.organizationId) {
-                      p.type = PROJECT_TYPE;
-                      p.key = `project${project.id}`;
-                      item.children.push(project);
-                    }
-                    return project;
-                  });
-                  return data;
-                });
-                menuStore.setMenuTypeData(data);
-              });
+              // menuStore.loadMenuTypeDate().then((res) => {
+              //   const datas = res.organizations;
+              //   const projects = res.projects;
+              //   datas.map((item) => {
+              //     const it = item;
+              //     it.key = `organization${item.id}`;
+              //     it.type = ORGANIZATION_TYPE;
+              //     it.children = [];
+              //     projects.map((project) => {
+              //       const p = project;
+              //       if (item.id === project.organizationId) {
+              //         p.type = PROJECT_TYPE;
+              //         p.key = `project${project.id}`;
+              //         item.children.push(project);
+              //       }
+              //       return project;
+              //     });
+              //     return data;
+              //   });
+              //   menuStore.setMenuTypeData(data);
+              // });
             }).catch((error) => {
-              Choerodon.handleResponseError(error);
-              this.setState({
-                submitting: false,
-                visibleCreate: false,
-              });
+            Choerodon.handleResponseError(error);
+            this.setState({
+              submitting: false,
+              visibleCreate: false,
             });
+          });
         }
       });
     } else {
@@ -424,7 +424,7 @@ class ProjectHome extends Component {
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('name', {
+              {getFieldDecorator('editname', {
                 rules: [{
                   required: true,
                   whitespace: true,
@@ -512,39 +512,21 @@ class ProjectHome extends Component {
               </Button>
             </Popover>
           </Permission>
-          {(record.enabled ?
-            <Permission service={['iam-service.organization-project.disableProject']} type={type} organizationId={orgId}>
-              <Popover
-                trigger="hover"
-                content="停用"
-                placement="bottom"
-              >
-                <Button
-                  shape="circle"
-                  onClick={this.handleEnable.bind(this, record)}
-                >
-                  <span
-                    className={record.enabled ? 'icon-remove_circle_outline' : 'icon-finished'}
-                  />
-                </Button>
-              </Popover>
-            </Permission> :
-            <Permission service={['iam-service.organization-project.enableProject']} type={type} organizationId={orgId}>
-              <Popover
-                trigger="hover"
-                content="启用"
-                placement="bottom"
-              >
-                <Button
-                  shape="circle"
-                  onClick={this.handleEnable.bind(this, record)}
-                >
-                  <span
-                    className={record.enabled ? 'icon-remove_circle_outline' : 'icon-finished'}
-                  />
-                </Button>
-              </Popover>
-            </Permission>)}
+          <Permission
+            service={['iam-service.organization-project.disableProject', 'iam-service.organization-project.enableProject']}
+            type={type} organizationId={orgId}>
+            <Popover
+              trigger="hover"
+              content={record.enabled ? "停用" : "启用"}
+              placement="bottom"
+            >
+              <Button
+                shape="circle"
+                onClick={this.handleEnable.bind(this, record)}
+                icon={record.enabled ? 'remove_circle_outline' : 'finished'}
+              />
+            </Popover>
+          </Permission>
         </div>
       ),
     }];
@@ -554,17 +536,26 @@ class ProjectHome extends Component {
     // });
 
     return (
-      <Page>
-        <Header title={Choerodon.getMessage('项目管理', 'project title')}>
-          <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
-            <Button
-              onClick={this.handleopenTab.bind(this, null, 'create')}
-              icon="playlist_add"
-            >
-              {Choerodon.getMessage('创建项目', 'create')}
-            </Button>
-          </Permission>
-          <Permission service={['iam-service.organization-project.list']} type={type} organizationId={orgId}>
+      <Permission
+        service={[
+          'iam-service.organization-project.create',
+          'iam-service.organization-project.list',
+          'iam-service.organization-project.update',
+          'iam-service.organization-project.disableProject',
+          'iam-service.organization-project.enableProject',
+        ]}
+        type={type}
+        organizationId={orgId}>
+        <Page>
+          <Header title={Choerodon.getMessage('项目管理', 'project title')}>
+            <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
+              <Button
+                onClick={this.handleopenTab.bind(this, null, 'create')}
+                icon="playlist_add"
+              >
+                {Choerodon.getMessage('创建项目', 'create')}
+              </Button>
+            </Permission>
             <Button
               icon="refresh"
               onClick={() => {
@@ -574,34 +565,34 @@ class ProjectHome extends Component {
             >
               {Choerodon.getMessage('刷新', 'flush')}
             </Button>
-          </Permission>
-        </Header>
-        <Content
-          title={`组织“${orgname}”的项目管理`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
-          description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
-        >
-          <Table
-            pagination={this.state.pagination}
-            columns={columns}
-            dataSource={projectData}
-            rowKey={record => record.id}
-            onChange={this.handlePageChange.bind(this)}
-            loading={ProjectStore.isLoading}
-            filterBarPlaceholder="过滤表"
-          />
-          <Sidebar
-            title={this.renderSideTitle()}
-            visible={this.state.sidebar}
-            onCancel={this.handleTabClose.bind(this)}
-            onOk={this.handleSubmit.bind(this)}
-            okText={this.state.operation === 'create' ? '创建' : '保存'}
-            cancelText="取消"
+          </Header>
+          <Content
+            title={`组织“${orgname}”的项目管理`}
+            link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
+            description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
           >
-            {this.renderSidebarContent()}
-          </Sidebar>
-        </Content>
-      </Page>
+            {projectData.length ? <Table
+              pagination={this.state.pagination}
+              columns={columns}
+              dataSource={projectData}
+              rowKey={record => record.id}
+              onChange={this.handlePageChange.bind(this)}
+              loading={ProjectStore.isLoading}
+              filterBarPlaceholder="过滤表"
+            /> : null}
+            <Sidebar
+              title={this.renderSideTitle()}
+              visible={this.state.sidebar}
+              onCancel={this.handleTabClose.bind(this)}
+              onOk={this.handleSubmit.bind(this)}
+              okText={this.state.operation === 'create' ? '创建' : '保存'}
+              cancelText="取消"
+            >
+              {this.renderSidebarContent()}
+            </Sidebar>
+          </Content>
+        </Page>
+      </Permission>
     );
   }
 }

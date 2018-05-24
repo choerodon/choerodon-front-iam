@@ -131,7 +131,6 @@
         sort: 1
         permission:
           - 'iam-service.project.disableProject'
-          - 'iam-service.project.list'
           - 'iam-service.project.query'
           - 'iam-service.project.update'
     - "member-role-project":

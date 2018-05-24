@@ -141,7 +141,7 @@ class EditRole extends Component {
     RoleStore.getWholePermission(roleData.level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(roleData.level, data);
     });
-  }
+  };
 
   handleAlreadyPageChange = (page) => {
     const updatePage = page;
@@ -164,11 +164,11 @@ class EditRole extends Component {
       _.remove(centerPermission, item => ids.indexOf(item.id) !== -1);
       RoleStore.setInitSelectedPermission(centerPermission);
     }
-  }
+  };
 
   handlestopPropagation = (event) => {
     event.stopPropagation();
-  }
+  };
 
   renderCanChoseService = () => {
     const data = RoleStore.getCanChosePermission[this.state.selectedLevel];
@@ -372,6 +372,7 @@ class EditRole extends Component {
                         currentPermission: selectedRowKeys,
                       });
                     },
+                    getCheckboxProps: () => ({ disabled: builtIn }),
                   }}
                 />
                 {currentPermission.length === 0 ? (

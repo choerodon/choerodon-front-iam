@@ -4,7 +4,6 @@ import { inject, observer } from 'mobx-react';
 import { Button, Col, Form, Icon, Input, Modal, Popconfirm, Popover, Row, Select, Table, Tabs } from 'choerodon-ui';
 import { DragDropContext, DragSource, DropTarget } from 'react-dnd';
 import { withRouter } from 'react-router-dom';
-import { PageHeadStyle, UnderPageHeadStyle } from 'PageHeader';
 import Page, { Content, Header } from 'Page';
 import _ from 'lodash';
 import axios from 'Axios';
@@ -847,13 +846,9 @@ class MenuTree extends Component {
         </Header>
         <Content
           title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的菜单配置`}
-          description={(<div>
-            菜单是左侧导航栏。菜单配置包括您对菜单名称、图标、层级关系、顺序的配置。菜单的类型分目录和菜单两种。
-            <a href="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">
-              了解详情
-            </a>
-            <span className="icon-open_in_new" />
-          </div>)}>
+          description="菜单是左侧导航栏。菜单配置包括您对菜单名称、图标、层级关系、顺序的配置。菜单的类型分目录和菜单两种。"
+          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
+        >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
             <TabPane tab="平台" key="site">
             </TabPane>

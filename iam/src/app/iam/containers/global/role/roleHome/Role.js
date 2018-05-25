@@ -61,10 +61,17 @@ class Role extends Component {
     this.props.history.push('role/create');
   };
 
-  loadRole(pagination = this.state.pagination,
-    sort = this.state.sort,
-    filters = this.state.filters,
-    params = this.state.params) {
+  loadRole(paginationIn, sortIn, filtersIn, paramsIn) {
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
     RoleStore.loadRole(pagination, sort, filters, params)
       .then((data) => {
         RoleStore.setIsLoading(false);

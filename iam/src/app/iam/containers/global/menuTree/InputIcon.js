@@ -1,8 +1,9 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Icon, Input, Pagination, Popover, Spin, Tooltip } from 'choerodon-ui';
+import { Icon, Input, Pagination, Dropdown, Spin, Tooltip } from 'choerodon-ui';
 import axios from 'Axios';
 import cx from 'classnames';
+import omit from 'object.omit';
 import './menuTree.scss';
 
 function noop() {
@@ -76,7 +77,7 @@ class InputIcon extends Component {
 
   iconCol = (value) => {
     return value.map(({ code }) => (
-      <Tooltip placement="right" title={code}>
+      <Tooltip key={code} placement="right" title={code}>
         <div
           className={cx('input-icon-cell', { 'input-icon-cell-active': code === this.state.value })}
           onClick={this.handleSelectIcon.bind(this, code)}
@@ -111,34 +112,34 @@ class InputIcon extends Component {
   getIconList() {
     const { loading, iconData, totalElements, pageSize, page, filterText } = this.state;
     return (
-      <div>
-        <div className="input-icon-header">
-          <Input
-            placeholder={Choerodon.getMessage('输入查询ICON名称', 'please input search Icon Name')}
-            size="default"
-            prefix={<Icon type="search" />}
-            onPressEnter={this.handleFilterChange}
-            onBlur={this.handleFilterChange}
-            onChange={this.handleFilterInput}
-            value={filterText}
-          />
-        </div>
-        <Spin spinning={loading}>
+      <Spin spinning={loading}>
+        <div className="ant-dropdown-menu">
+          <div className="input-icon-header">
+            <Input
+              placeholder={Choerodon.getMessage('输入查询ICON名称', 'please input search Icon Name')}
+              size="default"
+              prefix={<Icon type="search" />}
+              onPressEnter={this.handleFilterChange}
+              onBlur={this.handleFilterChange}
+              onChange={this.handleFilterInput}
+              value={filterText}
+            />
+          </div>
           <div className="input-icon-content">
             {iconData ? this.iconCol(iconData) : null}
           </div>
-        </Spin>
-        <div className="input-icon-footer">
-          <Pagination
-            total={totalElements}
-            onChange={this.handlePageChange}
-            pageSizeOptions={['20', '40', '80']}
-            pageSize={pageSize}
-            onShowSizeChange={this.handlePageChange}
-            current={page}
-          />
+          <div className="input-icon-footer">
+            <Pagination
+              total={totalElements}
+              onChange={this.handlePageChange}
+              pageSizeOptions={['20', '40', '80']}
+              pageSize={pageSize}
+              onShowSizeChange={this.handlePageChange}
+              current={page}
+            />
+          </div>
         </div>
-      </div>
+      </Spin>
     );
   }
 
@@ -146,20 +147,19 @@ class InputIcon extends Component {
     const { props } = this;
     const prefixIcon = (<span className={`icon-${props.value}`} style={{ color: 'black' }} />);
     return (
-      <Popover
+      <Dropdown
         overlayClassName="input-icon-popover"
-        content={this.getIconList()}
+        overlay={this.getIconList()}
         onVisibleChange={this.handlePopoverVisibleChange}
         placement="bottomLeft"
-        trigger="click"
+        trigger={['click']}
         visible={this.state.visible}
       >
         <Input
-          label="请选择一个图标"
           prefix={prefixIcon}
-          {...props}
+          {...omit(props, ['onFilter', 'pageSize', 'filterText', 'onPageChange'])}
         />
-      </Popover>
+      </Dropdown>
     );
   }
 }

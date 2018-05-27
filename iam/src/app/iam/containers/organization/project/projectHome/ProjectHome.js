@@ -19,12 +19,11 @@ import RePagination from 'RePagination';
 import ClientSearch from 'ClientSearch';
 import menuStore from 'menuStore';
 import classNames from 'classnames';
+import RightTab from '../component/rightTabs';
+import LoadingBar from '../../../../components/loadingBar';
 import HeaderStore from '@/stores/HeaderStore';
 import _ from 'lodash';
 import '../../../../assets/css/main.scss';
-
-import RightTab from '../component/rightTabs';
-import LoadingBar from '../../../../components/loadingBar';
 import './ProjectHome.scss';
 
 
@@ -78,10 +77,10 @@ class ProjectHome extends Component {
   };
 
   loadProjects = (pagination, sort, filters = {
-                    name: '',
-                    code: '',
-                    enabled: '',
-                  }) => {
+    name: '',
+    code: '',
+    enabled: '',
+  }) => {
     const { AppState, ProjectStore } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
@@ -201,7 +200,7 @@ class ProjectHome extends Component {
       validateFields((err, values) => {
         if (!err) {
           data = {
-            name: values.name,
+            name: values.editname,
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,
@@ -536,63 +535,52 @@ class ProjectHome extends Component {
     // });
 
     return (
-      <Permission
-        service={[
-          'iam-service.organization-project.create',
-          'iam-service.organization-project.list',
-          'iam-service.organization-project.update',
-          'iam-service.organization-project.disableProject',
-          'iam-service.organization-project.enableProject',
-        ]}
-        type={type}
-        organizationId={orgId}>
-        <Page>
-          <Header title={Choerodon.getMessage('项目管理', 'project title')}>
-            <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
-              <Button
-                onClick={this.handleopenTab.bind(this, null, 'create')}
-                icon="playlist_add"
-              >
-                {Choerodon.getMessage('创建项目', 'create')}
-              </Button>
-            </Permission>
+      <Page>
+        <Header title={Choerodon.getMessage('项目管理', 'project title')}>
+          <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
             <Button
-              icon="refresh"
-              onClick={() => {
-                const { pagination, sort } = this.state;
-                this.loadProjects(pagination, sort);
-              }}
+              onClick={this.handleopenTab.bind(this, null, 'create')}
+              icon="playlist_add"
             >
-              {Choerodon.getMessage('刷新', 'flush')}
+              {Choerodon.getMessage('创建项目', 'create')}
             </Button>
-          </Header>
-          <Content
-            title={`组织“${orgname}”的项目管理`}
-            link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
-            description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
+          </Permission>
+          <Button
+            icon="refresh"
+            onClick={() => {
+              const { pagination, sort } = this.state;
+              this.loadProjects(pagination, sort);
+            }}
           >
-            {projectData.length ? <Table
-              pagination={this.state.pagination}
-              columns={columns}
-              dataSource={projectData}
-              rowKey={record => record.id}
-              onChange={this.handlePageChange.bind(this)}
-              loading={ProjectStore.isLoading}
-              filterBarPlaceholder="过滤表"
-            /> : null}
-            <Sidebar
-              title={this.renderSideTitle()}
-              visible={this.state.sidebar}
-              onCancel={this.handleTabClose.bind(this)}
-              onOk={this.handleSubmit.bind(this)}
-              okText={this.state.operation === 'create' ? '创建' : '保存'}
-              cancelText="取消"
-            >
-              {this.renderSidebarContent()}
-            </Sidebar>
-          </Content>
-        </Page>
-      </Permission>
+            {Choerodon.getMessage('刷新', 'flush')}
+          </Button>
+        </Header>
+        <Content
+          title={`组织“${orgname}”的项目管理`}
+          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
+          description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
+        >
+          {projectData.length ? <Table
+            pagination={this.state.pagination}
+            columns={columns}
+            dataSource={projectData}
+            rowKey={record => record.id}
+            onChange={this.handlePageChange.bind(this)}
+            loading={ProjectStore.isLoading}
+            filterBarPlaceholder="过滤表"
+          /> : null}
+          <Sidebar
+            title={this.renderSideTitle()}
+            visible={this.state.sidebar}
+            onCancel={this.handleTabClose.bind(this)}
+            onOk={this.handleSubmit.bind(this)}
+            okText={this.state.operation === 'create' ? '创建' : '保存'}
+            cancelText="取消"
+          >
+            {this.renderSidebarContent()}
+          </Sidebar>
+        </Content>
+      </Page>
     );
   }
 }

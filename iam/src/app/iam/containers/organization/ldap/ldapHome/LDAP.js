@@ -291,14 +291,12 @@ class LDAP extends Component {
     return (
       <Page>
         <Header title={Choerodon.getMessage('修改LDAP', 'edit LDAP')}>
-          <Permission service={['iam-service.ldap.queryByOrgId']} type={type} organizationId={organizationId}>
-            <Button
-              onClick={this.reload}
-              icon="refresh"
-            >
-              {Choerodon.languageChange('refresh')}
-            </Button>
-          </Permission>
+          <Button
+            onClick={this.reload}
+            icon="refresh"
+          >
+            {Choerodon.languageChange('refresh')}
+          </Button>
         </Header>
         <Content
           title={`组织“${organizationName}”的LDAP`}

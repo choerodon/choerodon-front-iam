@@ -221,8 +221,8 @@ class OrganizationHome extends Component {
 
     return (
       <Content style={{ padding: 0 }}
-        title={title}
-        description={description}
+               title={title}
+               description={description}
       >
         <Form>
           {

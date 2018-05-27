@@ -14,7 +14,6 @@
           - 'iam-service.organization.update'
           - 'iam-service.organization.disableOrganization'
           - 'iam-service.organization.enableOrganization'
-          - 'iam-service.organization-project.check'
     - "menu-management":
         icon: view_list
         Routes: /iam/menuTree

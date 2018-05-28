@@ -49,6 +49,20 @@
           - 'iam-service.role.pagingQueryUsersByRoleIdOnSiteLevel'
           - 'iam-service.role.listRolesWithUserCountOnSiteLevel'
           - 'iam-service.user.pagingQueryUsersWithSiteLevelRoles'
+# 微服务管理
+"microservice":
+  icon: API
+  sort: 1
+  site:
+    - "route-management":
+        icon: routeroutline
+        Routes: /iam/route
+        sort: 1
+        permission:
+          - 'manager-service.route.list'
+          - 'manager-service.route.create'
+          - 'manager-service.route.update'
+          - 'manager-service.route.delete'
 
 # 租户设置
 "rentsetting":

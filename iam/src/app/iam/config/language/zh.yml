@@ -5,6 +5,9 @@
 "iam.role": "角色管理"
 "iam.member-role-global": "平台角色分配"
 
+"microservice": "微服务管理"
+"microservice.route-management": "路由管理"
+
 "rentsetting": 租户设置
 # organization
 "rentsetting.project": "项目管理"

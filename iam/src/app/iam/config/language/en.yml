@@ -5,6 +5,9 @@
 "iam.role": "Role"
 "iam.member-role-global": "Role Assignment"
 
+"microservice": "Microservice"
+"microservice.route-management": "Route Management"
+
 "rentsetting": "rent settings"
 # organization
 "rentsetting.project": "Project"

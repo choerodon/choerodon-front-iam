@@ -33,7 +33,9 @@ export function findParent(menus, record) {
         const ret = findParent(subMenus, record);
         if (ret) {
           result = ret;
-          result.parentData = data;
+          if (!ret.parentData) {
+            result.parentData = data;
+          }
           return true;
         }
       }

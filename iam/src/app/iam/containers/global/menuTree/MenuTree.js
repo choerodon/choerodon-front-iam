@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import axios from 'Axios';
 import Permission from 'PerComponent';
+import _ from 'lodash';
 import MenuStore from '@/stores/MenuStore';
 import InputIcon from './InputIcon';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
@@ -593,7 +594,7 @@ class MenuTree extends Component {
         if (menus.failed) {
           Choerodon.prompt(menus.message);
         } else {
-          MenuStore.setMenuData(menus, type);
+          MenuStore.setMenuData(_.clone(menus), type);
           Choerodon.prompt('保存成功');
           menuGroup[type] = normalizeMenus(menus);
           this.setState({

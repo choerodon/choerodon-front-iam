@@ -100,11 +100,18 @@ class EditUser extends Component {
     }
   };
 
+  // validateToPassword = (rule, value, callback) => {
+  //   const passwordPolicy = CreateUserStore.getPasswordPolicy;
+  //   if(value && passwordPolicy && passwordPolicy.not)
+  // }
+
   // 分别验证密码的最小长度，特殊字符和大写字母的情况和密码策略进行比对
   checkPassword = (rule, value, callback) => {
     const passwordPolicy = CreateUserStore.getPasswordPolicy;
+    const form = this.props.form;
     if (value && passwordPolicy && passwordPolicy.originalPassword !== value) {
-      const userName = this.state.userInfo.loginName;
+      // const userName = this.state.userInfo.loginName;
+      const userName = form.getFieldValue('loginName');
       Choerodon.checkPassword(passwordPolicy, value, callback, userName);
     } else {
       callback();
@@ -128,7 +135,7 @@ class EditUser extends Component {
   checkRepassword = (rule, value, callback) => {
     const form = this.props.form;
     if (value && value !== form.getFieldValue('password')) {
-      callback(Choerodon.getMessage('两次密码输入不一致', 'passwords don not match'));
+      callback(Choerodon.getMessage('两次密码输入不一致', 'passwords do not match'));
     } else {
       callback();
     }
@@ -258,9 +265,14 @@ class EditUser extends Component {
                   required: true,
                   whitespace: true,
                   message: Choerodon.getMessage('请输入登录名', 'The field is required'),
-                }, {
+                },
+                {
                   validator: this.checkUsername,
-                }],
+                },
+                // {
+                //   validator: this.validateToPassword,
+                // },
+              ],
               validateTrigger: 'onBlur',
               initialValue: userInfo.loginName,
               validateFirst: true,

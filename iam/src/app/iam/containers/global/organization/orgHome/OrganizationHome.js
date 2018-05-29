@@ -258,7 +258,7 @@ class OrganizationHome extends Component {
             {getFieldDecorator('name', {
               rules: [{ required: true, message: '请输入组织名称', whitespace: true }],
               validateTrigger: 'onBlur',
-              initialValue: editData.name,
+              initialValue: show === 'create' ? undefined : editData.name,
             })(
               <Input placeholder="组织名称" label="组织名称" style={{ width: inputWidth }} />,
             )}

@@ -4,6 +4,7 @@
 "iam.menu-management": "Menu Setting"
 "iam.role": "Role"
 "iam.member-role-global": "Role Assignment"
+"iam.root-user": "Root User Setting"
 
 "microservice": "Microservice"
 "microservice.route-management": "Route Management"

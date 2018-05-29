@@ -8,6 +8,7 @@ import Permission from 'PerComponent';
 import axios from 'Axios';
 import classnames from 'classnames';
 import querystring from 'query-string';
+import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import _ from 'lodash';
 import './MemberRole.scss';
 
@@ -139,12 +140,13 @@ class memberRoleType {
       });
   }
 
-  loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }) {
+  loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }, params) {
     const { type, id = 0 } = this.data;
     const body = {
       loginName: loginName && loginName[0],
       roleName: roles && roles[0],
       realName: realName && realName[0],
+      param: params,
     };
     const queryObj = { size, page: current - 1, sort: 'id' };
 
@@ -176,12 +178,12 @@ class memberRoleType {
 
   //多路请求
   fetch() {
-    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys } = this.context.state;
+    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params } = this.context.state;
     this.context.setState({
       loading: true,
     });
     return axios.all([
-      this.loadMemberDatas(memberRolePageInfo, memberRoleFilters),
+      this.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params),
       this.loadRoleMemberDatas(roleMemberFilters),
     ]).then(([{ content, totalElements, number }, roleData]) => {
       this.context.setState({
@@ -244,6 +246,7 @@ class MemberRole extends Component {
       },
       roleMemberFilterRole: [],
       roleIds: [],
+      params: [],
     };
   }
 
@@ -317,41 +320,12 @@ class MemberRole extends Component {
   }
 
   getProjectNameDom() {
-    const { getFieldDecorator } = this.props.form;
     const { selectType } = this.state;
-
-    return (
-      <FormItem
-        {...FormItemNumLayout}
-        label={'添加角色'}
-        style={{
-          display: selectType === 'edit' ? 'none' : 'block',
-          marginTop: '-15px',
-        }}
-      >
-        {getFieldDecorator('member', {
-          rules: [{
-            required: true,
-            validator: this.validateMember,
-          }],
-          validateTrigger: 'onChange',
-        })(
-          <Select
-            mode="tags"
-            ref={this.saveSelectRef}
-            style={{ width: 512 }}
-            label="成员"
-            placeholder="输入一个或多个成员名称"
-            filterOption={false}
-            onInputKeyDown={this.handleInputKeyDown}
-            notFoundContent={false}
-            showNotFindSelectedItem={false}
-            showNotFindInputItem={false}
-            choiceRender={this.handeChoiceRender}
-            allowClear
-          />,
-        )}
-      </FormItem>);
+    const style = {
+      display: selectType === 'edit' ? 'none' : 'block',
+      marginTop: '-15px',
+    };
+    return <MemberLabel style={style} form={this.props.form} />;
   }
 
   getRoleFormItems = () => {
@@ -458,36 +432,6 @@ class MemberRole extends Component {
         this.roles.fetch();
       }
     });
-  };
-
-  setMembersInSelect(member) {
-    const { getFieldValue, setFieldsValue, validateFields } = this.props.form;
-    const members = getFieldValue('member') || [];
-    if (members.indexOf(member) === -1) {
-      members.push(member);
-      setFieldsValue({
-        'member': members,
-      });
-      validateFields(['member']);
-    }
-    if (this.rcSelect) {
-      this.rcSelect.setState({
-        inputValue: '',
-      });
-    }
-  }
-
-  handleInputKeyDown = (e) => {
-    const { value } = e.target;
-    if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
-      this.setMembersInSelect(value);
-    }
-  };
-
-  saveSelectRef = (node) => {
-    if (node) {
-      this.rcSelect = node.rcSelect;
-    }
   };
 
   initMemberRole() {
@@ -598,54 +542,6 @@ class MemberRole extends Component {
     });
   };
 
-  validateMember = (rule, value, callback) => {
-    if (value && value.length) {
-      const { validedMembers } = this.state;
-      let errorMsg;
-      Promise.all(value.map((item) => {
-        if (item in validedMembers) {
-          return Promise.resolve(validedMembers[item]);
-        } else {
-          return new Promise((resolve) => {
-            this.roles.searchMemberId(item)
-              .then(({ failed, enabled }) => {
-                let success = true;
-                if (enabled === false) {
-                  errorMsg = '用户已被停用，无法给此用户分配角色，请先启用此用户';
-                  success = false;
-                } else if (failed) {
-                  errorMsg = '不存在此用户，请输入正确的登录名';
-                  success = false;
-                }
-                resolve(success);
-              })
-              .catch((error) => {
-                errorMsg = error;
-                resolve(false);
-              });
-          }).then((valid) => {
-            validedMembers[item] = valid;
-            return valid;
-          });
-        }
-      })).then(all => callback(
-        all.every(item => item) ? undefined :
-          errorMsg,
-      ));
-    } else {
-      callback(Choerodon.getMessage('必须至少输入一个成员', 'Please input one member at least'));
-    }
-  };
-
-  handeChoiceRender = (liNode, value) => {
-    const { validedMembers } = this.state;
-    return React.cloneElement(liNode, {
-      className: classnames(liNode.props.className, {
-        'choice-has-error': value in validedMembers && !validedMembers[value],
-      }),
-    });
-  };
-
   createRole = () => {
     this.setState({
       selectType: 'create',
@@ -685,16 +581,17 @@ class MemberRole extends Component {
     });
   }
 
-  memberRoleTableChange = (memberRolePageInfo, memberRoleFilters) => {
+  memberRoleTableChange = (memberRolePageInfo, memberRoleFilters, sort, params) => {
     if (!_.isEqual(memberRoleFilters, this.state.memberRoleFilters)) {
       memberRolePageInfo.current = 1;
     }
     this.setState({
       memberRolePageInfo,
       memberRoleFilters,
+      params,
       loading: true,
     });
-    this.roles.loadMemberDatas(memberRolePageInfo, memberRoleFilters).then(({ content, totalElements, number, size }) => {
+    this.roles.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params).then(({ content, totalElements, number, size }) => {
       this.setState({
         loading: false,
         memberDatas: content,
@@ -703,6 +600,7 @@ class MemberRole extends Component {
           total: totalElements,
           pageSize: size,
         },
+        params,
         memberRoleFilters,
       });
     });
@@ -1064,10 +962,6 @@ class MemberRole extends Component {
       organizationId,
       projectId,
     };
-  }
-
-  getLink() {
-
   }
 
   render() {

@@ -49,6 +49,14 @@
           - 'iam-service.role.pagingQueryUsersByRoleIdOnSiteLevel'
           - 'iam-service.role.listRolesWithUserCountOnSiteLevel'
           - 'iam-service.user.pagingQueryUsersWithSiteLevelRoles'
+     - "root-user":
+        icon: settings
+        Routes: /iam/rootuser
+        sort: 5
+        permission:
+          - 'iam-service.user.pagingQueryAdminUsers'
+          - 'iam-service.user.addDefaultUsers'
+          - 'iam-service.user.deleteDefaultUser'
 # 微服务管理
 "microservice":
   icon: API

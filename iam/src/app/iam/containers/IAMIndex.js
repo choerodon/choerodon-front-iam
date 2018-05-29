@@ -21,6 +21,7 @@ const RoleIndex = asyncRouter(() => import('./global/role'));
 const MemberRole = asyncRouter(() => import('./global/MemberRole'));
 const menuTree = asyncRouter(() => import('./global/menuTree'));
 const RouteIndex = asyncRouter(() => import('./global/route'));
+const RootUser = asyncRouter(() => import('./global/rootUser'));
 
 const ProjectSettingIndex = asyncRouter(() => import('./project/projectSetting'));
 
@@ -51,6 +52,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/memberRole`} component={MemberRole} />
           <Route path={`${match.url}/menuTree`} component={menuTree} />
           <Route path={`${match.url}/usermodifyPwd`} component={PasswordIndex} />
+          <Route path={`${match.url}/rootuser`} component={RootUser} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>

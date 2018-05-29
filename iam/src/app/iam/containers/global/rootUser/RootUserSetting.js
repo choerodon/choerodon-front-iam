@@ -1,56 +1,229 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Modal, Popconfirm, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Modal, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
-import axios from 'Axios';
-import classnames from 'classnames';
-import querystring from 'query-string';
-import _ from 'lodash';
+import RootUserStore from '../../../stores/globalStores/rootUser/RootUserStore';
+import MemberLabel from '../../../components/memberLabel/MemberLabel';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
-const Option = Select.Option;
-const pageSize = 10;
-const FormItemNumLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 10 },
-  },
-};
-
 
 @inject('AppState')
 @observer
 class RootUserSetting extends Component {
   constructor(props, context) {
     super(props, context);
+    this.state = {
+      visible: false,
+      deleteModal: false,
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      sort: {
+        columnKey: 'id',
+        order: 'descend',
+      },
+      filters: [],
+      params: [],
+      record: {},
+    }
   }
-  addRootUser = () => {
-
+  componentWillMount() {
+    this.reload();
   }
-  reload = () => {
 
+  reload = (paginationIn, filtersIn, sortIn, paramsIn) => {
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
+    this.setState({
+      loading: true,
+    })
+    RootUserStore.loadRootUserData(pagination, filters, sort, params).then(data => {
+      RootUserStore.setRootUserData(data.content);
+      this.setState({
+        pagination: {
+          current: data.number + 1,
+          pageSize: data.size,
+          total: data.totalElements,
+        },
+        loading: false,
+        sort,
+        filters,
+        params,
+      });
+    });
+  }
+  tableChange = (pagination, filters, sort, params) => {
+    this.reload(pagination, filters, sort, params);
+  }
+  openDeleteModal(record) {
+    this.setState({
+      record,
+      deleteModal: true,
+    });
+  }
+  closeDeleteModal = () => {
+    this.setState({
+      deleteModal: false,
+    });
+  }
+  openSidebar = () => {
+    const { resetFields } = this.props.form;
+    resetFields();
+    this.setState({
+      visible: true,
+    });
+  }
+  closeSidebar = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+
+  handleDelete = () => {
+    const { record } = this.state;
+    RootUserStore.deleteRootUser(record.id).then(({ failed, message }) => {
+      if (failed) {
+        Choerodon.prompt(message);
+      } else {
+        Choerodon.prompt('删除成功');
+        this.closeDeleteModal();
+        this.reload();
+      }
+    });
+  }
+
+  handleOk = (e) => {
+    const { validateFields } = this.props.form;
+    e.preventDefault();
+    validateFields((err, values) => {
+      if (!err) {
+        const memberNames = values.member;
+        RootUserStore.searchMemberIds(memberNames).then((data) => {
+          if (data) {
+            const memberIds = data.map((info) => {
+              return info.id;
+            });
+            RootUserStore.addRootUser(memberIds).then(({ failed, message }) => {
+              if (failed) {
+                Choerodon.prompt(message);
+              } else {
+                Choerodon.prompt('添加成功');
+                this.closeSidebar();
+                this.reload();
+              }
+            });
+          }
+        });
+      }
+    });
+  };
+
+  renderTable() {
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    const { filters, sort: { columnKey, order }, } = this.state;
+    const rootUserData = RootUserStore.getRootUserData.slice();
+    const columns = [
+      {
+        title: '登录名',
+        key: 'loginName',
+        dataIndex: 'loginName',
+        filters: [],
+        filteredValue: filters.loginName || [],
+        sorter: true,
+        sortOrder: columnKey === 'loginName' && order,
+      },
+      {
+        title: '用户名',
+        key: 'realName',
+        dataIndex: 'realName',
+        filters: [],
+        filteredValue: filters.realName || [],
+      },
+      {
+        title: '启用状态',
+        key: 'enabled',
+        dataIndex: 'enabled',
+        render: enabled => enabled ? '启用' : '禁用',
+        filters: [{
+          text: '启用',
+          value: 'true',
+        }, {
+          text: '禁用',
+          value: 'false',
+        }],
+        filteredValue: filters.enabled || [],
+      },
+      {
+        title: '安全状态',
+        key: 'locked',
+        dataIndex: 'locked',
+        filters: [{
+          text: '正常',
+          value: 'false',
+        }, {
+          text: '锁定',
+          value: 'true',
+        }],
+        filteredValue: filters.locked || [],
+        render: lock => lock ? '锁定' : '正常',
+      },
+      {
+        title: '',
+        width: 100,
+        render: (text, record) => {
+          return (
+            <div>
+              <Permission
+                service={['iam-service.user.deleteDefaultUser']}
+                type={type}
+              >
+                <Button onClick={this.openDeleteModal.bind(this, record)} shape="circle" icon="delete_forever" />
+              </Permission>
+            </div>
+          );
+        },
+      },
+    ];
+    return (
+      <Table
+        loading={this.state.loading}
+        pagination={this.state.pagination}
+        columns={columns}
+        indentSize={0}
+        dataSource={rootUserData}
+        rowKey="id"
+        onChange={this.tableChange}
+        filterBarPlaceholder="过滤表"
+      />
+    );
   }
   render() {
-    const { AppState } = this.props;
-    const { type, id: organizationId } = AppState.currentMenuType;
+    const { AppState, form } = this.props;
+    const { type } = AppState.currentMenuType;
     return (
-      <Page>
+      <Page className="root-user-setting">
         <Header title={'Root用户设置'}>
           <Permission
             service={['iam-service.user.addDefaultUsers']}
             type={type}
-            organizationId={organizationId}
           >
             <Button
-              onClick={this.addRootUser}
+              onClick={this.openSidebar}
               icon="playlist_add"
             >
               添加
@@ -64,11 +237,43 @@ class RootUserSetting extends Component {
           </Button>
         </Header>
         <Content
-          title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的Root用户设置`}
+          title={`平台的Root用户设置`}
           link=""
           description="Root用户能管理平台以及平台中的所有组织和项目。平台中可以有一个或多个Root用户。您可以添加和移除Root用户。"
         >
-          <Table />
+          {this.renderTable()}
+          <Sidebar
+            title="添加Root用户"
+            onOk={this.handleOk}
+            okText="添加"
+            cancelText="取消"
+            onCancel={this.closeSidebar}
+            visible={this.state.visible}
+          >
+            <Content
+              style={{ padding: 0 }}
+              title={`在平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”中添加Root用户`}
+              link=""
+              description="您可以在此添加一个或多个用户，被添加的用户为Root用户"
+            >
+              <Form>
+                <MemberLabel style={{ marginTop: '-15px'}} form={form} />
+              </Form>
+            </Content>
+          </Sidebar>
+          <Modal
+            title="移除Root用户"
+            className="delete-modal"
+            bodyStyle={{
+              marginTop: '24px'
+            }}
+            visible={this.state.deleteModal}
+            closable={false}
+            onOk={this.handleDelete}
+            onCancel={this.closeDeleteModal}
+          >
+            <span>确定要移除Root用户“{this.state.record.realName}”吗？移除后此用户将不能管理平台及所有组织、项目。</span>
+          </Modal>
         </Content>
       </Page>
     );

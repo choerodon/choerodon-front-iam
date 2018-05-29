@@ -3,20 +3,16 @@
  */
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import AutoRouter from 'AutoRouter';
 import CommonMenu from 'CommonMenu';
-// import ResourceMenu from 'ResourceMenu';
 import IsAuthSpin from 'IsAuthSpin';
 import MasterHeader from 'MasterHeader';
 import { Tooltip } from 'antd';
-// import MenuTitle from 'MenuTitle';
 import MenuType from 'MenuType';
-import Routes from 'RouteMap';
 import UserPreferences from 'UserPreferences';
 import RightIconButton from 'RightIconButton';
 import LeftIconButton from 'LeftIconButton';
-import _ from 'lodash';
 
 @inject('AppState')
 @observer
@@ -30,8 +26,6 @@ class Masters extends Component {
   }
 
   componentDidMount() {
-    const { AppState } = this.props;
-    AppState.loadUserInfo();
     window.addEventListener('resize', this.ChangeContent.bind(this));
     const el = document.getElementById('autoRouter');
     document.addEventListener('keyup', (e) => {
@@ -121,8 +115,6 @@ class Masters extends Component {
         width: AppState.getSingle ? 'calc(100% - 231px)' : 'calc(100% - 280px)',
       },
       resourceMenu: {
-        // flex: '0 0 14em',
-        // flexBasis: AppState.getChangeFlex,
         order: 1,
         zIndex: 3,
         backgroundColor: '#fafafa',

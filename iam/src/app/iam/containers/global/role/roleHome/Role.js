@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { observer, inject } from 'mobx-react';
-import { Table, Button, Menu, Dropdown, Icon, Form, Select, message } from 'choerodon-ui';
+import { inject, observer } from 'mobx-react';
+import { Button, Dropdown, Form, Icon, Menu, message, Modal, Select, Table } from 'choerodon-ui';
 import Permission from 'PerComponent';
-import Page, { Header, Content } from 'Page';
+import Page, { Content, Header } from 'Page';
 import Remove from 'Remove';
-import _ from 'lodash';
-import classNames from 'classnames';
 import Action from 'Action';
-import SideBar from 'SideBar';
 import CreateRole from '../roleCreate';
 import DetailRole from '../roleDetail';
 import EditRole from '../roleEdit';
@@ -16,7 +13,7 @@ import './Role.scss';
 import '../../../../assets/css/main.scss';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
 
-const Option = Select.Option;
+const { Sidebar } = Modal;
 
 @inject('AppState')
 @observer
@@ -472,7 +469,7 @@ class Role extends Component {
             loading={RoleStore.getIsLoading}
             filterBarPlaceholder="过滤表"
           />
-          <SideBar
+          <Sidebar
             title={this.renderSideTitle()}
             onClose={this.handleSideBarClose}
             visible={visible}
@@ -480,7 +477,7 @@ class Role extends Component {
             showOkBth={this.renderShowOkBtn()}
           >
             {this.renderSideBar()}
-          </SideBar>
+          </Sidebar>
         </Content>
       </Page>
     );

@@ -31,6 +31,8 @@ class UserInfoStore {
 
   updateUserInfo = user => axios.put(`/iam/v1/users/${user.id}/info`, JSON.stringify(user));
 
+  updatePassword = (id, body) => axios.put(`/iam/v1/users/${id}/password`, JSON.stringify(body));
+
   checkEmailAddress = email => (
     axios.post('/iam/v1/users/check', JSON.stringify({ id: this.userInfo.id, email }))
   );

@@ -3,16 +3,18 @@
  */
 
 import React, { Component } from 'react';
-import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip, Popover } from 'choerodon-ui';
+import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip, Popover, Radio } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import querystring from 'query-string';
 import { observer, inject } from 'mobx-react';
 import Page, { Header, Content } from 'Page';
 import axios from 'Axios';
+import './Route.scss';
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 @inject('AppState')
 @observer
 class Route extends Component {
@@ -20,6 +22,7 @@ class Route extends Component {
 
   componentWillMount() {
     this.loadRouteList();
+    this.getService();
   }
 
   /* 初始化state */
@@ -41,7 +44,47 @@ class Route extends Component {
       },
       filters: {},
       params: [],
+      isShowModal: false,
+      record: {},
+      serviceArr: [],
     };
+  }
+
+  /* 获取sidebar中对应微服务 */
+  getOption() {
+    const { serviceArr = [] } = this.state;
+    const services = serviceArr.map(({ name }) =>
+      (
+        <Option value={name} key={name}>{name}</Option>
+      ),
+    );
+    return services;
+  }
+
+  /* 获取所有微服务 */
+  getService() {
+    axios.get('manager/v1/services/page').then(({ content }) => {
+      this.setState({
+        serviceArr: content,
+      });
+    });
+  }
+
+  /**
+   * Input后缀提示
+   * @param text
+   */
+  getSuffix(text) {
+    return (
+      <Popover
+        className="routePop"
+        placement="right"
+        trigger="hover"
+        content={text}
+      >
+        <Icon type="help" />
+      </Popover>
+    );
   }
 
   loadRouteList(paginationIn, sortIn, filtersIn, paramsIn) {
@@ -104,12 +147,29 @@ class Route extends Component {
     this.loadRouteList(pagination, sorter, filters, params);
   };
 
-
   createRoute = () => {
     this.props.form.resetFields();
     this.setState({
       visible: true,
       show: 'create',
+    });
+  }
+
+  editRoute = (record) => {
+    this.props.form.resetFields();
+    this.setState({
+      visible: true,
+      show: 'edit',
+      sidebarData: record,
+    });
+  }
+
+  routeDetail = (record) => {
+    this.props.form.resetFields();
+    this.setState({
+      visible: true,
+      show: 'detail',
+      sidebarData: record,
     });
   }
 
@@ -120,10 +180,104 @@ class Route extends Component {
     });
   };
 
+  /* 关闭sidebar */
   handleCancel = () => {
     this.setState({
       visible: false,
     });
+  }
+
+
+  /* 显示删除弹窗 */
+  showModal(record) {
+    this.setState({
+      record,
+      isShowModal: true,
+    });
+  }
+
+  /* 关闭删除弹窗  */
+  cancelModal = () => {
+    this.setState({
+      isShowModal: false,
+    });
+  }
+
+  /* 删除自定义路由 */
+  handleDelete = () => {
+    const { record } = this.state;
+    axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
+      if (failed) {
+        Choerodon.prompt(message);
+      } else {
+        Choerodon.prompt('删除成功');
+        this.cancelModal();
+        this.loadRouteList();
+      }
+    });
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, { name, path, serviceId }) => {
+      if (!err) {
+        const { show } = this.state;
+        if (show === 'create') {
+          const body = {
+            name,
+            path,
+            serviceId,
+          };
+          axios.post('/manager/v1/routes', JSON.stringify(body)).then(({ failed, message }) => {
+            if (failed) {
+              Choerodon.prompt(message);
+            } else {
+              Choerodon.prompt('创建成功');
+              this.loadRouteList();
+              this.setState({
+                visible: false,
+              });
+            }
+          }).catch(Choerodon.handleResponseError);
+        } else if (show === 'detail') {
+          this.handleCancel();
+        }
+      }
+    });
+  }
+
+  /**
+   * 路由名称唯一性校验
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkName = (rule, value, callback) => {
+    axios.post('/manager/v1/routes/check', JSON.stringify({ name: value }))
+      .then(({ failed }) => {
+        if (failed) {
+          callback(Choerodon.getMessage('路由名称已存在，请输入其他路由名称', 'name existed, please try another'));
+        } else {
+          callback();
+        }
+      });
+  }
+
+  /**
+   * 路由路径唯一性校验
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkPath = (rule, value, callback) => {
+    axios.post('/manager/v1/routes/check', JSON.stringify({ path: value }))
+      .then(({ failed }) => {
+        if (failed) {
+          callback(Choerodon.getMessage('路由路径已存在，请输入其他路由路径', 'path existed, please try another'));
+        } else {
+          callback();
+        }
+      });
   }
 
   renderSidebarTitle() {
@@ -134,6 +288,17 @@ class Route extends Component {
       return '修改路由';
     } else {
       return '路由详情';
+    }
+  }
+
+  renderSidebarOkText() {
+    const { show } = this.state;
+    if (show === 'create') {
+      return '创建';
+    } else if (show === 'edit') {
+      return '保存';
+    } else {
+      return '返回';
     }
   }
 
@@ -151,6 +316,9 @@ class Route extends Component {
       },
     };
     const inputWidth = 512;
+    const stripPrefix = sidebarData && sidebarData.stripPrefix ? 'stripPrefix' : 'withPrefix';
+    const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
+    const customSensitiveHeaders = sidebarData && sidebarData.customSensitiveHeaders ? 'filtered' : 'noFiltered';
     let title;
     let description;
     if (show === 'create') {
@@ -159,75 +327,153 @@ class Route extends Component {
     } else if (show === 'edit') {
       title = `对路由"${sidebarData.name}"进行修改`;
       description = '您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。';
-    } else {
-      title = `查看路由${sidebarData.name}的详情`;
+    } else if (show === 'detail') {
+      title = `查看路由"${sidebarData.name}"的详情`;
       description = '预定义路由为平台初始化设置，您不能修改预定义路由。';
     }
-
+    const valid = show === 'create';
     return (
       <Content
         style={{ padding: 0 }}
         title={title}
         description={description}
+        className="formContainer"
       >
         <Form>
-          {
-            show === 'create' && (
-              <FormItem
-                {...formItemLayout}
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('name', {
+              rules: [{
+                required: valid,
+                whitespace: valid,
+                message: '请输入路由名称',
+              }, {
+                validator: valid && this.checkName,
+              }],
+              initialValue: valid ? undefined : sidebarData.name,
+              validateTrigger: 'onBlur',
+              validateFirst: true,
+            })(
+              <Input
+                label="路由名称"
+                suffix={this.getSuffix('路由表中的唯一标识')}
+                style={{ width: inputWidth }}
+                disabled={!valid}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('path', {
+              rules: [{
+                required: valid,
+                whitespace: valid,
+                message: '请输入路径',
+              }, {
+                validator: valid && this.checkPath,
+              }],
+              initialValue: valid ? undefined : sidebarData.path,
+              validateTrigger: 'onBlur',
+              validateFirst: true,
+            })(
+              <Input
+                label="路径"
+                style={{ width: inputWidth }}
+                suffix={this.getSuffix('路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径')}
+                disabled={!valid}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('serviceId', {
+              rules: [{
+                required: valid,
+                message: Choerodon.getMessage('必须选择一个微服务', 'Please choose one microservice at least'),
+              }],
+              initialValue: valid ? undefined : [sidebarData.serviceId],
+            })(
+              <Select
+                disabled={show === 'detail'}
+                style={{ width: 300 }}
+                label="请选择一个微服务"
+                filterOption={
+                  (input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                filter
               >
-                {getFieldDecorator('name', {
-                  rules: [{
-                    required: true,
-                    whitespace: true,
-                    message: '请输入路由名称',
-                  }],
-                })(
-                  <Input label="路由名称" style={{ width: inputWidth }} />,
-                )}
-              </FormItem>
-            )
-          }
-          {
-            show === 'create' && (
-              <FormItem
-                {...formItemLayout}
-              >
-                {getFieldDecorator('path', {
-                  rules: [{
-                    required: true,
-                    whitespace: true,
-                    message: '请输入路径',
-                  }],
-                })(
-                  <Input label="路径" style={{ width: inputWidth }} />,
-                )}
-              </FormItem>
-            )
-          }
-          {
-            show === 'create' && (
-              <FormItem
-                {...formItemLayout}
-              >
-                {getFieldDecorator('microservice', {
-                  rules: [{
-                    required: true,
-                    message: Choerodon.getMessage('必须选择一个微服务', 'Please choose one microservice at least'),
-                  }],
-                })(
-                  <Select
-                    style={{ width: 300 }}
-                    label="请选择一个微服务"
-                    filter
-                  >
-                    <Option value="test" key="test" />
-                  </Select>,
-                )}
-              </FormItem>
-            )
-          }
+                {this.getOption()}
+              </Select>,
+            )}
+          </FormItem>
+          {show !== 'create' && (
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('preffix', {
+                initialValue: stripPrefix,
+              })(
+                <RadioGroup label="是否去除前缀" className="radioGroup" disabled={show === 'detail'}>
+                  <Radio value={'stripPrefix'}>是</Radio>
+                  <Radio value={'withPrefix'}>否</Radio>
+                </RadioGroup>,
+              )}
+            </FormItem>
+          )}
+          {show !== 'create' && (
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('retryable', {
+                initialValue: retryable,
+              })(
+                <RadioGroup label="是否重试" className="radioGroup" disabled={show === 'detail'}>
+                  <Radio value={'retry'}>是</Radio>
+                  <Radio value={'notRetry'}>否</Radio>
+                </RadioGroup>,
+              )}
+            </FormItem>
+          )}
+          {show !== 'create' && (
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('customSensitiveHeaders', {
+                initialValue: customSensitiveHeaders,
+              })(
+                <RadioGroup label="是否过滤敏感头信息" className="radioGroup" disabled={show === 'detail'}>
+                  <Radio value={'filtered'}>是</Radio>
+                  <Radio value={'noFiltered'}>否</Radio>
+                </RadioGroup>,
+              )}
+            </FormItem>
+          )}
         </Form>
+        {show !== 'create' && (
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('path', {
+              rules: [{
+                whitespace: true,
+                message: '请输入Helper服务名',
+              }],
+              initialValue: sidebarData.helperService || undefined,
+            })(
+              <Input
+                disabled={show === 'detail'}
+                label="Helper服务名"
+                style={{ width: inputWidth }}
+                suffix={this.getSuffix('该路由规则对应的自定义网关处理器服务，默认为gateway-helper')}
+              />,
+            )}
+          </FormItem>
+        )
+        }
       </Content>
     );
   }
@@ -270,6 +516,7 @@ class Route extends Component {
             <Button
               icon="find_in_page"
               shape="circle"
+              onClick={this.routeDetail.bind(this, record)}
             />
           </Popover>
         </div>
@@ -285,6 +532,7 @@ class Route extends Component {
             <Button
               icon="mode_edit"
               shape="circle"
+              onClick={this.editRoute.bind(this, record)}
             />
           </Popover>
           <Popover
@@ -295,6 +543,7 @@ class Route extends Component {
             <Button
               icon="delete_forever"
               shape="circle"
+              onClick={this.showModal.bind(this, record)}
             />
           </Popover>
         </div>
@@ -304,12 +553,12 @@ class Route extends Component {
 
   render() {
     const { AppState } = this.props;
-    const { sort: { columnKey, order }, filters } = this.state;
+    const { sort: { columnKey, order }, filters, serviceArr } = this.state;
     const { content, loading, pagination, visible, show } = this.state;
     const { type } = AppState.currentMenuType;
-    const filtersService = content && content.map(({ serviceId }) => ({
-      value: serviceId,
-      text: serviceId,
+    const filtersService = serviceArr && serviceArr.map(({ name }) => ({
+      value: name,
+      text: name,
     }));
     const columns = [{
       title: '路由名称',
@@ -376,17 +625,28 @@ class Route extends Component {
             loading={loading}
             pagination={pagination}
             onChange={this.handlePageChange}
+            filters={this.state.filters.params}
             filterBarPlaceholder="过滤表"
           />
           <Sidebar
             title={this.renderSidebarTitle()}
             visible={visible}
-            okText={'保存'}
+            okText={this.renderSidebarOkText()}
             cancelText="取消"
+            onOk={this.handleSubmit}
             onCancel={this.handleCancel}
+            okCancel={show !== 'detail'}
           >
             {this.renderSidebarContent()}
           </Sidebar>
+          <Modal
+            title="删除路由"
+            visible={this.state.isShowModal}
+            onCancel={this.cancelModal}
+            onOk={this.handleDelete}
+          >
+            <p>确定要删除路由“{this.state.record.name}”吗？</p>
+          </Modal>
         </Content>
       </Page>
     );

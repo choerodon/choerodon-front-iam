@@ -5,7 +5,6 @@ import store from 'Store';
 @store('CreateUserStore')
 class CreateUserStore {
   @observable language;
-  @observable organization;
   @observable passwordPolicy;
 
   @action
@@ -19,16 +18,6 @@ class CreateUserStore {
   }
 
   @action
-  setOrganization(data) {
-    this.organization = data;
-  }
-
-  @computed
-  get getOrganization() {
-    return this.organization;
-  }
-
-  @action
   setPasswordPolicy(data) {
     this.passwordPolicy = data;
   }
@@ -36,12 +25,6 @@ class CreateUserStore {
   @computed
   get getPasswordPolicy() {
     return this.passwordPolicy;
-  }
-
-  loadOrganizationById(organizationId) {
-    return axios.get(`/iam/v1/organizations/${organizationId}`).then((data) => {
-      this.setOrganization(data);
-    });
   }
 
   loadPasswordPolicyById(id) {

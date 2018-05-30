@@ -56,13 +56,6 @@ class EditUser extends Component {
       });
   }
 
-  loadOrganizationById(id) {
-    CreateUserStore.loadOrganizationById(id)
-      .catch((error) => {
-        Choerodon.handleResponseError(error);
-      });
-  }
-
   loadPasswordPolicyById(id) {
     CreateUserStore.loadPasswordPolicyById(id)
       .catch((error) => {
@@ -76,7 +69,6 @@ class EditUser extends Component {
     if (edit) {
       this.getUserInfoById(organizationId, id);
     }
-    this.loadOrganizationById(organizationId);
     this.loadPasswordPolicyById(organizationId);
   }
 

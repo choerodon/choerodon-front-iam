@@ -1,26 +1,10 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Table,
-  Button,
-  Spin,
-  message,
-  Input,
-  Form,
-  notification,
-  Row,
-  Col,
-  Modal,
-  Popover } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { Button, Col, Form, Input, message, Modal, notification, Popover, Row, Spin, Table } from 'choerodon-ui';
+import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
-import RePagination from 'RePagination';
-import ClientSearch from 'ClientSearch';
-import menuStore from 'menuStore';
-import classNames from 'classnames';
-import RightTab from '../component/rightTabs';
-import LoadingBar from '../../../../components/loadingBar';
 import HeaderStore from '@/stores/HeaderStore';
 import _ from 'lodash';
 import '../../../../assets/css/main.scss';

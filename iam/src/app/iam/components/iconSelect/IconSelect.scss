@@ -1,0 +1,47 @@
+.input-icon {
+  &-popover {
+    width: 512px;
+
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+  }
+
+  &-header {
+    background-color: #fafafa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 17px;
+
+    .ant-input-underline {
+      display: none;
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 11px 1px;
+  }
+
+  &-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 8px;
+    text-align: right;
+  }
+
+  &-cell {
+    width: 88px;
+    line-height: 28px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 12px;
+    margin: 0 7px;
+    cursor: pointer;
+
+    &-active {
+      background-color: rgba(0, 0, 0, 0.06);
+      border-radius: 2px;
+    }
+  }
+}

@@ -8,7 +8,7 @@ import AutoRouter from 'AutoRouter';
 import CommonMenu from 'CommonMenu';
 import IsAuthSpin from 'IsAuthSpin';
 import MasterHeader from 'MasterHeader';
-import { Tooltip } from 'antd';
+import { Tooltip } from 'choerodon-ui';
 import MenuType from 'MenuType';
 import UserPreferences from 'UserPreferences';
 import RightIconButton from 'RightIconButton';
@@ -33,8 +33,9 @@ class Masters extends Component {
         el.style.position = 'absolute';
         el.style.width = widths;
       }
-    })
+    });
   }
+
   // componentDidUpdate() {
   //   const { history, AppState } = this.props;
   //   if (AppState.getfourTofour) {
@@ -150,14 +151,17 @@ class Masters extends Component {
 
     return styles;
   }
+
   changeServer = (stateName) => {
     this.setState(stateName);
-  }
+  };
+
   ChangeContent() {
     if (this.content) {
       this.content.style.height = `${window.innerHeight - 48}px`;
     }
   }
+
   Content(instance) {
     this.content = instance;
   }

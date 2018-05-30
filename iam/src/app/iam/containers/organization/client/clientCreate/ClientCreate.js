@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Form, Input, Select } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import { observer, inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import { Content } from 'Page';
-import NewButton from 'NewButton';
 import ClientStore from '../../../../stores/organization/client/ClientStore';
 import './ClientCreate.scss';
 

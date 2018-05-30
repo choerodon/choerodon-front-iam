@@ -4,12 +4,12 @@ import { Icon, Input, Pagination, Dropdown, Spin, Tooltip } from 'choerodon-ui';
 import axios from 'Axios';
 import cx from 'classnames';
 import omit from 'object.omit';
-import './menuTree.scss';
+import './IconSelect.scss';
 
 function noop() {
 }
 
-class InputIcon extends Component {
+class IconSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -164,4 +164,4 @@ class InputIcon extends Component {
   }
 }
 
-export default InputIcon;
+export default IconSelect;

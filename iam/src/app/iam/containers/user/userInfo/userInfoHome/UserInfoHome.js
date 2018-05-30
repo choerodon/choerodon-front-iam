@@ -4,7 +4,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Form, Button, Input, Select, Row, Col, message, Spin, Upload, Icon } from 'choerodon-ui';
+import { Form, Button, Input, Select, Row, Col, message, Upload, Icon } from 'choerodon-ui';
 import Permission from 'PerComponent';
 import Page, { Header, Content } from 'Page';
 import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
@@ -12,7 +12,6 @@ import './Userinfo.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-const InputGroup = Input.Group;
 const inputWidth = 480;
 const formItemLayout = {
   labelCol: {
@@ -28,34 +27,21 @@ const formItemLayout = {
 @inject('AppState')
 @observer
 class UserInfo extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      submitting: false,
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.loadUserInfo = this.loadUserInfo.bind(this);
-  }
+  state = {
+    submitting: false,
+  };
 
   componentWillMount() {
     this.loadUserInfo();
-    // this.loadLanguage(UserInfoStore);
-    // this.loadOrganization(UserInfoStore);
   }
 
   loadUserInfo = () => {
-    const { AppState } = this.props;
-    const userId = AppState.getUserId;
-    UserInfoStore.setIsLoading(true);
-    UserInfoStore.loadUserInfo(userId)
-      .then((data) => {
-        UserInfoStore.setIsLoading(false);
-        UserInfoStore.setUserInfo(data);
-      })
-      .catch(error => Choerodon.handleResponseError(error));
-    this.setState({
-      submitting: false,
-    });
+    UserInfoStore.setUserInfo(this.props.AppState.getUserInfo);
+  };
+
+  refresh = () => {
+    this.props.form.resetFields();
+    this.loadUserInfo();
   };
 
   checkEmailAddress = (rule, value, callback) => {
@@ -87,7 +73,6 @@ class UserInfo extends Component {
           ...originUser,
           ...values,
         };
-        delete user.name;
         UserInfoStore.updateUserInfo(user).then((data) => {
           if (data) {
             UserInfoStore.setUserInfo(data);
@@ -100,9 +85,6 @@ class UserInfo extends Component {
           this.setState({ submitting: false });
         });
       }
-      this.setState({
-        submitting: false,
-      });
     });
   };
 
@@ -186,118 +168,118 @@ class UserInfo extends Component {
     const { getFieldDecorator } = this.props.form;
     const { realName, email, language, timeZone } = user;
     return (
-      <Spin spinning={UserInfoStore.getIsLoading} wrapperClassName="form-spin">
-        <Form onSubmit={this.handleSubmit.bind(this)} layout="vertical" className="user-info">
-          {this.getAvatar(user)}
-          <FormItem
-            {...formItemLayout}
-          >
-            <Icon type="person" className="form-icon" />
-            {getFieldDecorator('realName', {
-              rules: [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: Choerodon.getMessage('请输入用户名', 'required'),
-                },
-              ],
-              validateTrigger: 'onBlur',
-              initialValue: realName,
-            })(
-              <Input
-                label="用户名"
-                style={{ width: inputWidth }}
-              />,
-            )}
+      <Form onSubmit={this.handleSubmit} layout="vertical" className="user-info">
+        {this.getAvatar(user)}
+        <FormItem
+          {...formItemLayout}
+        >
+          <Icon type="person" className="form-icon" />
+          {getFieldDecorator('realName', {
+            rules: [
+              {
+                required: true,
+                whitespace: true,
+                message: Choerodon.getMessage('请输入用户名', 'required'),
+              },
+            ],
+            validateTrigger: 'onBlur',
+            initialValue: realName,
+          })(
+            <Input
+              label="用户名"
+              style={{ width: inputWidth }}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          <Icon type="markunread" className="form-icon" />
+          {getFieldDecorator('email', {
+            rules: [
+              {
+                required: true,
+                whitespace: true,
+                message: Choerodon.getMessage('请输入邮箱', 'The field is required'),
+              },
+              {
+                type: 'email',
+                message: Choerodon.getMessage('请输入正确的邮箱', 'Please enter the correct email format'),
+              },
+              {
+                validator: this.checkEmailAddress,
+              },
+            ],
+            validateTrigger: 'onBlur',
+            initialValue: email,
+            validateFirst: true,
+          })(
+            <Input
+              label="邮箱"
+              style={{ width: inputWidth }}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          <Icon type="timer" className="form-icon" />
+          {getFieldDecorator('language', {
+            rules: [
+              {
+                required: true, message: Choerodon.getMessage('请选择语言', 'Language is required'),
+              },
+            ],
+            initialValue: language || 'zh_CN',
+          })(
+            <Select
+              label="语言"
+              style={{ width: inputWidth }}>
+              {this.getLanguageOptions()}
+            </Select>,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          <Icon type="domain" className="form-icon" />
+          {getFieldDecorator('timeZone', {
+            rules: [
+              {
+                required: true, message: Choerodon.getMessage('请选择时区', 'Timezone is required'),
+              }],
+            initialValue: timeZone || 'CTT',
+          })(
+            <Select
+              label="时区"
+              style={{ width: inputWidth }}>
+              {this.getTimeZoneOptions()}
+            </Select>,
+          )}
+        </FormItem>
+        <Permission
+          service={['iam-service.user.queryInfo', 'iam-service.user.updateInfo', 'iam-service.user.querySelf']}
+          type="site"
+        >
+          <FormItem>
+            <hr className='user-info-divider' />
+            <Button
+              text={Choerodon.languageChange('save')}
+              htmlType="submit"
+              funcType="raised"
+              type="primary"
+              disabled={this.state.submitting}
+            >保存</Button>
+            <Button
+              text={Choerodon.languageChange('save')}
+              funcType="raised"
+              onClick={this.refresh}
+              style={{ marginLeft: 16 }}
+              disabled={this.state.submitting}
+            >取消</Button>
           </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            <Icon type="markunread" className="form-icon" />
-            {getFieldDecorator('email', {
-              rules: [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: Choerodon.getMessage('请输入邮箱', 'The field is required'),
-                },
-                {
-                  type: 'email',
-                  message: Choerodon.getMessage('请输入正确的邮箱', 'Please enter the correct email format'),
-                },
-                {
-                  validator: this.checkEmailAddress,
-                },
-              ],
-              validateTrigger: 'onBlur',
-              initialValue: email,
-              validateFirst: true,
-            })(
-              <Input
-                label="邮箱"
-                style={{ width: inputWidth }}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            <Icon type="timer" className="form-icon" />
-            {getFieldDecorator('language', {
-              rules: [
-                {
-                  required: true, message: Choerodon.getMessage('请选择语言', 'Language is required'),
-                },
-              ],
-              initialValue: language || 'zh_CN',
-            })(
-              <Select
-                label="语言"
-                style={{ width: inputWidth }}>
-                {this.getLanguageOptions()}
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            <Icon type="domain" className="form-icon" />
-            {getFieldDecorator('timeZone', {
-              rules: [
-                {
-                  required: true, message: Choerodon.getMessage('请选择时区', 'Timezone is required'),
-                }],
-              initialValue: timeZone || 'CTT',
-            })(
-              <Select
-                label="时区"
-                style={{ width: inputWidth }}>
-                {this.getTimeZoneOptions()}
-              </Select>,
-            )}
-          </FormItem>
-          <Permission
-            service={['iam-service.user.queryInfo', 'iam-service.user.updateInfo', 'iam-service.user.querySelf']}
-            type="site"
-          >
-            <FormItem>
-              <hr className='user-info-divider' />
-              <Button
-                text={Choerodon.languageChange('save')}
-                htmlType="submit"
-                funcType="raised"
-                type="primary"
-              >保存</Button>
-              <Button
-                text={Choerodon.languageChange('save')}
-                funcType="raised"
-                onClick={this.loadUserInfo}
-                style={{ marginLeft: 16 }}
-              >取消</Button>
-            </FormItem>
-          </Permission>
-        </Form>
-      </Spin>
+        </Permission>
+      </Form>
     );
   }
 
@@ -308,9 +290,7 @@ class UserInfo extends Component {
         <Header
           title={Choerodon.getMessage('个人信息', 'userInfo')}
         >
-          <Button onClick={() => {
-            this.loadUserInfo();
-          }} icon="refresh">
+          <Button onClick={this.refresh} icon="refresh">
             {Choerodon.getMessage('刷新', 'flush')}
           </Button>
         </Header>

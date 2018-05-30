@@ -6,17 +6,6 @@ import axios from 'Axios';
 class UserInfoStore {
   @observable userInfo = {};
   @observable avatar;
-  @observable isLoading = true;
-
-  @computed
-  get getIsLoading() {
-    return this.isLoading;
-  }
-
-  @action
-  setIsLoading(data) {
-    this.isLoading = data;
-  }
 
   @computed
   get getUserInfo() {
@@ -38,10 +27,6 @@ class UserInfoStore {
   @computed
   get getAvatar() {
     return this.avatar;
-  }
-
-  loadUserInfo(id) {
-    return axios.get(`/iam/v1/users/${id}/info`);
   }
 
   updateUserInfo = user => axios.put(`/iam/v1/users/${user.id}/info`, JSON.stringify(user));

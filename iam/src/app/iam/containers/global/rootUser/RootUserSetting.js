@@ -50,7 +50,7 @@ class RootUserSetting extends Component {
     const params = paramsIn || paramsState;
     this.setState({
       loading: true,
-    })
+    });
     RootUserStore.loadRootUserData(pagination, filters, sort, params).then(data => {
       RootUserStore.setRootUserData(data.content);
       this.setState({
@@ -206,6 +206,7 @@ class RootUserSetting extends Component {
         columns={columns}
         indentSize={0}
         dataSource={rootUserData}
+        filters={this.state.params}
         rowKey="id"
         onChange={this.tableChange}
         filterBarPlaceholder="过滤表"
@@ -230,8 +231,24 @@ class RootUserSetting extends Component {
             </Button>
           </Permission>
           <Button
-            onClick={this.reload}
             icon="refresh"
+            onClick={() => {
+              this.setState({
+                filters: {},
+                loading: true,
+                pagination: {
+                  current: 1,
+                  pageSize: 10,
+                  total: '',
+                },
+                sort: {
+                  columnKey: null,
+                  order: null,
+                },
+              }, () => {
+                this.loadProjects();
+              });
+            }}
           >
             {Choerodon.languageChange('refresh')}
           </Button>

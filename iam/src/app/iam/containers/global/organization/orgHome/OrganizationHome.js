@@ -377,6 +377,7 @@ class OrganizationHome extends Component {
               dataSource={content}
               pagination={pagination}
               onChange={this.handlePageChange}
+              filters={this.state.params}
               loading={loading}
               filterBarPlaceholder="过滤表"
             />

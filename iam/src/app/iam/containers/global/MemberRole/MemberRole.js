@@ -32,21 +32,32 @@ class memberRoleType {
   constructor(context, data) {
     this.context = context;
     this.data = data;
-    this.urlDeleteMember = `/iam/v1/role_members/${data.type}_level/delete`;
     switch (sessionStorage.type) {
       case 'organization':
         this.title = '组织';
-        this.urlRoleMember = `/iam/v1/role_members/${data.type}_level?source_id=${data.id}&`;
+        this.urlUsers = `/iam/v1/organizations/${data.id}/role_members/users`;
+        this.urlRoles = `/iam/v1/organizations/${data.id}/role_members/users/roles`;
+        this.urlRoleMember = `/iam/v1/organizations/${data.id}/role_members`;
+        this.urlDeleteMember = `/iam/v1/organizations/${data.id}/role_members/delete`;
+        this.urlUserCount = `/iam/v1/organizations/${data.id}/role_members/users/count`;
         this.roleId = data.id;
         break;
       case 'project':
         this.title = '项目';
-        this.urlRoleMember = `/iam/v1/role_members/${data.type}_level?source_id=${data.id}&`;
+        this.urlUsers = `/iam/v1/projects/${data.id}/role_members/users`;
+        this.urlRoles = `/iam/v1/projects/${data.id}/role_members/users/roles`;
+        this.urlRoleMember = `/iam/v1/projects/${data.id}/role_members`;
+        this.urlDeleteMember = `/iam/v1/projects/${data.id}/role_members/delete`;
+        this.urlUserCount = `/iam/v1/projects/${data.id}/role_members/users/count`;
         this.roleId = data.id;
         break;
       case 'site':
         this.title = '平台';
-        this.urlRoleMember = `/iam/v1/role_members/${data.type}_level?`;
+        this.urlUsers = `/iam/v1/site/role_members/users`;
+        this.urlRoles = `/iam/v1/site/role_members/users/roles`;
+        this.urlRoleMember = `/iam/v1/site/role_members`;
+        this.urlDeleteMember = `/iam/v1/site/role_members/delete`;
+        this.urlUserCount = `/iam/v1/site/role_members/users/count`;
         this.roleId = 0;
         break;
     }
@@ -82,13 +93,11 @@ class memberRoleType {
   //   "sourceId": 0, 层级id 平台为0
   // }
   fetchRoleMember(memberIds, body, isEdit) {
-    let str = memberIds.map((value) => {
-      return `member_ids=${value}`;
-    }).join('&');
+    let str = `member_ids=${memberIds.join(',')}`;
     if (isEdit === true) {
       str += `&is_edit=true`;
     }
-    return axios.post(`${this.urlRoleMember}${str}`, JSON.stringify(body));
+    return axios.post(`${this.urlRoleMember}?${str}`, JSON.stringify(body));
   }
 
   //delete分配角色（delete)
@@ -112,22 +121,16 @@ class memberRoleType {
     return axios.all(promises);
   }
 
-  loadRoleMemberData(roleData, { current }, { loginName, realName }) {
-    const { type, id = 0 } = this.data;
+  loadRoleMemberData(roleData, { current }, { loginName, realName }, params) {
     const { id: roleId, users, name } = roleData;
     const body = {
       loginName: loginName && loginName[0],
       realName: realName && realName[0],
+      param: params,
     };
-    const queryObj = { size: pageSize, page: current - 1 };
-    switch (type) {
-      case 'organization':
-      case 'project':
-        queryObj.source_id = id;
-        break;
-    }
+    const queryObj = { 'role_id': roleId, size: pageSize, page: current - 1 };
     roleData.loading = true;
-    return axios.post(`/iam/v1/roles/${roleId}/${type}_level/users?${querystring.stringify(queryObj)}`,
+    return axios.post(`${this.urlUsers}?${querystring.stringify(queryObj)}`,
       JSON.stringify(body))
       .then(({ content }) => {
         roleData.users = users.concat(content.map(member => {
@@ -141,7 +144,6 @@ class memberRoleType {
   }
 
   loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }, params) {
-    const { type, id = 0 } = this.data;
     const body = {
       loginName: loginName && loginName[0],
       roleName: roles && roles[0],
@@ -149,36 +151,21 @@ class memberRoleType {
       param: params,
     };
     const queryObj = { size, page: current - 1, sort: 'id' };
-
-    switch (type) {
-      case 'organization':
-      case 'project':
-        queryObj.source_id = id;
-        break;
-    }
-    return axios.post(`/iam/v1/users/${type}_level/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
+    return axios.post(`${this.urlRoles}?${querystring.stringify(queryObj)}`, JSON.stringify(body));
   }
 
   loadRoleMemberDatas({ loginName, realName, name }) {
-    const { type, id = 0 } = this.data;
     const body = {
       roleName: name && name[0],
       loginName: loginName && loginName[0],
       realName: realName && realName[0],
     };
-    let url = `/iam/v1/roles/${this.data.type}_level/user_count`;
-    switch (type) {
-      case 'organization':
-      case 'project':
-        url += `?source_id=${id}`;
-        break;
-    }
-    return axios.post(url, JSON.stringify(body));
+    return axios.post(this.urlUserCount, JSON.stringify(body));
   }
 
   //多路请求
   fetch() {
-    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params } = this.context.state;
+    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params, roleMemberParams } = this.context.state;
     this.context.setState({
       loading: true,
     });
@@ -196,7 +183,7 @@ class memberRoleType {
               this.context.roles.loadRoleMemberData(role, {
                 current: 1,
                 pageSize,
-              }, roleMemberFilters);
+              }, roleMemberFilters, roleMemberParams);
             }
             return true;
           }
@@ -238,6 +225,7 @@ class MemberRole extends Component {
       validedMembers: {},
       roleMemberDatas: [],
       roleMemberFilters: {},
+      roleMemberParams: [],
       memberRoleFilters: {},
       memberRolePageInfo: {
         current: 1,
@@ -582,9 +570,6 @@ class MemberRole extends Component {
   }
 
   memberRoleTableChange = (memberRolePageInfo, memberRoleFilters, sort, params) => {
-    if (!_.isEqual(memberRoleFilters, this.state.memberRoleFilters)) {
-      memberRolePageInfo.current = 1;
-    }
     this.setState({
       memberRolePageInfo,
       memberRoleFilters,
@@ -606,35 +591,34 @@ class MemberRole extends Component {
     });
   };
 
-  roleMemberTableChange = (pageInfo, { name, ...roleMemberFilters }) => {
+  roleMemberTableChange = (pageInfo, { name, ...roleMemberFilters }, sort, params) => {
     const newState = {
       roleMemberFilterRole: name,
       roleMemberFilters,
+      roleMemberParams: params,
     };
-    if (!_.isEqual(roleMemberFilters, this.state.roleMemberFilters)) {
-      newState.loading = true;
-      const { expandedKeys } = this.state;
-      this.roles.loadRoleMemberDatas(roleMemberFilters)
-        .then((roleData) => {
-          this.setState({
-            loading: false,
-            expandedKeys,
-            roleMemberDatas: roleData.filter(role => {
-              role.users = role.users || [];
-              if (role.userCount > 0) {
-                if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-                  this.roles.loadRoleMemberData(role, {
-                    current: 1,
-                    pageSize,
-                  }, roleMemberFilters);
-                }
-                return true;
+    newState.loading = true;
+    const { expandedKeys } = this.state;
+    this.roles.loadRoleMemberDatas(roleMemberFilters)
+      .then((roleData) => {
+        this.setState({
+          loading: false,
+          expandedKeys,
+          roleMemberDatas: roleData.filter(role => {
+            role.users = role.users || [];
+            if (role.userCount > 0) {
+              if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
+                this.roles.loadRoleMemberData(role, {
+                  current: 1,
+                  pageSize,
+                }, roleMemberFilters, params);
               }
-              return false;
-            }),
-          });
+              return true;
+            }
+            return false;
+          }),
         });
-    }
+      });
     this.setState(newState);
   };
 
@@ -922,7 +906,7 @@ class MemberRole extends Component {
       this.roles.loadRoleMemberData(data, {
         current: 1,
         pageSize,
-      }, this.state.roleMemberFilters);
+      }, this.state.roleMemberFilters, this.state.roleMemberParams);
     }
   };
 

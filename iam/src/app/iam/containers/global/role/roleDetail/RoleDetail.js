@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { Checkbox, Modal, Button, Input, Row, Col, Form, Tag, Table } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { Button, Checkbox, Col, Form, Input, Modal, Row, Table, Tag } from 'choerodon-ui';
+import { inject, observer } from 'mobx-react';
 import { toJS } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { Observable } from 'rxjs';
 import axios from 'Axios';
 import PageHeader from 'PageHeader';
 import _ from 'lodash';
-import RePagination from 'RePagination';
 import '../../../../assets/css/main.scss';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
 import './RoleDetail.scss';

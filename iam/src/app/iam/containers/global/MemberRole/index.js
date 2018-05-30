@@ -1,3 +1,3 @@
-import globalMemberRole from './GlobalIndex';
+import MemberRoleIndex from './MemberRoleIndex';
 
-export default globalMemberRole;
+export default MemberRoleIndex;

@@ -8,9 +8,8 @@ import axios from 'Axios';
 import Permission from 'PerComponent';
 import _ from 'lodash';
 import MenuStore from '@/stores/MenuStore';
-import InputIcon from './InputIcon';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
-import './menuTree.scss';
+import './MenuTree.scss';
 
 let currentDropOverItem;
 let currentDropSide;

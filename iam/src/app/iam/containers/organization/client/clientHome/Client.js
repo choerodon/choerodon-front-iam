@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import Permission from 'PerComponent';
-import { Table, Button, Popover, Tag, Modal, Popconfirm } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
-import _ from 'lodash';
+import { Button, Modal, Popconfirm, Popover, Table, Tag } from 'choerodon-ui';
+import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Action from 'Action';
-import Remove from 'Remove';
-import Page, { Header, Content } from 'Page';
+import Page, { Content, Header } from 'Page';
 import ClientCreate from '../clientCreate';
 import ClientEdit from '../clientEdit';
 import './Client.scss';

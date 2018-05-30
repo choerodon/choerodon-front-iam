@@ -13,7 +13,6 @@ const UserIndex = asyncRouter(() => import('./organization/user'));
 const ProjectIndex = asyncRouter(() => import('./organization/project'));
 const PasswordPolicyIndex = asyncRouter(() => import('./organization/passwordPolicy'));
 const LDAPIndex = asyncRouter(() => import('./organization/ldap'));
-const userGroup = asyncRouter(() => import('./organization/userGroup'));
 
 // global
 const OrganizationIndex = asyncRouter(() => import('./global/organization'));
@@ -46,7 +45,6 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/ldap`} component={LDAPIndex} />
           <Route path={`${match.url}/role`} component={RoleIndex} />
           <Route path={`${match.url}/route`} component={RouteIndex} />
-          <Route path={`${match.url}/userGroup`} component={userGroup} />
           <Route path={`${match.url}/proManage`} component={ProjectSettingIndex} />
           <Route path={`${match.url}/userinfo`} component={UserInfoIndex} />
           <Route path={`${match.url}/memberRole`} component={MemberRole} />

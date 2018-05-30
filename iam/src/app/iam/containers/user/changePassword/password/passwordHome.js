@@ -10,11 +10,24 @@ import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
 import './password.scss';
 
 const FormItem = Form.Item;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 9 },
+  },
+};
+
+const inputWidth = 512;
 
 @inject('AppState')
 @observer
 class ChangePassword extends Component {
   state = {
+    submitting: false,
     confirmDirty: null,
   };
 
@@ -23,15 +36,7 @@ class ChangePassword extends Component {
   }
 
   loadUserInfo = () => {
-    const { AppState } = this.props;
-    const userId = AppState.getUserId;
-    UserInfoStore.setIsLoading(true);
-    UserInfoStore.loadUserInfo(userId)
-      .then((data) => {
-        UserInfoStore.setIsLoading(false);
-        UserInfoStore.setUserInfo(data);
-      })
-      .catch(error => Choerodon.handleResponseError(error));
+    UserInfoStore.setUserInfo(this.props.AppState.getUserInfo);
   };
 
   compareToFirstPassword = (rule, value, callback) => {
@@ -66,14 +71,20 @@ class ChangePassword extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        axios.put(`/iam/v1/users/${user.id}/password`, JSON.stringify(body))
+        this.setState({ submitting: true });
+        UserInfoStore.updatePassword(user.id, body)
           .then(({ failed, message }) => {
+            this.setState({ submitting: false });
             if (failed) {
               Choerodon.prompt(message);
             } else {
               Choerodon.logout();
             }
-          }).catch(Choerodon.handleResponseError);
+          })
+          .catch((error) => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
+          });
       }
     });
   };
@@ -86,18 +97,7 @@ class ChangePassword extends Component {
   render() {
     const { AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 100 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 9 },
-      },
-    };
-
-    const inputWidth = 512;
+    const { submitting } = this.state;
     const user = UserInfoStore.getUserInfo;
     return (
       <Page>
@@ -125,7 +125,7 @@ class ChangePassword extends Component {
                   }],
                   validateTrigger: 'onBlur',
                 })(
-                  <Input label="原密码" type="password" style={{ width: '512px' }} />,
+                  <Input label="原密码" type="password" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
               <FormItem
@@ -141,7 +141,7 @@ class ChangePassword extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label="新密码" type="password" style={{ width: '512px' }} />,
+                  <Input label="新密码" type="password" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
               <FormItem
@@ -157,7 +157,7 @@ class ChangePassword extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label="确认密码" type="password" style={{ width: '512px' }} onBlur={this.handleConfirmBlur} />,
+                  <Input label="确认密码" type="password" style={{ width: inputWidth }} onBlur={this.handleConfirmBlur} />,
                 )}
               </FormItem>
               <FormItem>
@@ -170,12 +170,14 @@ class ChangePassword extends Component {
                         funcType="raised"
                         type="primary"
                         htmlType="submit"
+                        loading={submitting}
                       >保存</Button>
                       <Button
                         text={Choerodon.languageChange('save')}
                         funcType="raised"
                         onClick={this.reload}
                         style={{ marginLeft: 16 }}
+                        disabled={submitting}
                       >取消</Button>
                     </Col>
                   </Row>

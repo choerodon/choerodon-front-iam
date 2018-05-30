@@ -754,6 +754,7 @@ class MemberRole extends Component {
         rowSelection={rowSelection}
         pagination={memberRolePageInfo}
         columns={columns}
+        filters={this.state.params}
         onChange={this.memberRoleTableChange}
         dataSource={memberDatas}
         filterBarPlaceholder="过滤表"

@@ -1,7 +1,12 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Button, Col, Form, Input, message, Modal, notification, Popover, Row, Spin, Table } from 'choerodon-ui';
-import { inject, observer } from 'mobx-react';
+import { Table,
+  Button,
+  Input,
+  Form,
+  Modal,
+  Popover } from 'choerodon-ui';
+import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
@@ -34,12 +39,16 @@ class ProjectHome extends Component {
       checkName: false,
       buttonClicked: false,
       state: {},
+      filters: {},
       pagination: {
         current: 1,
         pageSize: 10,
         total: '',
       },
-      sort: '',
+      sort: {
+        columnKey: null,
+        order: null,
+      },
     };
   }
 
@@ -51,8 +60,7 @@ class ProjectHome extends Component {
   }
 
   componentDidMount() {
-    const { pagination, sort } = this.state;
-    this.loadProjects(pagination, sort);
+    this.loadProjects();
   }
 
   linkToChange = (url) => {
@@ -60,23 +68,26 @@ class ProjectHome extends Component {
     history.push(url);
   };
 
-  loadProjects = (pagination, sort, filters = {
-    name: '',
-    code: '',
-    enabled: '',
-  }) => {
+  loadProjects = (paginationIn, sortIn, filtersIn) => {
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
     const { AppState, ProjectStore } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
-    // const params = this.state.params || state;
-    // this.setState({
-    //   page: pages,
-    // });
+    ProjectStore.changeLoading(true);
     ProjectStore.loadProject(organizationId, pagination, sort, filters)
       .then((data) => {
         ProjectStore.changeLoading(false);
         ProjectStore.setProjectData(data.content);
         this.setState({
+          filters,
+          sort,
           pagination: {
             current: data.number + 1,
             pageSize: data.size,
@@ -89,35 +100,19 @@ class ProjectHome extends Component {
       );
   };
 
-  handleSearch = (state) => {
-    this.setState({
-      page: 0,
-      params: state,
-    });
-    this.loadProjects(0, state);
-  }
   handleopenTab = (data, operation) => {
+    this.props.form.resetFields();
     this.setState({
       errorMeg: '',
       successMeg: '',
       sidebar: true,
+      projectDatas: data,
       operation,
     });
 
-    if (operation === 'create') {
-      this.setState({
-        projectDatas: '',
-      });
-    } else {
-      this.setState({
-        projectDatas: data,
-      });
-    }
   };
   handleTabClose = () => {
     this.setState({ sidebar: false });
-    const { resetFields } = this.props.form;
-    resetFields();
   };
   handleSubmit = (e) => {
     e.preventDefault();
@@ -130,11 +125,11 @@ class ProjectHome extends Component {
     // const editData = this.state.resourceData;
     if (this.state.operation === 'create') {
       const { validateFields } = this.props.form;
-      validateFields((err, values) => {
+      validateFields((err, { code, name }) => {
         if (!err) {
           data = {
-            code: document.getElementById('code').value,
-            name: document.getElementById('name').value,
+            code,
+            name,
             organizationId,
           };
           this.setState({ submitting: true });
@@ -144,32 +139,10 @@ class ProjectHome extends Component {
               if (value) {
                 Choerodon.prompt(Choerodon.getMessage('创建成功', 'Success'));
                 this.handleTabClose();
-                const { pagination, sort } = this.state;
-                this.loadProjects(pagination, sort);
+                this.loadProjects();
                 value.type = 'project';
                 HeaderStore.addProject(value);
               }
-              // menuStore.loadMenuTypeDate().then((res) => {
-              //   const datas = res.organizations;
-              //   const projects = res.projects;
-              //   datas.map((item) => {
-              //     const it = item;
-              //     it.key = `organization${item.id}`;
-              //     it.type = ORGANIZATION_TYPE;
-              //     it.children = [];
-              //     projects.map((project) => {
-              //       const p = project;
-              //       if (item.id === project.organizationId) {
-              //         p.type = PROJECT_TYPE;
-              //         p.key = `project${project.id}`;
-              //         item.children.push(project);
-              //       }
-              //       return project;
-              //     });
-              //     return data;
-              //   });
-              //   menuStore.setMenuTypeData(data);
-              // });
             }).catch((error) => {
             Choerodon.handleResponseError(error);
             this.setState({
@@ -181,10 +154,10 @@ class ProjectHome extends Component {
       });
     } else {
       const { validateFields } = this.props.form;
-      validateFields((err, values) => {
+      validateFields((err, {name}) => {
         if (!err) {
           data = {
-            name: values.editname,
+            name,
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,
@@ -196,40 +169,10 @@ class ProjectHome extends Component {
             if (value) {
               Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
               this.handleTabClose();
-              const { pagination, sort } = this.state;
-              this.loadProjects(pagination, sort);
+              this.loadProjects();
               value.type = 'project';
               HeaderStore.updateProject(value);
             }
-            //   menuStore.loadMenuTypeDate().then((res) => {
-            //     const datass = res.organizations;
-            //     const projects = res.projects;
-            //     datass.map((item) => {
-            //       const it = item;
-            //       it.key = `organization${item.id}`;
-            //       it.type = ORGANIZATION_TYPE;
-            //       it.children = [];
-            //       projects.map((project) => {
-            //         const p = project;
-            //         if (item.id === project.organizationId) {
-            //           p.type = PROJECT_TYPE;
-            //           p.key = `project${project.id}`;
-            //           item.children.push(project);
-            //         }
-            //         return project;
-            //       });
-            //       return data;
-            //     });
-            //     menuStore.setMenuTypeData(data);
-            //   });
-            // }).catch((error) => {
-            //   Choerodon.handleResponseError(error);
-            //   this.setState({
-            //     visible: false,
-            //     submitting: false,
-            //     buttonClicked: false,
-            //   });
-            // });
           }).catch((error) => {
             Choerodon.handleResponseError(error);
           });
@@ -247,8 +190,7 @@ class ProjectHome extends Component {
     ProjectStore.enableProject(orgId, record.id, record.enabled).then((value) => {
       const msg = record.enabled ? '停用成功' : '启用成功';
       Choerodon.prompt(Choerodon.getMessage(msg, 'Success'));
-      const { pagination, sort } = this.state;
-      this.loadProjects(pagination, sort);
+      this.loadProjects();
       HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
         org[0].map(value => {
           value.type = ORGANIZATION_TYPE;
@@ -265,18 +207,9 @@ class ProjectHome extends Component {
   }
 
   /* 分页处理 */
-  handlePageChange(pagination, filters, sorter) {
-    const newSorter = sorter.columnKey ? sorter.columnKey : '';
-    const tempfilters = {
-      name: (filters.name && filters.name[0]) || '',
-      code: (filters.code && filters.code[0]) || '',
-      enabled: '',
-    };
-    const enabled = filters.enabled;
-    if (enabled && enabled.length) {
-      tempfilters.enabled = enabled[0] === '启用';
-    }
-    this.loadProjects(pagination, newSorter, tempfilters);
+  handlePageChange(pagination, filters, sorter, params) {
+    filters.params = params;
+    this.loadProjects(pagination, sorter, filters);
   }
 
   /**
@@ -332,12 +265,31 @@ class ProjectHome extends Component {
     }
   }
 
-  renderSidebarContent() {
-    const { getFieldDecorator } = this.props.form;
+  getSidebarContentInfo(operation) {
     const { AppState } = this.props;
     const menuType = AppState.currentMenuType;
     const orgname = menuType.name;
+    switch (operation) {
+      case 'create':
+        return {
+          title:`在组织“${orgname}”中创建项目`,
+          link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/',
+          description: '请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。'
+        };
+      case 'edit':
+        return {
+          title: `对项目“${this.state.projectDatas.code}”进行修改`,
+          link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/',
+          description: '您可以在此修改项目名称。',
+        };
+    }
+  }
+
+  renderSidebarContent() {
+    const { getFieldDecorator } = this.props.form;
+    const { operation, projectDatas } = this.state;
     const inputWidth = 512;
+    const contentInfo = this.getSidebarContentInfo(operation);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -348,84 +300,49 @@ class ProjectHome extends Component {
         sm: { span: 16 },
       },
     };
-
-    if (this.state.operation === 'create') {
-      return (
-        <Content
-          style={{ padding: 0 }}
-          title={`在组织“${orgname}”中创建项目`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
-          description="请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。"
-        >
-          <Form layout="vertical" className="rightForm">
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('code', {
-                rules: [{
-                  required: true,
-                  hasFeedback: false,
-                  validator: this.checkcode.bind(this),
-                }],
-              })(
-                <Input
-                  placeholder={Choerodon.getMessage('项目编码', 'Project Code')}
-                  label="项目编码"
-                  style={{ width: inputWidth }}
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('name', {
-                rules: [{
-                  required: true,
-                  whitespace: true,
-                  message: Choerodon.getMessage('请输入项目名称', 'This field is required.'),
-                }],
-              })(
-                <Input
-                  label="项目名称"
-                  placeholder={Choerodon.getMessage('项目名称', 'Project Name')}
-                  style={{ width: inputWidth }}
-                />,
-              )}
-            </FormItem>
-          </Form>
-        </Content>
-      );
-    } else {
-      return (
-        <Content
-          style={{ padding: 0 }}
-          title={`对项目“${this.state.projectDatas.code}”进行修改`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
-          description="您可以在此修改项目名称。"
-        >
-          <Form>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('editname', {
-                rules: [{
-                  required: true,
-                  whitespace: true,
-                  message: Choerodon.getMessage('请输入项目名称', 'This field is required.'),
-                }],
-                initialValue: this.state.projectDatas.name,
-              })(
-                <Input
-                  label="项目名称"
-                  placeholder={Choerodon.getMessage('项目名称', 'Project Name')}
-                  style={{ width: inputWidth }}
-                />,
-              )}
-            </FormItem>
-          </Form>
-        </Content>
-      );
-    }
+    return (
+      <Content
+        style={{ padding: 0 }}
+        {...contentInfo}
+      >
+        <Form layout="vertical" className="rightForm">
+          {operation === 'create' ? (<FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('code', {
+              rules: [{
+                required: true,
+                hasFeedback: false,
+                validator: this.checkcode.bind(this),
+              }],
+            })(
+              <Input
+                placeholder={Choerodon.getMessage('项目编码', 'Project Code')}
+                label="项目编码"
+                style={{ width: inputWidth }}
+              />,
+            )}
+          </FormItem>): null}
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('name', {
+              rules: [{
+                required: true,
+                whitespace: true,
+                message: Choerodon.getMessage('请输入项目名称', 'This field is required.'),
+              }],
+              initialValue: operation === 'create' ? undefined : projectDatas.name,
+            })(
+              <Input
+                label="项目名称"
+                style={{ width: inputWidth }}
+              />,
+            )}
+          </FormItem>
+        </Form>
+      </Content>
+    );
   }
 
   render() {
@@ -434,32 +351,22 @@ class ProjectHome extends Component {
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
     const orgname = menuType.name;
-    const { checkCode, checkName } = this.state;
-    const buttonStyle = checkCode && checkName && this.props.form.getFieldValue('name')
-      && this.props.form.getFieldValue('code');
+    const { filters, operation } = this.state;
+
     const type = menuType.type;
-    const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 100 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 22 },
-      },
-    };
     const columns = [{
       title: Choerodon.getMessage('项目名称', 'project code'),
       dataIndex: 'name',
       key: 'name',
       filters: [],
+      filteredValue: filters.name || [],
       sorter: (a, b) => (a.name > b.name ? 1 : 0),
       render: (text, record) => <span>{text}</span>,
     }, {
       title: Choerodon.getMessage('项目编码', 'project code'),
       dataIndex: 'code',
       filters: [],
+      filteredValue: filters.code || [],
       key: 'code',
       sorter: (a, b) => (a.code > b.code ? 1 : 0),
     }, {
@@ -467,11 +374,12 @@ class ProjectHome extends Component {
       dataIndex: 'enabled',
       filters: [{
         text: '启用',
-        value: '启用',
+        value: 'true',
       }, {
         text: '停用',
-        value: '停用',
+        value: 'false',
       }],
+      filteredValue: filters.enabled || [],
       key: 'enabled',
       render: text => <span className="titleNameStyle">{text ? '启用' : '停用'}</span>,
     }, {
@@ -513,10 +421,7 @@ class ProjectHome extends Component {
         </div>
       ),
     }];
-    // const pageStyle = classNames({
-    //   'page-large': !this.state.operation,
-    //   'page-small': this.state.operation,
-    // });
+
 
     return (
       <Page>
@@ -532,8 +437,23 @@ class ProjectHome extends Component {
           <Button
             icon="refresh"
             onClick={() => {
-              const { pagination, sort } = this.state;
-              this.loadProjects(pagination, sort);
+              ProjectStore.changeLoading(true);
+              this.setState({
+                filters: {
+                  params: [],
+                },
+                pagination: {
+                  current: 1,
+                  pageSize: 10,
+                  total: '',
+                },
+                sort: {
+                  columnKey: null,
+                  order: null,
+                },
+              }, () => {
+                this.loadProjects();
+              });
             }}
           >
             {Choerodon.getMessage('刷新', 'flush')}
@@ -549,6 +469,7 @@ class ProjectHome extends Component {
             columns={columns}
             dataSource={projectData}
             rowKey={record => record.id}
+            filters={this.state.filters.params}
             onChange={this.handlePageChange.bind(this)}
             loading={ProjectStore.isLoading}
             filterBarPlaceholder="过滤表"
@@ -558,10 +479,10 @@ class ProjectHome extends Component {
             visible={this.state.sidebar}
             onCancel={this.handleTabClose.bind(this)}
             onOk={this.handleSubmit.bind(this)}
-            okText={this.state.operation === 'create' ? '创建' : '保存'}
+            okText={operation === 'create' ? '创建' : '保存'}
             cancelText="取消"
           >
-            {this.renderSidebarContent()}
+            {operation && this.renderSidebarContent()}
           </Sidebar>
         </Content>
       </Page>

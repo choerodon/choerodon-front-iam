@@ -9,6 +9,7 @@ import Permission from 'PerComponent';
 import _ from 'lodash';
 import MenuStore from '@/stores/MenuStore';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
+import IconSelect from '../../../components/iconSelect/IconSelect';
 import './MenuTree.scss';
 
 let currentDropOverItem;
@@ -296,7 +297,7 @@ class MenuTree extends Component {
             validateTrigger: 'onChange',
             initialValue: icon,
           })(
-            <InputIcon
+            <IconSelect
               label="请选择一个图标"
               onPageChange={this.handleIconPageChange}
               onFilter={this.handleIconFilter}
@@ -433,7 +434,7 @@ class MenuTree extends Component {
             }],
             validateTrigger: 'onChange',
           })(
-            <InputIcon
+            <IconSelect
               label="请选择一个图标"
               autoComplete="off"
               onPageChange={this.handleIconPageChange}

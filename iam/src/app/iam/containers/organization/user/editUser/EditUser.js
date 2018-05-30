@@ -72,11 +72,25 @@ class EditUser extends Component {
     this.loadPasswordPolicyById(organizationId);
   }
 
+  checkUsernameAndPwd() {
+    const { getFieldValue } = this.props.form;
+    const { enablePassword, notUsername } = CreateUserStore.getPasswordPolicy || {};
+    const password = getFieldValue('password');
+    const loginName = getFieldValue('loginName');
+    if (enablePassword && notUsername && password === loginName) {
+      return true;
+    }
+    return false;
+  }
   checkUsername = (rule, username, callback) => {
     const { edit, AppState } = this.props;
     if (!edit || username !== this.state.userInfo.loginName) {
       if (/\s/.test(username)) {
         callback(Choerodon.getMessage('输入存在空格，请检查', 'input Spaces, please check'));
+        return;
+      }
+      if (username && this.checkUsernameAndPwd()) {
+        callback(Choerodon.getMessage('登录名不能与密码相同', 'Login name cannot be the same as password'));
         return;
       }
       const id = AppState.currentMenuType.id;
@@ -101,6 +115,10 @@ class EditUser extends Component {
   checkPassword = (rule, value, callback) => {
     const passwordPolicy = CreateUserStore.getPasswordPolicy;
     const form = this.props.form;
+    if (value && this.checkUsernameAndPwd()) {
+      callback(Choerodon.getMessage('登录名不能与密码相同', 'Login name cannot be the same as password'));
+      return;
+    }
     if (value && passwordPolicy && passwordPolicy.originalPassword !== value) {
       // const userName = this.state.userInfo.loginName;
       const userName = form.getFieldValue('loginName');

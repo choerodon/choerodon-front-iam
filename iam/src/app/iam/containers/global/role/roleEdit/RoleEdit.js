@@ -22,7 +22,7 @@ class EditRole extends Component {
       roleData: {},
       visible: false,
       selectedLevel: 'site',
-      buttonClicked: false,
+      submitting: false,
       id: this.props.match.params.id,
       currentPermission: [],
       selectPermission: [],
@@ -114,16 +114,19 @@ class EditRole extends Component {
             labels: labelIds,
             objectVersionNumber: this.state.roleData.objectVersionNumber,
           };
-          this.setState({ submitting: true, buttonClicked: true });
-          RoleStore.editRoleByid(this.state.id, role).then((data) => {
-            if (data) {
-              Choerodon.prompt(Choerodon.getMessage('成功', 'Success'));
-              this.linkToChange('/iam/role');
-            }
-          }).catch((errors) => {
-            Choerodon.prompt(`${Choerodon.getMessage('失败', 'Fail')}:${errors}`);
-            this.setState({ buttonClicked: false });
-          });
+          this.setState({ submitting: true });
+          RoleStore.editRoleByid(this.state.id, role)
+            .then((data) => {
+              this.setState({ submitting: false });
+              if (data) {
+                Choerodon.prompt(Choerodon.getMessage('成功', 'Success'));
+                this.linkToChange('/iam/role');
+              }
+            })
+            .catch((errors) => {
+              this.setState({ submitting: false });
+              Choerodon.prompt(`${Choerodon.getMessage('失败', 'Fail')}:${errors}`);
+            });
         }
       }
     });
@@ -210,6 +213,7 @@ class EditRole extends Component {
       chosenLevel,
       visible,
       currentPermission,
+      submitting,
     } = this.state;
     const { level, name, code, labels, builtIn } = roleData;
     const origin = RoleStore.getCanChosePermission;
@@ -385,6 +389,7 @@ class EditRole extends Component {
                       funcType="raised"
                       type="primary"
                       onClick={this.handleEdit}
+                      loading={submitting}
                     >
                       {Choerodon.getMessage('保存', 'save')}
                     </Button>
@@ -393,6 +398,7 @@ class EditRole extends Component {
                     <Button
                       funcType="raised"
                       onClick={this.handlehandleReset}
+                      disabled={submitting}
                     >
                       {Choerodon.getMessage('取消', 'cancel')}
                     </Button>

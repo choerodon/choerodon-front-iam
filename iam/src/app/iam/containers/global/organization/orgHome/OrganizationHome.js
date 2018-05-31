@@ -27,6 +27,7 @@ class OrganizationHome extends Component {
       visible: false,
       content: null,
       show: '',
+      submitting: false,
       loading: false,
       editData: {},
       pagination: {
@@ -149,18 +150,25 @@ class OrganizationHome extends Component {
           message = '修改成功';
           method = 'put';
         }
-        axios[method](url, JSON.stringify(body)).then((data) => {
-          Choerodon.prompt(message);
-          this.loadOrganizations();
-          this.setState({
-            visible: false,
+        this.setState({ submitting: true });
+        axios[method](url, JSON.stringify(body))
+          .then(data => {
+            this.setState({
+              submitting: false,
+              visible: false,
+            });
+            Choerodon.prompt(message);
+            this.loadOrganizations();
+            if (isCreate) {
+              HeaderStore.addOrg(data);
+            } else {
+              HeaderStore.updateOrg(data);
+            }
+          })
+          .catch(error => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
           });
-          if (isCreate) {
-            HeaderStore.addOrg(data);
-          } else {
-            HeaderStore.updateOrg(data);
-          }
-        }).catch(Choerodon.handleResponseError);
       }
     });
   };
@@ -221,8 +229,8 @@ class OrganizationHome extends Component {
 
     return (
       <Content style={{ padding: 0 }}
-               title={title}
-               description={description}
+        title={title}
+        description={description}
       >
         <Form>
           {
@@ -274,7 +282,10 @@ class OrganizationHome extends Component {
 
   render() {
     const { AppState } = this.props;
-    const { sort: { columnKey, order }, filters, pagination, content, loading, visible, show } = this.state;
+    const {
+      sort: { columnKey, order }, filters, pagination,
+      params, content, loading, visible, show, submitting,
+    } = this.state;
     const { type } = AppState.currentMenuType;
     const columns = [{
       title: '组织名称',
@@ -314,7 +325,7 @@ class OrganizationHome extends Component {
       key: 'action',
       render: (text, record) => (
         <div className="operation">
-          <Permission service={['iam-service.organization.update']} type={type}>
+          <Permission service={['iam-service.organization.update']}>
             <Tooltip
               title="修改"
               placement="bottom"
@@ -326,7 +337,7 @@ class OrganizationHome extends Component {
               />
             </Tooltip>
           </Permission>
-          <Permission service={['iam-service.organization.disableOrganization', 'iam-service.organization.enableOrganization']} type={type}>
+          <Permission service={['iam-service.organization.disableOrganization', 'iam-service.organization.enableOrganization']}>
             <Tooltip
               title={record.enabled ? '停用' : '启用'}
               placement="bottom"
@@ -353,7 +364,7 @@ class OrganizationHome extends Component {
       >
         <Page>
           <Header title={Choerodon.languageChange('organization.title')}>
-            <Permission service={['organization-service.organization.create']} type={type}>
+            <Permission service={['organization-service.organization.create']}>
               <Button
                 onClick={this.createOrg}
                 icon="playlist_add"
@@ -377,7 +388,7 @@ class OrganizationHome extends Component {
               dataSource={content}
               pagination={pagination}
               onChange={this.handlePageChange}
-              filters={this.state.params}
+              filters={params}
               loading={loading}
               filterBarPlaceholder="过滤表"
             />
@@ -388,6 +399,7 @@ class OrganizationHome extends Component {
               onCancel={this.handleCancelFun}
               okText={show === 'create' ? '创建' : '保存'}
               cancelText="取消"
+              confirmLoading={submitting}
             >
               {this.renderSidebarContent()}
             </Sidebar>

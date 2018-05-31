@@ -13,6 +13,7 @@ import './UpdatePasswordPolicy.scss';
 
 
 const TabPane = Tabs.TabPane;
+
 @inject('AppState')
 @observer
 class UpdatePasswordPolicy extends Component {
@@ -23,6 +24,7 @@ class UpdatePasswordPolicy extends Component {
     this.state = {
       passwordPolicy: '',
       submitting: false,
+      loading: false,
       buttonClicked: false,
       organizationId: this.props.AppState.currentMenuType.id,
       enableLock: '',
@@ -64,16 +66,21 @@ class UpdatePasswordPolicy extends Component {
           uppercaseCount: parseInt(value.uppercaseCount, 10),
           digitsCount: parseInt(value.digitsCount, 10),
         };
+        this.setState({ submitting: true });
         passwordPolicyStore.updatePasswordPolicy(
-          this.props.AppState.currentMenuType.id, newValue.id, newValue).then((data) => {
-          Choerodon.prompt('保存成功');
-          passwordPolicyStore.setPasswordPolicy(data);
-        }).catch((error) => {
-          Choerodon.prompt(error);
-        });
+          this.props.AppState.currentMenuType.id, newValue.id, newValue)
+          .then((data) => {
+            this.setState({ submitting: false });
+            Choerodon.prompt('保存成功');
+            passwordPolicyStore.setPasswordPolicy(data);
+          })
+          .catch((error) => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
+          });
       }
     });
-  }
+  };
 
   /**
    * 刷新函数
@@ -94,7 +101,7 @@ class UpdatePasswordPolicy extends Component {
   loadData = () => {
     const { organizationId } = this.state;
     this.setState({
-      submitting: true,
+      loading: true,
     });
     PasswordPolicyStore.loadData(organizationId)
       .then((data) => {
@@ -104,26 +111,24 @@ class UpdatePasswordPolicy extends Component {
           enableCaptcha: data.enableCaptcha,
         });
         this.setState({
-          submitting: false,
+          loading: false,
         });
       })
       .catch((error) => {
         Choerodon.handleResponseError(error);
         this.setState({
-          submitting: false,
+          loading: false,
         });
       });
   };
 
   render() {
-    const { AppState } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
-    const type = menuType.type;
-    const passwordSecurity = this.state.submitting ?
-      <LoadingBar /> : <PasswordForm form={this.props.form} />;
-    const loginSecurity = this.state.submitting ?
-      <LoadingBar /> : <LoginForm form={this.props.form} />;
+    const { AppState, form } = this.props;
+    const { loading, submitting, tabKey } = this.state;
+    const passwordSecurity = loading ?
+      <LoadingBar /> : <PasswordForm form={form} />;
+    const loginSecurity = loading ?
+      <LoadingBar /> : <LoginForm form={form} />;
     return (
       <Page className="PasswordPolicy">
         <Header title={Choerodon.languageChange('policy.title')}>
@@ -140,17 +145,18 @@ class UpdatePasswordPolicy extends Component {
           description="密码策略包括密码安全策略、登录安全策略。密码安全策略是设置密码时的密码规则，登录安全策略是用户登录平台时的认证策略。选择启用并保存，策略将生效。"
         >
           <div className="policyType">
-            <Form onSubmit={this.handleSubmit} style={{ width: '512px' }}>
-              <Tabs activeKey={this.state.tabKey} onChange={this.changeTab}>
-                <TabPane tab="密码安全策略" key="pwdpolicy">{ passwordSecurity }</TabPane>
-                <TabPane tab="登录安全策略" key="loginpolicy">{ loginSecurity }</TabPane>
+            <Form onSubmit={this.handleSubmit} style={{ width: 512 }}>
+              <Tabs activeKey={tabKey} onChange={this.changeTab}>
+                <TabPane tab="密码安全策略" key="pwdpolicy">{passwordSecurity}</TabPane>
+                <TabPane tab="登录安全策略" key="loginpolicy">{loginSecurity}</TabPane>
               </Tabs>
               <div className="password-policy-btngroup">
-                <Permission service={['iam-service.password-policy.update']} type={type} organizationId={organizationId}>
+                <Permission service={['iam-service.password-policy.update']}>
                   <Button
                     funcType="raised"
                     type="primary"
                     htmlType="submit"
+                    loading={submitting}
                   >{Choerodon.languageChange('save')}</Button>
                 </Permission>
                 <Button
@@ -159,6 +165,7 @@ class UpdatePasswordPolicy extends Component {
                     const { resetFields } = this.props.form;
                     resetFields();
                   }}
+                  disabled={submitting}
                 >{Choerodon.languageChange('cancel')}
                 </Button>
               </div>

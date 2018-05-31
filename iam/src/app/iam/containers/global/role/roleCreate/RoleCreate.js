@@ -37,7 +37,7 @@ class CreateRole extends Component {
       alreadyPage: 1,
       errorName: '',
       errorDescription: '',
-      buttonClicked: false,
+      submitting: false,
       selectedRowKeys: [],
       selectedSideBar: [],
       currentPermission: [],
@@ -95,7 +95,7 @@ class CreateRole extends Component {
     } else {
       callback(Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'));
     }
-  }
+  };
 
   showModal = () => {
     this.setState({
@@ -111,7 +111,7 @@ class CreateRole extends Component {
   linkToChange = (url) => {
     const { history } = this.props;
     history.push(url);
-  }
+  };
 
   handleChangePermission = (selected, ids, permissions) => {
     const initPermission = RoleStore.getInitSelectedPermission;
@@ -123,7 +123,7 @@ class CreateRole extends Component {
       _.remove(centerPermission, item => ids.indexOf(item.id) !== -1);
       RoleStore.setInitSelectedPermission(centerPermission);
     }
-  }
+  };
 
   handleOk = () => {
     const selected = RoleStore.getInitSelectedPermission;
@@ -165,24 +165,27 @@ class CreateRole extends Component {
             permissions: rolePermissionss,
             labels: labelIds,
           };
-          this.setState({ submitting: true, buttonClicked: true });
-          RoleStore.createRole(role).then((data) => {
-            if (data) {
-              Choerodon.prompt(Choerodon.getMessage('创建成功', 'Create Success'));
-              this.linkToChange('/iam/role');
-            }
-          }).catch((errors) => {
-            if (errors.response.data.message === 'error.role.roleNameExist') {
-              Choerodon.prompt('该角色名已创建');
-            } else {
-              Choerodon.prompt(`${Choerodon.getMessage('创建失败', 'Create Failed')}:${errors}`);
-            }
-            this.setState({ buttonClicked: false });
-          });
+          this.setState({ submitting: true });
+          RoleStore.createRole(role)
+            .then((data) => {
+              this.setState({ submitting: false });
+              if (data) {
+                Choerodon.prompt(Choerodon.getMessage('创建成功', 'Create Success'));
+                this.linkToChange('/iam/role');
+              }
+            })
+            .catch((errors) => {
+              this.setState({ submitting: false });
+              if (errors.response.data.message === 'error.role.roleNameExist') {
+                Choerodon.prompt('该角色名已创建');
+              } else {
+                Choerodon.prompt(`${Choerodon.getMessage('创建失败', 'Create Failed')}:${errors}`);
+              }
+            });
         }
       }
     });
-  }
+  };
 
   handleReset = () => {
     this.linkToChange('/iam/role');
@@ -215,7 +218,7 @@ class CreateRole extends Component {
         currentPermission: [],
       });
     }
-  }
+  };
 
   handlePageChange = (pagination, filters, sorter, params) => {
     const level = RoleStore.getChosenLevel;
@@ -225,13 +228,13 @@ class CreateRole extends Component {
     RoleStore.getWholePermission(level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(level, data);
     });
-  }
+  };
 
   renderRoleLabel = () => {
     const labels = RoleStore.getLabel;
-    return labels.map(item => 
+    return labels.map(item =>
       <Option key={item.id} value={`${item.id}`}>{item.name}</Option>);
-  }
+  };
 
   renderLevel() {
     if (RoleStore.getChosenLevel === 'site') {
@@ -244,7 +247,7 @@ class CreateRole extends Component {
   }
 
   render() {
-    const { currentPermission, firstLoad } = this.state;
+    const { currentPermission, firstLoad, submitting } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -425,6 +428,7 @@ class CreateRole extends Component {
                       funcType="raised"
                       type="primary"
                       onClick={this.handleCreate}
+                      loading={submitting}
                     >
                       {Choerodon.getMessage('创建', 'create')}
                     </Button>
@@ -433,6 +437,7 @@ class CreateRole extends Component {
                     <Button
                       funcType="raised"
                       onClick={this.handleReset}
+                      disabled={submitting}
                     >
                       {Choerodon.getMessage('取消', 'cancel')}
                     </Button>

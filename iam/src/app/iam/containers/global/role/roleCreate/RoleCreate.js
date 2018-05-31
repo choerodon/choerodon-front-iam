@@ -452,7 +452,7 @@ class CreateRole extends Component {
                 style={{ padding: 0 }}
                 title="向当前创建角色添加权限"
                 description="您可以在此为当前角色添加一个或多个权限。"
-                link="http://choerodon.io/zh/docs/user-guide/system-configuration/iam/site4_role/"
+                link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
               >
                 <Table
                   style={{

@@ -420,7 +420,7 @@ class Role extends Component {
               icon="playlist_add"
               onClick={this.goCreate}
             >
-              {Choerodon.getMessage('创建角色', 'create')}
+              {Choerodon.getMessage('创建角色', 'createRole')}
             </Button>
           </Permission>
           <Permission

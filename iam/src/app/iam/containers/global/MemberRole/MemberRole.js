@@ -8,8 +8,7 @@ import Permission from 'PerComponent';
 import axios from 'Axios';
 import classnames from 'classnames';
 import querystring from 'query-string';
-import MemberLabel from '../../../components/memberLabel/MemberLabel';
-import _ from 'lodash';
+import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
 import './MemberRole.scss';
 
 const { Sidebar } = Modal;
@@ -28,61 +27,37 @@ const FormItemNumLayout = {
 };
 
 //公用方法类
-class memberRoleType {
-  constructor(context, data) {
+class MemberRoleType {
+  constructor(context) {
     this.context = context;
-    this.data = data;
-    switch (sessionStorage.type) {
-      case 'organization':
-        this.title = '组织';
-        this.urlUsers = `/iam/v1/organizations/${data.id}/role_members/users`;
-        this.urlRoles = `/iam/v1/organizations/${data.id}/role_members/users/roles`;
-        this.urlRoleMember = `/iam/v1/organizations/${data.id}/role_members`;
-        this.urlDeleteMember = `/iam/v1/organizations/${data.id}/role_members/delete`;
-        this.urlUserCount = `/iam/v1/organizations/${data.id}/role_members/users/count`;
-        this.roleId = data.id;
-        break;
-      case 'project':
-        this.title = '项目';
-        this.urlUsers = `/iam/v1/projects/${data.id}/role_members/users`;
-        this.urlRoles = `/iam/v1/projects/${data.id}/role_members/users/roles`;
-        this.urlRoleMember = `/iam/v1/projects/${data.id}/role_members`;
-        this.urlDeleteMember = `/iam/v1/projects/${data.id}/role_members/delete`;
-        this.urlUserCount = `/iam/v1/projects/${data.id}/role_members/users/count`;
-        this.roleId = data.id;
-        break;
-      case 'site':
-        this.title = '平台';
-        this.urlUsers = `/iam/v1/site/role_members/users`;
-        this.urlRoles = `/iam/v1/site/role_members/users/roles`;
-        this.urlRoleMember = `/iam/v1/site/role_members`;
-        this.urlDeleteMember = `/iam/v1/site/role_members/delete`;
-        this.urlUserCount = `/iam/v1/site/role_members/users/count`;
-        this.roleId = 0;
-        break;
-    }
-  }
-
-  //上面头部title
-  drawPage() {
-    return `${this.title}“${this.data.name || 'Choerodon'}”的角色分配`;
-  };
-
-  drawPageLink() {
-    const { type } = this.data;
-    let link = '';
+    const { AppState } = this.context.props;
+    const { type, id, name } = this.data = AppState.currentMenuType;
+    let apiGetway = `/iam/v1/${type}s/${id}`;
+    let typeDesc;
+    let linkName;
     switch (type) {
       case 'organization':
-        link = 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/role-assignment/';
+        typeDesc = '组织';
+        linkName = 'tenant';
         break;
       case 'project':
-        link = 'http://choerodon.io/zh/docs/user-guide/system-configuration/project/role-assignment/';
+        typeDesc = '项目';
+        linkName = 'project';
         break;
       case 'site':
-        link = 'http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
+        typeDesc = '平台';
+        linkName = 'platform';
+        apiGetway = `/iam/v1/${type}`;
         break;
     }
-    return link;
+    this.title = `${typeDesc}“${name || 'Choerodon'}”的角色分配`;
+    this.link = `http://choerodon.io/zh/docs/user-guide/system-configuration/${linkName}/role-assignment/`;
+    this.urlUsers = `${apiGetway}/role_members/users`;
+    this.urlRoles = `${apiGetway}/role_members/users/roles`;
+    this.urlRoleMember = `${apiGetway}/role_members`;
+    this.urlDeleteMember = `${apiGetway}/role_members/delete`;
+    this.urlUserCount = `${apiGetway}/role_members/users/count`;
+    this.roleId = id || 0;
   }
 
   //fetch分配角色（post）
@@ -104,7 +79,7 @@ class memberRoleType {
   deleteRoleMember(body) {
     const { id } = this.data;
     body['sourceId'] = id || 0;
-    return axios.post(`${this.urlDeleteMember}`, JSON.stringify(body));
+    return axios.post(this.urlDeleteMember, JSON.stringify(body));
   }
 
   //根据用户名查询memberId
@@ -180,7 +155,7 @@ class memberRoleType {
           role.users = role.users || [];
           if (role.userCount > 0) {
             if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-              this.context.roles.loadRoleMemberData(role, {
+              this.loadRoleMemberData(role, {
                 current: 1,
                 pageSize,
               }, roleMemberFilters, roleMemberParams);
@@ -211,6 +186,7 @@ class MemberRole extends Component {
 
   getInitState() {
     return {
+      submitting: false,
       memberDatas: [], //成员下的角色集合
       sidebar: false,
       roleData: [], // 当前情况下的所有角色
@@ -282,6 +258,7 @@ class MemberRole extends Component {
   };
 
   openSidebar = () => {
+    this.props.form.resetFields();
     this.setState({
       roleIds: this.initFormRoleIds(),
       sidebar: true,
@@ -289,31 +266,27 @@ class MemberRole extends Component {
   };
 
   initFormRoleIds() {
-    const { setFieldsValue, resetFields } = this.props.form;
     const { selectType, currentMemberData } = this.state;
     let roleIds = [undefined];
-    const member = [];
-    const memberId = [];
     if (selectType === 'edit') {
-      memberId.push(currentMemberData.id);
-      member.push(currentMemberData.loginName);
       roleIds = currentMemberData.roles.map(({ id }) => id);
     }
-    resetFields();
-    setFieldsValue({
-      member,
-      memberId,
-    });
     return roleIds;
   }
 
   getProjectNameDom() {
-    const { selectType } = this.state;
+    const { selectType, currentMemberData } = this.state;
+    const member = [];
     const style = {
-      display: selectType === 'edit' ? 'none' : 'block',
       marginTop: '-15px',
     };
-    return <MemberLabel style={style} form={this.props.form} />;
+    if (selectType === 'edit') {
+      member.push(currentMemberData.loginName);
+      style.display = 'none';
+    }
+    return (
+      <MemberLabel label="成员" style={style} value={member} form={this.props.form} />
+    );
   }
 
   getRoleFormItems = () => {
@@ -323,7 +296,6 @@ class MemberRole extends Component {
       const key = id === undefined ? `role-index-${index}` : String(id);
       return (<FormItem
         {...FormItemNumLayout}
-        label={'添加角色'}
         key={key}
       >
         {getFieldDecorator(key, {
@@ -423,7 +395,7 @@ class MemberRole extends Component {
   };
 
   initMemberRole() {
-    this.roles = new memberRoleType(this, JSON.parse(sessionStorage.selectData));
+    this.roles = new MemberRoleType(this);
   }
 
   getSidebarTitle() {
@@ -437,7 +409,8 @@ class MemberRole extends Component {
 
   getHeader() {
     const { selectType, currentMemberData } = this.state;
-    let contentTitle = `在${this.roles.title}“${this.roles.data.name || 'Choerodon'}”中添加成员角色`;
+    const { title, data: { name } } = this.roles;
+    let contentTitle = `在${title}“${name || 'Choerodon'}”中添加成员角色`;
     let contentDescription = '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。';
     let contentLink = 'http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
     if (selectType === 'edit') {
@@ -468,9 +441,7 @@ class MemberRole extends Component {
     return (
       <Content
         style={{ padding: 0 }}
-        title={header.title}
-        link={header.link}
-        description={header.description}
+        {...header}
       >
         <Form layout="vertical">
           {this.getProjectNameDom()}
@@ -483,9 +454,8 @@ class MemberRole extends Component {
   // ok 按钮保存
   handleOk = (e) => {
     const { selectType, roleIds } = this.state;
-    const { validateFields, getFieldValue } = this.props.form;
     e.preventDefault();
-    validateFields((err, values) => {
+    this.props.form.validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
         const body = roleIds.map((roleId, index) => {
@@ -496,35 +466,48 @@ class MemberRole extends Component {
             sourceType: sessionStorage.type,
           };
         });
+        this.setState({ submitting: true });
         if (selectType === 'create') {
           this.roles.searchMemberIds(memberNames).then((data) => {
             if (data) {
               const memberIds = data.map((info) => {
                 return info.id;
               });
-              this.roles.fetchRoleMember(memberIds, body).then(({ failed, message }) => {
-                if (failed) {
-                  Choerodon.prompt(message);
-                } else {
-                  Choerodon.prompt('添加成功');
-                  this.closeSidebar();
-                  this.roles.fetch();
-                }
-              });
+              this.roles.fetchRoleMember(memberIds, body)
+                .then(({ failed, message }) => {
+                  this.setState({ submitting: false });
+                  if (failed) {
+                    Choerodon.prompt(message);
+                  } else {
+                    Choerodon.prompt('添加成功');
+                    this.closeSidebar();
+                    this.roles.fetch();
+                  }
+                })
+                .catch(error => {
+                  this.setState({ submitting: false });
+                  Choerodon.handleResponseError(error);
+                });
             }
           });
         } else if (selectType === 'edit') {
           const { currentMemberData } = this.state;
           const memberIds = [currentMemberData.id];
-          this.roles.fetchRoleMember(memberIds, body, true).then(({ failed, message }) => {
-            if (failed) {
-              Choerodon.prompt(message);
-            } else {
-              Choerodon.prompt('修改成功');
-              this.closeSidebar();
-              this.roles.fetch();
-            }
-          });
+          this.roles.fetchRoleMember(memberIds, body, true)
+            .then(({ failed, message }) => {
+              this.setState({ submitting: false });
+              if (failed) {
+                Choerodon.prompt(message);
+              } else {
+                Choerodon.prompt('修改成功');
+                this.closeSidebar();
+                this.roles.fetch();
+              }
+            })
+            .catch(error => {
+              this.setState({ submitting: false });
+              Choerodon.handleResponseError(error);
+            });
         }
       }
     });
@@ -950,10 +933,8 @@ class MemberRole extends Component {
   }
 
   render() {
-    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys } = this.state;
-    const { AppState } = this.props;
+    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting } = this.state;
     const okText = selectType === 'create' ? '添加' : '保存';
-    const roles = new memberRoleType(this, JSON.parse(sessionStorage.selectData));
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     return (
       <Page>
@@ -993,8 +974,8 @@ class MemberRole extends Component {
           </Button>
         </Header>
         <Content
-          title={roles.drawPage()}
-          link={roles.drawPageLink()}
+          title={this.roles.title}
+          link={this.roles.link}
           description="角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。"
         >
           <div className="member-role-btns">
@@ -1015,11 +996,24 @@ class MemberRole extends Component {
           {showMember ? this.renderMemberTable() : this.renderRoleTable()}
           <Sidebar
             title={this.getSidebarTitle()}
-            onOk={this.handleOk}
-            okText={okText}
-            cancelText="取消"
-            onCancel={this.closeSidebar}
             visible={sidebar}
+            footer={
+              [
+                <Button
+                  key="ok"
+                  funcType="raised"
+                  type="primary"
+                  onClick={this.handleOk}
+                  loading={submitting}
+                >{okText}</Button>,
+                <Button
+                  key="cancel"
+                  funcType="raised"
+                  onClick={this.closeSidebar}
+                  disabled={submitting}
+                >取消</Button>,
+              ]
+            }
           >
             {roleData.length ? this.getSidebarContent() : null}
           </Sidebar>

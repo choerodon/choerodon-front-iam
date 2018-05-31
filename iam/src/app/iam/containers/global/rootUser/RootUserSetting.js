@@ -31,12 +31,23 @@ class RootUserSetting extends Component {
       filters: [],
       params: [],
       record: {},
+      onlyRootUser: false,
     }
   }
   componentWillMount() {
     this.reload();
   }
 
+  isEmptyFilters = ({ loginName, realName, enabled, locked}) => {
+    if ((loginName && loginName.length) ||
+      (realName && realName.length) ||
+      (enabled && enabled.length) ||
+      (locked && locked.length)
+    ) {
+      return false;
+    }
+    return true;
+  }
   reload = (paginationIn, filtersIn, sortIn, paramsIn) => {
     const {
       pagination: paginationState,
@@ -52,6 +63,11 @@ class RootUserSetting extends Component {
       loading: true,
     });
     RootUserStore.loadRootUserData(pagination, filters, sort, params).then(data => {
+      if (this.isEmptyFilters(filters) && !params.length) {
+        this.setState({
+          onlyRootUser: data.totalElements <= 1,
+        });
+      }
       RootUserStore.setRootUserData(data.content);
       this.setState({
         pagination: {
@@ -99,7 +115,7 @@ class RootUserSetting extends Component {
       if (failed) {
         Choerodon.prompt(message);
       } else {
-        Choerodon.prompt('删除成功');
+        Choerodon.prompt('移除成功');
         this.closeDeleteModal();
         this.reload();
       }
@@ -192,7 +208,17 @@ class RootUserSetting extends Component {
                 service={['iam-service.user.deleteDefaultUser']}
                 type={type}
               >
-                <Button onClick={this.openDeleteModal.bind(this, record)} shape="circle" icon="delete_forever" />
+                <Tooltip
+                  title="移除Root用户"
+                  placement="bottom"
+                >
+                  <Button
+                    disabled={this.state.onlyRootUser}
+                    onClick={this.openDeleteModal.bind(this, record)}
+                    shape="circle"
+                    icon="delete_forever"
+                  />
+                </Tooltip>
               </Permission>
             </div>
           );
@@ -246,7 +272,7 @@ class RootUserSetting extends Component {
                   order: null,
                 },
               }, () => {
-                this.loadProjects();
+                this.reload();
               });
             }}
           >
@@ -274,7 +300,7 @@ class RootUserSetting extends Component {
               description="您可以在此添加一个或多个用户，被添加的用户为Root用户"
             >
               <Form>
-                <MemberLabel style={{ marginTop: '-15px'}} form={form} />
+                <MemberLabel label="用户" style={{ marginTop: '-15px'}} form={form} />
               </Form>
             </Content>
           </Sidebar>

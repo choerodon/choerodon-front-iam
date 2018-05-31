@@ -198,7 +198,7 @@ class LDAP extends Component {
           {getFieldDecorator('serverAddress', {
             initialValue: ldapData ? ldapData.serverAddress : '',
           })(
-            <Input label={Choerodon.languageChange('ldap.serverAddress')} placeholder={Choerodon.languageChange('ldap.serverAddress')} style={{ width: inputWidth }} />,
+            <Input label={Choerodon.languageChange('ldap.serverAddress')} style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem
@@ -209,7 +209,7 @@ class LDAP extends Component {
           {getFieldDecorator('ldapAttributeName', {
             initialValue: ldapData ? ldapData.ldapAttributeName : '',
           })(
-            <Input label={Choerodon.languageChange('ldap.ldapAttributeName')} placeholder={Choerodon.languageChange('ldap.ldapAttributeName')} style={{ width: inputWidth }} />,
+            <Input label={Choerodon.languageChange('ldap.ldapAttributeName')} style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem
@@ -223,7 +223,6 @@ class LDAP extends Component {
           })(
             <Select
               label={Choerodon.getMessage('加密方式', 'ldap.encryption')}
-              placeholder="请选择一种加密方式"
               style={{ width: inputWidth }}
             >
               <Option value="SSL">SSL</Option>
@@ -240,7 +239,7 @@ class LDAP extends Component {
           {getFieldDecorator('baseDn', {
             initialValue: ldapData ? ldapData.baseDn : '',
           })(
-            <Input label={Choerodon.languageChange('ldap.baseDn')} placeholder={Choerodon.languageChange('ldap.baseDn')} style={{ width: inputWidth }} />,
+            <Input label={Choerodon.languageChange('ldap.baseDn')} style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem
@@ -251,7 +250,7 @@ class LDAP extends Component {
           {getFieldDecorator('description', {
             initialValue: ldapData ? ldapData.description : '',
           })(
-            <TextArea rows={2} label={Choerodon.languageChange('ldap.description')} placeholder="描述" />,
+            <TextArea rows={2} label={Choerodon.languageChange('ldap.description')} />,
           )}
         </FormItem>
         <FormItem

@@ -317,7 +317,6 @@ class ProjectHome extends Component {
               }],
             })(
               <Input
-                placeholder={Choerodon.getMessage('项目编码', 'Project Code')}
                 label="项目编码"
                 style={{ width: inputWidth }}
               />,

@@ -175,7 +175,6 @@ class CreateClient extends Component {
           })(
             <Input
               label={Choerodon.languageChange('client.name')}
-              placeholder={Choerodon.languageChange('client.name')}
             />,
           )}
         </FormItem>
@@ -193,7 +192,6 @@ class CreateClient extends Component {
           })(
             <Input
               label={Choerodon.languageChange('client.secret')}
-              placeholder={Choerodon.languageChange('client.secret')}
             />,
           )}
         </FormItem>
@@ -213,7 +211,6 @@ class CreateClient extends Component {
             <Select
               mode="multiple"
               label={Choerodon.languageChange('client.authorizedGrantTypes')}
-              placeholder={Choerodon.getMessage('请选择授权类型', 'Please choose authorization type')}
               size="default"
             >
               <Option value="password" key="password">password</Option>
@@ -256,7 +253,6 @@ class CreateClient extends Component {
           {getFieldDecorator('webServerRedirectUri')(
             <Input
               label={Choerodon.languageChange('client.webServerRedirectUri')}
-              placeholder={Choerodon.languageChange('client.webServerRedirectUri')}
             />,
           )}
         </FormItem>

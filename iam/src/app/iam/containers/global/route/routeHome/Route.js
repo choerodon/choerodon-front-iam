@@ -78,6 +78,7 @@ class Route extends Component {
   getSuffix(text) {
     return (
       <Popover
+        getPopupContainer={() => document.getElementsByClassName('formContainer')[0]}
         className="routePop"
         placement="right"
         trigger="hover"
@@ -162,27 +163,9 @@ class Route extends Component {
       visible: true,
       show: status,
       sidebarData: record,
+      helper: record.helperService && status === 'detail',
+      filterSensitive: record.customSensitiveHeaders ? 'filtered' : 'noFiltered',
     });
-
-    if (record.helperService && status === 'detail') {
-      this.setState({
-        helper: true,
-      })
-    } else {
-      this.setState({
-        helper: false,
-      })
-    }
-
-    if (record.customSensitiveHeaders) {
-      this.setState({
-        filterSensitive: 'filtered'
-      })
-    } else {
-      this.setState({
-        filterSensitive: 'noFiltered'
-      })
-    }
   }
 
   /* 刷新 */
@@ -227,6 +210,49 @@ class Route extends Component {
         this.loadRouteList();
       }
     });
+  }
+
+  setValueInSelect(value) {
+    const { getFieldValue, setFieldsValue } = this.props.form;
+    const sensitiveHeaders = getFieldValue('sensitiveHeaders') || [];
+    if(sensitiveHeaders.indexOf(value) === -1) {
+      sensitiveHeaders.push(value);
+      setFieldsValue({
+        sensitiveHeaders,
+      });
+    }
+    if (this.rcSelect) {
+      this.rcSelect.setState({
+        inputValue: '',
+      });
+    }
+  }
+
+  saveSelectRef = (node) => {
+    if (node) {
+      this.rcSelect = node.rcSelect;
+    }
+  };
+
+  handleInputKeyDown = (e) => {
+    const { value } = e.target;
+    if (e.keyCode === 32 || e.keyCode === 188) {
+      e.preventDefault();
+      return false;
+    }
+    if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
+      this.setValueInSelect(value);
+    }
+  }
+
+  changeSensetive(e) {
+   const { setFieldsValue } = this.props.form;
+   this.setState({
+     filterSensitive: e.target.value,
+   });
+   if (e.target.value === 'noFiltered') {
+     setFieldsValue({'sensitiveHeaders': []});
+   }
   }
 
   /* 表单提交 */
@@ -431,11 +457,13 @@ class Route extends Component {
         sm: { span: 16 },
       },
     };
-    const valid = show === 'create';
+    const createValidate = show === 'create';
+    const detailValidate = show === 'detail';
     const inputWidth = 512;
     const stripPrefix = sidebarData && sidebarData.stripPrefix ? 'stripPrefix' : 'withPrefix';
     const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
     const customSensitiveHeaders = sidebarData && sidebarData.customSensitiveHeaders ? 'filtered' : 'noFiltered';
+    let sensitiveHeaders = sidebarData && sidebarData.sensitiveHeaders ? sidebarData.sensitiveHeaders.split(',') : [];
     let title;
     let description;
     if (show === 'create') {
@@ -461,13 +489,13 @@ class Route extends Component {
           >
             {getFieldDecorator('name', {
               rules: [{
-                required: valid,
-                whitespace: valid,
+                required: true,
+                whitespace: true,
                 message: '请输入路由名称',
               }, {
-                validator: valid && this.checkName,
+                validator: createValidate && this.checkName,
               }],
-              initialValue: valid ? undefined : sidebarData.name,
+              initialValue: createValidate ? undefined : sidebarData.name,
               validateTrigger: 'onBlur',
               validateFirst: true,
             })(
@@ -475,7 +503,7 @@ class Route extends Component {
                 label="路由名称"
                 suffix={this.getSuffix('路由表中的唯一标识')}
                 style={{ width: inputWidth }}
-                disabled={!valid}
+                disabled={!createValidate}
               />,
             )}
           </FormItem>
@@ -484,13 +512,13 @@ class Route extends Component {
           >
             {getFieldDecorator('path', {
               rules: [{
-                required: valid,
-                whitespace: valid,
+                required: true,
+                whitespace: true,
                 message: '请输入路径',
               }, {
-                validator: valid && this.checkPath,
+                validator: createValidate && this.checkPath,
               }],
-              initialValue: valid ? undefined : sidebarData.path,
+              initialValue: createValidate ? undefined : sidebarData.path,
               validateTrigger: 'onBlur',
               validateFirst: true,
             })(
@@ -498,7 +526,7 @@ class Route extends Component {
                 label="路径"
                 style={{ width: inputWidth }}
                 suffix={this.getSuffix('路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径')}
-                disabled={!valid}
+                disabled={!createValidate}
               />,
             )}
           </FormItem>
@@ -507,13 +535,13 @@ class Route extends Component {
           >
             {getFieldDecorator('serviceId', {
               rules: [{
-                required: valid,
+                required: createValidate,
                 message: Choerodon.getMessage('必须选择一个微服务', 'Please choose one microservice at least'),
               }],
-              initialValue: valid ? undefined : sidebarData.serviceId,
+              initialValue: createValidate ? undefined : sidebarData.serviceId,
             })(
               <Select
-                disabled={show === 'detail'}
+                disabled={detailValidate}
                 style={{ width: 300 }}
                 label="请选择一个微服务"
                 filterOption={
@@ -526,42 +554,42 @@ class Route extends Component {
               </Select>,
             )}
           </FormItem>
-          {show !== 'create' && (
+          {!createValidate && (
             <FormItem
               {...formItemLayout}
             >
               {getFieldDecorator('preffix', {
                 initialValue: stripPrefix,
               })(
-                <RadioGroup label="是否去除前缀" className="radioGroup" disabled={show === 'detail'}>
+                <RadioGroup label="是否去除前缀" className="radioGroup" disabled={detailValidate}>
                   <Radio value={'stripPrefix'}>是</Radio>
                   <Radio value={'withPrefix'}>否</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
           )}
-          {show !== 'create' && (
+          {!createValidate && (
             <FormItem
               {...formItemLayout}
             >
               {getFieldDecorator('retryable', {
                 initialValue: retryable,
               })(
-                <RadioGroup label="是否重试" className="radioGroup" disabled={show === 'detail'}>
+                <RadioGroup label="是否重试" className="radioGroup" disabled={detailValidate}>
                   <Radio value={'retry'}>是</Radio>
                   <Radio value={'noRetry'}>否</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
           )}
-          {show !== 'create' && (
+          {!createValidate && (
             <FormItem
               {...formItemLayout}
             >
               {getFieldDecorator('customSensitiveHeaders', {
                 initialValue: customSensitiveHeaders,
               })(
-                <RadioGroup label="是否过滤敏感头信息" className="radioGroup" disabled={show === 'detail'} onChange={this.changeSensetive.bind(this)}>
+                <RadioGroup label="是否过滤敏感头信息" className="radioGroup" disabled={detailValidate} onChange={this.changeSensetive.bind(this)}>
                   <Radio value={'filtered'}>是</Radio>
                   <Radio value={'noFiltered'}>否</Radio>
                 </RadioGroup>,
@@ -570,26 +598,28 @@ class Route extends Component {
           )}
         </Form>
         {
-          filterSensitive === 'filtered' && show !== 'create' ? (
+          filterSensitive === 'filtered' && !createValidate ? (
             <FormItem
               {...formItemLayout}
             >
               {getFieldDecorator('sensitiveHeaders', {
-                // rules: [{
-                //   required: true,
-                //   whitespace: true,
-                //   message: '请输入敏感头信息',
-                // }],
-                initialValue: sidebarData && sidebarData.sensitiveHeaders,
+                rules: [{
+                  required: this.state.filterSensitive === 'filtered' && show === 'edit',
+                  message: '请输入敏感头信息',
+                }],
+                initialValue: sensitiveHeaders,
               })(
                 <Select
+                  disabled={show === 'detail'}
                   label="敏感头信息"
                   mode="tags"
                   filterOption={false}
-                  choiceRender={this.handeChoiceRender}
+                  onInputKeyDown={this.handleInputKeyDown}
                   ref={this.saveSelectRef}
                   style={{ width: inputWidth }}
                   notFoundContent={false}
+                  showNotFindSelectedItem={false}
+                  showNotFindInputItem={false}
                   allowClear
                 />
               )}
@@ -608,7 +638,7 @@ class Route extends Component {
               initialValue: sidebarData.helperService || undefined,
             })(
               <Input
-                disabled={show === 'detail'}
+                disabled={detailValidate}
                 label="Helper服务名"
                 style={{ width: inputWidth }}
                 suffix={this.getSuffix('该路由规则对应的自定义网关处理器服务，默认为gateway-helper')}
@@ -619,12 +649,6 @@ class Route extends Component {
         }
       </Content>
     );
-  }
-
-  changeSensetive(e) {
-    this.setState({
-      filterSensitive: e.target.value,
-    })
   }
 
   render() {
@@ -680,7 +704,7 @@ class Route extends Component {
       render: (text, record) => this.renderAction(record),
     }];
     return (
-      <Page>
+      <Page className="container">
         <Header
           title="路由管理"
         >
@@ -688,7 +712,7 @@ class Route extends Component {
             icon="playlist_add"
             onClick={this.createRoute}
           >
-            {Choerodon.getMessage('创建', 'create')}
+            {Choerodon.getMessage('创建路由', 'create')}
           </Button>
           <Button
             icon="refresh"

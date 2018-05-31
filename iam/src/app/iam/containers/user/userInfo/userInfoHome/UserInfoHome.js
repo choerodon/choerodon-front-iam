@@ -94,7 +94,7 @@ class UserInfo extends Component {
     } else {
       return [
         <Option key="zh_CN" value="zh_CN">简体中文</Option>,
-        <Option key="en_US" value="en_US">English</Option>,
+        // <Option key="en_US" value="en_US">English</Option>,
       ];
     }
   }
@@ -106,7 +106,7 @@ class UserInfo extends Component {
     } else {
       return [
         <Option key="CTT" value="CTT">中国</Option>,
-        <Option key="EST" value="EST">America</Option>,
+        // <Option key="EST" value="EST">America</Option>,
       ];
     }
   }
@@ -114,6 +114,7 @@ class UserInfo extends Component {
   getAvatar({ id, realName }) {
     const props = {
       name: 'file',
+      accept: 'image/jpeg, image/png, image/jpg',
       action: id && `${process.env.API_HOST}/iam/v1/users/${id}/photo`,
       headers: {
         Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
@@ -223,7 +224,7 @@ class UserInfo extends Component {
         <FormItem
           {...formItemLayout}
         >
-          <Icon type="timer" className="form-icon" />
+          <Icon type="language" className="form-icon" />
           {getFieldDecorator('language', {
             rules: [
               {
@@ -242,7 +243,7 @@ class UserInfo extends Component {
         <FormItem
           {...formItemLayout}
         >
-          <Icon type="domain" className="form-icon" />
+          <Icon type="location_city" className="form-icon" />
           {getFieldDecorator('timeZone', {
             rules: [
               {

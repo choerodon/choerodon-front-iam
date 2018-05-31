@@ -66,8 +66,9 @@
   }
 
   &-divider {
-    width: 536px;
-    margin: 0 -30px 12px;
+    box-sizing: border-box;
+    width: 512px;
+    margin: 0 0 12px;
     border: 1px solid rgba(0, 0, 0, 0.12);
   }
 
@@ -75,6 +76,10 @@
     font-size: 20px;
     color: rgba(0, 0, 0, 0.54);
     margin-right: 10px;
+  }
+
+  .ant-form-explain {
+    padding-left: 30px;
   }
 }
 

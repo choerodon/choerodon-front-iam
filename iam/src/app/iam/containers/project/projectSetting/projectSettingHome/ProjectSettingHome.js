@@ -129,23 +129,11 @@ class ProjectSettingHome extends Component {
                   title="停用项目"
                   visible={isShowModal}
                   closable={false}
-                  footer={
-                    [
-                      <Button
-                        key="cancel"
-                        funcType="raised"
-                        onClick={this.handleCancel}
-                        disabled={stopping}
-                      >取消</Button>,
-                      <Button
-                        key="ok"
-                        funcType="raised"
-                        type="primary"
-                        onClick={this.handleOk}
-                        loading={stopping}
-                      >确定</Button>,
-                    ]
-                  }
+                  confirmLoading={stopping}
+                  okText="确定"
+                  cancelText="取消"
+                  onOk={this.handleOk}
+                  onCancel={this.handleCancel}
                 >
                   <p>确定要停用项目“{name}”吗？停用后，您和项目下其他成员将无法进入此项目。</p>
                 </Modal>

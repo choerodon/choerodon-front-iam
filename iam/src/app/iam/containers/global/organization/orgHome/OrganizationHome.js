@@ -358,7 +358,7 @@ class OrganizationHome extends Component {
                 onClick={this.createOrg}
                 icon="playlist_add"
               >
-                {Choerodon.getMessage('创建组织', 'create')}
+                {Choerodon.getMessage('创建组织', 'createOrganization')}
               </Button>
             </Permission>
             <Button

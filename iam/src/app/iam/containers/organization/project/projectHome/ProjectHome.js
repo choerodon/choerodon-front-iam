@@ -428,7 +428,7 @@ class ProjectHome extends Component {
               onClick={this.handleopenTab.bind(this, null, 'create')}
               icon="playlist_add"
             >
-              {Choerodon.getMessage('创建项目', 'create')}
+              {Choerodon.getMessage('创建项目', 'createProject')}
             </Button>
           </Permission>
           <Button
@@ -461,7 +461,7 @@ class ProjectHome extends Component {
           link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
           description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
         >
-          {projectData.length ? <Table
+          <Table
             pagination={this.state.pagination}
             columns={columns}
             dataSource={projectData}
@@ -470,7 +470,7 @@ class ProjectHome extends Component {
             onChange={this.handlePageChange.bind(this)}
             loading={ProjectStore.isLoading}
             filterBarPlaceholder="过滤表"
-          /> : null}
+          />
           <Sidebar
             title={this.renderSideTitle()}
             visible={this.state.sidebar}

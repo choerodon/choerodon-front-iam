@@ -16,6 +16,7 @@ class User extends Component {
     super(props);
     this.linkToChange = this.linkToChange.bind(this);
     this.state = {
+      submitting: false,
       open: false,
       edit: false,
       id: '',
@@ -188,9 +189,20 @@ class User extends Component {
         }}
         onSubmit={() => {
           this.setState({
+            submitting: true,
+          });
+        }}
+        onSuccess={() => {
+          this.setState({
             visible: false,
+            submitting: false,
           });
           this.loadUser();
+        }}
+        onError={() => {
+          this.setState({
+            submitting: false,
+          });
         }}
       />
     );
@@ -198,7 +210,7 @@ class User extends Component {
 
   render() {
     const { UserStore, AppState } = this.props;
-    const { filters, pagination, visible, edit } = this.state;
+    const { filters, pagination, visible, edit, submitting } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const orgname = menuType.name;
@@ -429,17 +441,28 @@ class User extends Component {
           <Sidebar
             title={this.renderSideTitle()}
             visible={visible}
-            onCancel={() => {
-              this.setState({
-                visible: false,
-                selectedData: '',
-              });
-            }}
-            onOk={() => {
-              this.editUser.handleSubmit(event);
-            }}
-            cancelText="取消"
-            okText={edit ? '保存' : '创建'}
+            footer={
+              [
+                <Button
+                  key="ok"
+                  funcType="raised"
+                  type="primary"
+                  onClick={e => this.editUser.handleSubmit(e)}
+                  loading={submitting}
+                >{edit ? '保存' : '创建'}</Button>,
+                <Button
+                  key="cancel"
+                  funcType="raised"
+                  onClick={() => {
+                    this.setState({
+                      visible: false,
+                      selectedData: '',
+                    });
+                  }}
+                  disabled={submitting}
+                >取消</Button>,
+              ]
+            }
           >
             {
               this.renderSideBar()

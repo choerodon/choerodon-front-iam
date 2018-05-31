@@ -18,8 +18,8 @@ class ProjectSettingStore {
     return axios.get(`/iam/v1/projects/${id}`);
   }
 
-  axiosSaveProjectInfo(orgId, proId, data) {
-    return axios.put(`/iam/v1/projects/${proId}`, data);
+  axiosSaveProjectInfo(data) {
+    return axios.put(`/iam/v1/projects/${data.id}`, data);
   }
 
   disableProject(proId) {

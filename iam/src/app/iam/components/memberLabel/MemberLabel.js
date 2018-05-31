@@ -108,12 +108,11 @@ class MemberLabel extends Component {
   };
 
   render() {
-    const { style, className } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { style, className, form, value, label } = this.props;
+    const { getFieldDecorator } = form;
     return (
       <FormItem
         {...FormItemNumLayout}
-        label={'添加角色'}
         className={className}
         style={style}
       >
@@ -123,14 +122,14 @@ class MemberLabel extends Component {
             validator: this.validateMember,
           }],
           validateTrigger: 'onChange',
+          initialValue: value,
         })(
           <Select
             mode="tags"
             ref={this.saveSelectRef}
             style={{ width: 512 }}
-            label="成员"
-            placeholder="输入一个或多个成员名称"
             filterOption={false}
+            label={label}
             onInputKeyDown={this.handleInputKeyDown}
             notFoundContent={false}
             showNotFindSelectedItem={false}

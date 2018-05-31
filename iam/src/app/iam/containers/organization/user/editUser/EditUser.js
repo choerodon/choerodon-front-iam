@@ -8,6 +8,18 @@ import CreateUserStore from '../../../../stores/organization/user/createUser/Cre
 const FormItem = Form.Item;
 const Option = Select.Option;
 
+const inputWidth = 512; // input框的长度
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
+  },
+};
+
 function noop() {
 }
 
@@ -82,6 +94,7 @@ class EditUser extends Component {
     }
     return false;
   }
+
   checkUsername = (rule, username, callback) => {
     const { edit, AppState } = this.props;
     if (!edit || username !== this.state.userInfo.loginName) {
@@ -203,9 +216,10 @@ class EditUser extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        const { AppState, edit, onSubmit = noop } = this.props;
+        const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop } = this.props;
         const menuType = AppState.currentMenuType;
         const organizationId = menuType.id;
+        onSubmit();
         if (edit) {
           const { id, objectVersionNumber } = this.state.userInfo;
           CreateUserStore.updateUser(organizationId, id, {
@@ -214,9 +228,10 @@ class EditUser extends Component {
           }).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
+              onError();
             } else {
               Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
-              onSubmit();
+              onSuccess();
             }
           }).catch((error) => {
             Choerodon.handleResponseError(error);
@@ -225,11 +240,13 @@ class EditUser extends Component {
           CreateUserStore.createUser(data, organizationId).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
+              onError();
             } else {
               Choerodon.prompt(Choerodon.getMessage('创建成功', 'Success'));
-              onSubmit();
+              onSuccess();
             }
           }).catch((error) => {
+            onError();
             Choerodon.handleResponseError(error);
           });
         }
@@ -244,17 +261,6 @@ class EditUser extends Component {
     const { getFieldDecorator } = this.props.form;
     const { userInfo } = this.state;
     const { originalPassword, enablePassword } = CreateUserStore.getPasswordPolicy || {};
-    const inputWidth = 512; // input框的长度
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 100 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-    };
 
     return (
       <Content

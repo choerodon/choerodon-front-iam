@@ -1,69 +1,57 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import { Button, Form, Input, Modal } from 'choerodon-ui';
-import Page, { Header, Content } from 'Page';
-import _ from 'lodash';
+import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
 import HeaderStore from '@/stores/HeaderStore';
 import './ProjectSettingHome.scss';
 import ProjectSettingStore from '../../../../stores/project/projectSetting/ProjectSettingStore';
 
 const FormItem = Form.Item;
-const ORGANIZATION_TYPE = 'organization';
-const PROJECT_TYPE = 'project';
 
 @inject('AppState')
 @observer
 class ProjectSettingHome extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isShowModal: false,
-    };
-  }
+  state = {
+    stopping: false,
+    submitting: false,
+    isShowModal: false,
+  };
 
   componentWillMount() {
     const { AppState } = this.props;
     const id = AppState.currentMenuType.id;
     ProjectSettingStore.axiosGetProjectInfo(id).then((data) => {
       ProjectSettingStore.setProjectInfo(data);
-    }).catch((err) => {
-      window.console.log(err);
-    });
+    }).catch(Choerodon.handleResponseError);
   }
 
   handleSave(e) {
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, value) => {
+    const { form, location, history } = this.props;
+    form.validateFields((err, value) => {
       if (!err) {
-        const menuType = this.props.AppState.currentMenuType;
-        const newValue = _.clone(value);
-        newValue.id = ProjectSettingStore.getProjectInfo.id;
-        newValue.organizationId = ProjectSettingStore.getProjectInfo.organizationId;
-        newValue.objectVersionNumber = ProjectSettingStore.getProjectInfo.objectVersionNumber;
-        ProjectSettingStore.axiosSaveProjectInfo(menuType.organizationId, menuType.id, newValue)
+        const { id, organizationId, objectVersionNumber } = ProjectSettingStore.getProjectInfo;
+        const body = {
+          id,
+          organizationId,
+          objectVersionNumber,
+          ...value,
+        };
+        this.setState({ submitting: true });
+        ProjectSettingStore.axiosSaveProjectInfo(body)
           .then((data) => {
+            this.setState({ submitting: false });
             Choerodon.prompt('保存成功');
             ProjectSettingStore.setProjectInfo(data);
-            const { AppState } = this.props;
-            data.type = 'project';
-            AppState.changeMenuType(data);
             HeaderStore.updateProject(data);
-            const userId = AppState.getUserId;
-            HeaderStore.axiosGetOrgAndPro(userId).then((org1) => {
-              const org = org1;
-              _.forEach(org[0], (item, index) => {
-                org[0][index].type = ORGANIZATION_TYPE;
-              });
-              _.forEach(org[1], (item1, index1) => {
-                org[1][index1].type = PROJECT_TYPE;
-              });
-              HeaderStore.setOrgData(org[0]);
-              HeaderStore.setProData(org[1]);
-            });
-          }).catch((error) => {
-            Choerodon.prompt(`${error}`);
+            history.replace(`${location.pathname}?type=project&id=${id}&name=${encodeURIComponent(data.name)}&organizationId=${organizationId}`);
+          })
+          .catch((error) => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
           });
       }
     });
@@ -76,35 +64,33 @@ class ProjectSettingHome extends Component {
     this.setState({
       isShowModal: true,
     });
-  }
+  };
 
   /*
    * 确认停用
    * */
-  handleOk = (projectInfo) => {
+  handleOk = () => {
     const { AppState } = this.props;
-    const userId = AppState.getUserId;
-    if (projectInfo.enabled) {
-      ProjectSettingStore.disableProject(
-        AppState.currentMenuType.id).then((data) => {
+    this.setState({ stopping: true });
+    ProjectSettingStore.disableProject(AppState.currentMenuType.id)
+      .then((data) => {
+        this.setState({
+          stopping: false,
+          isShowModal: false,
+        });
         Choerodon.prompt('停用成功');
         ProjectSettingStore.setProjectInfo(data);
-        HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
-          org[0].map(value => {
-            value.type = ORGANIZATION_TYPE;
-          });
-          org[1].map(value => {
-            value.type = PROJECT_TYPE;
-          });
-          HeaderStore.setProData(org[0]);
-          HeaderStore.setProData(org[1]);
-        });
+        HeaderStore.updateProject(data);
         this.props.history.push('/');
-      }).catch((error) => {
-        window.console.log(error);
+      })
+      .catch((error) => {
+        this.setState({
+          stopping: false,
+          isShowModal: false,
+        });
+        Choerodon.handleResponseError(error);
       });
-    }
-  }
+  };
 
   /*
    * 取消停用
@@ -113,71 +99,61 @@ class ProjectSettingHome extends Component {
     this.setState({
       isShowModal: false,
     });
-  }
+  };
 
   cancelValue = () => {
     const { resetFields } = this.props.form;
     resetFields('name');
-  }
+  };
 
   render() {
-    const { AppState } = this.props;
-    const menuType = AppState.currentMenuType;
-    const menuTypeName = menuType.name;
-    const proId = menuType.id;
-    const orgId = menuType.organizationId;
-    const type = menuType.type;
+    const { stopping, submitting } = this.state;
     const { getFieldDecorator } = this.props.form;
-    const projectInfo = ProjectSettingStore.getProjectInfo;
+    const { enabled, name, code } = ProjectSettingStore.getProjectInfo;
     return (
       <Permission
         service={['iam-service.project.query']}
-        organizationId={AppState.currentMenuType.organizationId}
-        type={AppState.currentMenuType.type}
-        projectId={AppState.currentMenuType.id}
       >
         <Page>
           <Header title="项目信息">
-            {projectInfo.enabled ?
-              (<Permission
-                  service={['iam-service.project.disableProject']}
-                  organizationId={orgId}
-                  type={type}
-                  projectId={proId}>
-                <div>
-                  <Button
-                    icon="remove_circle_outline"
-                    onClick={this.showModal}
-                  >
-                    停用
-                  </Button>
-                  <Modal
-                    title="停用项目"
-                    visible={this.state.isShowModal}
-                    onCancel={this.handleCancel}
-                    onOk={this.handleOk.bind(this, projectInfo)}
-                  >
-                    <p>确定要停用项目“{JSON.parse(sessionStorage.menType).name}”吗？停用后，您和项目下其他成员将无法进入此项目。</p>
-                  </Modal>
-                </div>
-              </Permission>
-              ) : (
-                <Permission
-                  service={['iam-service.project.disableProject']}
-                  organizationId={orgId}
-                  type={type}
-                  projectId={proId}>
-                  <Button
-                    icon="remove_circle_outline"
-                    disabled
-                  >
-                    停用
-                  </Button>
-                </Permission>
-              )}
+            <Permission service={['iam-service.project.disableProject']}>
+              <div>
+                <Button
+                  icon="remove_circle_outline"
+                  onClick={this.showModal}
+                  disabled={!enabled}
+                >
+                  停用
+                </Button>
+                <Modal
+                  title="停用项目"
+                  visible={this.state.isShowModal}
+                  closable={false}
+                  footer={
+                    [
+                      <Button
+                        key="cancel"
+                        funcType="raised"
+                        onClick={this.handleCancel}
+                        disabled={stopping}
+                      >取消</Button>,
+                      <Button
+                        key="ok"
+                        funcType="raised"
+                        type="primary"
+                        onClick={this.handleOk}
+                        loading={stopping}
+                      >确定</Button>,
+                    ]
+                  }
+                >
+                  <p>确定要停用项目“{name}”吗？停用后，您和项目下其他成员将无法进入此项目。</p>
+                </Modal>
+              </div>
+            </Permission>
           </Header>
           <Content
-            title={projectInfo.enabled ? `对项目“${JSON.parse(sessionStorage.menType).name}”进行项目设置` : `项目“${projectInfo.code}”已被停用`}
+            title={enabled ? `对项目“${name}”进行项目设置` : `项目“${code}”已被停用`}
             description="您可以在此修改项目名称、停用项目。"
             link="http://choerodon.io/zh/docs/user-guide/system-configuration/project/pro_info/"
           >
@@ -185,55 +161,36 @@ class ProjectSettingHome extends Component {
               <Form onSubmit={this.handleSave.bind(this)}>
                 <FormItem>
                   {getFieldDecorator('name', {
-                    initialValue: menuTypeName,
+                    initialValue: name,
                   })(
-                    <Input label="项目名" disabled={!projectInfo.enabled} style={{ width: 512 }} />,
+                    <Input label="项目名" disabled={!enabled} style={{ width: 512 }} />,
                   )}
                 </FormItem>
                 <FormItem>
                   {getFieldDecorator('code', {
-                    initialValue: JSON.stringify(projectInfo) !== '{}' ? projectInfo.code : '',
+                    initialValue: code,
                   })(
                     <Input label="项目编码" disabled style={{ width: 512 }} />,
                   )}
                 </FormItem>
-                {projectInfo.enabled ? (
-                  <Permission
-                    service={['iam-service.project.update']}
-                    type={type}
-                    organizationId={orgId}
-                    projectId={proId}>
-                    <div className="btnGroup">
-                      <Button
-                        funcType="raised"
-                        htmlType="submit"
-                        type="primary"
-                      >{Choerodon.languageChange('save')}</Button>
-                      <Button
-                        funcType="raised"
-                        className={'cancel'}
-                        onClick={this.cancelValue}
-                      >
-                        {Choerodon.languageChange('cancel')}
-                      </Button>
-                    </div>
-                  </Permission>
-                ) : (
-                  <Permission
-                    service={['iam-service.project.update']}
-                    type={type}
-                    organizationId={orgId}
-                    projectId={proId}>
-                    <div className="btnGroup">
-                      <Button
-                        disabled
-                        funcType="raised"
-                        type="primary"
-                      >{Choerodon.languageChange('save')}</Button>
-                      <Button funcType="raised" disabled>{Choerodon.languageChange('cancel')}</Button>
-                    </div>
-                  </Permission>
-                )}
+                <Permission service={['iam-service.project.update']}>
+                  <div className="btnGroup">
+                    <Button
+                      funcType="raised"
+                      htmlType="submit"
+                      type="primary"
+                      loading={submitting}
+                      disabled={!enabled}
+                    >{Choerodon.languageChange('save')}</Button>
+                    <Button
+                      funcType="raised"
+                      onClick={this.cancelValue}
+                      disabled={!enabled}
+                    >
+                      {Choerodon.languageChange('cancel')}
+                    </Button>
+                  </div>
+                </Permission>
               </Form>
             </div>
           </Content>
@@ -243,5 +200,5 @@ class ProjectSettingHome extends Component {
   }
 }
 
-export default Form.create({})(ProjectSettingHome);
+export default Form.create({})(withRouter(ProjectSettingHome));
 

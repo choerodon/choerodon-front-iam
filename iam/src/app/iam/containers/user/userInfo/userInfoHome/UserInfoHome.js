@@ -63,11 +63,10 @@ class UserInfo extends Component {
     const { AppState } = this.props;
     const originUser = UserInfoStore.getUserInfo;
     e.preventDefault();
-    this.setState({ submitting: true });
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({
-          submitting: false,
+          submitting: true,
         });
         const user = {
           ...originUser,
@@ -166,6 +165,7 @@ class UserInfo extends Component {
 
   renderForm(user) {
     const { getFieldDecorator } = this.props.form;
+    const { submitting } = this.state;
     const { realName, email, language, timeZone } = user;
     return (
       <Form onSubmit={this.handleSubmit} layout="vertical" className="user-info">
@@ -268,14 +268,14 @@ class UserInfo extends Component {
               htmlType="submit"
               funcType="raised"
               type="primary"
-              disabled={this.state.submitting}
+              loading={submitting}
             >保存</Button>
             <Button
               text={Choerodon.languageChange('save')}
               funcType="raised"
               onClick={this.refresh}
               style={{ marginLeft: 16 }}
-              disabled={this.state.submitting}
+              disabled={submitting}
             >取消</Button>
           </FormItem>
         </Permission>

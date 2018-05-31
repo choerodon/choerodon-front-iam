@@ -9,6 +9,7 @@ import ClientEdit from '../clientEdit';
 import './Client.scss';
 
 const { Sidebar } = Modal;
+
 /**
  * 分页加载条数
  * @type {number}
@@ -20,6 +21,7 @@ class Client extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      submitting: false,
       page: 0,
       open: false,
       params: null,
@@ -53,7 +55,17 @@ class Client extends Component {
             onRef={(ref) => {
               this.clientCreate = ref;
             }}
-            onSubmit={this.closeSidebar}
+            onSubmit={() => {
+              this.setState({
+                submitting: true,
+              });
+            }}
+            onSuccess={this.closeSidebar}
+            onError={() => {
+              this.setState({
+                submitting: false,
+              });
+            }}
           />
         );
         break;
@@ -66,11 +78,21 @@ class Client extends Component {
             }}
             organizationId={this.state.selectData.organizationId}
             id={this.state.selectData.id}
-            onSubmit={this.closeSidebar}
+            onSubmit={() => {
+              this.setState({
+                submitting: true,
+              });
+            }}
+            onSuccess={this.closeSidebar}
+            onError={() => {
+              this.setState({
+                submitting: false,
+              });
+            }}
           />
         );
         break;
-      default: 
+      default:
         break;
     }
     return {
@@ -131,7 +153,7 @@ class Client extends Component {
       params: (params && params[0]) || '',
     };
     this.loadClient(pagination, newSorter, newFilters);
-  }
+  };
 
   /**
    * 删除客户端
@@ -162,7 +184,7 @@ class Client extends Component {
       });
       ClientStore.setClientById(record);
     }
-  }
+  };
 
   handleOk = (event) => {
     const { status } = this.state;
@@ -176,13 +198,14 @@ class Client extends Component {
     if (closeSidebar) {
       this.closeSidebar();
     }
-  }
+  };
 
   closeSidebar = () => {
     const clientCreate = this.clientCreate;
     const clientEdit = this.clientEdit;
     this.setState({
       visible: false,
+      submitting: false,
     }, () => {
       if (clientCreate) {
         clientCreate.resetForm();
@@ -192,21 +215,13 @@ class Client extends Component {
       }
     });
     this.reload();
-  }
+  };
 
   render() {
     const { AppState, ClientStore } = this.props;
+    const { submitting, status, pagination, visible } = this.state;
     const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
     const organizationName = menuType.name;
-    let type;
-    if (AppState.getType) {
-      type = AppState.getType;
-    } else if (sessionStorage.type) {
-      type = sessionStorage.type;
-    } else {
-      type = menuType.type;
-    }
     const clientData = ClientStore.getClients;
     const sidebarInfo = this.getSidebarInfo();
     const columns = [
@@ -262,8 +277,6 @@ class Client extends Component {
           <div>
             <Permission
               service={['iam-service.client.update']}
-              type={type}
-              organizationId={organizationId}
             >
               <Button
                 onClick={() => {
@@ -275,8 +288,6 @@ class Client extends Component {
             </Permission>
             <Permission
               service={['iam-service.client.delete']}
-              type={type}
-              organizationId={organizationId}
             >
               <Popconfirm
                 title={`确认删除客户端${record.name}吗?`}
@@ -294,8 +305,6 @@ class Client extends Component {
         <Header title={Choerodon.languageChange('client.title')}>
           <Permission
             service={['iam-service.client.create']}
-            type={type}
-            organizationId={organizationId}
           >
             <Button
               onClick={() => this.openSidebar('create')}
@@ -318,7 +327,7 @@ class Client extends Component {
         >
           <Table
             size="middle"
-            pagination={this.state.pagination}
+            pagination={pagination}
             columns={columns}
             dataSource={clientData}
             rowKey="id"
@@ -330,9 +339,10 @@ class Client extends Component {
             title={sidebarInfo.title}
             onOk={this.handleOk}
             onCancel={this.closeSidebar}
-            visible={this.state.visible}
-            okText={this.state.status === 'create' ? '创建' : '保存'}
+            visible={visible}
+            okText={status === 'create' ? '创建' : '保存'}
             cancelText="取消"
+            confirmLoading={submitting}
           >
             {sidebarInfo.content}
           </Sidebar>

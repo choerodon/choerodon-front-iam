@@ -10,6 +10,9 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
 
+function noop() {
+}
+
 @inject('AppState')
 @observer
 
@@ -73,7 +76,7 @@ class CreateClient extends Component {
       }
     }
     return false;
-  }
+  };
 
   /**
    * 校验秘钥
@@ -92,35 +95,35 @@ class CreateClient extends Component {
   resetForm = () => {
     const { resetFields } = this.props.form;
     resetFields();
-  }
+  };
   /**
    * 创建客户端提交form
    * @param e
    */
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, data) => {
+    const { form, AppState, onSubmit = noop, onError = noop, onSuccess = noop } = this.props;
+    form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        const { AppState } = this.props;
         const menuType = AppState.currentMenuType;
         const organizationId = menuType.id;
         const dataType = data;
         if (dataType.authorizedGrantTypes) {
           dataType.authorizedGrantTypes = dataType.authorizedGrantTypes.join(',');
-          this.setState({ submitting: true, buttonClicked: true });
         }
         dataType.organizationId = organizationId;
+        onSubmit();
         ClientStore.createClient(organizationId, { ...dataType })
           .then((value) => {
             if (value) {
-              this.props.onSubmit();
+              onSuccess();
+            } else {
+              onError();
             }
-          }).catch((error) => {
+          })
+          .catch((error) => {
+            onError();
             Choerodon.handleResponseError(error);
-            this.setState({
-              submitting: false,
-              buttonClicked: false,
-            });
           });
       }
     });
@@ -273,8 +276,8 @@ class CreateClient extends Component {
             ],
             validateTrigger: 'onBlur',
           })(
-            <TextArea 
-              rows={3} 
+            <TextArea
+              rows={3}
               label={Choerodon.languageChange('client.additionalInformation')}
             />,
           )}

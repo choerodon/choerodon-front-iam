@@ -693,9 +693,6 @@ class MemberRole extends Component {
             <div>
               <Permission
                 service={createService}
-                type={type}
-                organizationId={organizationId}
-                projectId={projectId}
               >
                 <Button onClick={() => {
                   this.editRole(record);
@@ -818,9 +815,6 @@ class MemberRole extends Component {
               <div>
                 <Permission
                   service={createService}
-                  type={type}
-                  organizationId={organizationId}
-                  projectId={projectId}
                 >
                   <Button onClick={() => {
                     this.handleEditRole(record);
@@ -828,9 +822,6 @@ class MemberRole extends Component {
                 </Permission>
                 <Permission
                   service={deleteService}
-                  type={type}
-                  organizationId={organizationId}
-                  projectId={projectId}
                 >
                   <Popconfirm
                     title={`确认删除成员“${record.loginName}”的角色“${record.roleName}”?`}
@@ -909,41 +900,31 @@ class MemberRole extends Component {
 
   getPermission() {
     const { AppState } = this.props;
-    const { type, id } = AppState.currentMenuType;
-    let organizationId;
-    let projectId;
+    const { type } = AppState.currentMenuType;
     let createService = ['iam-service.role-member.createOrUpdateOnSiteLevel'];
     let deleteService = ['iam-service.role-member.deleteOnSiteLevel'];
     if (type === 'organization') {
-      organizationId = id;
       createService = ['iam-service.role-member.createOrUpdateOnOrganizationLevel'];
       deleteService = ['iam-service.role-member.deleteOnOrganizationLevel'];
     } else if (type === 'project') {
-      projectId = id;
       createService = ['iam-service.role-member.createOnProjectLevel'];
       deleteService = ['iam-service.role-member.deleteOnProjectLevel'];
     }
     return {
-      type,
       createService,
       deleteService,
-      organizationId,
-      projectId,
     };
   }
 
   render() {
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting } = this.state;
     const okText = selectType === 'create' ? '添加' : '保存';
-    const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
+    const { createService, deleteService } = this.getPermission();
     return (
       <Page>
         <Header title={'角色分配'}>
           <Permission
             service={createService}
-            type={type}
-            organizationId={organizationId}
-            projectId={projectId}
           >
             <Button
               onClick={this.createRole}
@@ -954,9 +935,6 @@ class MemberRole extends Component {
           </Permission>
           <Permission
             service={deleteService}
-            type={type}
-            organizationId={organizationId}
-            projectId={projectId}
           >
             <Button
               onClick={this.deleteRoleByMultiple}
@@ -997,23 +975,11 @@ class MemberRole extends Component {
           <Sidebar
             title={this.getSidebarTitle()}
             visible={sidebar}
-            footer={
-              [
-                <Button
-                  key="ok"
-                  funcType="raised"
-                  type="primary"
-                  onClick={this.handleOk}
-                  loading={submitting}
-                >{okText}</Button>,
-                <Button
-                  key="cancel"
-                  funcType="raised"
-                  onClick={this.closeSidebar}
-                  disabled={submitting}
-                >取消</Button>,
-              ]
-            }
+            okText={okText}
+            cancelText="取消"
+            onOk={this.handleOk}
+            onCancel={this.closeSidebar}
+            confirmLoading={submitting}
           >
             {roleData.length ? this.getSidebarContent() : null}
           </Sidebar>

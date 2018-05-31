@@ -441,28 +441,16 @@ class User extends Component {
           <Sidebar
             title={this.renderSideTitle()}
             visible={visible}
-            footer={
-              [
-                <Button
-                  key="ok"
-                  funcType="raised"
-                  type="primary"
-                  onClick={e => this.editUser.handleSubmit(e)}
-                  loading={submitting}
-                >{edit ? '保存' : '创建'}</Button>,
-                <Button
-                  key="cancel"
-                  funcType="raised"
-                  onClick={() => {
-                    this.setState({
-                      visible: false,
-                      selectedData: '',
-                    });
-                  }}
-                  disabled={submitting}
-                >取消</Button>,
-              ]
-            }
+            okText={edit ? '保存' : '创建'}
+            cancelText="取消"
+            onOk={e => this.editUser.handleSubmit(e)}
+            onCancel={() => {
+              this.setState({
+                visible: false,
+                selectedData: '',
+              });
+            }}
+            confirmLoading={submitting}
           >
             {
               this.renderSideBar()

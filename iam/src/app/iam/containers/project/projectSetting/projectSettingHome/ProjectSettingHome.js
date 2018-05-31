@@ -107,7 +107,7 @@ class ProjectSettingHome extends Component {
   };
 
   render() {
-    const { stopping, submitting } = this.state;
+    const { stopping, submitting, isShowModal } = this.state;
     const { getFieldDecorator } = this.props.form;
     const { enabled, name, code } = ProjectSettingStore.getProjectInfo;
     return (
@@ -127,7 +127,7 @@ class ProjectSettingHome extends Component {
                 </Button>
                 <Modal
                   title="停用项目"
-                  visible={this.state.isShowModal}
+                  visible={isShowModal}
                   closable={false}
                   footer={
                     [

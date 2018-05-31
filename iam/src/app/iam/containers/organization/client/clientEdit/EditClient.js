@@ -11,17 +11,12 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
 
+function noop() {
+}
+
 @inject('AppState')
 @observer
 class EditClient extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      submitting: false,
-      buttonClicked: false,
-    };
-  }
-
   componentWillMount() {
     ClientStore.getClientById(this.props.organizationId, this.props.id)
       .subscribe((data) => {
@@ -37,7 +32,7 @@ class EditClient extends Component {
   resetForm = () => {
     const { resetFields } = this.props.form;
     resetFields();
-  }
+  };
 
   /**
    * 跳转函数
@@ -100,7 +95,7 @@ class EditClient extends Component {
       }
     }
     return false;
-  }
+  };
   /**
    * 编辑客户端form表单提交
    * @param e
@@ -108,9 +103,9 @@ class EditClient extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     let closeSidebar = true;
-    this.props.form.validateFieldsAndScroll((err, data) => {
+    const { form, AppState, onSubmit = noop, onError = noop, onSuccess = noop } = this.props;
+    form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        const { AppState } = this.props;
         const menuType = AppState.currentMenuType;
         const organizationId2 = menuType.id;
         const client = ClientStore.getClient;
@@ -121,7 +116,7 @@ class EditClient extends Component {
         if (dataType.additionalInformation === '') {
           dataType.additionalInformation = undefined;
         }
-        this.setState({ submitting: true, buttonClicked: true });
+        onSubmit();
         ClientStore.updateClient(this.props.organizationId,
           {
             ...data,
@@ -133,13 +128,14 @@ class EditClient extends Component {
           .then((value) => {
             if (value) {
               Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
-              this.props.onSubmit();
+              onSuccess();
+            } else {
+              onError();
             }
-          }).catch((error) => {
+          })
+          .catch((error) => {
+            onError();
             Choerodon.handleResponseError(error);
-            this.setState({
-              submitting: false,
-            });
           });
       } else {
         closeSidebar = false;
@@ -195,7 +191,7 @@ class EditClient extends Component {
             }],
           })(
             <Input
-              label={Choerodon.languageChange('client.name')} 
+              label={Choerodon.languageChange('client.name')}
               disabled
             />,
           )}
@@ -283,7 +279,7 @@ class EditClient extends Component {
           )}
         </FormItem>
         <FormItem
-          {...formItemLayout} 
+          {...formItemLayout}
         >
           {getFieldDecorator('additionalInformation', {
             rules: [

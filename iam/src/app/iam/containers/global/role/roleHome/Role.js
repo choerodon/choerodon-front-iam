@@ -7,7 +7,6 @@ import Page, { Content, Header } from 'Page';
 import Remove from 'Remove';
 import Action from 'Action';
 import CreateRole from '../roleCreate';
-import DetailRole from '../roleDetail';
 import EditRole from '../roleEdit';
 import './Role.scss';
 import '../../../../assets/css/main.scss';
@@ -251,12 +250,6 @@ class Role extends Component {
           }}
         />
       );
-    } else if (selectType === 'detail') {
-      return (
-        <DetailRole
-          id={this.state.selectedData}
-        />
-      );
     } else {
       return '';
     }
@@ -274,8 +267,6 @@ class Role extends Component {
     switch (this.state.selectType) {
       case 'create':
         return '创建角色';
-      case 'detail':
-        return '角色详情';
       case 'edit':
         return '角色编辑';
       default:
@@ -424,8 +415,6 @@ class Role extends Component {
         >
           <Permission
             service={['iam-service.role.create']}
-            type={type}
-            organizationId={organizationId}
           >
             <Button
               icon="playlist_add"
@@ -436,8 +425,6 @@ class Role extends Component {
           </Permission>
           <Permission
             service={['iam-service.role.createBaseOnRoles']}
-            type={type}
-            organizationId={organizationId}
           >
             <Button
               icon="content_copy"

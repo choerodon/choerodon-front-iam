@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Modal, Popconfirm, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, Modal, Popconfirm, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
@@ -694,9 +694,14 @@ class MemberRole extends Component {
               <Permission
                 service={createService}
               >
-                <Button onClick={() => {
-                  this.editRole(record);
-                }} shape="circle" icon="mode_edit" />
+                <Tooltip
+                  title="修改"
+                  placement="bottom"
+                >
+                  <Button onClick={() => {
+                    this.editRole(record);
+                  }} shape="circle" icon="mode_edit" />
+                </Tooltip>
               </Permission>
               <Permission
                 service={deleteService}
@@ -704,12 +709,17 @@ class MemberRole extends Component {
                 organizationId={organizationId}
                 projectId={projectId}
               >
-                <Popconfirm
-                  title={`确认删除成员“${record.loginName}”下的所有角色?`}
-                  onConfirm={() => this.deleteRoleByMember(record)}
+                <Tooltip
+                  title="移除"
+                  placement="bottom"
                 >
-                  <Button shape="circle" icon="delete" />
-                </Popconfirm>
+                  <Popconfirm
+                    title={`确认移除成员“${record.loginName}”下的所有角色?`}
+                    onConfirm={() => this.deleteRoleByMember(record)}
+                  >
+                    <Button shape="circle" icon="delete" />
+                  </Popconfirm>
+                </Tooltip>
               </Permission>
             </div>
           );

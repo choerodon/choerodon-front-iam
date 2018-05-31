@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Icon, Modal, Popover, Table } from 'choerodon-ui';
+import { Button, Icon, Modal, Tooltip, Table } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Permission from 'PerComponent';
@@ -325,9 +325,8 @@ class User extends Component {
               type={type}
               organizationId={organizationId}
             >
-              <Popover
-                trigger="hover"
-                content="修改"
+              <Tooltip
+                title="修改"
                 placement="bottom"
               >
                 <Button
@@ -335,7 +334,7 @@ class User extends Component {
                   shape="circle"
                   onClick={this.onEdit.bind(this, record.id)}
                 />
-              </Popover>
+              </Tooltip>
             </Permission>
             {record.enabled ? (
               <Permission
@@ -343,9 +342,8 @@ class User extends Component {
                 type={type}
                 organizationId={organizationId}
               >
-                <Popover
-                  trigger="hover"
-                  content="停用"
+                <Tooltip
+                  title="停用"
                   placement="bottom"
                 >
                   <Button
@@ -353,7 +351,7 @@ class User extends Component {
                     shape="circle"
                     onClick={this.handleAble.bind(this, record)}
                   />
-                </Popover>
+                </Tooltip>
               </Permission>
             ) : (
               <Permission
@@ -361,9 +359,8 @@ class User extends Component {
                 type={type}
                 organizationId={organizationId}
               >
-                <Popover
-                  trigger="hover"
-                  content="启用"
+                <Tooltip
+                  title="启用"
                   placement="bottom"
                 >
                   <Button
@@ -371,7 +368,7 @@ class User extends Component {
                     shape="circle"
                     onClick={this.handleAble.bind(this, record)}
                   />
-                </Popover>
+                </Tooltip>
               </Permission>
             )
             }
@@ -381,13 +378,12 @@ class User extends Component {
                 type={type}
                 organizationId={organizationId}
               >
-                <Popover
-                  trigger="hover"
-                  content="解锁"
+                <Tooltip
+                  title="解锁"
                   placement="bottom"
                 >
                   <Button icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
-                </Popover>
+                </Tooltip>
               </Permission> :
               <Permission
                 service={['iam-service.organization-user.unlock']}

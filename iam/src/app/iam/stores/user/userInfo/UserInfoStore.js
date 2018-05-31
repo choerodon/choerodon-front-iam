@@ -20,7 +20,6 @@ class UserInfoStore {
 
   @action
   setAvatar(avatar) {
-    this.userInfo.imageUrl = avatar;
     this.avatar = avatar;
   }
 

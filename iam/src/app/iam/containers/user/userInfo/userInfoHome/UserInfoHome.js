@@ -71,6 +71,7 @@ class UserInfo extends Component {
         const user = {
           ...originUser,
           ...values,
+          imageUrl: UserInfoStore.getAvatar,
         };
         UserInfoStore.updateUserInfo(user).then((data) => {
           if (data) {

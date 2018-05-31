@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Permission from 'PerComponent';
-import { Button, Modal, Popconfirm, Popover, Table, Tag } from 'choerodon-ui';
+import { Button, Modal, Popconfirm, Tooltip, Table } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
@@ -278,23 +278,33 @@ class Client extends Component {
             <Permission
               service={['iam-service.client.update']}
             >
-              <Button
-                onClick={() => {
-                  this.openSidebar('edit', record);
-                }}
-                shape="circle"
-                icon="mode_edit"
-              />
+              <Tooltip
+                title="修改"
+                placement="bottom"
+              >
+                <Button
+                  onClick={() => {
+                    this.openSidebar('edit', record);
+                  }}
+                  shape="circle"
+                  icon="mode_edit"
+                />
+              </Tooltip>
             </Permission>
             <Permission
               service={['iam-service.client.delete']}
             >
-              <Popconfirm
-                title={`确认删除客户端${record.name}吗?`}
-                onConfirm={() => this.handleDelete(record)}
+              <Tooltip
+                title="删除"
+                placement="bottom"
               >
-                <Button shape="circle" icon="delete_forever" />
-              </Popconfirm>
+                <Popconfirm
+                  title={`确认删除客户端${record.name}吗?`}
+                  onConfirm={() => this.handleDelete(record)}
+                >
+                  <Button shape="circle" icon="delete_forever" />
+                </Popconfirm>
+              </Tooltip>
             </Permission>
           </div>),
       },

@@ -202,6 +202,7 @@ class RootUserSetting extends Component {
         title: '',
         width: 100,
         render: (text, record) => {
+          const { onlyRootUser } = this.state;
           return (
             <div>
               <Permission
@@ -209,11 +210,11 @@ class RootUserSetting extends Component {
                 type={type}
               >
                 <Tooltip
-                  title="移除Root用户"
+                  title={onlyRootUser ? '平台至少需要一个Root用户。要移除当前的Root用户，请先添加另一个Root用户' : '移除'}
                   placement="bottom"
                 >
                   <Button
-                    disabled={this.state.onlyRootUser}
+                    disabled={onlyRootUser}
                     onClick={this.openDeleteModal.bind(this, record)}
                     shape="circle"
                     icon="delete_forever"

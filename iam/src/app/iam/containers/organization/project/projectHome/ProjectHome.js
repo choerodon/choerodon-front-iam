@@ -5,7 +5,7 @@ import { Table,
   Input,
   Form,
   Modal,
-  Popover } from 'choerodon-ui';
+  Tooltip } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
@@ -389,9 +389,8 @@ class ProjectHome extends Component {
       render: (text, record) => (
         <div>
           <Permission service={['iam-service.organization-project.update']} type={type} organizationId={orgId}>
-            <Popover
-              trigger="hover"
-              content="修改"
+            <Tooltip
+              title="修改"
               placement="bottom"
             >
               <Button
@@ -400,14 +399,13 @@ class ProjectHome extends Component {
               >
                 <span className="icon-mode_edit" />
               </Button>
-            </Popover>
+            </Tooltip>
           </Permission>
           <Permission
             service={['iam-service.organization-project.disableProject', 'iam-service.organization-project.enableProject']}
             type={type} organizationId={orgId}>
-            <Popover
-              trigger="hover"
-              content={record.enabled ? "停用" : "启用"}
+            <Tooltip
+              title={record.enabled ? "停用" : "启用"}
               placement="bottom"
             >
               <Button
@@ -415,7 +413,7 @@ class ProjectHome extends Component {
                 onClick={this.handleEnable.bind(this, record)}
                 icon={record.enabled ? 'remove_circle_outline' : 'finished'}
               />
-            </Popover>
+            </Tooltip>
           </Permission>
         </div>
       ),

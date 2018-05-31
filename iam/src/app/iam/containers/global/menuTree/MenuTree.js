@@ -667,7 +667,7 @@ class MenuTree extends Component {
           return (<span>
             <Permission service={['iam-service.menu.update']} type={menuType}>
               <Tooltip
-                title="编辑"
+                title="修改"
                 placement="bottom"
               >
                 <Button

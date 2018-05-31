@@ -289,7 +289,6 @@ class EditUser extends Component {
             })(
               <Input
                 label={Choerodon.getMessage('登录名', 'user loginName')}
-                placeholder={Choerodon.getMessage('登录名', 'user loginName')}
                 disabled={edit}
                 style={{ width: inputWidth }}
               />,
@@ -314,7 +313,6 @@ class EditUser extends Component {
                   label={Choerodon.getMessage('用户名', 'user name')}
                   type="text"
                   rows={1}
-                  placeholder={Choerodon.getMessage('用户名', 'user name')}
                   style={{ width: inputWidth }}
                 />,
               )
@@ -344,7 +342,6 @@ class EditUser extends Component {
             })(
               <Input
                 label={Choerodon.getMessage('邮箱', 'user email')}
-                placeholder={Choerodon.getMessage('邮箱', 'user email')}
                 style={{ width: inputWidth }}
               />,
             )}
@@ -373,7 +370,6 @@ class EditUser extends Component {
                 <Input
                   label={Choerodon.getMessage('密码', 'user password')}
                   type="password"
-                  placeholder={Choerodon.getMessage('密码', 'user password')}
                   style={{ width: inputWidth }}
                 />,
               )}
@@ -398,7 +394,6 @@ class EditUser extends Component {
                 <Input
                   label={Choerodon.getMessage('确认密码', 'password confirm')}
                   type="password"
-                  placeholder={Choerodon.getMessage('确认密码', 'password confirm')}
                   style={{ width: inputWidth }}
                   onBlur={this.handleRePasswordBlur}
                 />,

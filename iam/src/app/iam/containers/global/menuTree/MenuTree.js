@@ -259,9 +259,7 @@ class MenuTree extends Component {
             initialValue: name,
           })(
             <Input
-              placeholder={Choerodon.getMessage('目录名称', 'Dir Name')}
               label="目录名称"
-              maxLength={30}
               style={{ width: inputWidth }}
             />,
           )}
@@ -279,9 +277,7 @@ class MenuTree extends Component {
           })(
             <Input
               label="目录编码"
-              maxLength={30}
               disabled={true}
-              placeholder={Choerodon.getMessage('目录编码', 'Dir Code')}
               style={{ width: inputWidth }}
             />,
           )}
@@ -322,7 +318,6 @@ class MenuTree extends Component {
           >
             <Input
               value={name}
-              placeholder={Choerodon.getMessage('菜单名称', 'Menu Name')}
               label="菜单名称"
               disabled={true}
               style={{ width: inputWidth }}
@@ -333,7 +328,6 @@ class MenuTree extends Component {
           >
             <Input
               value={code}
-              placeholder={Choerodon.getMessage('菜单编码', 'Menu code')}
               label="菜单编码"
               disabled={true}
               style={{ width: inputWidth }}
@@ -346,7 +340,6 @@ class MenuTree extends Component {
               value={level}
               label="菜单层级"
               disabled={true}
-              placeholder={Choerodon.getMessage('菜单层级', 'Menu Level')}
               style={{ width: inputWidth }}
             />
           </FormItem>
@@ -357,7 +350,6 @@ class MenuTree extends Component {
               value={__parent_name__}
               label="所属根目录"
               disabled={true}
-              placeholder={Choerodon.getMessage('所属根目录', 'Menu Root')}
               style={{ width: inputWidth }}
             />
           </FormItem>
@@ -393,9 +385,7 @@ class MenuTree extends Component {
           })(
             <Input
               autoComplete="off"
-              placeholder={Choerodon.getMessage('目录名称', 'Dir Name')}
               label="目录名称"
-              maxLength={30}
               style={{ width: inputWidth }}
             />,
           )}
@@ -418,8 +408,6 @@ class MenuTree extends Component {
             <Input
               autoComplete="off"
               label="目录编码"
-              maxLength={30}
-              placeholder={Choerodon.getMessage('目录编码', 'Dir Code')}
               style={{ width: inputWidth }}
             />,
           )}

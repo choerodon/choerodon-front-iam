@@ -196,7 +196,6 @@ class EditClient extends Component {
           })(
             <Input
               label={Choerodon.languageChange('client.name')} 
-              placeholder={Choerodon.languageChange('client.name')}
               disabled
             />,
           )}
@@ -213,7 +212,7 @@ class EditClient extends Component {
               message: Choerodon.getMessage('密钥必填', 'Secret is required'),
             }],
           })(
-            <Input label={Choerodon.languageChange('client.secret')} placeholder={Choerodon.languageChange('client.secret')} />,
+            <Input label={Choerodon.languageChange('client.secret')} />,
           )}
         </FormItem>
         <FormItem
@@ -232,7 +231,6 @@ class EditClient extends Component {
             <Select
               mode="multiple"
               label={Choerodon.languageChange('client.authorizedGrantTypes')}
-              placeholder={Choerodon.getMessage('请选择授权类型', 'Please choose authorization type')}
               size="default"
             >
               <Option value="password">password</Option>
@@ -281,7 +279,7 @@ class EditClient extends Component {
           {getFieldDecorator('webServerRedirectUri', {
             initialValue: client.webServerRedirectUri || undefined,
           })(
-            <Input label={Choerodon.languageChange('client.webServerRedirectUri')} placeholder={Choerodon.languageChange('client.webServerRedirectUri')} />,
+            <Input label={Choerodon.languageChange('client.webServerRedirectUri')} />,
           )}
         </FormItem>
         <FormItem

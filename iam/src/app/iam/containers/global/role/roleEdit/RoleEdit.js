@@ -268,7 +268,6 @@ class EditRole extends Component {
                   initialValue: code,
                 })(
                   <Input
-                    placeholder={Choerodon.getMessage('请输入角色编码', 'Please input role code')}
                     size="default"
                     label={Choerodon.getMessage('角色编码', 'code')}
                     style={{
@@ -290,7 +289,6 @@ class EditRole extends Component {
                   initialValue: name,
                 })(
                   <Input
-                    placeholder={Choerodon.getMessage('请输入角色名称', 'Please input role name')}
                     rows={1}
                     label={Choerodon.getMessage('角色名称', 'name')}
                     style={{
@@ -310,7 +308,6 @@ class EditRole extends Component {
                   })(
                     <Select
                       mode="tags"
-                      placeholder="请选择角色标签"
                       size="default"
                       label={Choerodon.getMessage('角色标签', 'label')}
                       style={{

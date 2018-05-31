@@ -286,7 +286,6 @@ class CreateRole extends Component {
                   initialValue: RoleStore.getChosenLevel !== '' ? RoleStore.getChosenLevel : undefined,
                 })(
                   <Select
-                    placeholder="请选择角色层级"
                     label={Choerodon.getMessage('角色层级', 'role label')}
                     ref={this.saveSelectRef}
                     size="default"
@@ -314,7 +313,6 @@ class CreateRole extends Component {
                 })(
                   <Input
                     label={Choerodon.getMessage('角色编码', 'code')}
-                    placeholder={Choerodon.getMessage('请输入角色编码', 'Please input role code')}
                     prefix={codePrefix}
                     size="default"
                     style={{
@@ -336,7 +334,6 @@ class CreateRole extends Component {
                 })(
                   <Input
                     label={Choerodon.getMessage('角色名称', 'name')}
-                    placeholder={Choerodon.getMessage('请输入角色名称', 'Please input role name')}
                     type="textarea"
                     rows={1}
                     style={{
@@ -351,7 +348,6 @@ class CreateRole extends Component {
                 {getFieldDecorator('label')(
                   <Select
                     mode="tags"
-                    placeholder="请选择角色标签"
                     label={Choerodon.getMessage('角色标签', 'role label')}
                     size="default"
                     style={{

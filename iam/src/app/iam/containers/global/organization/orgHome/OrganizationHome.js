@@ -247,7 +247,7 @@ class OrganizationHome extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input placeholder="组织编码" label="组织编码" style={{ width: inputWidth }} />,
+                  <Input label="组织编码" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -260,7 +260,7 @@ class OrganizationHome extends Component {
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input placeholder="组织名称" label="组织名称" style={{ width: inputWidth }} />,
+              <Input label="组织名称" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>

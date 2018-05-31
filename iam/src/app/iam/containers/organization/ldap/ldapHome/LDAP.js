@@ -12,6 +12,19 @@ const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 9 },
+  },
+};
+
+const inputWidth = 512;
+
 @inject('AppState')
 @observer
 class LDAP extends Component {
@@ -28,7 +41,6 @@ class LDAP extends Component {
   getInitState() {
     return {
       sidebar: false,
-      buttonClicked: false,
       open: false,
       saving: false,
       organizationId: this.props.AppState.currentMenuType.id,
@@ -100,7 +112,6 @@ class LDAP extends Component {
         ladp.status = ldapStatus;
         this.setState({
           saving: true,
-          buttonClicked: true,
         });
         LDAPStore.updateLDAP(this.state.organizationId, LDAPStore.getLDAPData.id, ladp)
           .then((data) => {
@@ -112,24 +123,12 @@ class LDAP extends Component {
             }
             this.setState({
               saving: false,
-              buttonClicked: false,
             });
-          }).catch((error) => {
-            const response = error.response;
-            if (response) {
-              const status = response.status;
-              const mess = response.data.message;
-              switch (status) {
-                case 400:
-                  Choerodon.prompt(mess);
-                  break;
-                default:
-                  break;
-              }
-            }
+          })
+          .catch((error) => {
+            Choerodon.handleResponseError(error);
             this.setState({
               saving: false,
-              buttonClicked: false,
             });
           });
       }
@@ -137,48 +136,23 @@ class LDAP extends Component {
   };
 
   render() {
-    const { LDAPStore } = this.props;
-    const { AppState } = this.props;
+    const { LDAPStore, AppState, form } = this.props;
+    const { saving } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
-    const organizationId = menuType.id;
     const ldapData = LDAPStore.getLDAPData;
-    let type;
-    if (AppState.getType) {
-      type = AppState.getType;
-    } else if (sessionStorage.type) {
-      type = sessionStorage.type;
-    } else {
-      type = menuType.type;
-    }
 
-
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = form;
     let status = 'N';
     if (ldapData && ldapData.status === 'Y') {
       status = 'Y';
     } else {
       status = 'N';
     }
-
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 100 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 9 },
-      },
-    };
-
-    const inputWidth = 512;
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
       <Form onSubmit={this.handleSubmit} layout="vertical">
         <FormItem
           {...formItemLayout}
-          // label={Choerodon.languageChange('ldap.name')}
-          // hasFeedback
         >
           {getFieldDecorator('name', {
             rules: [{
@@ -192,8 +166,6 @@ class LDAP extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
-          // label={Choerodon.languageChange('ldap.serverAddress')}
-          // hasFeedback
         >
           {getFieldDecorator('serverAddress', {
             initialValue: ldapData ? ldapData.serverAddress : '',
@@ -203,8 +175,6 @@ class LDAP extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
-          // label={Choerodon.languageChange('ldap.ldapAttributeName')}
-          // hasFeedback
         >
           {getFieldDecorator('ldapAttributeName', {
             initialValue: ldapData ? ldapData.ldapAttributeName : '',
@@ -214,9 +184,6 @@ class LDAP extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
-
-          // label={Choerodon.languageChange('ldap.encryption')}
-          // hasFeedback
         >
           {getFieldDecorator('encryption', {
             initialValue: ldapData.encryption ? ldapData.encryption : undefined,
@@ -233,8 +200,6 @@ class LDAP extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
-          label={Choerodon.languageChange('ldap.baseDn')}
-          // hasFeedback
         >
           {getFieldDecorator('baseDn', {
             initialValue: ldapData ? ldapData.baseDn : '',
@@ -245,7 +210,6 @@ class LDAP extends Component {
         <FormItem
           style={{ width: 512 }}
           {...formItemLayout}
-          // label={Choerodon.languageChange('ldap.description')}
         >
           {getFieldDecorator('description', {
             initialValue: ldapData ? ldapData.description : '',
@@ -265,17 +229,18 @@ class LDAP extends Component {
             </RadioGroup>,
           )}
         </FormItem>
-        <Permission service={['iam-service.ldap.update']} type={type} organizationId={organizationId}>
+        <Permission service={['iam-service.ldap.update']}>
           <div className="btnGroup">
             <Button
               text={Choerodon.languageChange('save')}
               htmlType="submit"
-              loading={this.state.saving}
+              loading={saving}
               funcType="raised"
               type="primary"
             >保存</Button>
             <Button
               funcType="raised"
+              disabled={saving}
               onClick={() => {
                 const { resetFields } = this.props.form;
                 resetFields();

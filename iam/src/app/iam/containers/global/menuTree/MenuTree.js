@@ -54,6 +54,7 @@ class MenuTree extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      submitting: false,
       menuGroup: {},
       type: 'site',
       selectType: 'create',
@@ -577,8 +578,10 @@ class MenuTree extends Component {
   //储存菜单
   saveMenu = () => {
     const { type, menuGroup } = this.state;
+    this.setState({ submitting: true });
     axios.post(`/iam/v1/menus/tree?level=${type}`, JSON.stringify(adjustSort(menuGroup[type])))
       .then(menus => {
+        this.setState({ submitting: false });
         if (menus.failed) {
           Choerodon.prompt(menus.message);
         } else {
@@ -589,12 +592,16 @@ class MenuTree extends Component {
             menuGroup,
           });
         }
+      })
+      .catch(error => {
+        Choerodon.handleResponseError(error);
+        this.setState({ submitting: false });
       });
   };
 
   render() {
     const menuType = this.props.AppState.currentMenuType.type;
-    const { menuGroup, type: typeState, selectType, sidebar } = this.state;
+    const { menuGroup, type: typeState, selectType, sidebar, submitting } = this.state;
     const columns = [{
       title: '目录 / 菜单',
       dataIndex: 'name',
@@ -713,10 +720,8 @@ class MenuTree extends Component {
     return (
       <Page>
         <Header title={'菜单配置'}>
-          <Permission service={['iam-service.menu.create']} type={menuType}>
+          <Permission service={['iam-service.menu.create']}>
             <Button
-              className="header-btn headLeftBtn leftBtn"
-              ghost
               onClick={this.addDir}
               icon="playlist_add"
             >
@@ -724,8 +729,6 @@ class MenuTree extends Component {
             </Button>
           </Permission>
           <Button
-            className="header-btn headRightBtn leftBtn2"
-            ghost
             onClick={this.handleRefresh}
             icon="refresh"
           >
@@ -767,17 +770,19 @@ class MenuTree extends Component {
           >
             {this.getSidebarContent(selectType)}
           </Sidebar>
-          <Permission service={['iam-service.menu.saveListTree']} type={menuType}>
+          <Permission service={['iam-service.menu.saveListTree']}>
             <div style={{ marginTop: 25 }}>
               <Button
                 funcType="raised"
                 type="primary"
                 onClick={this.saveMenu}
+                loading={submitting}
               >{Choerodon.languageChange('save')}</Button>
               <Button
                 funcType="raised"
                 onClick={this.handleRefresh}
                 style={{ marginLeft: 16 }}
+                disabled={submitting}
               >取消</Button>
             </div>
           </Permission>

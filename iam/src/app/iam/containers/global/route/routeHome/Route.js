@@ -1,7 +1,7 @@
 /**
  * Created by hulingfangzi on 2018/5/28.
  */
-
+/*eslint-disable*/
 import React, { Component } from 'react';
 import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip, Popover, Radio } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
@@ -47,6 +47,7 @@ class Route extends Component {
       isShowModal: false,
       record: {},
       serviceArr: [],
+      filterSensitive: false,
     };
   }
 
@@ -155,22 +156,33 @@ class Route extends Component {
     });
   }
 
-  editRoute = (record) => {
+  editOrDetail = (record, status) => {
     this.props.form.resetFields();
     this.setState({
       visible: true,
-      show: 'edit',
+      show: status,
       sidebarData: record,
     });
-  }
 
-  routeDetail = (record) => {
-    this.props.form.resetFields();
-    this.setState({
-      visible: true,
-      show: 'detail',
-      sidebarData: record,
-    });
+    if (record.helperService && status === 'detail') {
+      this.setState({
+        helper: true,
+      })
+    } else {
+      this.setState({
+        helper: false,
+      })
+    }
+
+    if (record.customSensitiveHeaders) {
+      this.setState({
+        filterSensitive: 'filtered'
+      })
+    } else {
+      this.setState({
+        filterSensitive: 'noFiltered'
+      })
+    }
   }
 
   /* 刷新 */
@@ -217,16 +229,18 @@ class Route extends Component {
     });
   }
 
+  /* 表单提交 */
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, { name, path, serviceId }) => {
+    const { id, objectVersionNumber } = this.state.sidebarData;
+    this.props.form.validateFields((err, { name, path, serviceId, preffix, retryable, customSensitiveHeaders, sensitiveHeaders, helperService }) => {
       if (!err) {
         const { show } = this.state;
         if (show === 'create') {
           const body = {
             name,
             path,
-            serviceId,
+            serviceId : serviceId,
           };
           axios.post('/manager/v1/routes', JSON.stringify(body)).then(({ failed, message }) => {
             if (failed) {
@@ -241,6 +255,35 @@ class Route extends Component {
           }).catch(Choerodon.handleResponseError);
         } else if (show === 'detail') {
           this.handleCancel();
+        } else {
+          let Info;
+          if(customSensitiveHeaders === 'filtered') {
+            Info = sensitiveHeaders.join(',');
+          } else {
+            Info = null;
+          }
+          const body = {
+            name,
+            path,
+            objectVersionNumber,
+            helperService,
+            serviceId: serviceId,
+            preffix: preffix === 'stripPrefix' ? true : false,
+            retryable: retryable === 'retry' ? true : false,
+            customSensitiveHeaders: customSensitiveHeaders === 'filtered' ? true : false,
+            sensitiveHeaders: Info,
+          }
+          axios.post(`/manager/v1/routes/${id}`, JSON.stringify(body)).then(({ failed, message }) => {
+            if (failed) {
+              Choerodon.prompt(message);
+            } else {
+              Choerodon.prompt('修改成功');
+              this.loadRouteList();
+              this.setState({
+                visible: false,
+              });
+            }
+          }).catch(Choerodon.handleResponseError);
         }
       }
     });
@@ -248,9 +291,9 @@ class Route extends Component {
 
   /**
    * 路由名称唯一性校验
-   * @param rule
-   * @param value
-   * @param callback
+   * @param rule 规则
+   * @param value 路径
+   * @param callback 回调
    */
   checkName = (rule, value, callback) => {
     axios.post('/manager/v1/routes/check', JSON.stringify({ name: value }))
@@ -265,9 +308,9 @@ class Route extends Component {
 
   /**
    * 路由路径唯一性校验
-   * @param rule
-   * @param value
-   * @param callback
+   * @param rule 规则
+   * @param value 路径
+   * @param callback 回调
    */
   checkPath = (rule, value, callback) => {
     axios.post('/manager/v1/routes/check', JSON.stringify({ path: value }))
@@ -280,6 +323,77 @@ class Route extends Component {
       });
   }
 
+  /**
+   * 渲染列表路由来源
+   * @param record 当前行数据
+   */
+  renderBuiltIn(record) {
+    if (record.builtIn) {
+      return (
+        <div>
+          <span className="icon-settings" />
+          {Choerodon.getMessage('预定义', 'Predefined')}
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <span className="icon-av_timer" />
+          {Choerodon.getMessage('自定义', 'Custom')}
+        </div>
+      );
+    }
+  }
+
+  /**
+   * 渲染列表操作按钮
+   * @param record 当前行数据
+   */
+  renderAction(record) {
+    if (record.builtIn) {
+      return (
+        <div>
+          <Tooltip
+            title="详情"
+            placement="bottom"
+          >
+            <Button
+              icon="find_in_page"
+              shape="circle"
+              onClick={this.editOrDetail.bind(this, record, 'detail')}
+            />
+          </Tooltip>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <Tooltip
+            title="修改"
+            placement="bottom"
+          >
+            <Button
+              icon="mode_edit"
+              shape="circle"
+              onClick={this.editOrDetail.bind(this, record, 'edit')}
+            />
+          </Tooltip>
+          <Tooltip
+            title="删除"
+            placement="bottom"
+          >
+            <Button
+              icon="delete_forever"
+              shape="circle"
+              onClick={this.showModal.bind(this, record)}
+            />
+          </Tooltip>
+        </div>
+      );
+    }
+  }
+
+  /* 渲染侧边栏头部 */
   renderSidebarTitle() {
     const { show } = this.state;
     if (show === 'create') {
@@ -291,6 +405,7 @@ class Route extends Component {
     }
   }
 
+  /* 渲染侧边栏成功按钮文字 */
   renderSidebarOkText() {
     const { show } = this.state;
     if (show === 'create') {
@@ -302,9 +417,10 @@ class Route extends Component {
     }
   }
 
+  /* 渲染侧边栏内容 */
   renderSidebarContent() {
     const { getFieldDecorator } = this.props.form;
-    const { show, sidebarData } = this.state;
+    const { show, sidebarData, filterSensitive, helper } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -315,6 +431,7 @@ class Route extends Component {
         sm: { span: 16 },
       },
     };
+    const valid = show === 'create';
     const inputWidth = 512;
     const stripPrefix = sidebarData && sidebarData.stripPrefix ? 'stripPrefix' : 'withPrefix';
     const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
@@ -331,7 +448,6 @@ class Route extends Component {
       title = `查看路由"${sidebarData.name}"的详情`;
       description = '预定义路由为平台初始化设置，您不能修改预定义路由。';
     }
-    const valid = show === 'create';
     return (
       <Content
         style={{ padding: 0 }}
@@ -394,7 +510,7 @@ class Route extends Component {
                 required: valid,
                 message: Choerodon.getMessage('必须选择一个微服务', 'Please choose one microservice at least'),
               }],
-              initialValue: valid ? undefined : [sidebarData.serviceId],
+              initialValue: valid ? undefined : sidebarData.serviceId,
             })(
               <Select
                 disabled={show === 'detail'}
@@ -402,7 +518,7 @@ class Route extends Component {
                 label="请选择一个微服务"
                 filterOption={
                   (input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 filter
               >
@@ -433,7 +549,7 @@ class Route extends Component {
               })(
                 <RadioGroup label="是否重试" className="radioGroup" disabled={show === 'detail'}>
                   <Radio value={'retry'}>是</Radio>
-                  <Radio value={'notRetry'}>否</Radio>
+                  <Radio value={'noRetry'}>否</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -445,7 +561,7 @@ class Route extends Component {
               {getFieldDecorator('customSensitiveHeaders', {
                 initialValue: customSensitiveHeaders,
               })(
-                <RadioGroup label="是否过滤敏感头信息" className="radioGroup" disabled={show === 'detail'}>
+                <RadioGroup label="是否过滤敏感头信息" className="radioGroup" disabled={show === 'detail'} onChange={this.changeSensetive.bind(this)}>
                   <Radio value={'filtered'}>是</Radio>
                   <Radio value={'noFiltered'}>否</Radio>
                 </RadioGroup>,
@@ -453,13 +569,40 @@ class Route extends Component {
             </FormItem>
           )}
         </Form>
-        {show !== 'create' && (
+        {
+          filterSensitive === 'filtered' && show !== 'create' ? (
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('sensitiveHeaders', {
+                // rules: [{
+                //   required: true,
+                //   whitespace: true,
+                //   message: '请输入敏感头信息',
+                // }],
+                initialValue: sidebarData && sidebarData.sensitiveHeaders,
+              })(
+                <Select
+                  label="敏感头信息"
+                  mode="tags"
+                  filterOption={false}
+                  choiceRender={this.handeChoiceRender}
+                  ref={this.saveSelectRef}
+                  style={{ width: inputWidth }}
+                  notFoundContent={false}
+                  allowClear
+                />
+              )}
+            </FormItem>
+          ) : ''
+        }
+        {(show === 'edit' || helper) && (
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('path', {
+            {getFieldDecorator('helperService', {
               rules: [{
-                whitespace: true,
+                whitespace: show === 'edit',
                 message: '请输入Helper服务名',
               }],
               initialValue: sidebarData.helperService || undefined,
@@ -478,88 +621,27 @@ class Route extends Component {
     );
   }
 
-  /**
-   * 渲染列表路由来源
-   * @param record 当前行数据
-   */
-  renderBuiltIn(record) {
-    if (record.builtIn) {
-      return (
-        <div>
-          <span className="icon-settings" />
-          {Choerodon.getMessage('预定义', 'Predefined')}
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <span className="icon-av_timer" />
-          {Choerodon.getMessage('自定义', 'Custom')}
-        </div>
-      );
-    }
-  }
-
-  /**
-   * 渲染列表操作按钮
-   * @param record 当前行数据
-   */
-  renderAction(record) {
-    if (record.builtIn) {
-      return (
-        <div>
-          <Popover
-            trigger="hover"
-            content="路由详情"
-            placement="bottom"
-          >
-            <Button
-              icon="find_in_page"
-              shape="circle"
-              onClick={this.routeDetail.bind(this, record)}
-            />
-          </Popover>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Popover
-            trigger="hover"
-            content="修改路由"
-            placement="bottom"
-          >
-            <Button
-              icon="mode_edit"
-              shape="circle"
-              onClick={this.editRoute.bind(this, record)}
-            />
-          </Popover>
-          <Popover
-            trigger="hover"
-            content="删除路由"
-            placement="bottom"
-          >
-            <Button
-              icon="delete_forever"
-              shape="circle"
-              onClick={this.showModal.bind(this, record)}
-            />
-          </Popover>
-        </div>
-      );
-    }
+  changeSensetive(e) {
+    this.setState({
+      filterSensitive: e.target.value,
+    })
   }
 
   render() {
     const { AppState } = this.props;
-    const { sort: { columnKey, order }, filters, serviceArr } = this.state;
+    const { sort: { columnKey, order }, filters } = this.state;
     const { content, loading, pagination, visible, show } = this.state;
     const { type } = AppState.currentMenuType;
-    const filtersService = serviceArr && serviceArr.map(({ name }) => ({
-      value: name,
-      text: name,
+    let filtersService = content && content.map(({ serviceId }) => ({
+      value: serviceId,
+      text: serviceId,
     }));
+    const obj = {};
+    filtersService = filtersService && filtersService.reduce((cur, next) => {
+      obj[next.value] ? '' : obj[next.value] = true && cur.push(next);
+      return cur;
+    }, []);
+
     const columns = [{
       title: '路由名称',
       dataIndex: 'name',
@@ -606,7 +688,7 @@ class Route extends Component {
             icon="playlist_add"
             onClick={this.createRoute}
           >
-            {Choerodon.getMessage('创建路由', 'create')}
+            {Choerodon.getMessage('创建', 'create')}
           </Button>
           <Button
             icon="refresh"

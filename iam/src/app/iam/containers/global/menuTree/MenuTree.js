@@ -625,7 +625,7 @@ class MenuTree extends Component {
       dataIndex: 'icon',
       key: 'icon',
       render: (text) => {
-        return <span className={`icon-${text}`} style={{ fontSize: 18 }} />;
+        return <Icon type={text} style={{ fontSize: 18 }} />;
       },
     }, {
       title: '编码',

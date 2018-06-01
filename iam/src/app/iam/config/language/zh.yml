@@ -9,7 +9,7 @@
 "microservice": "微服务管理"
 "microservice.route-management": "路由管理"
 
-"rentsetting": 租户设置
+"rentsetting": 组织设置
 # organization
 "rentsetting.project": "项目管理"
 "rentsetting.user": "用户管理"

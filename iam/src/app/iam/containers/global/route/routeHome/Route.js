@@ -3,6 +3,7 @@
  */
 /*eslint-disable*/
 import React, { Component } from 'react';
+import Permission from 'PerComponent';
 import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip, Popover, Radio } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import querystring from 'query-string';
@@ -418,26 +419,30 @@ class Route extends Component {
     } else {
       return (
         <div>
-          <Tooltip
-            title="修改"
-            placement="bottom"
-          >
-            <Button
-              icon="mode_edit"
-              shape="circle"
-              onClick={this.editOrDetail.bind(this, record, 'edit')}
-            />
-          </Tooltip>
-          <Tooltip
-            title="删除"
-            placement="bottom"
-          >
-            <Button
-              icon="delete_forever"
-              shape="circle"
-              onClick={this.showModal.bind(this, record)}
-            />
-          </Tooltip>
+          <Permission service={['manager-service.route.update']}>
+            <Tooltip
+              title="修改"
+              placement="bottom"
+            >
+              <Button
+                icon="mode_edit"
+                shape="circle"
+                onClick={this.editOrDetail.bind(this, record, 'edit')}
+              />
+            </Tooltip>
+          </Permission>
+          <Permission service={['manager-service.route.delete']}>
+            <Tooltip
+              title="删除"
+              placement="bottom"
+            >
+              <Button
+                icon="delete_forever"
+                shape="circle"
+                onClick={this.showModal.bind(this, record)}
+              />
+            </Tooltip>
+          </Permission>
         </div>
       );
     }
@@ -560,7 +565,7 @@ class Route extends Component {
           >
             {getFieldDecorator('serviceId', {
               rules: [{
-                required: createValidate,
+                required: true,
                 message: Choerodon.getMessage('必须选择一个微服务', 'Please choose one microservice at least'),
               }],
               initialValue: createValidate ? undefined : sidebarData.serviceId,
@@ -733,12 +738,14 @@ class Route extends Component {
         <Header
           title="路由管理"
         >
-          <Button
-            icon="playlist_add"
-            onClick={this.createRoute}
-          >
-            {Choerodon.getMessage('创建路由', 'create')}
-          </Button>
+          <Permission service={['manager-service.route.create']}>
+            <Button
+              icon="playlist_add"
+              onClick={this.createRoute}
+            >
+              {Choerodon.getMessage('创建路由', 'create')}
+            </Button>
+          </Permission>
           <Button
             icon="refresh"
             onClick={this.handleRefresh}

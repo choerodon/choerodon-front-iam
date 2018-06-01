@@ -9,7 +9,7 @@
 "microservice": "Microservice"
 "microservice.route-management": "Route Management"
 
-"rentsetting": "rent settings"
+"rentsetting": "Organization settings"
 # organization
 "rentsetting.project": "Project"
 "rentsetting.user": "User"

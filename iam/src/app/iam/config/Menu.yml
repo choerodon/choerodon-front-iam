@@ -50,7 +50,7 @@
           - 'iam-service.role.listRolesWithUserCountOnSiteLevel'
           - 'iam-service.user.pagingQueryUsersWithSiteLevelRoles'
     - "root-user":
-        icon: settings
+        icon: root
         Routes: /iam/rootuser
         sort: 5
         permission:
@@ -60,7 +60,7 @@
 
 # 微服务管理
 "microservice":
-  icon: API
+  icon: micro
   sort: 1
   site:
     - "route-management":

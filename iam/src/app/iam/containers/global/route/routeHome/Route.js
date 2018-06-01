@@ -89,6 +89,23 @@ class Route extends Component {
     );
   }
 
+
+  setValueInSelect(value) {
+    const { getFieldValue, setFieldsValue } = this.props.form;
+    const sensitiveHeaders = getFieldValue('sensitiveHeaders') || [];
+    if (sensitiveHeaders.indexOf(value) === -1) {
+      sensitiveHeaders.push(value);
+      setFieldsValue({
+        sensitiveHeaders,
+      });
+    }
+    if (this.rcSelect) {
+      this.rcSelect.setState({
+        inputValue: '',
+      });
+    }
+  }
+
   loadRouteList(paginationIn, sortIn, filtersIn, paramsIn) {
     const {
       pagination: paginationState,
@@ -212,20 +229,29 @@ class Route extends Component {
     });
   }
 
-  setValueInSelect(value) {
-    const { getFieldValue, setFieldsValue } = this.props.form;
-    const sensitiveHeaders = getFieldValue('sensitiveHeaders') || [];
-    if(sensitiveHeaders.indexOf(value) === -1) {
-      sensitiveHeaders.push(value);
-      setFieldsValue({
-        sensitiveHeaders,
-      });
-    }
-    if (this.rcSelect) {
-      this.rcSelect.setState({
-        inputValue: '',
-      });
-    }
+  /**
+   * label后缀提示
+   * @param label label文字
+   * @param tip 提示文字
+   */
+
+  labelSuffix(label, tip) {
+    return (
+      <div className="labelSuffix">
+        <span>
+          {label}
+        </span>
+        <Popover
+          getPopupContainer={() => document.getElementsByClassName('formContainer')[0]}
+          className="routePop"
+          placement="right"
+          trigger="hover"
+          content={tip}
+        >
+          <Icon type="help" />
+        </Popover>
+      </div>
+    );
   }
 
   saveSelectRef = (node) => {
@@ -246,27 +272,27 @@ class Route extends Component {
   }
 
   changeSensetive(e) {
-   const { setFieldsValue } = this.props.form;
-   this.setState({
-     filterSensitive: e.target.value,
-   });
-   if (e.target.value === 'noFiltered') {
-     setFieldsValue({'sensitiveHeaders': []});
-   }
+    const { setFieldsValue } = this.props.form;
+    this.setState({
+      filterSensitive: e.target.value,
+    }, () => {
+      setFieldsValue({ sensitiveHeaders: [] });
+    });
   }
 
   /* 表单提交 */
   handleSubmit = (e) => {
     e.preventDefault();
     const { id, objectVersionNumber } = this.state.sidebarData;
-    this.props.form.validateFields((err, { name, path, serviceId, preffix, retryable, customSensitiveHeaders, sensitiveHeaders, helperService }) => {
+    this.props.form.validateFields((err, { name, path, serviceId, preffix,
+      retryable, customSensitiveHeaders, sensitiveHeaders, helperService }) => {
       if (!err) {
         const { show } = this.state;
         if (show === 'create') {
           const body = {
             name,
             path,
-            serviceId : serviceId,
+            serviceId,
           };
           axios.post('/manager/v1/routes', JSON.stringify(body)).then(({ failed, message }) => {
             if (failed) {
@@ -282,23 +308,20 @@ class Route extends Component {
         } else if (show === 'detail') {
           this.handleCancel();
         } else {
-          let Info;
-          if(customSensitiveHeaders === 'filtered') {
-            Info = sensitiveHeaders.join(',');
-          } else {
-            Info = null;
-          }
+          const isFiltered = customSensitiveHeaders === 'filtered';
+          const info = isFiltered ? sensitiveHeaders.join(',') : undefined;
           const body = {
             name,
             path,
             objectVersionNumber,
             helperService,
-            serviceId: serviceId,
-            preffix: preffix === 'stripPrefix' ? true : false,
-            retryable: retryable === 'retry' ? true : false,
-            customSensitiveHeaders: customSensitiveHeaders === 'filtered' ? true : false,
-            sensitiveHeaders: Info,
-          }
+            serviceId,
+            preffix: preffix === 'stripPrefix',
+            retryable: retryable === 'retry',
+            customSensitiveHeaders: isFiltered,
+            sensitiveHeaders: info,
+          };
+          window.console.log(JSON.stringify(body));
           axios.post(`/manager/v1/routes/${id}`, JSON.stringify(body)).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
@@ -353,6 +376,7 @@ class Route extends Component {
    * 渲染列表路由来源
    * @param record 当前行数据
    */
+
   renderBuiltIn(record) {
     if (record.builtIn) {
       return (
@@ -463,7 +487,7 @@ class Route extends Component {
     const stripPrefix = sidebarData && sidebarData.stripPrefix ? 'stripPrefix' : 'withPrefix';
     const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
     const customSensitiveHeaders = sidebarData && sidebarData.customSensitiveHeaders ? 'filtered' : 'noFiltered';
-    let sensitiveHeaders = sidebarData && sidebarData.sensitiveHeaders ? sidebarData.sensitiveHeaders.split(',') : [];
+    const sensitiveHeaders = sidebarData && sidebarData.sensitiveHeaders ? sidebarData.sensitiveHeaders.split(',') : [];
     let title;
     let description;
     if (show === 'create') {
@@ -481,6 +505,7 @@ class Route extends Component {
         style={{ padding: 0 }}
         title={title}
         description={description}
+        link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
         className="formContainer"
       >
         <Form>
@@ -543,10 +568,10 @@ class Route extends Component {
               <Select
                 disabled={detailValidate}
                 style={{ width: 300 }}
-                label="请选择一个微服务"
+                label="对应微服务"
                 filterOption={
                   (input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 filter
               >
@@ -561,7 +586,7 @@ class Route extends Component {
               {getFieldDecorator('preffix', {
                 initialValue: stripPrefix,
               })(
-                <RadioGroup label="是否去除前缀" className="radioGroup" disabled={detailValidate}>
+                <RadioGroup label={this.labelSuffix('是否去除前缀', '默认情况下，请求转发时会将路由规则中的前缀去除')} className="radioGroup" disabled={detailValidate}>
                   <Radio value={'stripPrefix'}>是</Radio>
                   <Radio value={'withPrefix'}>否</Radio>
                 </RadioGroup>,
@@ -575,7 +600,7 @@ class Route extends Component {
               {getFieldDecorator('retryable', {
                 initialValue: retryable,
               })(
-                <RadioGroup label="是否重试" className="radioGroup" disabled={detailValidate}>
+                <RadioGroup label={this.labelSuffix('是否重试', '默认为否，如果为是，请求失败时会自动重试3次')} className="radioGroup" disabled={detailValidate}>
                   <Radio value={'retry'}>是</Radio>
                   <Radio value={'noRetry'}>否</Radio>
                 </RadioGroup>,
@@ -589,7 +614,7 @@ class Route extends Component {
               {getFieldDecorator('customSensitiveHeaders', {
                 initialValue: customSensitiveHeaders,
               })(
-                <RadioGroup label="是否过滤敏感头信息" className="radioGroup" disabled={detailValidate} onChange={this.changeSensetive.bind(this)}>
+                <RadioGroup label={this.labelSuffix('是否过滤敏感头信息', '请求转发时，会将Headers中的敏感信息随HTTP转发，如果想过滤一些敏感信息，请选择是')} className="radioGroup" disabled={detailValidate} onChange={this.changeSensetive.bind(this)}>
                   <Radio value={'filtered'}>是</Radio>
                   <Radio value={'noFiltered'}>否</Radio>
                 </RadioGroup>,
@@ -607,7 +632,7 @@ class Route extends Component {
                   required: this.state.filterSensitive === 'filtered' && show === 'edit',
                   message: '请输入敏感头信息',
                 }],
-                initialValue: sensitiveHeaders,
+                initialValue: this.state.filterSensitive === 'filtered' ? sensitiveHeaders : [],
               })(
                 <Select
                   disabled={show === 'detail'}
@@ -621,7 +646,7 @@ class Route extends Component {
                   showNotFindSelectedItem={false}
                   showNotFindInputItem={false}
                   allowClear
-                />
+                />,
               )}
             </FormItem>
           ) : ''
@@ -724,6 +749,7 @@ class Route extends Component {
         <Content
           title={`平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"的路由管理`}
           description="路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。"
+          link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
         >
           <Table
             columns={columns}

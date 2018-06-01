@@ -11,7 +11,20 @@
 
   .ant-popover-content {
     .ant-popover-inner-content {
-      width: 180px;
+      max-width: 180px;
+    }
+  }
+
+  .labelSuffix {
+    vertical-align: middle;
+
+    span {
+      vertical-align: middle;
+    }
+
+    i {
+      margin-left: 8px;
+      color: rgba(0, 0, 0, 0.26);
     }
   }
 }

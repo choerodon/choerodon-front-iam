@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Modal, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
@@ -18,7 +18,6 @@ class RootUserSetting extends Component {
     super(props, context);
     this.state = {
       visible: false,
-      deleteModal: false,
       pagination: {
         current: 1,
         pageSize: 10,
@@ -30,8 +29,8 @@ class RootUserSetting extends Component {
       },
       filters: [],
       params: [],
-      record: {},
       onlyRootUser: false,
+      submitting: false,
     }
   }
   componentWillMount() {
@@ -85,17 +84,7 @@ class RootUserSetting extends Component {
   tableChange = (pagination, filters, sort, params) => {
     this.reload(pagination, filters, sort, params);
   }
-  openDeleteModal(record) {
-    this.setState({
-      record,
-      deleteModal: true,
-    });
-  }
-  closeDeleteModal = () => {
-    this.setState({
-      deleteModal: false,
-    });
-  }
+
   openSidebar = () => {
     const { resetFields } = this.props.form;
     resetFields();
@@ -105,19 +94,24 @@ class RootUserSetting extends Component {
   }
   closeSidebar = () => {
     this.setState({
+      submitting: false,
       visible: false,
     });
   }
 
-  handleDelete = () => {
-    const { record } = this.state;
-    RootUserStore.deleteRootUser(record.id).then(({ failed, message }) => {
-      if (failed) {
-        Choerodon.prompt(message);
-      } else {
-        Choerodon.prompt('移除成功');
-        this.closeDeleteModal();
-        this.reload();
+  handleDelete = (record) => {
+    Modal.confirm({
+      title: '移除Root用户',
+      content: `确定要移除Root用户"${record.realName}"吗？移除后此用户将不能管理平台及所有组织、项目。`,
+      onOk: () => {
+        return RootUserStore.deleteRootUser(record.id).then(({ failed, message }) => {
+          if (failed) {
+            Choerodon.prompt(message);
+          } else {
+            Choerodon.prompt('移除成功');
+            this.reload();
+          }
+        });
       }
     });
   }
@@ -128,6 +122,9 @@ class RootUserSetting extends Component {
     validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
+        this.setState({
+          submitting: true,
+        });
         RootUserStore.searchMemberIds(memberNames).then((data) => {
           if (data) {
             const memberIds = data.map((info) => {
@@ -211,12 +208,12 @@ class RootUserSetting extends Component {
               >
                 <Tooltip
                   title={onlyRootUser ? '平台至少需要一个Root用户。要移除当前的Root用户，请先添加另一个Root用户' : '移除'}
-                  placement="bottom"
+                  placement="bottomRight"
                   overlayStyle={{ maxWidth: '300px'}}
                 >
                   <Button
                     disabled={onlyRootUser}
-                    onClick={this.openDeleteModal.bind(this, record)}
+                    onClick={this.handleDelete.bind(this, record)}
                     shape="circle"
                     icon="delete_forever"
                   />
@@ -294,6 +291,7 @@ class RootUserSetting extends Component {
             cancelText="取消"
             onCancel={this.closeSidebar}
             visible={this.state.visible}
+            confirmLoading={this.state.submitting}
           >
             <Content
               style={{ padding: 0 }}
@@ -306,19 +304,6 @@ class RootUserSetting extends Component {
               </Form>
             </Content>
           </Sidebar>
-          <Modal
-            title="移除Root用户"
-            className="delete-modal"
-            bodyStyle={{
-              marginTop: '24px'
-            }}
-            visible={this.state.deleteModal}
-            closable={false}
-            onOk={this.handleDelete}
-            onCancel={this.closeDeleteModal}
-          >
-            <span>确定要移除Root用户“{this.state.record.realName}”吗？移除后此用户将不能管理平台及所有组织、项目。</span>
-          </Modal>
         </Content>
       </Page>
     );

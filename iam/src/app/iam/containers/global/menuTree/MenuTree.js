@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Modal, Popconfirm, Table, Tabs, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Modal, Table, Tabs, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import axios from 'Axios';
@@ -139,6 +139,15 @@ class MenuTree extends Component {
     Choerodon.prompt(Choerodon.getMessage('删除成功，请点击保存。', 'Success'));
   };
 
+  handleDelete = (record) => {
+    Modal.confirm({
+      title: '删除自设目录',
+      content: `确认删除自设目录"${record.name}"吗?`,
+      onOk: () => {
+        this.deleteMenu(record);
+      },
+    });
+  }
   handleRefresh = () => {
     const { type, menuGroup } = this.state;
     this.setState({
@@ -599,6 +608,16 @@ class MenuTree extends Component {
       });
   };
 
+  getOkText = (selectType) => {
+    switch (selectType) {
+      case 'create':
+        return '添加';
+      case 'detail':
+        return '返回';
+      default:
+        return '确定';
+    }
+  }
   render() {
     const menuType = this.props.AppState.currentMenuType.type;
     const { menuGroup, type: typeState, selectType, sidebar, submitting } = this.state;
@@ -686,20 +705,16 @@ class MenuTree extends Component {
             </Permission>
             <Permission service={['iam-service.menu.delete']} type={menuType}>
               {canDel ? (
-                <Popconfirm
-                  title={`确认删除目录${record.name}吗?`}
-                  onConfirm={this.deleteMenu.bind(this, record)}
+                <Tooltip
+                  title="删除"
+                  placement="bottom"
                 >
-                  <Tooltip
-                    title="删除"
-                    placement="bottom"
-                  >
-                    <Button
-                      shape="circle"
-                      icon="delete_forever"
-                    />
-                  </Tooltip>
-                </Popconfirm>
+                  <Button
+                    onClick={this.handleDelete.bind(this, record)}
+                    shape="circle"
+                    icon="delete_forever"
+                  />
+                </Tooltip>
               ) : (
                 <Tooltip
                   title="该目录下有菜单，将菜单移空后即可删除目录"
@@ -762,9 +777,10 @@ class MenuTree extends Component {
           />
           <Sidebar
             title={this.getSidebarTitle(selectType)}
-            onOk={this.handleOk}
-            okText={selectType === 'create' ? '添加' : '确定'}
+            onOk={selectType === 'detail'? this.closeSidebar : this.handleOk}
+            okText={this.getOkText(selectType)}
             cancelText="取消"
+            okCancel={selectType !== 'detail'}
             onCancel={this.closeSidebar}
             visible={sidebar}
           >

@@ -49,6 +49,7 @@ class ProjectHome extends Component {
         columnKey: null,
         order: null,
       },
+      submitting: false,
     };
   }
 
@@ -112,7 +113,10 @@ class ProjectHome extends Component {
 
   };
   handleTabClose = () => {
-    this.setState({ sidebar: false });
+    this.setState({
+      sidebar: false,
+      submitting: false,
+    });
   };
   handleSubmit = (e) => {
     e.preventDefault();
@@ -478,6 +482,7 @@ class ProjectHome extends Component {
             onOk={this.handleSubmit.bind(this)}
             okText={operation === 'create' ? '创建' : '保存'}
             cancelText="取消"
+            confirmLoading={this.state.submitting}
           >
             {operation && this.renderSidebarContent()}
           </Sidebar>

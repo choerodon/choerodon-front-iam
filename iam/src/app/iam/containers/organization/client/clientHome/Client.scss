@@ -27,3 +27,19 @@ $baseFontColor: rgba(0, 0, 0, 0.55);
   margin: 0 5px;
   line-height: 20px;
 }
+
+.submit-wrap {
+  button {
+    margin-right: 10px;
+  }
+}
+
+.client-detail {
+  line-height: 12px;
+}
+
+.detail-input,
+.detail-input .ant-select-selection {
+  border: 0 !important;
+  color: #000;
+}

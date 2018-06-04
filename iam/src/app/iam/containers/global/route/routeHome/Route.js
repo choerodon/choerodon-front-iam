@@ -45,10 +45,10 @@ class Route extends Component {
       },
       filters: {},
       params: [],
-      isShowModal: false,
       record: {},
       serviceArr: [],
       filterSensitive: false,
+      submitting: false,
     };
   }
 
@@ -200,33 +200,21 @@ class Route extends Component {
     });
   }
 
-
-  /* 显示删除弹窗 */
-  showModal(record) {
-    this.setState({
-      record,
-      isShowModal: true,
-    });
-  }
-
-  /* 关闭删除弹窗  */
-  cancelModal = () => {
-    this.setState({
-      isShowModal: false,
-    });
-  }
-
   /* 删除自定义路由 */
-  handleDelete = () => {
-    const { record } = this.state;
-    axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
-      if (failed) {
-        Choerodon.prompt(message);
-      } else {
-        Choerodon.prompt('删除成功');
-        this.cancelModal();
-        this.loadRouteList();
-      }
+  handleDelete = (record) => {
+    Modal.confirm({
+      title: '删除路由',
+      content: '确定要删除路由"${record.name}"吗？',
+      onOk: () => {
+        return axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
+          if (failed) {
+            Choerodon.prompt(message);
+          } else {
+            Choerodon.prompt('删除成功');
+            this.loadRouteList();
+          }
+        });
+      },
     });
   }
 
@@ -295,6 +283,9 @@ class Route extends Component {
             path,
             serviceId,
           };
+          this.setState({
+            submitting: true,
+          });
           axios.post('/manager/v1/routes', JSON.stringify(body)).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
@@ -302,6 +293,7 @@ class Route extends Component {
               Choerodon.prompt('创建成功');
               this.loadRouteList();
               this.setState({
+                submitting: false,
                 visible: false,
               });
             }
@@ -311,6 +303,9 @@ class Route extends Component {
         } else {
           const isFiltered = customSensitiveHeaders === 'filtered';
           const info = isFiltered ? sensitiveHeaders.join(',') : undefined;
+          this.setState({
+            submitting: true,
+          });
           const body = {
             name,
             path,
@@ -330,6 +325,7 @@ class Route extends Component {
               Choerodon.prompt('修改成功');
               this.loadRouteList();
               this.setState({
+                submitting: false,
                 visible: false,
               });
             }
@@ -439,7 +435,7 @@ class Route extends Component {
               <Button
                 icon="delete_forever"
                 shape="circle"
-                onClick={this.showModal.bind(this, record)}
+                onClick={this.handleDelete.bind(this, record)}
               />
             </Tooltip>
           </Permission>
@@ -684,7 +680,7 @@ class Route extends Component {
   render() {
     const { AppState } = this.props;
     const { sort: { columnKey, order }, filters } = this.state;
-    const { content, loading, pagination, visible, show } = this.state;
+    const { content, loading, pagination, visible, show, submitting } = this.state;
     const { type } = AppState.currentMenuType;
     let filtersService = content && content.map(({ serviceId }) => ({
       value: serviceId,
@@ -775,17 +771,10 @@ class Route extends Component {
             onOk={this.handleSubmit}
             onCancel={this.handleCancel}
             okCancel={show !== 'detail'}
+            confirmLoading={submitting}
           >
             {this.renderSidebarContent()}
           </Sidebar>
-          <Modal
-            title="删除路由"
-            visible={this.state.isShowModal}
-            onCancel={this.cancelModal}
-            onOk={this.handleDelete}
-          >
-            <p>确定要删除路由“{this.state.record.name}”吗？</p>
-          </Modal>
         </Content>
       </Page>
     );

@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Modal, Popconfirm, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
@@ -358,14 +358,12 @@ class MemberRole extends Component {
     }
   };
 
-  deleteRoleByRole = (roleId, memberId) => {
-    this.deleteRolesByIds({ [roleId]: [memberId] });
-  };
-
-  deleteRoleByMember = (memberData) => {
-    this.deleteRolesByIds({
-      [memberData.id]: memberData.roles.map(({ id }) => id),
-    });
+  deleteRoleByRole = (record) => {
+    Modal.confirm({
+      title: '移除角色',
+      content: `确认移除成员"${record.loginName}"的角色"${record.roleName}"?`,
+      onOk: this.deleteRolesByIds({ [record.roleId]: [record.id] }),
+    })
   };
 
   deleteRolesByIds = (data) => {
@@ -530,6 +528,15 @@ class MemberRole extends Component {
     });
   };
 
+  handleDelete = (record) => {
+    Modal.confirm({
+      title: '移除角色',
+      content: `确认移除成员"${record.loginName}"下的所有角色?`,
+      onOk: this.deleteRolesByIds({
+        [record.id]: record.roles.map(({ id }) => id),
+      }),
+    });
+  }
   handleEditRole = ({ id: memberId, loginName }) => {
     const member = this.state.memberDatas.find(({ id }) => id === memberId);
     if (!member) {
@@ -713,12 +720,7 @@ class MemberRole extends Component {
                   title="移除"
                   placement="bottom"
                 >
-                  <Popconfirm
-                    title={`确认移除成员“${record.loginName}”下的所有角色?`}
-                    onConfirm={() => this.deleteRoleByMember(record)}
-                  >
-                    <Button shape="circle" icon="delete" />
-                  </Popconfirm>
+                  <Button shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
                 </Tooltip>
               </Permission>
             </div>
@@ -833,12 +835,7 @@ class MemberRole extends Component {
                 <Permission
                   service={deleteService}
                 >
-                  <Popconfirm
-                    title={`确认删除成员“${record.loginName}”的角色“${record.roleName}”?`}
-                    onConfirm={() => this.deleteRoleByRole(record.roleId, record.id)}
-                  >
-                    <Button size="small" shape="circle" icon="delete" />
-                  </Popconfirm>
+                  <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
                 </Permission>
               </div>
             );

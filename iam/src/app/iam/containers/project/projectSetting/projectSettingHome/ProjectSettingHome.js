@@ -1,11 +1,11 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
 import { Button, Form, Input, Modal } from 'choerodon-ui';
 import Page, { Content, Header } from 'Page';
 import Permission from 'PerComponent';
 import HeaderStore from '@/stores/HeaderStore';
+import { withRouter } from 'react-router-dom';
 import './ProjectSettingHome.scss';
 import ProjectSettingStore from '../../../../stores/project/projectSetting/ProjectSettingStore';
 
@@ -17,7 +17,6 @@ class ProjectSettingHome extends Component {
   state = {
     stopping: false,
     submitting: false,
-    isShowModal: false,
   };
 
   componentWillMount() {
@@ -57,49 +56,30 @@ class ProjectSettingHome extends Component {
     });
   }
 
-  /*
-   * 显示模态框
-   * */
-  showModal = () => {
-    this.setState({
-      isShowModal: true,
-    });
-  };
-
-  /*
-   * 确认停用
-   * */
-  handleOk = () => {
+  handleEnabled = (name) => {
     const { AppState } = this.props;
     this.setState({ stopping: true });
-    ProjectSettingStore.disableProject(AppState.currentMenuType.id)
-      .then((data) => {
-        this.setState({
-          stopping: false,
-          isShowModal: false,
-        });
-        Choerodon.prompt('停用成功');
-        ProjectSettingStore.setProjectInfo(data);
-        HeaderStore.updateProject(data);
-        this.props.history.push('/');
-      })
-      .catch((error) => {
-        this.setState({
-          stopping: false,
-          isShowModal: false,
-        });
-        Choerodon.handleResponseError(error);
-      });
-  };
-
-  /*
-   * 取消停用
-   * */
-  handleCancel = () => {
-    this.setState({
-      isShowModal: false,
+    Modal.confirm({
+      title: '停用项目',
+      content: `确定要停用项目"${name}"吗？停用后，您和项目下其他成员将无法进入此项目。`,
+      onOk: () => ProjectSettingStore.disableProject(AppState.currentMenuType.id)
+        .then((data) => {
+          this.setState({
+            stopping: false,
+          });
+          Choerodon.prompt('停用成功');
+          ProjectSettingStore.setProjectInfo(data);
+          HeaderStore.updateProject(data);
+          this.props.history.push('/');
+        })
+        .catch((error) => {
+          this.setState({
+            stopping: false,
+          });
+          Choerodon.handleResponseError(error);
+        }),
     });
-  };
+  }
 
   cancelValue = () => {
     const { resetFields } = this.props.form;
@@ -107,7 +87,7 @@ class ProjectSettingHome extends Component {
   };
 
   render() {
-    const { stopping, submitting, isShowModal } = this.state;
+    const { submitting } = this.state;
     const { getFieldDecorator } = this.props.form;
     const { enabled, name, code } = ProjectSettingStore.getProjectInfo;
     return (
@@ -120,23 +100,11 @@ class ProjectSettingHome extends Component {
               <div>
                 <Button
                   icon="remove_circle_outline"
-                  onClick={this.showModal}
+                  onClick={this.handleEnabled.bind(this, name)}
                   disabled={!enabled}
                 >
                   停用
                 </Button>
-                <Modal
-                  title="停用项目"
-                  visible={isShowModal}
-                  closable={false}
-                  confirmLoading={stopping}
-                  okText="确定"
-                  cancelText="取消"
-                  onOk={this.handleOk}
-                  onCancel={this.handleCancel}
-                >
-                  <p>确定要停用项目“{name}”吗？停用后，您和项目下其他成员将无法进入此项目。</p>
-                </Modal>
               </div>
             </Permission>
           </Header>

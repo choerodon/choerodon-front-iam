@@ -57,7 +57,7 @@ docker_build:
         mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
         python ./boot/structure/configAuto.py ${1}
         cp -r config.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
-        cd boot && npm install && cd ../${1} && npm install && cd ..
+        cd boot && npm install -registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ && cd ../${1} && npm install && cd ..
     }
 
 before_script:

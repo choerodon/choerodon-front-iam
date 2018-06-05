@@ -344,25 +344,32 @@ class MemberRole extends Component {
 
   deleteRoleByMultiple = () => {
     const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
-    if (showMember) {
-      this.deleteRolesByIds(selectMemberRoles);
-    } else {
-      const data = {};
-      selectRoleMembers.forEach(({ id, roleId }) => {
-        if (!data[roleId]) {
-          data[roleId] = [];
+    const content = showMember ? '确认移除当前选中的成员下的所有角色?' : '确认移除当前选中的成员的这些角色?';
+    Modal.confirm({
+      title: '移除角色',
+      content: content,
+      onOk: () => {
+        if (showMember) {
+          return this.deleteRolesByIds(selectMemberRoles);
+        } else {
+          const data = {};
+          selectRoleMembers.forEach(({ id, roleId }) => {
+            if (!data[roleId]) {
+              data[roleId] = [];
+            }
+            data[roleId].push(id);
+          });
+          return this.deleteRolesByIds(data);
         }
-        data[roleId].push(id);
-      });
-      this.deleteRolesByIds(data);
-    }
+      },
+    });
   };
 
   deleteRoleByRole = (record) => {
     Modal.confirm({
       title: '移除角色',
       content: `确认移除成员"${record.loginName}"的角色"${record.roleName}"?`,
-      onOk: this.deleteRolesByIds({ [record.roleId]: [record.id] }),
+      onOk: () => this.deleteRolesByIds({ [record.roleId]: [record.id] }),
     })
   };
 
@@ -532,7 +539,7 @@ class MemberRole extends Component {
     Modal.confirm({
       title: '移除角色',
       content: `确认移除成员"${record.loginName}"下的所有角色?`,
-      onOk: this.deleteRolesByIds({
+      onOk: () => this.deleteRolesByIds({
         [record.id]: record.roles.map(({ id }) => id),
       }),
     });
@@ -741,6 +748,7 @@ class MemberRole extends Component {
     };
     return (
       <Table
+        key="member-role"
         className="member-role-table"
         loading={loading}
         rowSelection={rowSelection}
@@ -858,6 +866,7 @@ class MemberRole extends Component {
     };
     return (
       <Table
+        key="role-member"
         loading={loading}
         rowSelection={rowSelection}
         expandedRowKeys={expandedKeys}

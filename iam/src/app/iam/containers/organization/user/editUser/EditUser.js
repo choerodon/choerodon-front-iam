@@ -264,7 +264,7 @@ class EditUser extends Component {
 
     return (
       <Content
-        style={{ padding: 0 }}
+        className="sidebar-content"
         title={edit ? `对用户“${userInfo.loginName}”进行修改` : `在组织“${organizationName}”中创建用户`}
         description={
           edit ? '您可以在此修改用户名、邮箱、语言、时区。' : '用户是全平台唯一的。您创建的用户只属于这个组织，但在平台的其他组织中能被分配角色。'
@@ -412,7 +412,11 @@ class EditUser extends Component {
             {getFieldDecorator('language', {
               initialValue: this.state.userInfo.language,
             })(
-              <Select label={Choerodon.getMessage('语言', 'user language')} style={{ width: inputWidth }}>
+              <Select
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                label={Choerodon.getMessage('语言', 'user language')}
+                style={{ width: inputWidth }}
+              >
                 <Option value="zh_CN">简体中文</Option>
                 <Option value="en_US">English</Option>
               </Select>,
@@ -425,7 +429,11 @@ class EditUser extends Component {
             {getFieldDecorator('timeZone', {
               initialValue: 'CTT',
             })(
-              <Select label={Choerodon.getMessage('时区', 'Timezone')} style={{ width: inputWidth }}>
+              <Select
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                label={Choerodon.getMessage('时区', 'Timezone')}
+                style={{ width: inputWidth }}
+              >
                 <Option value="CTT">中国</Option>
                 <Option value="EST">America</Option>
               </Select>,

@@ -295,6 +295,7 @@ class CreateRole extends Component {
                     style={{
                       width: '512px',
                     }}
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     onChange={this.handleModal}
                   >
                     <Option value="site">全局</Option>
@@ -353,6 +354,7 @@ class CreateRole extends Component {
                     mode="tags"
                     label={Choerodon.getMessage('角色标签', 'role label')}
                     size="default"
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     style={{
                       width: '512px',
                     }}
@@ -454,7 +456,7 @@ class CreateRole extends Component {
               cancelText="取消"
             >
               <Content
-                style={{ padding: 0 }}
+                className="sidebar-content"
                 title="向当前创建角色添加权限"
                 description="您可以在此为当前角色添加一个或多个权限。"
                 link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"

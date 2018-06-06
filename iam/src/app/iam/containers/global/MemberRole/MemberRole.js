@@ -310,7 +310,10 @@ class MemberRole extends Component {
           <Select
             style={{ width: 300 }}
             label="请选择一个角色"
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+            filterOption={(input, option) => {
+              return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            }}
             onChange={(value) => roleIds[index] = value}
             filter
           >
@@ -445,7 +448,7 @@ class MemberRole extends Component {
       || !roleData.filter(({ enabled, id }) => enabled && roleIds.indexOf(id) === -1).length;
     return (
       <Content
-        style={{ padding: 0 }}
+        className="sidebar-content"
         {...header}
       >
         <Form layout="vertical">

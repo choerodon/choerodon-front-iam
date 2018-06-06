@@ -49,11 +49,11 @@ class LDAP extends Component {
       showServer: true,
       showUser: true,
       showAdminPwd: false,
-      enabled: true,
       showWhich: '',
       ldapAdminData: '',
     };
   }
+
 
   /**
    * Input后缀提示
@@ -131,11 +131,11 @@ class LDAP extends Component {
   };
 
   /* 启用停用 */
-  changeStatus = () => {
-    this.setState({
-      enabled: !this.state.enabled,
-    });
-  }
+  // changeStatus = () => {
+  //   this.setState({
+  //     enabled: !this.state.enabled,
+  //   });
+  // }
 
   /* 开启侧边栏 */
   openSidebar(status) {
@@ -152,6 +152,7 @@ class LDAP extends Component {
       sidebar: false,
     }, () => {
       LDAPStore.setIsShowResult(false);
+      LDAPStore.setIsConfirmLoading(false);
       const { resetFields } = this.TestLdap.props.form;
       resetFields();
     });
@@ -175,7 +176,7 @@ class LDAP extends Component {
   changeSsl() {
     const { getFieldValue, setFieldsValue } = this.props.form;
     setFieldsValue({
-      port: getFieldValue('port') === 636 ? 398 : 636,
+      port: getFieldValue('useSSL') === 'Y' ? '389' : '636',
     });
   }
 
@@ -197,6 +198,9 @@ class LDAP extends Component {
           objectVersionNumber: original.objectVersionNumber,
         };
         ladp.useSSL = ldapStatus;
+        if (!ladp.port) {
+          ladp.port = ladp.useSSL ? 636 : 389;
+        }
         this.setState({
           saving: true,
         });
@@ -208,17 +212,21 @@ class LDAP extends Component {
               this.setState({
                 saving: false,
               });
-              LDAPStore.setIsConnectLoading(true);
-              this.openSidebar('adminConnect');
-              LDAPStore.testConnect(this.state.organizationId, LDAPStore.getLDAPData.id, ladp)
-                .then((res) => {
-                  if (res.failed) {
-                    Choerodon.prompt(res.message);
-                  } else {
-                    LDAPStore.setTestData(res);
-                    LDAPStore.setIsConnectLoading(false);
-                  }
-                });
+              if (LDAPStore.getLDAPData.enabled) {
+                LDAPStore.setIsConnectLoading(true);
+                LDAPStore.setIsConfirmLoading(true);
+                this.openSidebar('adminConnect');
+                LDAPStore.testConnect(this.state.organizationId, LDAPStore.getLDAPData.id, ladp)
+                  .then((res) => {
+                    if (res.failed) {
+                      Choerodon.prompt(res.message);
+                    } else {
+                      LDAPStore.setTestData(res);
+                      LDAPStore.setIsConnectLoading(false);
+                      LDAPStore.setIsConfirmLoading(false);
+                    }
+                  });
+              }
             } else {
               Choerodon.prompt(Choerodon.getMessage('保存失败！', 'update failed!'));
             }
@@ -259,7 +267,7 @@ class LDAP extends Component {
 
   render() {
     const { LDAPStore, AppState, form } = this.props;
-    const { saving, enabled, sidebar, showWhich } = this.state;
+    const { saving, sidebar, showWhich } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
     const ldapData = LDAPStore.getLDAPData;
@@ -292,6 +300,7 @@ class LDAP extends Component {
               <Select
                 label={Choerodon.getMessage('目录类型', 'category type')}
                 style={{ width: inputWidth }}
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
               >
                 <Option value="Microsoft Active Directory">
                   <Tooltip placement="right" title="微软Windows Server中，负责架构中大型网络环境的集中式目录管理服务" overlayStyle={{ maxWidth: '300px' }}>
@@ -335,7 +344,11 @@ class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('port', {
-              initialValue: ldapData.port ? ldapData.port : undefined,
+              rules: [{
+                pattern: /^[1-9]\d*$/,
+                message: Choerodon.getMessage('请输入大于零的整数', 'port must be positive integer'),
+              }],
+              initialValue: ldapData.port || (ldapData.useSSL ? '636' : '389'),
             })(
               <Input label="端口号" style={{ width: inputWidth }} />,
             )}
@@ -451,7 +464,7 @@ class LDAP extends Component {
               type="primary"
               htmlType="submit"
               loading={saving}
-            >{enabled ? '保存并测试' : '保存'}</Button>
+            >{ldapData.enabled ? '保存并测试' : '保存'}</Button>
             <Button
               funcType="raised"
               onClick={() => {
@@ -470,22 +483,21 @@ class LDAP extends Component {
       <Page>
         <Header title={Choerodon.getMessage('修改LDAP', 'edit LDAP')}>
           <Button
-            icon={enabled ? 'remove_circle_outline' : 'finished'}
-            onClick={this.changeStatus}
+            icon={ldapData && ldapData.enabled ? 'remove_circle_outline' : 'finished'}
           >
-            {enabled ? '停用' : '启用'}
+            {ldapData && ldapData.enabled ? '停用' : '启用'}
           </Button>
           <Button
             icon="low_priority"
             onClick={this.openSidebar.bind(this, 'connect')}
-            disabled={!enabled}
+            disabled={!(ldapData && ldapData.enabled)}
           >
             {Choerodon.getMessage('测试连接', 'test contact')}
           </Button>
           <Button
             icon="sync"
             onClick={this.openSidebar.bind(this, 'sync')}
-            disabled={!enabled}
+            disabled={!(ldapData && ldapData.enabled)}
           >
             {Choerodon.getMessage('同步用户', 'update users')}
           </Button>
@@ -497,6 +509,7 @@ class LDAP extends Component {
           </Button>
         </Header>
         <Content
+          className="sidebar-content"
           title={`组织“${organizationName}”的LDAP`}
           link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/"
           description="LDAP管理是对组织应用的LDAP信息设置的管理。LDAP只针对LDAP用户，LDAP用户的登录名和密码取自LDAP指向的外部系统中的数据。"
@@ -512,7 +525,7 @@ class LDAP extends Component {
             cancelText="取消"
             onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
-            confirmLoading={LDAPStore.getIsConnectLoading}
+            confirmLoading={LDAPStore.getIsConfirmLoading}
           >
             {this.renderSidebarContent()}
           </Sidebar>

@@ -109,6 +109,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
+                  type="password"
                   label="LDAP密码"
                   style={{ width: inputWidth }}
                 />,

@@ -73,8 +73,9 @@ class CreateRole extends Component {
     }
   }
 
-  checkCodeOnly = _.debounce((value, callback) => {
-    const params = { code: value };
+  checkCode = (rule, value, callback) => {
+    const validValue = `role/${RoleStore.getChosenLevel}/custom/${value}`;
+    const params = { code: validValue };
     axios.post('/iam/v1/roles/check', JSON.stringify(params)).then((mes) => {
       if (mes.failed) {
         callback(Choerodon.getMessage('角色编码已存在，请输入其他角色编码', 'code existed, please try another'));
@@ -82,19 +83,6 @@ class CreateRole extends Component {
         callback();
       }
     });
-  }, 1000);
-
-  checkCode = (rule, value, callback) => {
-    if (!value) {
-      callback(Choerodon.getMessage('请输入角色编码', 'please input role code'));
-      return;
-    }
-    const pa = new RegExp(/^[a-z]([-a-z0-9]*[a-z0-9])?$/);
-    if (pa.test(value)) {
-      this.checkCodeOnly(value, callback);
-    } else {
-      callback(Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'));
-    }
   };
 
   showModal = () => {
@@ -192,8 +180,12 @@ class CreateRole extends Component {
   };
 
   handleModal = (value) => {
+    const form = this.props.form;
     const that = this;
     const { getFieldValue, setFieldsValue } = this.props.form;
+    if (getFieldValue('code')) {
+      form.validateFields(['code'], { force: true });
+    }
     const { currentPermission } = this.state;
     const level = getFieldValue('level');
     if (level && currentPermission.length) {
@@ -310,8 +302,14 @@ class CreateRole extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
+                    message: Choerodon.getMessage('请输入角色编码', 'please input role code'),
+                  }, {
+                    pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
+                    message: Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'),
+                  }, {
                     validator: this.checkCode,
                   }],
+                  validateFirst: true,
                   initialValue: this.state.roleName,
                 })(
                   <Input

@@ -4,9 +4,10 @@ import { withRouter } from 'react-router-dom';
 import Permission from 'PerComponent';
 import { observer, inject } from 'mobx-react';
 import Page, { Content, Header } from 'Page';
+import TestLdap from '../testLdap';
 import LoadingBar from '../../../../components/loadingBar';
 import './LDAP.scss';
-import TestLoading from './testLoading';
+
 
 const { TextArea } = Input;
 const Sidebar = Modal.Sidebar;
@@ -24,8 +25,6 @@ const formItemLayout = {
     sm: { span: 9 },
   },
 };
-
-const inputWidth = 512;
 
 @inject('AppState')
 @observer
@@ -51,6 +50,8 @@ class LDAP extends Component {
       showUser: true,
       showAdminPwd: false,
       enabled: true,
+      showWhich: '',
+      ldapAdminData: '',
     };
   }
 
@@ -72,29 +73,31 @@ class LDAP extends Component {
     );
   }
 
-
-  openSidebar = () => {
-    this.setState({
-      sidebar: true,
-    });
-  };
-
-  closeSidebar = () => {
-    this.setState({
-      sidebar: false,
-    });
-  };
-
   /**
-   * 刷新函数
+   * label后缀提示
+   * @param label label文字
+   * @param tip 提示文字
    */
-  reload = () => {
-    this.loadLDAP();
-  };
 
-  /**
-   * 加载LDAP
-   */
+  labelSuffix(label, tip) {
+    return (
+      <div className="labelSuffix">
+        <span>
+          {label}
+        </span>
+        <Popover
+          overlayStyle={{ maxWidth: '180px' }}
+          placement="right"
+          trigger="hover"
+          content={tip}
+        >
+          <Icon type="help" />
+        </Popover>
+      </div>
+    );
+  }
+
+  /* 加载LDAP */
   loadLDAP = () => {
     const { LDAPStore } = this.props;
     const { organizationId } = this.state;
@@ -122,42 +125,53 @@ class LDAP extends Component {
     });
   };
 
-  /**
-   * label后缀提示
-   * @param label label文字
-   * @param tip 提示文字
-   */
+  /* 刷新 */
+  reload = () => {
+    this.loadLDAP();
+  };
 
-  labelSuffix(label, tip) {
-    return (
-      <div className="labelSuffix">
-        <span>
-          {label}
-        </span>
-        <Popover
-          overlayStyle={{ maxWidth: '180px' }}
-          placement="right"
-          trigger="hover"
-          content={tip}
-        >
-          <Icon type="help" />
-        </Popover>
-      </div>
-    );
+  /* 启用停用 */
+  changeStatus = () => {
+    this.setState({
+      enabled: !this.state.enabled,
+    });
   }
 
+  /* 开启侧边栏 */
+  openSidebar(status) {
+    this.setState({
+      sidebar: true,
+      showWhich: status,
+    });
+  }
+
+  /* 关闭侧边栏 */
+  closeSidebar = () => {
+    const { LDAPStore } = this.props;
+    this.setState({
+      sidebar: false,
+    }, () => {
+      LDAPStore.setIsShowResult(false);
+      const { resetFields } = this.TestLdap.props.form;
+      resetFields();
+    });
+  };
+
+  /* 是否显示服务器设置下拉面板 */
   isShowServerSetting = () => {
     this.setState({
       showServer: !this.state.showServer,
     });
   }
 
+  /* 是否显示用户设置属性下拉面板 */
   isShowUserSetting = () => {
     this.setState({
       showUser: !this.state.showUser,
     });
   }
 
+  /* ssl修改状态默认端口号更改 */
   changeSsl() {
     const { getFieldValue, setFieldsValue } = this.props.form;
     setFieldsValue({
@@ -165,38 +179,24 @@ class LDAP extends Component {
     });
   }
 
-
-  adminSuffix() {
-    return (
-      <Icon type={!this.state.showAdminPwd ? 'visibility' : 'visibility_off'} onClick={this.changeAdminSuffixState} />
-    );
-  }
-
-  changeAdminSuffixState = () => {
-    this.setState({
-      showAdminPwd: !this.state.showAdminPwd,
-    });
-  }
-
-  changeStatus = () => {
-    this.setState({
-      enabled: !this.state.enabled,
-    });
-  }
-
+  /* 表单提交 */
   handleSubmit = (e) => {
     e.preventDefault();
+    this.setState({
+      showServer: true,
+      showUser: true,
+    });
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const { LDAPStore } = this.props;
         const original = LDAPStore.getLDAPData;
-        const ldapStatus = values.status;
+        const ldapStatus = values.useSSL === 'Y';
         const ladp = {
           ...values,
           id: original.id,
           objectVersionNumber: original.objectVersionNumber,
         };
-        ladp.status = ldapStatus;
+        ladp.useSSL = ldapStatus;
         this.setState({
           saving: true,
         });
@@ -205,12 +205,23 @@ class LDAP extends Component {
             if (data) {
               LDAPStore.setLDAPData(data);
               Choerodon.prompt(Choerodon.getMessage('保存成功！', 'update success!'));
+              this.setState({
+                saving: false,
+              });
+              LDAPStore.setIsConnectLoading(true);
+              this.openSidebar('adminConnect');
+              LDAPStore.testConnect(this.state.organizationId, LDAPStore.getLDAPData.id, ladp)
+                .then((res) => {
+                  if (res.failed) {
+                    Choerodon.prompt(res.message);
+                  } else {
+                    LDAPStore.setTestData(res);
+                    LDAPStore.setIsConnectLoading(false);
+                  }
+                });
             } else {
               Choerodon.prompt(Choerodon.getMessage('保存失败！', 'update failed!'));
             }
-            this.setState({
-              saving: false,
-            });
           })
           .catch((error) => {
             Choerodon.handleResponseError(error);
@@ -222,63 +233,38 @@ class LDAP extends Component {
     });
   };
 
+  /* 渲染侧边栏头部 */
+  renderSidebarTitle() {
+    const { showWhich } = this.state;
+    if (showWhich === 'connect' || showWhich === 'adminConnect') {
+      return '测试连接';
+    } else {
+      return '同步用户';
+    }
+  }
+
+  /* 渲染侧边栏内容 */
   renderSidebarContent() {
-    const { getFieldDecorator } = this.props.form;
+    const { sidebar, showWhich } = this.state;
     return (
-      <Content
-        style={{ padding: 0 }}
-        title="测试LDAP连接"
-        description="登录您的LDAP服务器需要对您的身份进行验证。请在下面输入您在LDAP服务器中的登录名和密码。"
-        link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
-      >
-        <Form>
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('ldapname', {
-              rules: [{
-                required: true,
-                whitespace: true,
-                message: '请输入LDAP登录名',
-              }],
-            })(
-              <Input
-                label="LDAP登录名"
-                style={{ width: inputWidth }}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('ldappwd', {
-              rules: [{
-                required: true,
-                whitespace: true,
-                message: '请输入LDAP密码',
-              }],
-            })(
-              <Input
-                label="LDAP密码"
-                style={{ width: inputWidth }}
-              />,
-            )}
-          </FormItem>
-        </Form>
-        <div className="resultContainer">
-          <TestLoading />
-        </div>
-      </Content>
+      <TestLdap
+        sidebar={sidebar}
+        showWhich={showWhich}
+        onRef={(node) => {
+          this.TestLdap = node;
+        }}
+      />
     );
   }
 
   render() {
     const { LDAPStore, AppState, form } = this.props;
-    const { saving, enabled } = this.state;
+    const { saving, enabled, sidebar, showWhich } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
     const ldapData = LDAPStore.getLDAPData;
     const { getFieldDecorator } = form;
+    const inputWidth = 512;
     const tips = {
       hostname: '运行 LDAP 的服务器主机名。例如ldap.example.com',
       ssl: '默认情况下，请求转发时会将路由规则中的前缀去除',
@@ -296,11 +282,12 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('category', {
+            {getFieldDecorator('directoryType', {
               rules: [{
                 required: true,
                 message: Choerodon.getMessage('请选择目录类型', 'Please choose category type'),
               }],
+              initialValue: ldapData.directoryType ? ldapData.directoryType : undefined,
             })(
               <Select
                 label={Choerodon.getMessage('目录类型', 'category type')}
@@ -322,11 +309,12 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('hostname', {
+            {getFieldDecorator('serverAddress', {
               rules: [{
                 required: true,
                 message: Choerodon.getMessage('请输入主机名', 'Please input host name'),
               }],
+              initialValue: ldapData.serverAddress ? ldapData.serverAddress : undefined,
             })(
               <Input label="主机名" style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} />,
             )}
@@ -334,8 +322,8 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('ssl', {
-              initialValue: 'Y',
+            {getFieldDecorator('useSSL', {
+              initialValue: ldapData.useSSL ? 'Y' : 'N',
             })(
               <RadioGroup className="ldapRadioGroup" label={this.labelSuffix('是否使用SSL', tips.ssl)} onChange={this.changeSsl.bind(this)}>
                 <Radio value={'Y'}>是</Radio>
@@ -347,7 +335,7 @@ class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('port', {
-              initialValue: 636,
+              initialValue: ldapData.port ? ldapData.port : undefined,
             })(
               <Input label="端口号" style={{ width: inputWidth }} />,
             )}
@@ -355,7 +343,8 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('basedn', {
+            {getFieldDecorator('baseDn', {
+              initialValue: ldapData.baseDn ? ldapData.baseDn : undefined,
             })(
               <Input label="基准DN" suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} />,
             )}
@@ -363,7 +352,8 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('adminname', {
+            {getFieldDecorator('account', {
+              initialValue: ldapData.account ? ldapData.account : undefined,
             })(
               <Input label="管理员登录名" suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} />,
             )}
@@ -371,9 +361,10 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('adminpwd', {
+            {getFieldDecorator('password', {
+              initialValue: ldapData.password ? ldapData.password : undefined,
             })(
-              <Input label="管理员密码" style={{ width: inputWidth }} suffix={this.adminSuffix()} type={this.state.showAdminPwd ? 'text' : 'password'} />,
+              <Input label="管理员密码" type="password" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </div>
@@ -385,11 +376,25 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('loginname', {
+            {getFieldDecorator('objectClass', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入登录名', 'Please input login name'),
+                message: Choerodon.getMessage('请输入用户对象类', 'Please input user object class'),
               }],
+              initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
+            })(
+              <Input label="用户对象类" style={{ width: inputWidth }} />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('loginNameField', {
+              rules: [{
+                required: true,
+                message: Choerodon.getMessage('请输入登录名属性', 'Please input login name'),
+              }],
+              initialValue: ldapData.loginNameField ? ldapData.loginNameField : undefined,
             })(
               <Input label="登录名属性" style={{ width: inputWidth }} />,
             )}
@@ -397,11 +402,12 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('password', {
+            {getFieldDecorator('passwordField', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入密码', 'Please input password'),
+                message: Choerodon.getMessage('请输入密码属性', 'Please input password'),
               }],
+              initialValue: ldapData.passwordField ? ldapData.passwordField : undefined,
             })(
               <Input label="密码属性" style={{ width: inputWidth }} />,
             )}
@@ -409,11 +415,12 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('email', {
+            {getFieldDecorator('emailField', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入邮箱', 'Please input email'),
+                message: Choerodon.getMessage('请输入邮箱属性', 'Please input email'),
               }],
+              initialValue: ldapData.emailField ? ldapData.emailField : undefined,
             })(
               <Input label="邮箱属性" style={{ width: inputWidth }} />,
             )}
@@ -421,7 +428,8 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('username', {
+            {getFieldDecorator('realNameField', {
+              initialValue: ldapData.realNameField ? ldapData.realNameField : undefined,
             })(
               <Input label="用户名属性" style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} />,
             )}
@@ -429,7 +437,8 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('phone', {
+            {getFieldDecorator('phoneField', {
+              initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
             })(
               <Input label="手机号属性" style={{ width: inputWidth }} />,
             )}
@@ -438,19 +447,18 @@ class LDAP extends Component {
         <Permission service={['iam-service.ldap.update']}>
           <div className="btnGroup">
             <Button
-              text={Choerodon.languageChange('save')}
-              htmlType="submit"
-              loading={saving}
               funcType="raised"
               type="primary"
+              htmlType="submit"
+              loading={saving}
             >{enabled ? '保存并测试' : '保存'}</Button>
             <Button
               funcType="raised"
-              disabled={saving}
               onClick={() => {
                 const { resetFields } = this.props.form;
                 resetFields();
               }}
+              disabled={saving}
             >{Choerodon.languageChange('cancel')}
             </Button>
           </div>
@@ -469,13 +477,14 @@ class LDAP extends Component {
           </Button>
           <Button
             icon="low_priority"
-            onClick={this.openSidebar}
+            onClick={this.openSidebar.bind(this, 'connect')}
             disabled={!enabled}
           >
             {Choerodon.getMessage('测试连接', 'test contact')}
           </Button>
           <Button
             icon="sync"
+            onClick={this.openSidebar.bind(this, 'sync')}
             disabled={!enabled}
           >
             {Choerodon.getMessage('同步用户', 'update users')}
@@ -497,11 +506,13 @@ class LDAP extends Component {
           </div>
           <Sidebar
             className="connectContainer"
-            title="测试LDAP连接"
-            visible={this.state.sidebar}
-            okText="测试"
+            title={this.renderSidebarTitle()}
+            visible={sidebar}
+            okText={showWhich === 'sync' ? '同步' : '测试'}
             cancelText="取消"
+            onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
+            confirmLoading={LDAPStore.getIsConnectLoading}
           >
             {this.renderSidebarContent()}
           </Sidebar>

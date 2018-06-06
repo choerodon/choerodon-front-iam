@@ -19,7 +19,6 @@
 
     > button:last-child {
       margin-left: 12px;
-      color: #3f51b5;
     }
   }
 
@@ -39,14 +38,5 @@
       margin-left: 8px;
       color: rgba(0, 0, 0, 0.26);
     }
-  }
-}
-
-.connectContainer {
-  .resultContainer {
-    width: 512px;
-    height: 96px;
-    border-radius: 4px;
-    position: relative;
   }
 }

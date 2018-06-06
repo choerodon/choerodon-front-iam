@@ -9,7 +9,10 @@ import store from 'Store';
 @store('LDAPStore')
 class LDAPStore {
   @observable ldapData = null;
+  @observable testData = null;
   @observable isLoading = true;
+  @observable isConnectLoading = true;
+  @observable isShowResult = false;
 
   @action setIsLoading(flag) {
     this.isLoading = flag;
@@ -19,12 +22,36 @@ class LDAPStore {
     return this.isLoading;
   }
 
+  @action setIsConnectLoading(flag) {
+    this.isConnectLoading = flag;
+  }
+
+  @computed get getIsConnectLoading() {
+    return this.isConnectLoading;
+  }
+
+  @action setIsShowResult(data) {
+    this.isShowResult = data;
+  }
+
+  @computed get getIsShowResult() {
+    return this.isShowResult;
+  }
+
   @action setLDAPData(data) {
     this.ldapData = data;
   }
 
   @computed get getLDAPData() {
     return this.ldapData;
+  }
+
+  @action setTestData(data) {
+    this.testData = data;
+  }
+
+  @computed get getTestData() {
+    return this.testData;
   }
 
   @action cleanData() {
@@ -53,6 +80,9 @@ class LDAPStore {
 
   updateLDAP = (organizationId, id, ldap) =>
     axios.post(`/iam/v1/organizations/${organizationId}/ldaps/${id}`, JSON.stringify(ldap));
+
+  testConnect = (organizationId, id, ldap) =>
+    axios.post(`/iam/v1/organizations/${organizationId}/ldaps/${id}/test_connect`, JSON.stringify(ldap));
 }
 
 const ldapStore = new LDAPStore();

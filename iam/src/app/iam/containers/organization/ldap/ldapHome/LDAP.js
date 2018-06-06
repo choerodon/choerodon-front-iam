@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Checkbox, Form, Input, Button, Select, Radio, Tooltip, Popover, Icon, Modal } from 'choerodon-ui';
+import { Form, Input, Button, Select, Radio, Tooltip, Popover, Icon, Modal } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Permission from 'PerComponent';
 import { observer, inject } from 'mobx-react';
@@ -300,7 +300,6 @@ class LDAP extends Component {
               <Select
                 label={Choerodon.getMessage('目录类型', 'category type')}
                 style={{ width: inputWidth }}
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
               >
                 <Option value="Microsoft Active Directory">
                   <Tooltip placement="right" title="微软Windows Server中，负责架构中大型网络环境的集中式目录管理服务" overlayStyle={{ maxWidth: '300px' }}>
@@ -509,7 +508,6 @@ class LDAP extends Component {
           </Button>
         </Header>
         <Content
-          className="sidebar-content"
           title={`组织“${organizationName}”的LDAP`}
           link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/"
           description="LDAP管理是对组织应用的LDAP信息设置的管理。LDAP只针对LDAP用户，LDAP用户的登录名和密码取自LDAP指向的外部系统中的数据。"

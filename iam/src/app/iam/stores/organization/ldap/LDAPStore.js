@@ -13,6 +13,7 @@ class LDAPStore {
   @observable isLoading = true;
   @observable isConnectLoading = true;
   @observable isShowResult = false;
+  @observable confirmLoading = false;
 
   @action setIsLoading(flag) {
     this.isLoading = flag;
@@ -28,6 +29,14 @@ class LDAPStore {
 
   @computed get getIsConnectLoading() {
     return this.isConnectLoading;
+  }
+
+  @action setIsConfirmLoading(flag) {
+    this.confirmLoading = flag;
+  }
+
+  @computed get getIsConfirmLoading() {
+    return this.confirmLoading;
   }
 
   @action setIsShowResult(data) {

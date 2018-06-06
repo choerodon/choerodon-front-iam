@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Modal, Table, Tabs, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Modal, Table, Tabs, Tooltip, IconSelect } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import Page, { Content, Header } from 'Page';
 import axios from 'Axios';
@@ -9,7 +9,6 @@ import Permission from 'PerComponent';
 import _ from 'lodash';
 import MenuStore from '@/stores/MenuStore';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
-import IconSelect from '../../../components/iconSelect/IconSelect';
 import './MenuTree.scss';
 
 let currentDropOverItem;
@@ -61,9 +60,6 @@ class MenuTree extends Component {
       sidebar: false,
       selectMenuDetail: {},
       dragData: null,
-      iconFilterText: null,
-      iconPage: 1,
-      iconPageSize: 20,
     };
   }
 
@@ -97,22 +93,20 @@ class MenuTree extends Component {
   closeSidebar = () => {
     this.setState({
       sidebar: false,
-      iconPage: 1,
-      iconPageSize: 20,
-      iconFilterText: null,
     });
   };
   //创建目录，弹出sidebar
   addDir = () => {
-    const { resetFields } = this.props.form;
-    resetFields();
+    this.props.form.resetFields();
     this.setState({
       selectType: 'create',
       sidebar: true,
+      selectMenuDetail: {},
     });
   };
   //查看细节，弹出sidebar,设置选中的菜单或目录
   detailMenu = (record) => {
+    this.props.form.resetFields();
     this.setState({
       selectType: 'detail',
       sidebar: true,
@@ -121,8 +115,7 @@ class MenuTree extends Component {
   };
   //修改菜单,弹出sidebar,设置选中的菜单或目录
   changeMenu = (record) => {
-    const { resetFields } = this.props.form;
-    resetFields();
+    this.props.form.resetFields();
     this.setState({
       selectType: 'edit',
       sidebar: true,
@@ -194,17 +187,7 @@ class MenuTree extends Component {
       }
     });
   };
-  handleIconPageChange = (iconPage, iconPageSize) => {
-    this.setState({
-      iconPage,
-      iconPageSize,
-    });
-  };
-  handleIconFilter = (iconFilterText) => {
-    this.setState({
-      iconFilterText,
-    });
-  };
+
   // 创建目录的3个状态
   getSidebarTitle = (selectType) => {
     switch (selectType) {
@@ -230,7 +213,7 @@ class MenuTree extends Component {
       case 'edit':
         pageFirstLineTitle = `对目录“${name}”进行修改`;
         FirstLineContent = '您可以在此修改目录名称、图标。';
-        formDom = this.setDirNameDom();
+        formDom = this.getDirNameDom();
         break;
       case 'detail':
         pageFirstLineTitle = `查看菜单“${name}”详情`;
@@ -241,7 +224,7 @@ class MenuTree extends Component {
     return (
       <div>
         <Content
-          style={{ padding: 0 }}
+          className="sidebar-content"
           title={pageFirstLineTitle}
           description={FirstLineContent}
           link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
@@ -249,72 +232,6 @@ class MenuTree extends Component {
           {formDom}
         </Content>
       </div>);
-  }
-
-  //修改目录详情
-  setDirNameDom() {
-    const { getFieldDecorator } = this.props.form;
-    const { selectMenuDetail: { name, code, icon }, iconFilterText, iconPage, iconPageSize } = this.state;
-    return (
-      <Form layout="vertical">
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: Choerodon.getMessage('请输入目录名称', 'This field is required.'),
-            }],
-            initialValue: name,
-          })(
-            <Input
-              label="目录名称"
-              style={{ width: inputWidth }}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('code', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: Choerodon.getMessage('请输入目录编码', 'This field is required.'),
-            }],
-            initialValue: code,
-          })(
-            <Input
-              label="目录编码"
-              disabled={true}
-              style={{ width: inputWidth }}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('icon', {
-            rules: [{
-              required: true,
-              message: Choerodon.getMessage('请选择一个图标', 'icon is required'),
-            }],
-            validateTrigger: 'onChange',
-            initialValue: icon,
-          })(
-            <IconSelect
-              label="请选择一个图标"
-              onPageChange={this.handleIconPageChange}
-              onFilter={this.handleIconFilter}
-              filterText={iconFilterText}
-              page={iconPage}
-              pageSize={iconPageSize}
-              style={{ width: inputWidth }}
-            />,
-          )}
-        </FormItem>
-      </ Form>);
   }
 
   //查看详情
@@ -379,7 +296,7 @@ class MenuTree extends Component {
   //created FormDom渲染
   getDirNameDom() {
     const { getFieldDecorator } = this.props.form;
-    const { iconFilterText, iconPage, iconPageSize } = this.state;
+    const selectMenuDetail = this.state.selectMenuDetail || {};
     return (
       <Form layout="vertical">
         <FormItem
@@ -392,6 +309,7 @@ class MenuTree extends Component {
               message: Choerodon.getMessage('请输入目录名称', 'This field is required.'),
             }],
             validateTrigger: 'onBlur',
+            initialValue: selectMenuDetail.name,
           })(
             <Input
               autoComplete="off"
@@ -414,6 +332,7 @@ class MenuTree extends Component {
             }],
             validateTrigger: 'onBlur',
             validateFirst: true,
+            initialValue: selectMenuDetail.code,
           })(
             <Input
               autoComplete="off"
@@ -431,16 +350,12 @@ class MenuTree extends Component {
               message: Choerodon.getMessage('请选择一个图标', 'icon is required'),
             }],
             validateTrigger: 'onChange',
+            initialValue: selectMenuDetail.icon,
           })(
             <IconSelect
               label="请选择一个图标"
-              autoComplete="off"
-              onPageChange={this.handleIconPageChange}
-              onFilter={this.handleIconFilter}
-              filterText={iconFilterText}
-              page={iconPage}
-              pageSize={iconPageSize}
               style={{ width: inputWidth }}
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
             />,
           )}
         </FormItem>

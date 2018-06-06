@@ -314,6 +314,7 @@ class EditRole extends Component {
                       mode="tags"
                       size="default"
                       label={Choerodon.getMessage('角色标签', 'label')}
+                      getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                       style={{
                         width: '512px',
                       }}
@@ -417,7 +418,7 @@ class EditRole extends Component {
           cancelText="取消"
         >
           <Content
-            style={{ padding: 0 }}
+            className="sidebar-content"
             title={`向角色“${name}”添加权限`}
             description="您可以在此为角色添加一个或多个权限。"
             link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"

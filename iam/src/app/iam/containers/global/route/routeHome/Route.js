@@ -79,7 +79,7 @@ class Route extends Component {
   getSuffix(text) {
     return (
       <Popover
-        getPopupContainer={() => document.getElementsByClassName('formContainer')[0]}
+        getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
         className="routePop"
         placement="right"
         trigger="hover"
@@ -231,7 +231,7 @@ class Route extends Component {
           {label}
         </span>
         <Popover
-          getPopupContainer={() => document.getElementsByClassName('formContainer')[0]}
+          getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
           className="routePop"
           placement="right"
           trigger="hover"
@@ -503,11 +503,10 @@ class Route extends Component {
     }
     return (
       <Content
-        style={{ padding: 0 }}
         title={title}
         description={description}
         link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
-        className="formContainer"
+        className="sidebar-content formContainer"
       >
         <Form>
           <FormItem
@@ -570,6 +569,7 @@ class Route extends Component {
                 disabled={detailValidate}
                 style={{ width: 300 }}
                 label="对应微服务"
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
                 filterOption={
                   (input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

@@ -351,6 +351,7 @@ class Client extends Component {
           })(
             <Select
               mode="multiple"
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
               label={Choerodon.languageChange('client.authorizedGrantTypes')}
               size="default"
             >
@@ -428,7 +429,7 @@ class Client extends Component {
     </div>) : <LoadingBar />;
     return (
       <div>
-        <Content style={{ padding: 0 }}{...this.getSidebarContentInfo()}>
+        <Content className="sidebar-content" {...this.getSidebarContentInfo()}>
           {mainContent}
         </Content>
       </div>

@@ -11,7 +11,7 @@ node_build:
   stage: node_build
   script:
     - node_module iam
-    - node_build
+    - node_build build
     - cp -r dist /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/dist
   only:
     - /^release-.*$/
@@ -23,7 +23,7 @@ node_build_dev:
   stage: node_build
   script:
     - node_module iam
-    - node_build
+    - node_build build
     - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
   only:
     - /^feature-.*$/
@@ -50,7 +50,7 @@ docker_build:
     fi
     source .auto_devops.sh    
     function node_module(){
-        cd ${1} && npm install && cd ..
+        cd ${1} && npm install -registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ && cd ..
         mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
         python ./${1}/node_modules/choerodon-front-boot/structure/configAuto.py ${1}
         cp -r config.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
@@ -58,7 +58,7 @@ docker_build:
     }
 
     function node_build(){
-        npm run build
+        npm run ${1:-"build"}
         find dist -name '*.js' | xargs sed -i "s/localhost:version/$CI_COMMIT_TAG/g"
     }
 

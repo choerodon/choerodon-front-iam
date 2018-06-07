@@ -1,5 +1,3 @@
-const path = require('path');
-
 const config = {
   local: true, //是否为本地开发
   clientId: 'localhost', // 必须填入响应的客户端（本地开发）
@@ -9,7 +7,7 @@ const config = {
     'primary-color': '#3F51B5',
   },
   cookieServer: '', //子域名token共享
-  server: 'http://api.staging.saas.hand-china.com',
+  server: 'http://api.choerodon.com.cn',
 };
 
 module.exports = config;

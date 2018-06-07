@@ -298,6 +298,7 @@ class LDAP extends Component {
               initialValue: ldapData.directoryType ? ldapData.directoryType : undefined,
             })(
               <Select
+                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                 label={Choerodon.getMessage('目录类型', 'category type')}
                 style={{ width: inputWidth }}
               >

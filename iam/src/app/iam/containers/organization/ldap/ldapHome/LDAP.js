@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { Component } from 'react';
 import { Button, Form, Icon, Input, Modal, Popover, Radio, Select, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -8,7 +9,6 @@ import LoadingBar from '../../../../components/loadingBar';
 import './LDAP.scss';
 
 
-const { TextArea } = Input;
 const Sidebar = Modal.Sidebar;
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
@@ -53,6 +53,19 @@ class LDAP extends Component {
     };
   }
 
+  /* 获取同步用户信息 */
+  getSyncInfo() {
+    const { LDAPStore } = this.props;
+    const ldapData = LDAPStore.getLDAPData;
+    const { organizationId } = this.state;
+    LDAPStore.getSyncInfo(organizationId, ldapData.id).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        LDAPStore.setSyncData(data);
+      }
+    });
+  }
 
   /**
    * Input后缀提示
@@ -129,24 +142,21 @@ class LDAP extends Component {
     this.loadLDAP();
   };
 
-  /* 启用停用 */
-  // changeStatus = () => {
-  //   this.setState({
-  //     enabled: !this.state.enabled,
-  //   });
-  // }
-
   /* 开启侧边栏 */
   openSidebar(status) {
     this.setState({
       sidebar: true,
       showWhich: status,
     });
+    if (status === 'sync') {
+      this.getSyncInfo();
+    }
   }
 
   /* 关闭侧边栏 */
   closeSidebar = () => {
     const { LDAPStore } = this.props;
+    const { showWhich } = this.state;
     this.setState({
       sidebar: false,
     }, () => {
@@ -154,6 +164,9 @@ class LDAP extends Component {
       LDAPStore.setIsConfirmLoading(false);
       const { resetFields } = this.TestLdap.props.form;
       resetFields();
+      if (showWhich === 'sync') {
+        this.TestLdap.closeSyncSidebar();
+      }
     });
   };
 
@@ -177,6 +190,35 @@ class LDAP extends Component {
     setFieldsValue({
       port: getFieldValue('useSSL') === 'Y' ? '389' : '636',
     });
+  }
+
+  enableLdap = () => {
+    const { LDAPStore, AppState, form } = this.props;
+    const {  organizationId } = this.state;
+    const ldapData = LDAPStore.getLDAPData;
+    if (ldapData.enabled) {
+      Modal.confirm({
+        title: '停用LDAP',
+        content: '确定要停用LDAP吗？停用LDAP后，之前所同步的用户将无法登录平台，且无法使用测试连接和同步用户功能。',
+        onOk: () => LDAPStore.disabledLdap(organizationId, ldapData.id).then((data) => {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            Choerodon.prompt(Choerodon.getMessage('停用成功！', 'disabled success!'));
+            LDAPStore.setLDAPData(data);
+          }
+        })
+      });
+    } else {
+      LDAPStore.enabledLdap(organizationId, ldapData.id).then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          Choerodon.prompt(Choerodon.getMessage('启用成功！', 'enabled success!'));
+          LDAPStore.setLDAPData(data);
+        }
+      })
+    }
   }
 
   /* 表单提交 */
@@ -414,19 +456,6 @@ class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('passwordField', {
-              rules: [{
-                required: true,
-                message: Choerodon.getMessage('请输入密码属性', 'Please input password'),
-              }],
-              initialValue: ldapData.passwordField ? ldapData.passwordField : undefined,
-            })(
-              <Input label="密码属性" style={{ width: inputWidth }} />,
-            )}
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
             {getFieldDecorator('emailField', {
               rules: [{
                 required: true,
@@ -483,6 +512,7 @@ class LDAP extends Component {
         <Header title={Choerodon.getMessage('修改LDAP', 'edit LDAP')}>
           <Button
             icon={ldapData && ldapData.enabled ? 'remove_circle_outline' : 'finished'}
+            onClick={this.enableLdap}
           >
             {ldapData && ldapData.enabled ? '停用' : '启用'}
           </Button>
@@ -520,10 +550,9 @@ class LDAP extends Component {
             title={this.renderSidebarTitle()}
             visible={sidebar}
             okText={showWhich === 'sync' ? '同步' : '测试'}
-            cancelText="取消"
+            cancelText={showWhich === 'sync' ? '返回' : '取消'}
             onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
-            confirmLoading={LDAPStore.getIsConfirmLoading}
           >
             {this.renderSidebarContent()}
           </Sidebar>

@@ -5,8 +5,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Form, Button, Input, Select, Row, Col, message, Upload, Icon } from 'choerodon-ui';
-import Permission from 'PerComponent';
-import Page, { Header, Content } from 'Page';
+import { Action, Content, Header, Page, Permission, Remove } from 'choerodon-front-boot';
 import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
 import './Userinfo.scss';
 

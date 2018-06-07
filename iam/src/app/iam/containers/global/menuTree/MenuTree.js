@@ -1,15 +1,14 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Modal, Table, Tabs, Tooltip, IconSelect } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import Page, { Content, Header } from 'Page';
-import axios from 'Axios';
-import Permission from 'PerComponent';
+import { Button, Form, Icon, IconSelect, Input, Modal, Table, Tabs, Tooltip } from 'choerodon-ui';
+import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import MenuStore from '@/stores/MenuStore';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
 import './MenuTree.scss';
+
+const { MenuStore } = stores;
 
 let currentDropOverItem;
 let currentDropSide;
@@ -140,7 +139,7 @@ class MenuTree extends Component {
         this.deleteMenu(record);
       },
     });
-  }
+  };
   handleRefresh = () => {
     const { type, menuGroup } = this.state;
     this.setState({
@@ -532,7 +531,8 @@ class MenuTree extends Component {
       default:
         return '确定';
     }
-  }
+  };
+
   render() {
     const menuType = this.props.AppState.currentMenuType.type;
     const { menuGroup, type: typeState, selectType, sidebar, submitting } = this.state;
@@ -692,7 +692,7 @@ class MenuTree extends Component {
           />
           <Sidebar
             title={this.getSidebarTitle(selectType)}
-            onOk={selectType === 'detail'? this.closeSidebar : this.handleOk}
+            onOk={selectType === 'detail' ? this.closeSidebar : this.handleOk}
             okText={this.getOkText(selectType)}
             cancelText="取消"
             okCancel={selectType !== 'detail'}

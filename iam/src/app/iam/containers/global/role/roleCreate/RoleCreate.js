@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Checkbox, Input, Row, Col, Modal, Icon, Form, Select, Button, Table, Tooltip } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import { toJS } from 'mobx';
-import axios from 'Axios';
-import Page, { Header, Content } from 'Page';
 import { Observable } from 'rxjs';
 import _ from 'lodash';
+import { Button, Checkbox, Col, Form, Icon, Input, Modal, Row, Select, Table, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, axios } from 'choerodon-front-boot';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
-import '../../../../assets/css/main.scss';
+// import '../../../../assets/css/main.scss';
 import './RoleCreate.scss';
 
 const FormItem = Form.Item;
@@ -370,11 +369,9 @@ class CreateRole extends Component {
                     onClick={this.showModal.bind(this)}
                     disabled={RoleStore.getChosenLevel === ''}
                     className="addPermission"
+                    icon="add"
                   >
-                    <div>
-                      <span className="icon-add" />
-                      <span>添加权限</span>
-                    </div>
+                    添加权限
                   </Button>
                 </Tooltip>
               </FormItem>

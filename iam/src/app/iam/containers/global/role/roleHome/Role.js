@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { Button, Dropdown, Form, Icon, Menu, message, Modal, Select, Table } from 'choerodon-ui';
-import Permission from 'PerComponent';
-import Page, { Content, Header } from 'Page';
-import Remove from 'Remove';
-import Action from 'Action';
+import { Action, Content, Header, Page, Permission, Remove } from 'choerodon-front-boot';
 import CreateRole from '../roleCreate';
 import EditRole from '../roleEdit';
 import './Role.scss';
-import '../../../../assets/css/main.scss';
+// import '../../../../assets/css/main.scss';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
 
 const { Sidebar } = Modal;
@@ -205,14 +202,14 @@ class Role extends Component {
     if (record.builtIn) {
       return (
         <div>
-          <span className="icon-settings" />
+          <Icon type="settings" />
           {Choerodon.getMessage('预定义', 'Yes')}
         </div>
       );
     } else {
       return (
         <div>
-          <span className="icon-av_timer" />
+          <Icon type="av_timer" />
           {Choerodon.getMessage('自定义', 'No')}
         </div>
       );

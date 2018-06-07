@@ -1,21 +1,14 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Table,
-  Button,
-  Input,
-  Form,
-  Modal,
-  Tooltip } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
+import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Page, { Content, Header } from 'Page';
-import Permission from 'PerComponent';
-import HeaderStore from '@/stores/HeaderStore';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import '../../../../assets/css/main.scss';
+// import '../../../../assets/css/main.scss';
 import './ProjectHome.scss';
 
-
+const { HeaderStore } = stores;
 const FormItem = Form.Item;
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
@@ -158,16 +151,18 @@ class ProjectHome extends Component {
       });
     } else {
       const { validateFields } = this.props.form;
-      validateFields((err, {name}) => {
+      validateFields((err, { name }) => {
         if (!err) {
           data = {
             name,
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,
-            { ...data,
+            {
+              ...data,
               objectVersionNumber: projectDatas.objectVersionNumber,
-              code: projectDatas.code },
+              code: projectDatas.code,
+            },
             this.state.projectDatas.id).then((value) => {
             this.setState({ submitting: false, buttonClicked: false });
             if (value) {
@@ -183,7 +178,7 @@ class ProjectHome extends Component {
         }
       });
     }
-  }
+  };
 
   /* 停用启用 */
   handleEnable = (record) => {
@@ -198,17 +193,17 @@ class ProjectHome extends Component {
       HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
         org[0].map(value => {
           value.type = ORGANIZATION_TYPE;
-        })
+        });
         org[1].map(value => {
           value.type = PROJECT_TYPE;
-        })
+        });
         HeaderStore.setProData(org[0]);
         HeaderStore.setProData(org[1]);
-      })
+      });
     }).catch((error) => {
       Choerodon.prompt(`操作失败 ${error}`);
     });
-  }
+  };
 
   /* 分页处理 */
   handlePageChange(pagination, filters, sorter, params) {
@@ -276,9 +271,9 @@ class ProjectHome extends Component {
     switch (operation) {
       case 'create':
         return {
-          title:`在组织“${orgname}”中创建项目`,
+          title: `在组织“${orgname}”中创建项目`,
           link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/',
-          description: '请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。'
+          description: '请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。',
         };
       case 'edit':
         return {
@@ -325,7 +320,7 @@ class ProjectHome extends Component {
                 style={{ width: inputWidth }}
               />,
             )}
-          </FormItem>): null}
+          </FormItem>) : null}
           <FormItem
             {...formItemLayout}
           >
@@ -400,16 +395,15 @@ class ProjectHome extends Component {
               <Button
                 shape="circle"
                 onClick={this.handleopenTab.bind(this, record, 'edit')}
-              >
-                <span className="icon-mode_edit" />
-              </Button>
+                icon="mode_edit"
+              />
             </Tooltip>
           </Permission>
           <Permission
             service={['iam-service.organization-project.disableProject', 'iam-service.organization-project.enableProject']}
             type={type} organizationId={orgId}>
             <Tooltip
-              title={record.enabled ? "停用" : "启用"}
+              title={record.enabled ? '停用' : '启用'}
               placement="bottom"
             >
               <Button
@@ -491,4 +485,5 @@ class ProjectHome extends Component {
     );
   }
 }
+
 export default Form.create({})(withRouter(ProjectHome));

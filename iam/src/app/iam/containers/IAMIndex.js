@@ -1,12 +1,7 @@
 import React from 'react';
-import {
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../util/asyncRouter';
-import asyncLocaleProvider from '../../../util/asyncLocaleProvider';
+import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const ClientIndex = asyncRouter(() => import('./organization/client'));
 const UserIndex = asyncRouter(() => import('./organization/user'));

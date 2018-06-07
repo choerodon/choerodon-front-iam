@@ -2,10 +2,8 @@
 import React, { Component } from 'react';
 import { Button, Checkbox, Col, Form, Input, Radio, Row, Select } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
 import { inject, observer } from 'mobx-react';
-import Page, { Content, Header } from 'Page';
-import axios from 'Axios';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
 import './password.scss';
 

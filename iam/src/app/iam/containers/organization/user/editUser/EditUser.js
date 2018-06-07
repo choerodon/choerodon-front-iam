@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Checkbox, Form, Input, Select } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Content } from 'Page';
+import { Content } from 'choerodon-front-boot';
 import CreateUserStore from '../../../../stores/organization/user/createUser/CreateUserStore';
 
 const FormItem = Form.Item;

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Col, Form, Input, Modal, Row, Select, Table } from 'choerodon-ui';
-import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { inject, observer } from 'mobx-react';
 import { Observable } from 'rxjs';
-import Page, { Header, Content } from 'Page';
+import { Button, Col, Form, Input, Modal, Row, Select, Table } from 'choerodon-ui';
+import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
-import '../../../../assets/css/main.scss';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
 import './RoleEdit.scss';
 
@@ -332,11 +331,9 @@ class EditRole extends Component {
                   onClick={this.showModal.bind(this)}
                   disabled={chosenLevel === '' || builtIn}
                   className="addPermission"
+                  icon="add"
                 >
-                  <div>
-                    <span className="icon-add" />
-                    <span>添加权限</span>
-                  </div>
+                  添加权限
                 </Button>
               </FormItem>
               <FormItem>

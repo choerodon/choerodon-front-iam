@@ -1,9 +1,7 @@
-import { observable, action, computed } from 'mobx';
+import { action, computed, observable, toJS } from 'mobx';
 import { Observable } from 'rxjs';
-import axios from 'Axios';
-import { toJS } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import _ from 'lodash';
-import store from 'Store';
 
 @store('RoleStore')
 class RoleStore {

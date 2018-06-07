@@ -3,9 +3,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import Page, { Content, Header } from 'Page';
-import Permission from 'PerComponent';
-import axios from 'Axios';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import querystring from 'query-string';
 import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
@@ -373,7 +371,7 @@ class MemberRole extends Component {
       title: '移除角色',
       content: `确认移除成员"${record.loginName}"的角色"${record.roleName}"?`,
       onOk: () => this.deleteRolesByIds({ [record.roleId]: [record.id] }),
-    })
+    });
   };
 
   deleteRolesByIds = (data) => {
@@ -546,7 +544,7 @@ class MemberRole extends Component {
         [record.id]: record.roles.map(({ id }) => id),
       }),
     });
-  }
+  };
   handleEditRole = ({ id: memberId, loginName }) => {
     const member = this.state.memberDatas.find(({ id }) => id === memberId);
     if (!member) {

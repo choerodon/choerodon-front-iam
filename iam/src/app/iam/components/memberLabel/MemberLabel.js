@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { Form, Select } from 'choerodon-ui';
-import axios from 'Axios';
+import { axios } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import './MemberLabel.scss';
 

@@ -2,12 +2,8 @@
  * Created by hulingfangzi on 2018/5/28.
  */
 import React from 'react';
-import {
-  Route,
-  Switch,
-} from 'react-router-dom';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../../../util/asyncRouter';
+import { Route, Switch } from 'react-router-dom';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const route = asyncRouter(() => (import('./routeHome')), () => (import('../../../stores/globalStores/route')));
 

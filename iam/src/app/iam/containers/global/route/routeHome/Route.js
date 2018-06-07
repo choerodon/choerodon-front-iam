@@ -3,13 +3,11 @@
  */
 /*eslint-disable*/
 import React, { Component } from 'react';
-import Permission from 'PerComponent';
-import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip, Popover, Radio } from 'choerodon-ui';
+import { Button, Col, Form, Icon, Input, Modal, Popover, Radio, Row, Select, Spin, Table, Tooltip } from 'choerodon-ui';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import querystring from 'query-string';
-import { observer, inject } from 'mobx-react';
-import Page, { Header, Content } from 'Page';
-import axios from 'Axios';
+import { inject, observer } from 'mobx-react';
 import './Route.scss';
 
 const { Sidebar } = Modal;

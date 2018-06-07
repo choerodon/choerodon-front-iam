@@ -164,10 +164,10 @@ class LDAP extends Component {
       LDAPStore.setIsConfirmLoading(false);
       const { resetFields } = this.TestLdap.props.form;
       resetFields();
-      if (showWhich === 'sync') {
-        this.TestLdap.closeSyncSidebar();
-      }
     });
+    if (showWhich === 'sync') {
+      this.TestLdap.closeSyncSidebar();
+    }
   };
 
   /* 是否显示服务器设置下拉面板 */

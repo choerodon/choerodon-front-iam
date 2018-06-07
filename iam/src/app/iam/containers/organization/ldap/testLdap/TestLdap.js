@@ -70,6 +70,11 @@ class TestConnect extends Component {
     return resultDays + resultHours + resultMinutes + resultSeconds;
   }
 
+  loading () {
+    timer = window.setInterval(this.getSyncInfoOnce, 3000);
+    return <SyncLoading />;
+  }
+
   getTestResult() {
     const testData = LDAPStore.getTestData;
     const ldapData = LDAPStore.getLDAPData;
@@ -186,7 +191,7 @@ class TestConnect extends Component {
     } else {
       return (
         <div style={{ width: '512px' }}>
-          {isSyncLoading ? <SyncLoading /> : this.getSyncInfo()}
+          {isSyncLoading ? this.loading() : this.getSyncInfo()}
         </div>
       );
     }
@@ -194,6 +199,7 @@ class TestConnect extends Component {
 
   closeSyncSidebar = () => {
     window.clearInterval(timer);
+    LDAPStore.setIsSyncLoading(false);
   }
 
   handleSubmit = (e) => {
@@ -239,7 +245,7 @@ class TestConnect extends Component {
           LDAPStore.setIsConfirmLoading(false);
         } else {
           LDAPStore.setIsSyncLoading(true);
-          timer = window.setInterval(this.getSyncInfoOnce, 3000);
+          // timer = window.setInterval(this.getSyncInfoOnce, 3000);
         }
       });
     }

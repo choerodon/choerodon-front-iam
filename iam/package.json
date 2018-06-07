@@ -7,7 +7,9 @@
     "start": "choerodon-front-boot start --config ../config.js",
     "build": "choerodon-front-boot build --config ../config.js"
   },
-  "contributors": ["choerodon"],
+  "contributors": [
+    "choerodon"
+  ],
   "license": "ISC",
   "dependencies": {
     "choerodon-front-boot": "^0.0.1"

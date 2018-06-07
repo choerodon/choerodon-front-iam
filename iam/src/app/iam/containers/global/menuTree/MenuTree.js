@@ -12,6 +12,7 @@ const { MenuStore } = stores;
 
 let currentDropOverItem;
 let currentDropSide;
+let dropItem;
 
 function addDragClass(currentTarget, dropSide) {
   if (dropSide) {
@@ -398,10 +399,16 @@ class MenuTree extends Component {
   //拖拽离开目标
   handleDragLeave() {
     removeDragClass();
+    dropItem = null;
   }
 
   //拖拽开始
-  handleDragtStart(dragData) {
+  handleDragtStart(dragData, e) {
+    e.dataTransfer.setData('text', 'choerodon');
+    document.body.ondrop = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    };
     this.setState({
       dragData,
     });
@@ -410,6 +417,9 @@ class MenuTree extends Component {
   //拖拽结束
   handleDragEnd = () => {
     removeDragClass();
+    if (dropItem) {
+      this.handleDrop(dropItem);
+    }
     this.setState({
       dragData: null,
     });
@@ -421,6 +431,7 @@ class MenuTree extends Component {
     const canAddIn = this.checkDropIn(record);
     const canAddBesides = this.checkDropBesides(record);
     if (canAddIn || canAddBesides) {
+      dropItem = record;
       const { currentTarget, pageY, dataTransfer } = e;
       const { top, height } = currentTarget.getBoundingClientRect();
       let before = height / 2;

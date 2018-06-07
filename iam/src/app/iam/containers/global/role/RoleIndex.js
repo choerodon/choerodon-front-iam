@@ -2,12 +2,8 @@
  * Created by cheon on 6/27/17.
  */
 import React from 'react';
-import {
-  Route,
-  Switch,
-} from 'react-router-dom';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../../../util/asyncRouter';
+import { Route, Switch } from 'react-router-dom';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const Role = asyncRouter(() => (import('./roleHome')), () => (import('../../../stores/globalStores/role')));
 const EditRole = asyncRouter(() => (import('./roleEdit')), () => (import('../../../stores/globalStores/role')));

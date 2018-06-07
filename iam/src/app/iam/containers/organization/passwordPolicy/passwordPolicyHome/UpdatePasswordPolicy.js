@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import { Checkbox, Form, Input, InputNumber, Row, Col, Button, Tabs, Modal } from 'choerodon-ui';
-import Page, { Header, Content } from 'Page';
+import { Button, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Tabs } from 'choerodon-ui';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import PasswordPolicyStore from '../../../../stores/organization/passwordPolicy';
+import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import LoadingBar from '../../../../components/loadingBar';
 import PasswordForm from '../passwordPolicyComponent/PasswordForm';
 import LoginForm from '../passwordPolicyComponent/LoginForm';
-import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import './UpdatePasswordPolicy.scss';
 
 

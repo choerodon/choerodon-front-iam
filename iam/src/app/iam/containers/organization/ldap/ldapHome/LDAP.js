@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Form, Input, Button, Select, Radio, Tooltip, Popover, Icon, Modal } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Modal, Popover, Radio, Select, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import { observer, inject } from 'mobx-react';
-import Page, { Content, Header } from 'Page';
+import { inject, observer } from 'mobx-react';
 import TestLdap from '../testLdap';
 import LoadingBar from '../../../../components/loadingBar';
 import './LDAP.scss';

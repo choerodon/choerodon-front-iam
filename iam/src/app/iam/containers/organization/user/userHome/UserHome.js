@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Icon, Modal, Tooltip, Table } from 'choerodon-ui';
+import { Button, Icon, Modal, Table, Tooltip } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import Page, { Content, Header } from 'Page';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import EditUser from '../editUser';
 import './UserHome.scss';
 

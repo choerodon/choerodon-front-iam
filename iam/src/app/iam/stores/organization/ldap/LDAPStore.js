@@ -2,9 +2,8 @@
  * Created by song on 2017/6/26.
  */
 
-import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store('LDAPStore')
 class LDAPStore {

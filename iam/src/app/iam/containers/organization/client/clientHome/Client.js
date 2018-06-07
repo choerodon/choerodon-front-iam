@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import Permission from 'PerComponent';
-import { Button, Modal, Form, Input, Select, Tooltip, Table } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Page, { Content, Header } from 'Page';
 import LoadingBar from '../../../../components/loadingBar';
 import ClientStore from '../../../../stores/organization/client/ClientStore';
 import './Client.scss';

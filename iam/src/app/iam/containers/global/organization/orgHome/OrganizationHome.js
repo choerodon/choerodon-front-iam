@@ -1,17 +1,14 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import querystring from 'query-string';
-import Permission from 'PerComponent';
-import Page, { Content, Header } from 'Page';
-import axios from 'Axios';
-import HeaderStore from '@/stores/HeaderStore';
-import _ from 'lodash';
+import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip } from 'choerodon-ui';
+import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import './OrganizationHome.scss';
-import '../../../../assets/css/main.scss';
+//import '../../../../assets/css/main.scss';
 
+const { HeaderStore } = stores;
 const { Sidebar } = Modal;
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';

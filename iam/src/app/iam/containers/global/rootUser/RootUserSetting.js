@@ -2,14 +2,12 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Modal, Table, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
-import Page, { Content, Header } from 'Page';
-import Permission from 'PerComponent';
 import RootUserStore from '../../../stores/globalStores/rootUser/RootUserStore';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
 
 const { Sidebar } = Modal;
-const FormItem = Form.Item;
 
 @inject('AppState')
 @observer

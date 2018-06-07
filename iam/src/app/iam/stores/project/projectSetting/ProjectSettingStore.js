@@ -1,6 +1,5 @@
-import { observable, action, computed } from 'mobx';
-import store from 'Store';
-import axios from 'Axios';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store("ProjectSettingStore")
 class ProjectSettingStore {

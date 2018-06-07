@@ -3,17 +3,13 @@
  */
 
 import React from 'react';
-import {
-  Route,
-  Switch,
-} from 'react-router-dom';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../../../util/asyncRouter';
+import { Route, Switch } from 'react-router-dom';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const Organization = asyncRouter(() => (import('./orgHome')), () => import('../../../stores/globalStores/organization'));
 
 const OrganizationIndex = ({ match }) => (
-  <Switch> 
+  <Switch>
     <Route exact path={match.url} component={Organization} />
     <Route path={'*'} component={nomatch} />
   </Switch>

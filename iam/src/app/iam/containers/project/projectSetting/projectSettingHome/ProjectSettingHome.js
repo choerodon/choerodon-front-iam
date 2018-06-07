@@ -2,13 +2,12 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Input, Modal } from 'choerodon-ui';
-import Page, { Content, Header } from 'Page';
-import Permission from 'PerComponent';
-import HeaderStore from '@/stores/HeaderStore';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import './ProjectSettingHome.scss';
 import ProjectSettingStore from '../../../../stores/project/projectSetting/ProjectSettingStore';
 
+const {HeaderStore} = stores;
 const FormItem = Form.Item;
 
 @inject('AppState')

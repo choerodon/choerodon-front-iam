@@ -1,9 +1,8 @@
 /**
  * Created by jaywoods on 2017/6/25.
  */
-import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store('ServiceStore')
 class ServiceStore {

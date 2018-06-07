@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { Component } from 'react';
 import { Checkbox, Form, Input, Select, Icon } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
@@ -20,6 +21,7 @@ const formItemLayout = {
     sm: { span: 10 },
   },
 };
+let timer = null;
 
 @inject('AppState')
 @observer
@@ -36,8 +38,39 @@ class TestConnect extends Component {
     };
   }
 
+  getSyncInfoOnce = () => {
+    const ldapData = LDAPStore.getLDAPData;
+    const { organizationId } = this.state;
+    LDAPStore.getSyncInfo(organizationId, ldapData.id).then((data) => {
+      if (data.syncEndTime) {
+        window.clearInterval(timer);
+        LDAPStore.setSyncData(data);
+        LDAPStore.setIsSyncLoading(false);
+      }
+    })
+  }
+
+  getSpentTime = (startTime, endTime) => {
+    const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
+    // 天数
+    const days = Math.floor(spentTime / (24 * 3600 * 1000));
+    // 小时
+    const leave1 = spentTime % (24 * 3600 * 1000); //  计算天数后剩余的毫秒数
+    const hours = Math.floor(leave1 / (3600 * 1000));
+    // 分钟
+    const leave2 = leave1 % (3600 * 1000); //  计算小时数后剩余的毫秒数
+    const minutes = Math.floor(leave2 / (60 * 1000));
+    // 秒数
+    const leave3 = leave2 % (60 * 1000); //  计算分钟数后剩余的毫秒数
+    const seconds = Math.round(leave3 / 1000);
+    const resultDays = days ? (days + '天') : '';
+    const resultHours = hours ? (hours + '小时') : '';
+    const resultMinutes = minutes ? (minutes + '分钟') : '';
+    const resultSeconds = seconds ? (seconds + '秒') : '';
+    return resultDays + resultHours + resultMinutes + resultSeconds;
+  }
+
   getTestResult() {
-    const { showWhich } = this.props;
     const testData = LDAPStore.getTestData;
     const ldapData = LDAPStore.getLDAPData;
     const adminAccount = LDAPStore.getLDAPData.account;
@@ -63,7 +96,6 @@ class TestConnect extends Component {
             <ul className="info">
               <li style={{ display: ldapData.loginNameField ? 'inline' : 'none' }} className={ldapData.loginNameField === testData.loginNameField ? 'toRed' : ''}><span>登录名属性：</span><span>{ldapData.loginNameField}</span></li>
               <li style={{ display: ldapData.realNameField && adminStatus ? 'inline' : 'none' }} className={ldapData.realNameField === testData.realNameField ? 'toRed' : ''}><span>用户名属性：</span><span>{ldapData.realNameField}</span></li>
-              <li style={{ display: ldapData.passwordField && adminStatus ? 'inline' : 'none' }} className={ldapData.passwordField === testData.passwordField ? 'toRed' : ''}><span>密码属性：</span><span>{ldapData.passwordField}</span></li>
               <li style={{ display: ldapData.phoneField && adminStatus ? 'inline' : 'none' }} className={ldapData.phoneField === testData.phoneField ? 'toRed' : ''}><span>手机号属性：</span><span>{ldapData.phoneField}</span></li>
               <li style={{ display: ldapData.emailField ? 'inline' : 'none' }} className={ldapData.emailField === testData.emailField ? 'toRed' : ''}><span>邮箱属性：</span><span>{ldapData.emailField}</span></li>
             </ul>
@@ -73,11 +105,34 @@ class TestConnect extends Component {
     );
   }
 
+  getSyncInfo() {
+    const syncData = LDAPStore.getSyncData;
+    if (!syncData) {
+      return (
+        <div className="syncContainer">
+          <p>
+            当前没有同步用户记录。
+          </p>
+        </div>
+      );
+    } else if (syncData && syncData.syncEndTime) {
+      return (
+        <div className="syncContainer">
+          <p><span>上次同步时间</span> {syncData.syncEndTime}</p>
+          <p><span>（耗时</span>{this.getSpentTime(syncData.syncBeginTime, syncData.syncEndTime)}<span>），同步</span>{syncData.updateUserCount + syncData.newUserCount}<span>个用户</span></p>
+        </div>
+      );
+    } else if ((!syncData.syncEndTime) && syncData) {
+      return LDAPStore.setIsSyncLoading(true);
+    }
+  }
+
   getSidebarContent() {
     const { showWhich } = this.props;
     const { getFieldDecorator } = this.props.form;
     const testData = LDAPStore.getTestData;
     const ldapData = LDAPStore.getLDAPData;
+    const isSyncLoading = LDAPStore.getIsSyncLoading;
     if (showWhich === 'connect') {
       return (
         <div>
@@ -131,14 +186,19 @@ class TestConnect extends Component {
     } else {
       return (
         <div style={{ width: '512px' }}>
-          <SyncLoading />
+          {isSyncLoading ? <SyncLoading /> : this.getSyncInfo()}
         </div>
       );
     }
   }
 
+  closeSyncSidebar = () => {
+    window.clearInterval(timer);
+  }
+
   handleSubmit = (e) => {
-    const { AppState, showWhich } = this.props;
+    const { showWhich } = this.props;
+    const { organizationId } = this.state;
     e.preventDefault();
     if (showWhich === 'connect') {
       this.props.form.validateFieldsAndScroll((err, value) => {
@@ -149,7 +209,7 @@ class TestConnect extends Component {
           ldapData.account = value.ldapname;
           ldapData.password = value.ldappwd;
           LDAPStore.setIsConfirmLoading(true);
-          LDAPStore.testConnect(this.state.organizationId, LDAPStore.getLDAPData.id, ldapData)
+          LDAPStore.testConnect(organizationId, LDAPStore.getLDAPData.id, ldapData)
             .then((res) => {
               if (res) {
                 LDAPStore.setTestData(res);
@@ -163,7 +223,7 @@ class TestConnect extends Component {
       LDAPStore.setIsConnectLoading(true);
       LDAPStore.setIsConfirmLoading(true);
       const ldapData = LDAPStore.getLDAPData;
-      LDAPStore.testConnect(this.state.organizationId, LDAPStore.getLDAPData.id, ldapData)
+      LDAPStore.testConnect(organizationId, LDAPStore.getLDAPData.id, ldapData)
         .then((res) => {
           if (res) {
             LDAPStore.setTestData(res);
@@ -171,6 +231,17 @@ class TestConnect extends Component {
           LDAPStore.setIsConnectLoading(false);
           LDAPStore.setIsConfirmLoading(false);
         });
+    } else if (showWhich === 'sync') {
+      LDAPStore.setIsConfirmLoading(true);
+      LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+          LDAPStore.setIsConfirmLoading(false);
+        } else {
+          LDAPStore.setIsSyncLoading(true);
+          timer = window.setInterval(this.getSyncInfoOnce, 3000);
+        }
+      });
     }
   }
 

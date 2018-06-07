@@ -80,7 +80,7 @@ class Route extends Component {
     return (
       <Popover
         getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-        className="routePop"
+        overlayStyle={{ maxWidth: '180px' }}
         placement="right"
         trigger="hover"
         content={text}
@@ -204,7 +204,7 @@ class Route extends Component {
   handleDelete = (record) => {
     Modal.confirm({
       title: '删除路由',
-      content: '确定要删除路由"${record.name}"吗？',
+      content: `确定要删除路由"${record.name}"吗？`,
       onOk: () => {
         return axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
           if (failed) {
@@ -232,10 +232,10 @@ class Route extends Component {
         </span>
         <Popover
           getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-          className="routePop"
           placement="right"
           trigger="hover"
           content={tip}
+          overlayStyle={{ maxWidth: '180px' }}
         >
           <Icon type="help" />
         </Popover>

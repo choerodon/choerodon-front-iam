@@ -561,7 +561,7 @@ class MenuTree extends Component {
           icon = 'folder';
         }
         return (
-          <span><Icon type={icon} /> {text}</span>
+          <span><Icon type={icon} style={{ verticalAlign: 'text-bottom'}}/> {text}</span>
         );
       },
       onCell: this.handleCell,

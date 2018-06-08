@@ -316,6 +316,7 @@ class ProjectHome extends Component {
               }],
             })(
               <Input
+                autocomplete="off"
                 label="项目编码"
                 style={{ width: inputWidth }}
               />,
@@ -333,6 +334,7 @@ class ProjectHome extends Component {
               initialValue: operation === 'create' ? undefined : projectDatas.name,
             })(
               <Input
+                autocomplete="off"
                 label="项目名称"
                 style={{ width: inputWidth }}
               />,

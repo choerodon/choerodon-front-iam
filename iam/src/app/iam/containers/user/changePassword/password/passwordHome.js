@@ -123,7 +123,7 @@ class ChangePassword extends Component {
                   }],
                   validateTrigger: 'onBlur',
                 })(
-                  <Input label="原密码" type="password" style={{ width: inputWidth }} />,
+                  <Input autocomplete="off" label="原密码" type="password" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
               <FormItem
@@ -139,7 +139,7 @@ class ChangePassword extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label="新密码" type="password" style={{ width: inputWidth }} />,
+                  <Input autocomplete="off" label="新密码" type="password" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
               <FormItem
@@ -155,7 +155,7 @@ class ChangePassword extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label="确认密码" type="password" style={{ width: inputWidth }} onBlur={this.handleConfirmBlur} />,
+                  <Input autocomplete="off" label="确认密码" type="password" style={{ width: inputWidth }} onBlur={this.handleConfirmBlur} />,
                 )}
               </FormItem>
               <FormItem>

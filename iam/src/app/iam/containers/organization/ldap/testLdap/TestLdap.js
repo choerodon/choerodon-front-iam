@@ -157,6 +157,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
+                  autocomplete="off"
                   label="LDAP登录名"
                   style={{ width: inputWidth }}
                 />,
@@ -173,6 +174,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
+                  autocomplete="off"
                   type="password"
                   label="LDAP密码"
                   style={{ width: inputWidth }}

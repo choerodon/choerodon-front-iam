@@ -103,6 +103,10 @@ Once running, open http://localhost:9090
 * [webpack](https://webpack.docschina.org)
 * [gulp](https://gulpjs.com)
 
+## Links
+
+* [Change Log](./CHANGELOG.zh-CN.md)
+
 ## Reporting Issues
 If you find any shortcomings or bugs, please describe them in the  [issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
 

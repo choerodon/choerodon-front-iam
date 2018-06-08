@@ -375,16 +375,16 @@ class Route extends Component {
   renderBuiltIn(record) {
     if (record.builtIn) {
       return (
-        <div>
-          <span className="icon-settings" />
-          {Choerodon.getMessage('预定义', 'Predefined')}
+        <div className="iconStyle">
+          <Icon type="settings" />
+          <span>{Choerodon.getMessage('预定义', 'Predefined')}</span>
         </div>
       );
     } else {
       return (
-        <div>
-          <span className="icon-av_timer" />
-          {Choerodon.getMessage('自定义', 'Custom')}
+        <div className="iconStyle">
+          <Icon type="av_timer" />
+          <span>{Choerodon.getMessage('自定义', 'Custom')}</span>
         </div>
       );
     }

@@ -71,6 +71,7 @@ class TestConnect extends Component {
   }
 
   loading () {
+    window.clearInterval(timer);
     timer = window.setInterval(this.getSyncInfoOnce, 3000);
     return <SyncLoading />;
   }
@@ -111,7 +112,10 @@ class TestConnect extends Component {
   }
 
   getSyncInfo() {
-    const syncData = LDAPStore.getSyncData;
+    const syncData = LDAPStore.getSyncData || {};
+    if (timer) {
+      window.clearInterval(timer);
+    };
     if (!syncData) {
       return (
         <div className="syncContainer">
@@ -127,7 +131,7 @@ class TestConnect extends Component {
           <p><span>（耗时</span>{this.getSpentTime(syncData.syncBeginTime, syncData.syncEndTime)}<span>），同步</span>{syncData.updateUserCount + syncData.newUserCount}<span>个用户</span></p>
         </div>
       );
-    } else if ((!syncData.syncEndTime) && syncData) {
+    } else if (!syncData.syncEndTime) {
       return LDAPStore.setIsSyncLoading(true);
     }
   }
@@ -238,14 +242,11 @@ class TestConnect extends Component {
           LDAPStore.setIsConfirmLoading(false);
         });
     } else if (showWhich === 'sync') {
-      LDAPStore.setIsConfirmLoading(true);
       LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
-          LDAPStore.setIsConfirmLoading(false);
         } else {
           LDAPStore.setIsSyncLoading(true);
-          // timer = window.setInterval(this.getSyncInfoOnce, 3000);
         }
       });
     }

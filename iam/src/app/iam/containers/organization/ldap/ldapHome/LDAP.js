@@ -74,7 +74,7 @@ class LDAP extends Component {
   getSuffix(text) {
     return (
       <Popover
-        overlayStyle={{ maxWidth: '180px' }}
+        overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
         className="routePop"
         placement="right"
         trigger="hover"
@@ -144,6 +144,18 @@ class LDAP extends Component {
 
   /* 开启侧边栏 */
   openSidebar(status) {
+    const { LDAPStore } = this.props;
+    if (this.TestLdap) {
+      LDAPStore.setIsShowResult(false);
+      const { resetFields } = this.TestLdap.props.form;
+      resetFields();
+      LDAPStore.setIsSyncLoading(false);
+    }
+
+    if (status === 'connect') {
+      LDAPStore.setIsConfirmLoading(false);
+    }
+
     this.setState({
       sidebar: true,
       showWhich: status,
@@ -155,19 +167,16 @@ class LDAP extends Component {
 
   /* 关闭侧边栏 */
   closeSidebar = () => {
-    const { LDAPStore } = this.props;
     const { showWhich } = this.state;
+    const { LDAPStore } = this.props;
+    // if (showWhich === 'sync') {
+    //
+    // }
     this.setState({
       sidebar: false,
     }, () => {
-      LDAPStore.setIsShowResult(false);
-      LDAPStore.setIsConfirmLoading(false);
-      const { resetFields } = this.TestLdap.props.form;
-      resetFields();
-    });
-    if (showWhich === 'sync') {
       this.TestLdap.closeSyncSidebar();
-    }
+    });
   };
 
   /* 是否显示服务器设置下拉面板 */
@@ -316,9 +325,9 @@ class LDAP extends Component {
     const inputWidth = 512;
     const tips = {
       hostname: '运行 LDAP 的服务器主机名。例如ldap.example.com',
-      ssl: '默认情况下，请求转发时会将路由规则中的前缀去除',
-      basedn: 'LDAP目录树的最顶部的根，从根节点搜索用户。例如: cn=users,dc=example,dc=com',
-      loginname: '用户登录到 LDAP。例子: user@domain.name 或 cn =用户, dc =域、dc =名称',
+      ssl: '是否使用SSL会对端口号有影响',
+      basedn: 'LDAP目录树的最顶部的根，从根节点搜索用户。例如：cn=users,dc=example,dc=com',
+      loginname: '用户登录到 LDAP。例如：user@domain.name 或 cn =用户, dc =域、dc =名称',
       username: '为空时系统将默认获取登录名的值',
     };
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
@@ -553,6 +562,7 @@ class LDAP extends Component {
             cancelText={showWhich === 'sync' ? '返回' : '取消'}
             onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
+            confirmLoading={showWhich === 'sync' ? false : LDAPStore.confirmLoading}
           >
             {this.renderSidebarContent()}
           </Sidebar>

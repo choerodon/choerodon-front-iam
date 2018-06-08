@@ -375,7 +375,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.serverAddress ? ldapData.serverAddress : undefined,
             })(
-              <Input label="主机名" style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} />,
+              <Input label="主机名" style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -400,7 +400,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.port || (ldapData.useSSL ? '636' : '389'),
             })(
-              <Input label="端口号" style={{ width: inputWidth }} />,
+              <Input label="端口号" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -409,7 +409,7 @@ class LDAP extends Component {
             {getFieldDecorator('baseDn', {
               initialValue: ldapData.baseDn ? ldapData.baseDn : undefined,
             })(
-              <Input label="基准DN" suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} />,
+              <Input label="基准DN" suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -418,7 +418,7 @@ class LDAP extends Component {
             {getFieldDecorator('account', {
               initialValue: ldapData.account ? ldapData.account : undefined,
             })(
-              <Input label="管理员登录名" suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} />,
+              <Input label="管理员登录名" suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -427,7 +427,7 @@ class LDAP extends Component {
             {getFieldDecorator('password', {
               initialValue: ldapData.password ? ldapData.password : undefined,
             })(
-              <Input label="管理员密码" type="password" style={{ width: inputWidth }} />,
+              <Input label="管理员密码" type="password" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
         </div>
@@ -446,7 +446,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
             })(
-              <Input label="用户对象类" style={{ width: inputWidth }} />,
+              <Input label="用户对象类" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -459,7 +459,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.loginNameField ? ldapData.loginNameField : undefined,
             })(
-              <Input label="登录名属性" style={{ width: inputWidth }} />,
+              <Input label="登录名属性" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -472,7 +472,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.emailField ? ldapData.emailField : undefined,
             })(
-              <Input label="邮箱属性" style={{ width: inputWidth }} />,
+              <Input label="邮箱属性" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -481,7 +481,7 @@ class LDAP extends Component {
             {getFieldDecorator('realNameField', {
               initialValue: ldapData.realNameField ? ldapData.realNameField : undefined,
             })(
-              <Input label="用户名属性" style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} />,
+              <Input label="用户名属性" style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -490,7 +490,7 @@ class LDAP extends Component {
             {getFieldDecorator('phoneField', {
               initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
             })(
-              <Input label="手机号属性" style={{ width: inputWidth }} />,
+              <Input label="手机号属性" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
         </div>

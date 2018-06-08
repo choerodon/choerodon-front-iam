@@ -145,8 +145,8 @@ class LDAP extends Component {
   /* 开启侧边栏 */
   openSidebar(status) {
     const { LDAPStore } = this.props;
+    LDAPStore.setIsShowResult(false);
     if (this.TestLdap) {
-      LDAPStore.setIsShowResult(false);
       const { resetFields } = this.TestLdap.props.form;
       resetFields();
       LDAPStore.setIsSyncLoading(false);

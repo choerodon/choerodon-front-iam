@@ -524,6 +524,7 @@ class Route extends Component {
             })(
               <Input
                 label="路由名称"
+                autocomplete="off"
                 suffix={this.getSuffix('路由表中的唯一标识')}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
@@ -547,6 +548,7 @@ class Route extends Component {
             })(
               <Input
                 label="路径"
+                autocomplete="off"
                 style={{ width: inputWidth }}
                 suffix={this.getSuffix('路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径')}
                 disabled={!createValidate}
@@ -663,6 +665,7 @@ class Route extends Component {
             })(
               <Input
                 disabled={detailValidate}
+                autocomplete="off"
                 label="Helper服务名"
                 style={{ width: inputWidth }}
                 suffix={this.getSuffix('该路由规则对应的自定义网关处理器服务，默认为gateway-helper')}

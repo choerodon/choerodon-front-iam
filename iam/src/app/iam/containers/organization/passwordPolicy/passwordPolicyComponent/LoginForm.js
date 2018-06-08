@@ -98,6 +98,7 @@ class LoginForm extends Component {
                 initialValue: passwordPolicy ? passwordPolicy.maxCheckCaptcha : undefined,
               })(
                 <Input
+                  autocomplete="off"
                   type="number"
                   label="输错次数"
                   style={{ width: 300 }}
@@ -134,7 +135,7 @@ class LoginForm extends Component {
                 }],
                 initialValue: passwordPolicy ? passwordPolicy.maxErrorTime : undefined,
               })(
-                <Input type="number" label="输错次数" style={{ width: 300 }} />,
+                <Input autocomplete="off" type="number" label="输错次数" style={{ width: 300 }} />,
               )}
             </FormItem>
             {/* <FormItem

@@ -294,6 +294,7 @@ class EditUser extends Component {
               validateFirst: true,
             })(
               <Input
+                autocomplete="off"
                 label={Choerodon.getMessage('登录名', 'user loginName')}
                 disabled={edit}
                 style={{ width: inputWidth }}
@@ -316,6 +317,7 @@ class EditUser extends Component {
                 validateTrigger: 'onBlur',
               })(
                 <Input
+                  autocomplete="off"
                   label={Choerodon.getMessage('用户名', 'user name')}
                   type="text"
                   rows={1}
@@ -347,6 +349,7 @@ class EditUser extends Component {
               validateFirst: true,
             })(
               <Input
+                autocomplete="off"
                 label={Choerodon.getMessage('邮箱', 'user email')}
                 style={{ width: inputWidth }}
               />,
@@ -374,6 +377,7 @@ class EditUser extends Component {
                 validateFirst: true,
               })(
                 <Input
+                  autocomplete="off"
                   label={Choerodon.getMessage('密码', 'user password')}
                   type="password"
                   style={{ width: inputWidth }}
@@ -398,6 +402,7 @@ class EditUser extends Component {
                 validateFirst: true,
               })(
                 <Input
+                  autocomplete="off"
                   label={Choerodon.getMessage('确认密码', 'password confirm')}
                   type="password"
                   style={{ width: inputWidth }}

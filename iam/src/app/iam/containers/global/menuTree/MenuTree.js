@@ -245,6 +245,7 @@ class MenuTree extends Component {
           >
             <Input
               value={name}
+              autocomplete="off"
               label="菜单名称"
               disabled={true}
               style={{ width: inputWidth }}
@@ -255,6 +256,7 @@ class MenuTree extends Component {
           >
             <Input
               value={code}
+              autocomplete="off"
               label="菜单编码"
               disabled={true}
               style={{ width: inputWidth }}
@@ -266,6 +268,7 @@ class MenuTree extends Component {
             <Input
               value={level}
               label="菜单层级"
+              autocomplete="off"
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -277,6 +280,7 @@ class MenuTree extends Component {
               value={__parent_name__}
               label="所属根目录"
               disabled={true}
+              autocomplete="off"
               style={{ width: inputWidth }}
             />
           </FormItem>
@@ -312,7 +316,7 @@ class MenuTree extends Component {
             initialValue: selectMenuDetail.name,
           })(
             <Input
-              autoComplete="off"
+              autocomplete="off"
               label="目录名称"
               style={{ width: inputWidth }}
             />,

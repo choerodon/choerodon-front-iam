@@ -313,6 +313,7 @@ class CreateRole extends Component {
                   initialValue: this.state.roleName,
                 })(
                   <Input
+                    autocomplete="off"
                     label={Choerodon.getMessage('角色编码', 'code')}
                     prefix={codePrefix}
                     size="default"
@@ -334,6 +335,7 @@ class CreateRole extends Component {
                   initialValue: this.state.name,
                 })(
                   <Input
+                    autocomplete="off"
                     label={Choerodon.getMessage('角色名称', 'name')}
                     type="textarea"
                     rows={1}

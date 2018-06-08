@@ -187,6 +187,7 @@ class UserInfo extends Component {
             initialValue: realName,
           })(
             <Input
+              autocomplete="off"
               label="用户名"
               style={{ width: inputWidth }}
             />,
@@ -216,6 +217,7 @@ class UserInfo extends Component {
             validateFirst: true,
           })(
             <Input
+              autocomplete="off"
               label="邮箱"
               style={{ width: inputWidth }}
             />,

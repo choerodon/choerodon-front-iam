@@ -315,6 +315,7 @@ class Client extends Component {
             validateFirst: true,
           })(
             <Input
+              autocomplete="off"
               label={Choerodon.languageChange('client.name')}
               disabled={status === 'edit'}
             />,
@@ -332,7 +333,7 @@ class Client extends Component {
               message: Choerodon.getMessage('密钥必填', 'Secret is required'),
             }],
           })(
-            <Input label={Choerodon.languageChange('client.secret')} />,
+            <Input autocomplete="off" label={Choerodon.languageChange('client.secret')} />,
           )}
         </FormItem>
         <FormItem
@@ -370,6 +371,7 @@ class Client extends Component {
               parseInt(client.accessTokenValidity, 10) : undefined,
           })(
             <Input
+              autocomplete="off"
               label={Choerodon.languageChange('client.accessTokenValidity')}
               style={{ width: 300 }}
               type="number"
@@ -386,6 +388,7 @@ class Client extends Component {
               parseInt(client.refreshTokenValidity, 10) : undefined,
           })(
             <Input
+              autocomplete="off"
               label={Choerodon.languageChange('client.refreshTokenValidity')}
               style={{ width: 300 }}
               type="number"
@@ -400,7 +403,7 @@ class Client extends Component {
           {getFieldDecorator('webServerRedirectUri', {
             initialValue: client.webServerRedirectUri || undefined,
           })(
-            <Input label={Choerodon.languageChange('client.webServerRedirectUri')} />,
+            <Input autocomplete="off" label={Choerodon.languageChange('client.webServerRedirectUri')} />,
           )}
         </FormItem>
         <FormItem
@@ -421,7 +424,7 @@ class Client extends Component {
             validateTrigger: 'onBlur',
             initialValue: client.additionalInformation || undefined,
           })(
-            <TextArea label={Choerodon.languageChange('client.additionalInformation')} rows={3} />,
+            <TextArea autocomplete="off" label={Choerodon.languageChange('client.additionalInformation')} rows={3} />,
           )}
         </FormItem>
       </Form>

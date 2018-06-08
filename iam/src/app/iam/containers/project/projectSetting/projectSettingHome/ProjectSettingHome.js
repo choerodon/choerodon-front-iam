@@ -118,14 +118,14 @@ class ProjectSettingHome extends Component {
                   {getFieldDecorator('name', {
                     initialValue: name,
                   })(
-                    <Input label="项目名" disabled={!enabled} style={{ width: 512 }} />,
+                    <Input autocomplete="off" label="项目名" disabled={!enabled} style={{ width: 512 }} />,
                   )}
                 </FormItem>
                 <FormItem>
                   {getFieldDecorator('code', {
                     initialValue: code,
                   })(
-                    <Input label="项目编码" disabled style={{ width: 512 }} />,
+                    <Input autocomplete="off" label="项目编码" disabled style={{ width: 512 }} />,
                   )}
                 </FormItem>
                 <Permission service={['iam-service.project.update']}>

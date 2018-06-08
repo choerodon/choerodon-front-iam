@@ -253,6 +253,7 @@ class EditRole extends Component {
                   <Input
                     size="default"
                     label="角色层级"
+                    autocomplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -273,6 +274,7 @@ class EditRole extends Component {
                   <Input
                     size="default"
                     label={Choerodon.getMessage('角色编码', 'code')}
+                    autocomplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -294,6 +296,7 @@ class EditRole extends Component {
                   <Input
                     rows={1}
                     label={Choerodon.getMessage('角色名称', 'name')}
+                    autocomplete="off"
                     style={{
                       width: '512px',
                     }}

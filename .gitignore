@@ -21,5 +21,4 @@ webpack/dll
 #缓存
 sh.sh
 .cache
-config.yml
 pythonsql.py

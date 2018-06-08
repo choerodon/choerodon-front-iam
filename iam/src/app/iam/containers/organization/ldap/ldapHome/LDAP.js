@@ -324,7 +324,7 @@ class LDAP extends Component {
     const { getFieldDecorator } = form;
     const inputWidth = 512;
     const tips = {
-      hostname: '运行 LDAP 的服务器主机名。例如ldap.example.com',
+      hostname: '运行 LDAP 的服务器主机名。例如：ldap.example.com',
       ssl: '是否使用SSL会对端口号有影响',
       basedn: 'LDAP目录树的最顶部的根，从根节点搜索用户。例如：cn=users,dc=example,dc=com',
       loginname: '用户登录到 LDAP。例如：user@domain.name 或 cn =用户, dc =域、dc =名称',

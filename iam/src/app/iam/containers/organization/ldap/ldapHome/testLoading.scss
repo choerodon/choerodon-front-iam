@@ -1,0 +1,138 @@
+/* stylelint-disable */
+.loadingContainer {
+  padding-top: 24px;
+  padding-bottom: 1px;
+  margin-bottom: 32px;
+  border-radius: 4px;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,0.20), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12);
+
+  .connectLoader {
+    position: relative;
+    margin: 0 auto;
+    width: 50px;
+    height: inherit;
+
+    &:before {
+      content: '';
+      display: block;
+      padding-top: 100%;
+    }
+  }
+
+  .connectCircular {
+    -webkit-animation: rotate 2s linear infinite;
+    animation: rotate 2s linear infinite;
+    height: 100%;
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  .connectPath {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    -webkit-animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+    animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+    stroke-linecap: round;
+  }
+
+  @-webkit-keyframes rotate {
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotate {
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+
+  @-webkit-keyframes dash {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+
+    50% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -35px;
+    }
+
+    100% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -124px;
+    }
+  }
+
+  @keyframes dash {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+
+    50% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -35px;
+    }
+
+    100% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -124px;
+    }
+  }
+
+  @-webkit-keyframes color {
+    100%,
+    0% {
+      stroke: #0057e7;
+    }
+
+    40% {
+      stroke: #0057e7;
+    }
+
+    66% {
+      stroke: #0057e7;
+    }
+
+    80%,
+    90% {
+      stroke: #0057e7;
+    }
+  }
+
+  @keyframes color {
+    100%,
+    0% {
+      stroke: #0057e7;
+    }
+
+    40% {
+      stroke: #0057e7;
+    }
+
+    66% {
+      stroke: #0057e7;
+    }
+
+    80%,
+    90% {
+      stroke: #0057e7;
+    }
+  }
+
+  .loadingText {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 22px;
+  }
+}

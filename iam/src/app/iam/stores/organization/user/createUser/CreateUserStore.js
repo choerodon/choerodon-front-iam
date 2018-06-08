@@ -1,11 +1,9 @@
-import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store('CreateUserStore')
 class CreateUserStore {
   @observable language;
-  @observable organization;
   @observable passwordPolicy;
 
   @action
@@ -19,16 +17,6 @@ class CreateUserStore {
   }
 
   @action
-  setOrganization(data) {
-    this.organization = data;
-  }
-
-  @computed
-  get getOrganization() {
-    return this.organization;
-  }
-
-  @action
   setPasswordPolicy(data) {
     this.passwordPolicy = data;
   }
@@ -38,12 +26,6 @@ class CreateUserStore {
     return this.passwordPolicy;
   }
 
-  loadOrganizationById(organizationId) {
-    return axios.get(`/iam/v1/organizations/${organizationId}`).then((data) => {
-      this.setOrganization(data);
-    });
-  }
-
   loadPasswordPolicyById(id) {
     return axios.get(`/iam/v1/organizations/${id}/password_policies`).then((data) => {
       this.setPasswordPolicy(data);
@@ -51,11 +33,11 @@ class CreateUserStore {
   }
 
   checkUsername = (organizationId, loginName) => (
-    axios.post('/iam/v1/users/check', JSON.stringify({ organizationId, loginName }))
+    axios.post(`/iam/v1/organizations/${organizationId}/users/check`, JSON.stringify({ organizationId, loginName }))
   );
 
   checkEmailAddress = (organizationId, email) => (
-    axios.post('/iam/v1/users/check', JSON.stringify({ organizationId, email }))
+    axios.post(`/iam/v1/organizations/${organizationId}/users/check`, JSON.stringify({ organizationId, email }))
   );
 
   createUser = (user, id) => (

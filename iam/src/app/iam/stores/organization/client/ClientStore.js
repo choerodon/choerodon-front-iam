@@ -1,6 +1,5 @@
-import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
 
 @store('ClientStore')
@@ -88,7 +87,7 @@ class ClientStore {
   deleteClientById = (organizationId, id) =>
     axios.delete(`/iam/v1/organizations/${organizationId}/clients/${id}`);
 
-  checkName = name => axios.get(`/iam/v1/public/client/name?name=${name}`);
+  checkName = (organizationId, client) => axios.post(`/iam/v1/organizations/${organizationId}/clients/check`, client);
 }
 
 const clientStore = new ClientStore();

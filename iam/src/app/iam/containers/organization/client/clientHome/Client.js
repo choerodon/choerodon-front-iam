@@ -1,17 +1,37 @@
 import React, { Component } from 'react';
-import Permission from 'PerComponent';
-import { Table, Button, Popover, Tag, Modal, Popconfirm } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
-import _ from 'lodash';
+import { Button, Form, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Action from 'Action';
-import Remove from 'Remove';
-import Page, { Header, Content } from 'Page';
-import ClientCreate from '../clientCreate';
-import ClientEdit from '../clientEdit';
+import LoadingBar from '../../../../components/loadingBar';
+import ClientStore from '../../../../stores/organization/client/ClientStore';
 import './Client.scss';
 
+
 const { Sidebar } = Modal;
+const FormItem = Form.Item;
+const Option = Select.Option;
+const { TextArea } = Input;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
+  },
+};
+const formItemNumLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
+  },
+};
 /**
  * 分页加载条数
  * @type {number}
@@ -23,6 +43,7 @@ class Client extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      submitting: false,
       page: 0,
       open: false,
       params: null,
@@ -44,44 +65,28 @@ class Client extends Component {
     this.loadClient(pagination, sort);
   }
 
-  getSidebarInfo() {
+  getSidebarContentInfo = () => {
+    const menuType = this.props.AppState.currentMenuType;
+    const organizationName = menuType.name;
+    const client = ClientStore.getClient;
     const { status } = this.state;
-    let title = '';
-    let content = null;
     switch (status) {
       case 'create':
-        title = '创建客户端';
-        content = (
-          <ClientCreate
-            onRef={(ref) => {
-              this.clientCreate = ref;
-            }}
-            onSubmit={this.closeSidebar}
-          />
-        );
-        break;
+        return {
+          title: `在组织“${organizationName}”中创建客户端`,
+          link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
+          description: '请在下面输入客户端ID、密钥，选择授权类型。您可以选择性输入访问授权超时、授权超时、重定向地址、附加信息。',
+        };
       case 'edit':
-        title = '修改客户端';
-        content = (
-          <ClientEdit
-            onRef={(ref) => {
-              this.clientEdit = ref;
-            }}
-            organizationId={this.state.selectData.organizationId}
-            id={this.state.selectData.id}
-            onSubmit={this.closeSidebar}
-          />
-        );
-        break;
-      default: 
-        break;
+        return {
+          title: `对客户端“${client && client.name}”进行修改`,
+          link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
+          description: '您可以在此修改客户端密钥、授权类型、访问授权超时、授权超时、重定向地址、附加信息。',
+        };
+      default:
+        return {};
     }
-    return {
-      title,
-      content,
-    };
   }
-
   /**
    * 刷新
    */
@@ -96,7 +101,7 @@ class Client extends Component {
    * @param state 当前search参数
    */
   loadClient = (pagination, sort, filters) => {
-    const { AppState, ClientStore } = this.props;
+    const { AppState } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     ClientStore.loadClients(organizationId, pagination, sort, filters)
@@ -134,84 +139,311 @@ class Client extends Component {
       params: (params && params[0]) || '',
     };
     this.loadClient(pagination, newSorter, newFilters);
-  }
+  };
 
   /**
    * 删除客户端
    */
   handleDelete = (record) => {
-    const { ClientStore } = this.props;
-    ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {
-      if (status) {
-        Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
-        this.reload();
-      } else {
+    Modal.confirm({
+      title: '删除客户端',
+      content: `确认删除客户端${record.name}吗?`,
+      onOk: () => ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {
+        if (status) {
+          Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
+          this.reload();
+        } else {
+          Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
+        }
+      }).catch(() => {
         Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
-      }
-    }).catch(() => {
-      Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
+      }),
     });
   };
 
-  openSidebar = (status, record) => {
-    const { ClientStore } = this.props;
+  openSidebar = (status, record = {}) => {
     this.setState({
       status,
       visible: true,
+      selectData: record,
     });
-    if (record) {
-      this.setState({
-        selectData: record,
-      });
-      ClientStore.setClientById(record);
+    ClientStore.setClientById([]);
+    if (record.organizationId && record.id) {
+      ClientStore.getClientById(record.organizationId, record.id)
+        .subscribe((data) => {
+          ClientStore.setClientById(data);
+        });
     }
-  }
-
-  handleOk = (event) => {
-    const { status } = this.state;
-    let closeSidebar;
-    if (status === 'create') {
-      closeSidebar = this.clientCreate.handleSubmit(event);
-    }
-    if (status === 'edit') {
-      closeSidebar = this.clientEdit.handleSubmit(event);
-    }
-    if (closeSidebar) {
-      this.closeSidebar();
-    }
-  }
+  };
 
   closeSidebar = () => {
-    const clientCreate = this.clientCreate;
-    const clientEdit = this.clientEdit;
+    const { resetFields } = this.props.form;
+    resetFields();
     this.setState({
       visible: false,
+      submitting: false,
     }, () => {
-      if (clientCreate) {
-        clientCreate.resetForm();
-      }
-      if (clientEdit) {
-        clientEdit.resetForm();
+      this.reload();
+    });
+  };
+
+  /**
+   * 跳转函数
+   * @param url
+   */
+  linkToChange = (url) => {
+    const { history } = this.props;
+    history.push(url);
+  };
+
+  /**
+   * 校验客户端名称
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkName = (rule, value, callback) => {
+    const { AppState } = this.props;
+    const menuType = AppState.currentMenuType;
+    const organizationId = menuType.id;
+    ClientStore.checkName(organizationId, {
+      name: value,
+    }).then((mes) => {
+      if (mes.failed) {
+        callback(Choerodon.getMessage('客户端名称已存在，请输入其他客户端名称', 'name existed, please try another'));
+      } else {
+        callback();
       }
     });
-    this.reload();
+  };
+
+  isJson = (string) => {
+    if (typeof string === 'string') {
+      const str = string.trim();
+      if (str.substr(0, 1) === '{' && str.substr(-1, 1) === '}') {
+        try {
+          JSON.parse(str);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+    }
+    return false;
+  };
+  /**
+   * 编辑客户端form表单提交
+   * @param e
+   */
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { form, AppState } = this.props;
+    const { status, selectData } = this.state;
+    form.validateFieldsAndScroll((err, data) => {
+      if (!err) {
+        const menuType = AppState.currentMenuType;
+        const organizationId = menuType.id;
+        const dataType = data;
+        if (dataType.authorizedGrantTypes) {
+          dataType.authorizedGrantTypes = dataType.authorizedGrantTypes.join(',');
+        }
+        if (status === 'create') {
+          dataType.organizationId = organizationId;
+          this.setState({
+            submitting: true,
+          });
+          ClientStore.createClient(organizationId, { ...dataType })
+            .then((value) => {
+              if (value) {
+                this.closeSidebar();
+                Choerodon.prompt(Choerodon.getMessage('添加成功', 'Success'));
+              }
+            })
+            .catch((error) => {
+              Choerodon.handleResponseError(error);
+            });
+        } else if (status === 'edit') {
+          const client = ClientStore.getClient;
+          this.setState({
+            submitting: true,
+          });
+          if (dataType.additionalInformation === '') {
+            dataType.additionalInformation = undefined;
+          }
+          ClientStore.updateClient(selectData.organizationId,
+            {
+              ...data,
+              authorizedGrantTypes: dataType.authorizedGrantTypes,
+              objectVersionNumber: client.objectVersionNumber,
+              organizationId,
+            },
+            selectData.id)
+            .then((value) => {
+              if (value) {
+                this.closeSidebar();
+                Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
+              }
+            })
+            .catch((error) => {
+              this.closeSidebar();
+              Choerodon.handleResponseError(error);
+            });
+        }
+      }
+    });
+  };
+
+  renderSidebarContent() {
+    const client = ClientStore.getClient || {};
+    const { getFieldDecorator } = this.props.form;
+    const { status } = this.state;
+    const mainContent = client ? (<div className="client-detail">
+      <Form layout="vertical" style={{ width: 512 }}>
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('name', {
+            initialValue: client.name || undefined,
+            rules: [{
+              required: true,
+              whitespace: true,
+              message: Choerodon.getMessage('客户端名称必填', 'Client name is required'),
+            }, {
+              validator: status === 'create' && this.checkName,
+            }],
+            validateTrigger: 'onBlur',
+            validateFirst: true,
+          })(
+            <Input
+              autocomplete="off"
+              label={Choerodon.languageChange('client.name')}
+              disabled={status === 'edit'}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          label={Choerodon.languageChange('client.secret')}
+        >
+          {getFieldDecorator('secret', {
+            initialValue: client.secret || undefined,
+            rules: [{
+              required: true,
+              whitespace: true,
+              message: Choerodon.getMessage('密钥必填', 'Secret is required'),
+            }],
+          })(
+            <Input autocomplete="off" label={Choerodon.languageChange('client.secret')} />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('authorizedGrantTypes', {
+            initialValue: client.authorizedGrantTypes ? client.authorizedGrantTypes.split(',') : [],
+            rules: [
+              {
+                type: 'array',
+                required: true,
+                message: Choerodon.getMessage('授权类型必填', 'AuthorizedGrantTypes is required'),
+              },
+            ],
+          })(
+            <Select
+              mode="multiple"
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              label={Choerodon.languageChange('client.authorizedGrantTypes')}
+              size="default"
+            >
+              <Option value="password">password</Option>
+              <Option value="implicit">implicit</Option>
+              <Option value="client_credentials">client_credentials</Option>
+              <Option value="authorization_code">authorization_code</Option>
+              <Option value="refresh_token">refresh_token</Option>
+            </Select>,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemNumLayout}
+        >
+          {getFieldDecorator('accessTokenValidity', {
+            initialValue: client.accessTokenValidity ?
+              parseInt(client.accessTokenValidity, 10) : undefined,
+          })(
+            <Input
+              autocomplete="off"
+              label={Choerodon.languageChange('client.accessTokenValidity')}
+              style={{ width: 300 }}
+              type="number"
+              size="default"
+              min={60}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemNumLayout}
+        >
+          {getFieldDecorator('refreshTokenValidity', {
+            initialValue: client.refreshTokenValidity ?
+              parseInt(client.refreshTokenValidity, 10) : undefined,
+          })(
+            <Input
+              autocomplete="off"
+              label={Choerodon.languageChange('client.refreshTokenValidity')}
+              style={{ width: 300 }}
+              type="number"
+              size="default"
+              min={60}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('webServerRedirectUri', {
+            initialValue: client.webServerRedirectUri || undefined,
+          })(
+            <Input autocomplete="off" label={Choerodon.languageChange('client.webServerRedirectUri')} />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('additionalInformation', {
+            rules: [
+              {
+                validator: (rule, value, callback) => {
+                  if (!value || this.isJson(value)) {
+                    callback();
+                  } else {
+                    callback('请输入正确的json字符串');
+                  }
+                },
+              },
+            ],
+            validateTrigger: 'onBlur',
+            initialValue: client.additionalInformation || undefined,
+          })(
+            <TextArea autocomplete="off" label={Choerodon.languageChange('client.additionalInformation')} rows={3} />,
+          )}
+        </FormItem>
+      </Form>
+    </div>) : <LoadingBar />;
+    return (
+      <div>
+        <Content className="sidebar-content" {...this.getSidebarContentInfo()}>
+          {mainContent}
+        </Content>
+      </div>
+    );
   }
 
   render() {
-    const { AppState, ClientStore } = this.props;
+    const { AppState } = this.props;
+    const { submitting, status, pagination, visible } = this.state;
     const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
     const organizationName = menuType.name;
-    let type;
-    if (AppState.getType) {
-      type = AppState.getType;
-    } else if (sessionStorage.type) {
-      type = sessionStorage.type;
-    } else {
-      type = menuType.type;
-    }
     const clientData = ClientStore.getClients;
-    const sidebarInfo = this.getSidebarInfo();
     const columns = [
       {
         title: Choerodon.languageChange('client.name'),
@@ -265,46 +497,44 @@ class Client extends Component {
           <div>
             <Permission
               service={['iam-service.client.update']}
-              type={type}
-              organizationId={organizationId}
             >
-              <Button
-                onClick={() => {
-                  this.openSidebar('edit', record);
-                }}
-                shape="circle"
-                icon="mode_edit"
-              />
+              <Tooltip
+                title="修改"
+                placement="bottom"
+              >
+                <Button
+                  onClick={() => {
+                    this.openSidebar('edit', record);
+                  }}
+                  shape="circle"
+                  icon="mode_edit"
+                />
+              </Tooltip>
             </Permission>
             <Permission
               service={['iam-service.client.delete']}
-              type={type}
-              organizationId={organizationId}
             >
-              <Popconfirm
-                title={`确认删除客户端${record.name}吗?`}
-                onConfirm={() => this.handleDelete(record)}
+              <Tooltip
+                title="删除"
+                placement="bottom"
               >
-                <Button shape="circle" icon="delete" />
-              </Popconfirm>
+                <Button shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete_forever" />
+              </Tooltip>
             </Permission>
           </div>),
       },
     ];
-
     return (
       <Page>
         <Header title={Choerodon.languageChange('client.title')}>
           <Permission
             service={['iam-service.client.create']}
-            type={type}
-            organizationId={organizationId}
           >
             <Button
               onClick={() => this.openSidebar('create')}
               icon="playlist_add"
             >
-              {Choerodon.languageChange('create')}
+              {Choerodon.getMessage('创建客户端', 'Create Client')}
             </Button>
           </Permission>
           <Button
@@ -321,7 +551,7 @@ class Client extends Component {
         >
           <Table
             size="middle"
-            pagination={this.state.pagination}
+            pagination={pagination}
             columns={columns}
             dataSource={clientData}
             rowKey="id"
@@ -330,14 +560,15 @@ class Client extends Component {
             filterBarPlaceholder="过滤表"
           />
           <Sidebar
-            title={sidebarInfo.title}
-            onOk={this.handleOk}
+            title={status === 'create' ? '创建客户端' : '修改客户端'}
+            onOk={this.handleSubmit}
             onCancel={this.closeSidebar}
-            visible={this.state.visible}
-            okText={this.state.status === 'create' ? '创建' : '保存'}
+            visible={visible}
+            okText={status === 'create' ? '创建' : '保存'}
             cancelText="取消"
+            confirmLoading={submitting}
           >
-            {sidebarInfo.content}
+            {this.renderSidebarContent()}
           </Sidebar>
         </Content>
       </Page>
@@ -345,4 +576,4 @@ class Client extends Component {
   }
 }
 
-export default withRouter(Client);
+export default Form.create({})(withRouter(Client));

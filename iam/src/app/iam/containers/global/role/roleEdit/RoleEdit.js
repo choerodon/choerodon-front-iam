@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Col, Form, Input, Modal, Row, Select, Table } from 'choerodon-ui';
-import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { inject, observer } from 'mobx-react';
 import { Observable } from 'rxjs';
-import Page, { Header, Content } from 'Page';
+import { Button, Col, Form, Input, Modal, Row, Select, Table } from 'choerodon-ui';
+import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
-import '../../../../assets/css/main.scss';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
 import './RoleEdit.scss';
 
@@ -22,7 +21,7 @@ class EditRole extends Component {
       roleData: {},
       visible: false,
       selectedLevel: 'site',
-      buttonClicked: false,
+      submitting: false,
       id: this.props.match.params.id,
       currentPermission: [],
       selectPermission: [],
@@ -114,16 +113,19 @@ class EditRole extends Component {
             labels: labelIds,
             objectVersionNumber: this.state.roleData.objectVersionNumber,
           };
-          this.setState({ submitting: true, buttonClicked: true });
-          RoleStore.editRoleByid(this.state.id, role).then((data) => {
-            if (data) {
-              Choerodon.prompt(Choerodon.getMessage('成功', 'Success'));
-              this.linkToChange('/iam/role');
-            }
-          }).catch((errors) => {
-            Choerodon.prompt(`${Choerodon.getMessage('失败', 'Fail')}:${errors}`);
-            this.setState({ buttonClicked: false });
-          });
+          this.setState({ submitting: true });
+          RoleStore.editRoleByid(this.state.id, role)
+            .then((data) => {
+              this.setState({ submitting: false });
+              if (data) {
+                Choerodon.prompt(Choerodon.getMessage('成功', 'Success'));
+                this.linkToChange('/iam/role');
+              }
+            })
+            .catch((errors) => {
+              this.setState({ submitting: false });
+              Choerodon.prompt(`${Choerodon.getMessage('失败', 'Fail')}:${errors}`);
+            });
         }
       }
     });
@@ -141,7 +143,7 @@ class EditRole extends Component {
     RoleStore.getWholePermission(roleData.level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(roleData.level, data);
     });
-  }
+  };
 
   handleAlreadyPageChange = (page) => {
     const updatePage = page;
@@ -164,11 +166,11 @@ class EditRole extends Component {
       _.remove(centerPermission, item => ids.indexOf(item.id) !== -1);
       RoleStore.setInitSelectedPermission(centerPermission);
     }
-  }
+  };
 
   handlestopPropagation = (event) => {
     event.stopPropagation();
-  }
+  };
 
   renderCanChoseService = () => {
     const data = RoleStore.getCanChosePermission[this.state.selectedLevel];
@@ -210,6 +212,7 @@ class EditRole extends Component {
       chosenLevel,
       visible,
       currentPermission,
+      submitting,
     } = this.state;
     const { level, name, code, labels, builtIn } = roleData;
     const origin = RoleStore.getCanChosePermission;
@@ -250,6 +253,7 @@ class EditRole extends Component {
                   <Input
                     size="default"
                     label="角色层级"
+                    autocomplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -268,9 +272,9 @@ class EditRole extends Component {
                   initialValue: code,
                 })(
                   <Input
-                    placeholder={Choerodon.getMessage('请输入角色编码', 'Please input role code')}
                     size="default"
                     label={Choerodon.getMessage('角色编码', 'code')}
+                    autocomplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -290,9 +294,9 @@ class EditRole extends Component {
                   initialValue: name,
                 })(
                   <Input
-                    placeholder={Choerodon.getMessage('请输入角色名称', 'Please input role name')}
                     rows={1}
                     label={Choerodon.getMessage('角色名称', 'name')}
+                    autocomplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -310,9 +314,9 @@ class EditRole extends Component {
                   })(
                     <Select
                       mode="tags"
-                      placeholder="请选择角色标签"
                       size="default"
                       label={Choerodon.getMessage('角色标签', 'label')}
+                      getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                       style={{
                         width: '512px',
                       }}
@@ -330,11 +334,9 @@ class EditRole extends Component {
                   onClick={this.showModal.bind(this)}
                   disabled={chosenLevel === '' || builtIn}
                   className="addPermission"
+                  icon="add"
                 >
-                  <div>
-                    <span className="icon-add" />
-                    <span>添加权限</span>
-                  </div>
+                  添加权限
                 </Button>
               </FormItem>
               <FormItem>
@@ -372,6 +374,7 @@ class EditRole extends Component {
                         currentPermission: selectedRowKeys,
                       });
                     },
+                    getCheckboxProps: () => ({ disabled: builtIn }),
                   }}
                 />
                 {currentPermission.length === 0 ? (
@@ -387,6 +390,7 @@ class EditRole extends Component {
                       funcType="raised"
                       type="primary"
                       onClick={this.handleEdit}
+                      loading={submitting}
                     >
                       {Choerodon.getMessage('保存', 'save')}
                     </Button>
@@ -395,6 +399,7 @@ class EditRole extends Component {
                     <Button
                       funcType="raised"
                       onClick={this.handlehandleReset}
+                      disabled={submitting}
                     >
                       {Choerodon.getMessage('取消', 'cancel')}
                     </Button>
@@ -413,10 +418,10 @@ class EditRole extends Component {
           cancelText="取消"
         >
           <Content
-            style={{ padding: 0 }}
+            className="sidebar-content"
             title={`向角色“${name}”添加权限`}
             description="您可以在此为角色添加一个或多个权限。"
-            link="http://choerodon.io/zh/docs/user-guide/system-configuration/iam/site4_role/"
+            link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
           >
             <Table
               style={{

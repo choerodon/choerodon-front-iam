@@ -1,15 +1,42 @@
 .ldapContainer {
+  .serverContainer {
+    margin-bottom: 16px;
+
+    span {
+      margin-left: 20px;
+      font-size: 18px;
+    }
+  }
+
+  .ldapForm {
+    .ant-form-item {
+      margin-left: 50px;
+    }
+  }
+
   .btnGroup {
-    margin-top: 65px;
-    margin-bottom: 14px;
+    margin: 65px 0 14px 50px;
 
     > button:last-child {
       margin-left: 12px;
-      color: #3f51b5;
     }
   }
 
   .ldapRadioGroup > label:first-child {
     margin-right: 52px;
+  }
+
+  .labelSuffix {
+    display: inline-block;
+    vertical-align: middle;
+
+    span {
+      vertical-align: middle;
+    }
+
+    i {
+      margin-left: 8px;
+      color: rgba(0, 0, 0, 0.26);
+    }
   }
 }

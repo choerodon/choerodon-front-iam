@@ -1,31 +1,39 @@
-import { observable, action, computed } from 'mobx';
-import store from 'Store';
-import axios from 'Axios';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store('UserInfoStore')
 class UserInfoStore {
   @observable userInfo = {};
-  @observable isLoading = true;
+  @observable avatar;
 
-  @computed get getIsLoading() {
-    return this.isLoading;
-  }
-
-  @action setIsLoading(data) {
-    this.isLoading = data;
-  }
-
-  @computed get getUserInfo() {
+  @computed
+  get getUserInfo() {
     return this.userInfo;
   }
 
-  @action setUserInfo(data) {
+  @action
+  setUserInfo(data) {
     this.userInfo = data;
+    this.avatar = data.imageUrl;
   }
 
-  loadUserInfo(id) {
-    return axios.get(`/iam/v1/users/${id}/info`);
+  @action
+  setAvatar(avatar) {
+    this.avatar = avatar;
   }
+
+  @computed
+  get getAvatar() {
+    return this.avatar;
+  }
+
+  updateUserInfo = user => axios.put(`/iam/v1/users/${user.id}/info`, JSON.stringify(user));
+
+  updatePassword = (id, body) => axios.put(`/iam/v1/users/${id}/password`, JSON.stringify(body));
+
+  checkEmailAddress = email => (
+    axios.post('/iam/v1/users/check', JSON.stringify({ id: this.userInfo.id, email }))
+  );
 }
 
 const userInfoStore = new UserInfoStore();

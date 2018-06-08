@@ -1,9 +1,8 @@
 /**
  * Created by jinqin.ma on 2017/6/27.
  */
-import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store('OrganizationStore')
 class OrganizationStore {

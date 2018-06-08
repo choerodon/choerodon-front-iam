@@ -1,25 +1,21 @@
 import React from 'react';
-import {
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../util/asyncRouter';
-import asyncLocaleProvider from '../../../util/asyncLocaleProvider';
+import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const ClientIndex = asyncRouter(() => import('./organization/client'));
 const UserIndex = asyncRouter(() => import('./organization/user'));
 const ProjectIndex = asyncRouter(() => import('./organization/project'));
 const PasswordPolicyIndex = asyncRouter(() => import('./organization/passwordPolicy'));
 const LDAPIndex = asyncRouter(() => import('./organization/ldap'));
-const userGroup = asyncRouter(() => import('./organization/userGroup'));
 
 // global
 const OrganizationIndex = asyncRouter(() => import('./global/organization'));
 const RoleIndex = asyncRouter(() => import('./global/role'));
 const MemberRole = asyncRouter(() => import('./global/MemberRole'));
 const menuTree = asyncRouter(() => import('./global/menuTree'));
+const RouteIndex = asyncRouter(() => import('./global/route'));
+const RootUser = asyncRouter(() => import('./global/rootUser'));
 
 const ProjectSettingIndex = asyncRouter(() => import('./project/projectSetting'));
 
@@ -43,12 +39,13 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/password-policy`} component={PasswordPolicyIndex} />
           <Route path={`${match.url}/ldap`} component={LDAPIndex} />
           <Route path={`${match.url}/role`} component={RoleIndex} />
-          <Route path={`${match.url}/userGroup`} component={userGroup} />
+          <Route path={`${match.url}/route`} component={RouteIndex} />
           <Route path={`${match.url}/proManage`} component={ProjectSettingIndex} />
           <Route path={`${match.url}/userinfo`} component={UserInfoIndex} />
           <Route path={`${match.url}/memberRole`} component={MemberRole} />
           <Route path={`${match.url}/menuTree`} component={menuTree} />
           <Route path={`${match.url}/usermodifyPwd`} component={PasswordIndex} />
+          <Route path={`${match.url}/rootuser`} component={RootUser} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>

@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Checkbox, Input, Row, Col, Modal, Icon, Form, Select, Button, Table, Tooltip } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import { toJS } from 'mobx';
-import axios from 'Axios';
-import Page, { Header, Content } from 'Page';
 import { Observable } from 'rxjs';
 import _ from 'lodash';
+import { Button, Checkbox, Col, Form, Icon, Input, Modal, Row, Select, Table, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, axios } from 'choerodon-front-boot';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
-import '../../../../assets/css/main.scss';
+// import '../../../../assets/css/main.scss';
 import './RoleCreate.scss';
 
 const FormItem = Form.Item;
@@ -37,7 +36,7 @@ class CreateRole extends Component {
       alreadyPage: 1,
       errorName: '',
       errorDescription: '',
-      buttonClicked: false,
+      submitting: false,
       selectedRowKeys: [],
       selectedSideBar: [],
       currentPermission: [],
@@ -73,8 +72,9 @@ class CreateRole extends Component {
     }
   }
 
-  checkCodeOnly = _.debounce((value, callback) => {
-    const params = { code: value };
+  checkCode = (rule, value, callback) => {
+    const validValue = `role/${RoleStore.getChosenLevel}/custom/${value}`;
+    const params = { code: validValue };
     axios.post('/iam/v1/roles/check', JSON.stringify(params)).then((mes) => {
       if (mes.failed) {
         callback(Choerodon.getMessage('角色编码已存在，请输入其他角色编码', 'code existed, please try another'));
@@ -82,20 +82,7 @@ class CreateRole extends Component {
         callback();
       }
     });
-  }, 1000);
-
-  checkCode = (rule, value, callback) => {
-    if (!value) {
-      callback(Choerodon.getMessage('请输入角色编码', 'please input role code'));
-      return;
-    }
-    const pa = new RegExp(/^[a-z]([-a-z0-9]*[a-z0-9])?$/);
-    if (pa.test(value)) {
-      this.checkCodeOnly(value, callback);
-    } else {
-      callback(Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'));
-    }
-  }
+  };
 
   showModal = () => {
     this.setState({
@@ -111,7 +98,7 @@ class CreateRole extends Component {
   linkToChange = (url) => {
     const { history } = this.props;
     history.push(url);
-  }
+  };
 
   handleChangePermission = (selected, ids, permissions) => {
     const initPermission = RoleStore.getInitSelectedPermission;
@@ -123,7 +110,7 @@ class CreateRole extends Component {
       _.remove(centerPermission, item => ids.indexOf(item.id) !== -1);
       RoleStore.setInitSelectedPermission(centerPermission);
     }
-  }
+  };
 
   handleOk = () => {
     const selected = RoleStore.getInitSelectedPermission;
@@ -165,32 +152,39 @@ class CreateRole extends Component {
             permissions: rolePermissionss,
             labels: labelIds,
           };
-          this.setState({ submitting: true, buttonClicked: true });
-          RoleStore.createRole(role).then((data) => {
-            if (data) {
-              Choerodon.prompt(Choerodon.getMessage('创建成功', 'Create Success'));
-              this.linkToChange('/iam/role');
-            }
-          }).catch((errors) => {
-            if (errors.response.data.message === 'error.role.roleNameExist') {
-              Choerodon.prompt('该角色名已创建');
-            } else {
-              Choerodon.prompt(`${Choerodon.getMessage('创建失败', 'Create Failed')}:${errors}`);
-            }
-            this.setState({ buttonClicked: false });
-          });
+          this.setState({ submitting: true });
+          RoleStore.createRole(role)
+            .then((data) => {
+              this.setState({ submitting: false });
+              if (data) {
+                Choerodon.prompt(Choerodon.getMessage('创建成功', 'Create Success'));
+                this.linkToChange('/iam/role');
+              }
+            })
+            .catch((errors) => {
+              this.setState({ submitting: false });
+              if (errors.response.data.message === 'error.role.roleNameExist') {
+                Choerodon.prompt('该角色名已创建');
+              } else {
+                Choerodon.prompt(`${Choerodon.getMessage('创建失败', 'Create Failed')}:${errors}`);
+              }
+            });
         }
       }
     });
-  }
+  };
 
   handleReset = () => {
     this.linkToChange('/iam/role');
   };
 
   handleModal = (value) => {
+    const form = this.props.form;
     const that = this;
     const { getFieldValue, setFieldsValue } = this.props.form;
+    if (getFieldValue('code')) {
+      form.validateFields(['code'], { force: true });
+    }
     const { currentPermission } = this.state;
     const level = getFieldValue('level');
     if (level && currentPermission.length) {
@@ -215,7 +209,7 @@ class CreateRole extends Component {
         currentPermission: [],
       });
     }
-  }
+  };
 
   handlePageChange = (pagination, filters, sorter, params) => {
     const level = RoleStore.getChosenLevel;
@@ -225,13 +219,13 @@ class CreateRole extends Component {
     RoleStore.getWholePermission(level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(level, data);
     });
-  }
+  };
 
   renderRoleLabel = () => {
     const labels = RoleStore.getLabel;
-    return labels.map(item => 
+    return labels.map(item =>
       <Option key={item.id} value={`${item.id}`}>{item.name}</Option>);
-  }
+  };
 
   renderLevel() {
     if (RoleStore.getChosenLevel === 'site') {
@@ -244,7 +238,7 @@ class CreateRole extends Component {
   }
 
   render() {
-    const { currentPermission, firstLoad } = this.state;
+    const { currentPermission, firstLoad, submitting } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -286,13 +280,13 @@ class CreateRole extends Component {
                   initialValue: RoleStore.getChosenLevel !== '' ? RoleStore.getChosenLevel : undefined,
                 })(
                   <Select
-                    placeholder="请选择角色层级"
                     label={Choerodon.getMessage('角色层级', 'role label')}
                     ref={this.saveSelectRef}
                     size="default"
                     style={{
                       width: '512px',
                     }}
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     onChange={this.handleModal}
                   >
                     <Option value="site">全局</Option>
@@ -308,13 +302,19 @@ class CreateRole extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
+                    message: Choerodon.getMessage('请输入角色编码', 'please input role code'),
+                  }, {
+                    pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
+                    message: Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'),
+                  }, {
                     validator: this.checkCode,
                   }],
+                  validateFirst: true,
                   initialValue: this.state.roleName,
                 })(
                   <Input
+                    autocomplete="off"
                     label={Choerodon.getMessage('角色编码', 'code')}
-                    placeholder={Choerodon.getMessage('请输入角色编码', 'Please input role code')}
                     prefix={codePrefix}
                     size="default"
                     style={{
@@ -335,8 +335,8 @@ class CreateRole extends Component {
                   initialValue: this.state.name,
                 })(
                   <Input
+                    autocomplete="off"
                     label={Choerodon.getMessage('角色名称', 'name')}
-                    placeholder={Choerodon.getMessage('请输入角色名称', 'Please input role name')}
                     type="textarea"
                     rows={1}
                     style={{
@@ -351,9 +351,9 @@ class CreateRole extends Component {
                 {getFieldDecorator('label')(
                   <Select
                     mode="tags"
-                    placeholder="请选择角色标签"
                     label={Choerodon.getMessage('角色标签', 'role label')}
                     size="default"
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     style={{
                       width: '512px',
                     }}
@@ -371,11 +371,9 @@ class CreateRole extends Component {
                     onClick={this.showModal.bind(this)}
                     disabled={RoleStore.getChosenLevel === ''}
                     className="addPermission"
+                    icon="add"
                   >
-                    <div>
-                      <span className="icon-add" />
-                      <span>添加权限</span>
-                    </div>
+                    添加权限
                   </Button>
                 </Tooltip>
               </FormItem>
@@ -429,6 +427,7 @@ class CreateRole extends Component {
                       funcType="raised"
                       type="primary"
                       onClick={this.handleCreate}
+                      loading={submitting}
                     >
                       {Choerodon.getMessage('创建', 'create')}
                     </Button>
@@ -437,6 +436,7 @@ class CreateRole extends Component {
                     <Button
                       funcType="raised"
                       onClick={this.handleReset}
+                      disabled={submitting}
                     >
                       {Choerodon.getMessage('取消', 'cancel')}
                     </Button>
@@ -453,10 +453,10 @@ class CreateRole extends Component {
               cancelText="取消"
             >
               <Content
-                style={{ padding: 0 }}
+                className="sidebar-content"
                 title="向当前创建角色添加权限"
                 description="您可以在此为当前角色添加一个或多个权限。"
-                link="http://choerodon.io/zh/docs/user-guide/system-configuration/iam/site4_role/"
+                link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
               >
                 <Table
                   style={{

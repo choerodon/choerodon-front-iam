@@ -45,7 +45,7 @@ class PasswordForm extends Component {
     const passwordPolicy = passwordPolicyStore.getPasswordPolicy;
     const inputWidth = 300; // 输入框长度
     const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd';
-    const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'same' : 'different';
+    const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same';
     const organizationId = menuType.id;
     const type = menuType.type;
     const formItemNumLayout = {
@@ -91,6 +91,7 @@ class PasswordForm extends Component {
               initialValue: passwordPolicy ? passwordPolicy.originalPassword : '',
             })(
               <Input
+                autocomplete="off"
                 label="新用户默认密码"
                 style={{ width: 512 }}
               />,
@@ -107,6 +108,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.minLength : '',
           })(
             <Input
+              autocomplete="off"
               type="number"
               label="最小密码长度"
               style={{ width: inputWidth }}
@@ -121,7 +123,7 @@ class PasswordForm extends Component {
             }],
             initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
           })(
-            <Input type="number" label="最大密码长度" style={{ width: inputWidth }} />,
+            <Input autocomplete="off" type="number" label="最大密码长度" style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem>
@@ -132,7 +134,7 @@ class PasswordForm extends Component {
             }],
             initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
           })(
-            <Input type="number" label="最少数字数" style={{ width: inputWidth }} />,
+            <Input autocomplete="off" type="number" label="最少数字数" style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem>
@@ -143,7 +145,7 @@ class PasswordForm extends Component {
             }],
             initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
           })(
-            <Input type="number" label="最少小写字母数" style={{ width: inputWidth }} />,
+            <Input autocomplete="off" type="number" label="最少小写字母数" style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem>
@@ -154,7 +156,7 @@ class PasswordForm extends Component {
             }],
             initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
           })(
-            <Input type="number" label="最少大写字母数" style={{ width: inputWidth }} />,
+            <Input autocomplete="off" type="number" label="最少大写字母数" style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem>
@@ -165,7 +167,7 @@ class PasswordForm extends Component {
             }],
             initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
           })(
-            <Input type="number" label="最少特殊字符数" style={{ width: inputWidth }} />,
+            <Input autocomplete="off" type="number" label="最少特殊字符数" style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem>
@@ -176,14 +178,14 @@ class PasswordForm extends Component {
             }],
             initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
           })(
-            <Input type="number" label="最大近期密码数" style={{ width: inputWidth }} />,
+            <Input autocomplete="off" type="number" label="最大近期密码数" style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem style={{ width: 512 }}>
           {getFieldDecorator('regularExpression', {
             initialValue: passwordPolicy ? passwordPolicy.regularExpression : '',
           })(
-            <TextArea rows={2} label="密码正则" />,
+            <TextArea autocomplete="off" rows={2} label="密码正则" />,
           )}
         </FormItem>
       </div>

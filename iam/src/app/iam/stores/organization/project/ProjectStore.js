@@ -2,10 +2,10 @@
  * Created by jinqin.ma on 2017/6/27.
  */
 /*eslint-disable*/
-import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
-import { Observable } from 'rxjs';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
+import querystring from 'query-string';
+
 
 @store('ProjectStore')
 class ProjectStore {
@@ -51,39 +51,29 @@ class ProjectStore {
     return this.isLoading;
   }
 
-  loadProject = (organizationId, page, sortParam, filters) => {
+  loadProject = (
+    organizationId,
+    { current, pageSize },
+    { columnKey = 'id', order = 'descend' },
+    {name, code, enabled, params}) => {
     this.changeLoading(true);
-    return axios.get(`/iam/v1/organizations/${organizationId}/projects?page=${page.current - 1}&size=${page.pageSize}&sort=${sortParam}&name=${filters.name}&code=${filters.code}&enabled=${filters.enabled}`)
-    // if (state) {
-    //   if (state.code === '') {
-    //     return axios.get(`/iam/v1/organizations/${organizationId}/projects?page=${page}&size=10`).then((data) => {
-    //       if (data) {
-    //         this.setProjectData(data.content);
-    //         this.setTotalPage(data.totalPages);
-    //         this.setTotalSize(data.totalElements);
-    //       }
-    //       this.changeLoading(false);
-    //     });
-    //   } else {
-    //     return axios.get(`/iam/v1/organizations/${organizationId}/projects?page=${page}&size=10`).then((data) => {
-    //       if (data) {
-    //         this.setProjectData(data.content);
-    //         this.setTotalPage(data.totalPages);
-    //         this.setTotalSize(data.totalElements);
-    //       }
-    //       this.changeLoading(false);
-    //     });
-    //   }
-    // } else {
-    //   return axios.get(`/iam/v1/organizations/${organizationId}/projects?page=${page}&size=10`).then((data) => {
-    //     if (data) {
-    //       this.setProjectData(data.content);
-    //       this.setTotalPage(data.totalPages);
-    //       this.setTotalSize(data.totalElements);
-    //     }
-    //     this.changeLoading(false);
-    //   });
-    // }
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+      name,
+      code,
+      enabled,
+      params,
+    };
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/iam/v1/organizations/${organizationId}/projects?${querystring.stringify(queryObj)}`)
   };
   enableProject(orgId, projectId, data) {
     return data ? axios.put(`/iam/v1/organizations/${orgId}/projects/${projectId}/disable`) :

@@ -1,6 +1,5 @@
-import { observable, action, computed } from 'mobx';
-import store from 'Store';
-import axios from 'Axios';
+import { action, computed, observable } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 
 @store("ProjectSettingStore")
 class ProjectSettingStore {
@@ -18,8 +17,8 @@ class ProjectSettingStore {
     return axios.get(`/iam/v1/projects/${id}`);
   }
 
-  axiosSaveProjectInfo(orgId, proId, data) {
-    return axios.put(`/iam/v1/projects/${proId}`, data);
+  axiosSaveProjectInfo(data) {
+    return axios.put(`/iam/v1/projects/${data.id}`, data);
   }
 
   disableProject(proId) {

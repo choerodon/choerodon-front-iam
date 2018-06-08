@@ -1,14 +1,12 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Modal, Popconfirm, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import Page, { Content, Header } from 'Page';
-import Permission from 'PerComponent';
-import axios from 'Axios';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import querystring from 'query-string';
-import _ from 'lodash';
+import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
 import './MemberRole.scss';
 
 const { Sidebar } = Modal;
@@ -27,51 +25,39 @@ const FormItemNumLayout = {
 };
 
 //公用方法类
-class memberRoleType {
-  constructor(context, data) {
+class MemberRoleType {
+  constructor(context) {
     this.context = context;
-    this.data = data;
-    this.urlDeleteMember = `/iam/v1/role_members/${data.type}_level/delete`;
-    switch (sessionStorage.type) {
-      case 'organization':
-        this.title = '组织';
-        this.urlRoleMember = `/iam/v1/role_members/${data.type}_level?source_id=${data.id}&`;
-        this.roleId = data.id;
-        break;
-      case 'project':
-        this.title = '项目';
-        this.urlRoleMember = `/iam/v1/role_members/${data.type}_level?source_id=${data.id}&`;
-        this.roleId = data.id;
-        break;
-      case 'site':
-        this.title = '平台';
-        this.urlRoleMember = `/iam/v1/role_members/${data.type}_level?`;
-        this.roleId = 0;
-        break;
-    }
-  }
-
-  //上面头部title
-  drawPage() {
-    return `${this.title}“${this.data.name || 'Choerodon'}”的角色分配`;
-  };
-
-  drawPageLink () {
-    const { type } = this.data;
-    let link = '';
+    const { AppState } = this.context.props;
+    const { type, id, name } = this.data = AppState.currentMenuType;
+    let apiGetway = `/iam/v1/${type}s/${id}`;
+    let typeDesc;
+    let linkName;
     switch (type) {
       case 'organization':
-        link = 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/role-assignment/';
+        typeDesc = '组织';
+        linkName = 'tenant';
         break;
       case 'project':
-        link = 'http://choerodon.io/zh/docs/user-guide/system-configuration/project/role-assignment/';
+        typeDesc = '项目';
+        linkName = 'project';
         break;
       case 'site':
-        link = 'http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
+        typeDesc = '平台';
+        linkName = 'platform';
+        apiGetway = `/iam/v1/${type}`;
         break;
     }
-    return link;
+    this.title = `${typeDesc}“${name || 'Choerodon'}”的角色分配`;
+    this.link = `http://choerodon.io/zh/docs/user-guide/system-configuration/${linkName}/role-assignment/`;
+    this.urlUsers = `${apiGetway}/role_members/users`;
+    this.urlRoles = `${apiGetway}/role_members/users/roles`;
+    this.urlRoleMember = `${apiGetway}/role_members`;
+    this.urlDeleteMember = `${apiGetway}/role_members/delete`;
+    this.urlUserCount = `${apiGetway}/role_members/users/count`;
+    this.roleId = id || 0;
   }
+
   //fetch分配角色（post）
   // body  array
   // {
@@ -80,20 +66,18 @@ class memberRoleType {
   //   "sourceId": 0, 层级id 平台为0
   // }
   fetchRoleMember(memberIds, body, isEdit) {
-    let str = memberIds.map((value) => {
-      return `member_ids=${value}`;
-    }).join('&');
+    let str = `member_ids=${memberIds.join(',')}`;
     if (isEdit === true) {
       str += `&is_edit=true`;
     }
-    return axios.post(`${this.urlRoleMember}${str}`, JSON.stringify(body));
+    return axios.post(`${this.urlRoleMember}?${str}`, JSON.stringify(body));
   }
 
   //delete分配角色（delete)
   deleteRoleMember(body) {
     const { id } = this.data;
     body['sourceId'] = id || 0;
-    return axios.post(`${this.urlDeleteMember}`, JSON.stringify(body));
+    return axios.post(this.urlDeleteMember, JSON.stringify(body));
   }
 
   //根据用户名查询memberId
@@ -110,18 +94,17 @@ class memberRoleType {
     return axios.all(promises);
   }
 
-  loadRoleMemberData(roleData, { current }, { loginName, realName }) {
-    const { type, id = 0 } = this.data;
+  loadRoleMemberData(roleData, { current }, { loginName, realName }, params) {
     const { id: roleId, users, name } = roleData;
-    roleData.loading = true;
-    return axios.post(`/iam/v1/roles/${roleId}/${type}_level/users`, JSON.stringify(Object.assign({
+    const body = {
       loginName: loginName && loginName[0],
       realName: realName && realName[0],
-    }, {
-      page: current - 1,
-      size: pageSize,
-      source_id: id,
-    })))
+      param: params,
+    };
+    const queryObj = { 'role_id': roleId, size: pageSize, page: current - 1 };
+    roleData.loading = true;
+    return axios.post(`${this.urlUsers}?${querystring.stringify(queryObj)}`,
+      JSON.stringify(body))
       .then(({ content }) => {
         roleData.users = users.concat(content.map(member => {
           member.roleId = roleId;
@@ -133,52 +116,34 @@ class memberRoleType {
       });
   }
 
-  loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }) {
-    const { type, id = 0 } = this.data;
+  loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }, params) {
     const body = {
       loginName: loginName && loginName[0],
       roleName: roles && roles[0],
       realName: realName && realName[0],
+      param: params,
     };
-    const queryObj = Object.assign(
-      { size, page: current - 1 },
-      { sort: 'id' },
-    );
-    let url = `/iam/v1/users/${type}_level/roles`;
-    switch (type) {
-      case 'organization':
-      case 'project':
-        queryObj.source_id = id;
-        break;
-    }
-    return axios.post(`/iam/v1/users/${type}_level/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
+    const queryObj = { size, page: current - 1, sort: 'id' };
+    return axios.post(`${this.urlRoles}?${querystring.stringify(queryObj)}`, JSON.stringify(body));
   }
 
   loadRoleMemberDatas({ loginName, realName, name }) {
-    const { type, id = 0 } = this.data;
     const body = {
       roleName: name && name[0],
       loginName: loginName && loginName[0],
       realName: realName && realName[0],
     };
-    let url = `/iam/v1/roles/${this.data.type}_level/user_count`;
-    switch (type) {
-      case 'organization':
-      case 'project':
-        url += `?source_id=${id}`;
-        break;
-    }
-    return axios.post(url, JSON.stringify(body));
+    return axios.post(this.urlUserCount, JSON.stringify(body));
   }
 
   //多路请求
   fetch() {
-    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys } = this.context.state;
+    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params, roleMemberParams } = this.context.state;
     this.context.setState({
       loading: true,
     });
     return axios.all([
-      this.loadMemberDatas(memberRolePageInfo, memberRoleFilters),
+      this.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params),
       this.loadRoleMemberDatas(roleMemberFilters),
     ]).then(([{ content, totalElements, number }, roleData]) => {
       this.context.setState({
@@ -188,10 +153,10 @@ class memberRoleType {
           role.users = role.users || [];
           if (role.userCount > 0) {
             if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-              this.context.roles.loadRoleMemberData(role, {
+              this.loadRoleMemberData(role, {
                 current: 1,
                 pageSize,
-              }, roleMemberFilters);
+              }, roleMemberFilters, roleMemberParams);
             }
             return true;
           }
@@ -219,6 +184,7 @@ class MemberRole extends Component {
 
   getInitState() {
     return {
+      submitting: false,
       memberDatas: [], //成员下的角色集合
       sidebar: false,
       roleData: [], // 当前情况下的所有角色
@@ -233,6 +199,7 @@ class MemberRole extends Component {
       validedMembers: {},
       roleMemberDatas: [],
       roleMemberFilters: {},
+      roleMemberParams: [],
       memberRoleFilters: {},
       memberRolePageInfo: {
         current: 1,
@@ -241,6 +208,7 @@ class MemberRole extends Component {
       },
       roleMemberFilterRole: [],
       roleIds: [],
+      params: [],
     };
   }
 
@@ -263,12 +231,18 @@ class MemberRole extends Component {
   //创建编辑角色 状态
   getOption = (current) => {
     const { roleData = [], roleIds } = this.state;
-    return roleData.reduce((options, { id, name, enabled }) => {
+    return roleData.reduce((options, { id, name, enabled, code }) => {
       if (roleIds.indexOf(id) === -1 || id === current) {
         if (enabled === false) {
           options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
         } else {
-          options.push(<Option value={id} key={id}>{name}</Option>);
+          options.push(
+            <Option value={id} key={id}>
+              <Tooltip title={code} placement="topLeft">
+                {name}
+              </Tooltip>
+            </Option>,
+          );
         }
       }
       return options;
@@ -282,6 +256,7 @@ class MemberRole extends Component {
   };
 
   openSidebar = () => {
+    this.props.form.resetFields();
     this.setState({
       roleIds: this.initFormRoleIds(),
       sidebar: true,
@@ -289,70 +264,36 @@ class MemberRole extends Component {
   };
 
   initFormRoleIds() {
-    const { setFieldsValue, resetFields } = this.props.form;
     const { selectType, currentMemberData } = this.state;
     let roleIds = [undefined];
-    const member = [];
-    const memberId = [];
     if (selectType === 'edit') {
-      memberId.push(currentMemberData.id);
-      member.push(currentMemberData.loginName);
       roleIds = currentMemberData.roles.map(({ id }) => id);
     }
-    resetFields();
-    setFieldsValue({
-      member,
-      memberId,
-    });
     return roleIds;
   }
 
   getProjectNameDom() {
-    const { getFieldDecorator } = this.props.form;
-    const { selectType } = this.state;
-
+    const { selectType, currentMemberData } = this.state;
+    const member = [];
+    const style = {
+      marginTop: '-15px',
+    };
+    if (selectType === 'edit') {
+      member.push(currentMemberData.loginName);
+      style.display = 'none';
+    }
     return (
-      <FormItem
-        {...FormItemNumLayout}
-        label={'添加角色'}
-        style={{
-          display: selectType === 'edit' ? 'none' : 'block',
-          marginTop: '-15px',
-        }}
-      >
-        {getFieldDecorator('member', {
-          rules: [{
-            required: true,
-            validator: this.validateMember,
-          }],
-          validateTrigger: 'onChange',
-        })(
-          <Select
-            mode="tags"
-            ref={this.saveSelectRef}
-            style={{ width: 512 }}
-            label="成员"
-            placeholder="输入一个或多个成员名称"
-            filterOption={false}
-            onInputKeyDown={this.handleInputKeyDown}
-            notFoundContent={false}
-            showNotFindSelectedItem={false}
-            showNotFindInputItem={false}
-            choiceRender={this.handeChoiceRender}
-            allowClear
-          />,
-        )}
-      </FormItem>);
+      <MemberLabel label="成员" style={style} value={member} form={this.props.form} />
+    );
   }
 
   getRoleFormItems = () => {
     const { selectType, roleIds } = this.state;
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const formItems = roleIds.map((id, index) => {
-      const key = `role_${id === undefined ? index : id}`;
+      const key = id === undefined ? `role-index-${index}` : String(id);
       return (<FormItem
         {...FormItemNumLayout}
-        label={'添加角色'}
         key={key}
       >
         {getFieldDecorator(key, {
@@ -367,7 +308,10 @@ class MemberRole extends Component {
           <Select
             style={{ width: 300 }}
             label="请选择一个角色"
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+            filterOption={(input, option) => {
+              return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            }}
             onChange={(value) => roleIds[index] = value}
             filter
           >
@@ -401,27 +345,32 @@ class MemberRole extends Component {
 
   deleteRoleByMultiple = () => {
     const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
-    if (showMember) {
-      this.deleteRolesByIds(selectMemberRoles);
-    } else {
-      const data = {};
-      selectRoleMembers.forEach(({ id, roleId }) => {
-        if (!data[roleId]) {
-          data[roleId] = [];
+    const content = showMember ? '确认移除当前选中的成员下的所有角色?' : '确认移除当前选中的成员的这些角色?';
+    Modal.confirm({
+      title: '移除角色',
+      content: content,
+      onOk: () => {
+        if (showMember) {
+          return this.deleteRolesByIds(selectMemberRoles);
+        } else {
+          const data = {};
+          selectRoleMembers.forEach(({ id, roleId }) => {
+            if (!data[roleId]) {
+              data[roleId] = [];
+            }
+            data[roleId].push(id);
+          });
+          return this.deleteRolesByIds(data);
         }
-        data[roleId].push(id);
-      });
-      this.deleteRolesByIds(data);
-    }
+      },
+    });
   };
 
-  deleteRoleByRole = (roleId, memberId) => {
-    this.deleteRolesByIds({ [roleId]: [memberId] });
-  };
-
-  deleteRoleByMember = (memberData) => {
-    this.deleteRolesByIds({
-      [memberData.id]: memberData.roles.map(({ id }) => id),
+  deleteRoleByRole = (record) => {
+    Modal.confirm({
+      title: '移除角色',
+      content: `确认移除成员"${record.loginName}"的角色"${record.roleName}"?`,
+      onOk: () => this.deleteRolesByIds({ [record.roleId]: [record.id] }),
     });
   };
 
@@ -451,38 +400,8 @@ class MemberRole extends Component {
     });
   };
 
-  setMembersInSelect(member) {
-    const { getFieldValue, setFieldsValue, validateFields } = this.props.form;
-    const members = getFieldValue('member') || [];
-    if (members.indexOf(member) === -1) {
-      members.push(member);
-      setFieldsValue({
-        'member': members,
-      });
-      validateFields(['member']);
-    }
-    if (this.rcSelect) {
-      this.rcSelect.setState({
-        inputValue: '',
-      });
-    }
-  }
-
-  handleInputKeyDown = (e) => {
-    const { value } = e.target;
-    if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
-      this.setMembersInSelect(value);
-    }
-  };
-
-  saveSelectRef = (node) => {
-    if (node) {
-      this.rcSelect = node.rcSelect;
-    }
-  };
-
   initMemberRole() {
-    this.roles = new memberRoleType(this, JSON.parse(sessionStorage.selectData));
+    this.roles = new MemberRoleType(this);
   }
 
   getSidebarTitle() {
@@ -496,7 +415,8 @@ class MemberRole extends Component {
 
   getHeader() {
     const { selectType, currentMemberData } = this.state;
-    let contentTitle = `在${this.roles.title}“${this.roles.data.name || 'Choerodon'}”中添加成员角色`;
+    const { title, data: { name } } = this.roles;
+    let contentTitle = `在${title}“${name || 'Choerodon'}”中添加成员角色`;
     let contentDescription = '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。';
     let contentLink = 'http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
     if (selectType === 'edit') {
@@ -526,10 +446,8 @@ class MemberRole extends Component {
       || !roleData.filter(({ enabled, id }) => enabled && roleIds.indexOf(id) === -1).length;
     return (
       <Content
-        style={{ padding: 0 }}
-        title={header.title}
-        link={header.link}
-        description={header.description}
+        className="sidebar-content"
+        {...header}
       >
         <Form layout="vertical">
           {this.getProjectNameDom()}
@@ -542,98 +460,62 @@ class MemberRole extends Component {
   // ok 按钮保存
   handleOk = (e) => {
     const { selectType, roleIds } = this.state;
-    const { validateFields, getFieldValue } = this.props.form;
     e.preventDefault();
-    validateFields((err, values) => {
+    this.props.form.validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
-        const body = roleIds.map((key, index) => {
+        const body = roleIds.map((roleId, index) => {
           return {
             memberType: 'user',
-            roleId: getFieldValue(`role_${key || index}`),
+            roleId,
             sourceId: sessionStorage.selectData.id || 0,
             sourceType: sessionStorage.type,
           };
         });
+        this.setState({ submitting: true });
         if (selectType === 'create') {
           this.roles.searchMemberIds(memberNames).then((data) => {
             if (data) {
               const memberIds = data.map((info) => {
                 return info.id;
               });
-              this.roles.fetchRoleMember(memberIds, body).then(({ failed, message }) => {
-                if (failed) {
-                  Choerodon.prompt(message);
-                } else {
-                  Choerodon.prompt('添加成功');
-                  this.closeSidebar();
-                  this.roles.fetch();
-                }
-              });
+              this.roles.fetchRoleMember(memberIds, body)
+                .then(({ failed, message }) => {
+                  this.setState({ submitting: false });
+                  if (failed) {
+                    Choerodon.prompt(message);
+                  } else {
+                    Choerodon.prompt('添加成功');
+                    this.closeSidebar();
+                    this.roles.fetch();
+                  }
+                })
+                .catch(error => {
+                  this.setState({ submitting: false });
+                  Choerodon.handleResponseError(error);
+                });
             }
           });
         } else if (selectType === 'edit') {
           const { currentMemberData } = this.state;
           const memberIds = [currentMemberData.id];
-          this.roles.fetchRoleMember(memberIds, body, true).then(({ failed, message }) => {
-            if (failed) {
-              Choerodon.prompt(message);
-            } else {
-              Choerodon.prompt('修改成功');
-              this.closeSidebar();
-              this.roles.fetch();
-            }
-          });
+          this.roles.fetchRoleMember(memberIds, body, true)
+            .then(({ failed, message }) => {
+              this.setState({ submitting: false });
+              if (failed) {
+                Choerodon.prompt(message);
+              } else {
+                Choerodon.prompt('修改成功');
+                this.closeSidebar();
+                this.roles.fetch();
+              }
+            })
+            .catch(error => {
+              this.setState({ submitting: false });
+              Choerodon.handleResponseError(error);
+            });
         }
       }
-    });
-  };
-
-  validateMember = (rule, value, callback) => {
-    if (value && value.length) {
-      const { validedMembers } = this.state;
-      let errorMsg;
-      Promise.all(value.map((item) => {
-        if (item in validedMembers) {
-          return Promise.resolve(validedMembers[item]);
-        } else {
-          return new Promise((resolve) => {
-            this.roles.searchMemberId(item)
-              .then(({ failed, enabled }) => {
-                let success = true;
-                if (enabled === false) {
-                  errorMsg = '用户已被停用，无法给此用户分配角色，请先启用此用户';
-                  success = false;
-                } else if (failed) {
-                  errorMsg = '不存在此用户，请输入正确的登录名';
-                  success = false;
-                }
-                resolve(success);
-              })
-              .catch((error) => {
-                errorMsg = error;
-                resolve(false);
-              });
-          }).then((valid) => {
-            validedMembers[item] = valid;
-            return valid;
-          });
-        }
-      })).then(all => callback(
-        all.every(item => item) ? undefined :
-          errorMsg,
-      ));
-    } else {
-      callback(Choerodon.getMessage('必须至少输入一个成员', 'Please input one member at least'));
-    }
-  };
-
-  handeChoiceRender = (liNode, value) => {
-    const { validedMembers } = this.state;
-    return React.cloneElement(liNode, {
-      className: classnames(liNode.props.className, {
-        'choice-has-error': value in validedMembers && !validedMembers[value],
-      }),
     });
   };
 
@@ -654,6 +536,15 @@ class MemberRole extends Component {
     });
   };
 
+  handleDelete = (record) => {
+    Modal.confirm({
+      title: '移除角色',
+      content: `确认移除成员"${record.loginName}"下的所有角色?`,
+      onOk: () => this.deleteRolesByIds({
+        [record.id]: record.roles.map(({ id }) => id),
+      }),
+    });
+  };
   handleEditRole = ({ id: memberId, loginName }) => {
     const member = this.state.memberDatas.find(({ id }) => id === memberId);
     if (!member) {
@@ -676,16 +567,14 @@ class MemberRole extends Component {
     });
   }
 
-  memberRoleTableChange = (memberRolePageInfo, memberRoleFilters) => {
-    if (!_.isEqual(memberRoleFilters, this.state.memberRoleFilters)) {
-      memberRolePageInfo.current = 1;
-    }
+  memberRoleTableChange = (memberRolePageInfo, memberRoleFilters, sort, params) => {
     this.setState({
       memberRolePageInfo,
       memberRoleFilters,
+      params,
       loading: true,
     });
-    this.roles.loadMemberDatas(memberRolePageInfo, memberRoleFilters).then(({ content, totalElements, number, size }) => {
+    this.roles.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params).then(({ content, totalElements, number, size }) => {
       this.setState({
         loading: false,
         memberDatas: content,
@@ -694,40 +583,40 @@ class MemberRole extends Component {
           total: totalElements,
           pageSize: size,
         },
+        params,
         memberRoleFilters,
       });
     });
   };
 
-  roleMemberTableChange = (pageInfo, { name, ...roleMemberFilters }) => {
+  roleMemberTableChange = (pageInfo, { name, ...roleMemberFilters }, sort, params) => {
     const newState = {
       roleMemberFilterRole: name,
       roleMemberFilters,
+      roleMemberParams: params,
     };
-    if (!_.isEqual(roleMemberFilters, this.state.roleMemberFilters)) {
-      newState.loading = true;
-      const { expandedKeys } = this.state;
-      this.roles.loadRoleMemberDatas(roleMemberFilters)
-        .then((roleData) => {
-          this.setState({
-            loading: false,
-            expandedKeys,
-            roleMemberDatas: roleData.filter(role => {
-              role.users = role.users || [];
-              if (role.userCount > 0) {
-                if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-                  this.roles.loadRoleMemberData(role, {
-                    current: 1,
-                    pageSize,
-                  }, roleMemberFilters);
-                }
-                return true;
+    newState.loading = true;
+    const { expandedKeys } = this.state;
+    this.roles.loadRoleMemberDatas(roleMemberFilters)
+      .then((roleData) => {
+        this.setState({
+          loading: false,
+          expandedKeys,
+          roleMemberDatas: roleData.filter(role => {
+            role.users = role.users || [];
+            if (role.userCount > 0) {
+              if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
+                this.roles.loadRoleMemberData(role, {
+                  current: 1,
+                  pageSize,
+                }, roleMemberFilters, params);
               }
-              return false;
-            }),
-          });
+              return true;
+            }
+            return false;
+          }),
         });
-    }
+      });
     this.setState(newState);
   };
 
@@ -819,13 +708,15 @@ class MemberRole extends Component {
             <div>
               <Permission
                 service={createService}
-                type={type}
-                organizationId={organizationId}
-                projectId={projectId}
               >
-                <Button onClick={() => {
-                  this.editRole(record);
-                }} shape="circle" icon="mode_edit" />
+                <Tooltip
+                  title="修改"
+                  placement="bottom"
+                >
+                  <Button onClick={() => {
+                    this.editRole(record);
+                  }} shape="circle" icon="mode_edit" />
+                </Tooltip>
               </Permission>
               <Permission
                 service={deleteService}
@@ -833,12 +724,12 @@ class MemberRole extends Component {
                 organizationId={organizationId}
                 projectId={projectId}
               >
-                <Popconfirm
-                  title={`确认删除成员“${record.loginName}”下的所有角色?`}
-                  onConfirm={() => this.deleteRoleByMember(record)}
+                <Tooltip
+                  title="移除"
+                  placement="bottom"
                 >
-                  <Button shape="circle" icon="delete" />
-                </Popconfirm>
+                  <Button shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
+                </Tooltip>
               </Permission>
             </div>
           );
@@ -858,11 +749,13 @@ class MemberRole extends Component {
     };
     return (
       <Table
+        key="member-role"
         className="member-role-table"
         loading={loading}
         rowSelection={rowSelection}
         pagination={memberRolePageInfo}
         columns={columns}
+        filters={this.state.params}
         onChange={this.memberRoleTableChange}
         dataSource={memberDatas}
         filterBarPlaceholder="过滤表"
@@ -943,9 +836,6 @@ class MemberRole extends Component {
               <div>
                 <Permission
                   service={createService}
-                  type={type}
-                  organizationId={organizationId}
-                  projectId={projectId}
                 >
                   <Button onClick={() => {
                     this.handleEditRole(record);
@@ -953,16 +843,8 @@ class MemberRole extends Component {
                 </Permission>
                 <Permission
                   service={deleteService}
-                  type={type}
-                  organizationId={organizationId}
-                  projectId={projectId}
                 >
-                  <Popconfirm
-                    title={`确认删除成员“${record.loginName}”的角色“${record.roleName}”?`}
-                    onConfirm={() => this.deleteRoleByRole(record.roleId, record.id)}
-                  >
-                    <Button size="small" shape="circle" icon="delete" />
-                  </Popconfirm>
+                  <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
                 </Permission>
               </div>
             );
@@ -985,6 +867,7 @@ class MemberRole extends Component {
     };
     return (
       <Table
+        key="role-member"
         loading={loading}
         rowSelection={rowSelection}
         expandedRowKeys={expandedKeys}
@@ -1015,7 +898,7 @@ class MemberRole extends Component {
       this.roles.loadRoleMemberData(data, {
         current: 1,
         pageSize,
-      }, this.state.roleMemberFilters);
+      }, this.state.roleMemberFilters, this.state.roleMemberParams);
     }
   };
 
@@ -1034,46 +917,31 @@ class MemberRole extends Component {
 
   getPermission() {
     const { AppState } = this.props;
-    const { type, id } = AppState.currentMenuType;
-    let organizationId;
-    let projectId;
+    const { type } = AppState.currentMenuType;
     let createService = ['iam-service.role-member.createOrUpdateOnSiteLevel'];
     let deleteService = ['iam-service.role-member.deleteOnSiteLevel'];
     if (type === 'organization') {
-      organizationId = id;
       createService = ['iam-service.role-member.createOrUpdateOnOrganizationLevel'];
       deleteService = ['iam-service.role-member.deleteOnOrganizationLevel'];
     } else if (type === 'project') {
-      projectId = id;
       createService = ['iam-service.role-member.createOnProjectLevel'];
       deleteService = ['iam-service.role-member.deleteOnProjectLevel'];
     }
     return {
-      type,
       createService,
       deleteService,
-      organizationId,
-      projectId,
     };
   }
 
-  getLink() {
-
-  }
   render() {
-    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys } = this.state;
-    const { AppState } = this.props;
+    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting } = this.state;
     const okText = selectType === 'create' ? '添加' : '保存';
-    const roles = new memberRoleType(this, JSON.parse(sessionStorage.selectData));
-    const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
+    const { createService, deleteService } = this.getPermission();
     return (
       <Page>
         <Header title={'角色分配'}>
           <Permission
             service={createService}
-            type={type}
-            organizationId={organizationId}
-            projectId={projectId}
           >
             <Button
               onClick={this.createRole}
@@ -1084,9 +952,6 @@ class MemberRole extends Component {
           </Permission>
           <Permission
             service={deleteService}
-            type={type}
-            organizationId={organizationId}
-            projectId={projectId}
           >
             <Button
               onClick={this.deleteRoleByMultiple}
@@ -1104,8 +969,8 @@ class MemberRole extends Component {
           </Button>
         </Header>
         <Content
-          title={roles.drawPage()}
-          link={roles.drawPageLink()}
+          title={this.roles.title}
+          link={this.roles.link}
           description="角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。"
         >
           <div className="member-role-btns">
@@ -1126,11 +991,12 @@ class MemberRole extends Component {
           {showMember ? this.renderMemberTable() : this.renderRoleTable()}
           <Sidebar
             title={this.getSidebarTitle()}
-            onOk={this.handleOk}
+            visible={sidebar}
             okText={okText}
             cancelText="取消"
+            onOk={this.handleOk}
             onCancel={this.closeSidebar}
-            visible={sidebar}
+            confirmLoading={submitting}
           >
             {roleData.length ? this.getSidebarContent() : null}
           </Sidebar>

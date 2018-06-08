@@ -1,42 +1,40 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Checkbox, Form, Input, Button, Select, Radio, Row, Col } from 'choerodon-ui';
+import { Button, Checkbox, Col, Form, Input, Radio, Row, Select } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import { observer, inject } from 'mobx-react';
-import PageHeader from 'PageHeader';
-import Page, { Header, Content } from 'Page';
-import axios from 'Axios';
+import { inject, observer } from 'mobx-react';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
 import './password.scss';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 9 },
+  },
+};
+
+const inputWidth = 512;
 
 @inject('AppState')
 @observer
 class ChangePassword extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      confirmDirty: null,
-    }
-  }
+  state = {
+    submitting: false,
+    confirmDirty: null,
+  };
 
   componentWillMount() {
     this.loadUserInfo();
   }
 
   loadUserInfo = () => {
-    const { AppState } = this.props;
-    const userId = AppState.getUserId;
-    UserInfoStore.setIsLoading(true);
-    UserInfoStore.loadUserInfo(userId)
-      .then((data) => {
-        UserInfoStore.setIsLoading(false);
-        UserInfoStore.setUserInfo(data);
-      })
-      .catch(error => Choerodon.handleResponseError(error));
+    UserInfoStore.setUserInfo(this.props.AppState.getUserInfo);
   };
 
   compareToFirstPassword = (rule, value, callback) => {
@@ -46,7 +44,7 @@ class ChangePassword extends Component {
     } else {
       callback();
     }
-  }
+  };
 
   validateToNextPassword = (rule, value, callback) => {
     const form = this.props.form;
@@ -54,84 +52,63 @@ class ChangePassword extends Component {
       form.validateFields(['confirm'], { force: true });
     }
     callback();
-  }
+  };
 
   handleConfirmBlur = (e) => {
     const value = e.target.value;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
-  }
+  };
 
   handleSubmit = (e) => {
     const { getFieldValue, setFields } = this.props.form;
     const user = UserInfoStore.getUserInfo;
     const body = {
-      "originalPassword": getFieldValue("oldpassword"),
-      "password": getFieldValue("confirm")
-    }
+      'originalPassword': getFieldValue('oldpassword'),
+      'password': getFieldValue('confirm'),
+    };
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        axios.put(`/iam/v1/users/${user.id}/password`, JSON.stringify(body))
-          .then((value) => {
-            if (value.message !== "原始密码错误") {
-              Choerodon.logout();
+        this.setState({ submitting: true });
+        UserInfoStore.updatePassword(user.id, body)
+          .then(({ failed, message }) => {
+            this.setState({ submitting: false });
+            if (failed) {
+              Choerodon.prompt(message);
             } else {
-              Choerodon.prompt(value.message);
+              Choerodon.logout();
             }
-          }).catch(err => {
-            if (err.response) {
-              const status = err.response.status;
-              const mess = err.response.data.message;
-              switch (status) {
-                case 400:
-                  Choerodon.prompt(mess);
-                  break;
-                default:
-                  break;
-              }
-            }
+          })
+          .catch((error) => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
           });
       }
     });
-  }
+  };
 
   reload = () => {
     const { resetFields } = this.props.form;
     resetFields();
-  }
+  };
 
   render() {
     const { AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 100 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 9 },
-      },
-    };
-
-    const inputWidth = 512;
+    const { submitting } = this.state;
     const user = UserInfoStore.getUserInfo;
     return (
       <Page>
-        <Header title={"修改密码"}>
+        <Header title={'修改密码'}>
           <Button onClick={this.reload} icon="refresh">
             {Choerodon.getMessage('刷新', 'flush')}
           </Button>
         </Header>
         <Content
           title={`对用户“${user.realName}”密码进行修改`}
-          description={(<div>
-            您可以在此修改您的密码
-            <a href="http://choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/">
-              了解详情
-            </a>
-            <span className="icon-open_in_new" />
-          </div>)}>
+          description="非LDAP用户可以修改自己的登录密码。"
+          link="http://choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/"
+        >
           <div className="ldapContainer">
             <Form onSubmit={this.handleSubmit} layout="vertical">
               <FormItem
@@ -144,8 +121,9 @@ class ChangePassword extends Component {
                   }, {
                     validator: this.validateToNextPassword,
                   }],
+                  validateTrigger: 'onBlur',
                 })(
-                  <Input label="原密码" type="password" style={{ width: "512px" }} />
+                  <Input autocomplete="off" label="原密码" type="password" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
               <FormItem
@@ -158,8 +136,10 @@ class ChangePassword extends Component {
                   }, {
                     validator: this.validateToNextPassword,
                   }],
+                  validateTrigger: 'onBlur',
+                  validateFirst: true,
                 })(
-                  <Input label="新密码" type="password" style={{ width: "512px" }} />
+                  <Input autocomplete="off" label="新密码" type="password" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
               <FormItem
@@ -172,8 +152,10 @@ class ChangePassword extends Component {
                   }, {
                     validator: this.compareToFirstPassword,
                   }],
+                  validateTrigger: 'onBlur',
+                  validateFirst: true,
                 })(
-                  <Input label="确认密码" type="password" style={{ width: "512px" }} onBlur={this.handleConfirmBlur} />
+                  <Input autocomplete="off" label="确认密码" type="password" style={{ width: inputWidth }} onBlur={this.handleConfirmBlur} />,
                 )}
               </FormItem>
               <FormItem>
@@ -186,12 +168,14 @@ class ChangePassword extends Component {
                         funcType="raised"
                         type="primary"
                         htmlType="submit"
+                        loading={submitting}
                       >保存</Button>
                       <Button
                         text={Choerodon.languageChange('save')}
                         funcType="raised"
                         onClick={this.reload}
                         style={{ marginLeft: 16 }}
+                        disabled={submitting}
                       >取消</Button>
                     </Col>
                   </Row>

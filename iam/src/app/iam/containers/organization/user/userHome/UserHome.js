@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Icon, Modal, Popover, Table } from 'choerodon-ui';
+import { Button, Icon, Modal, Table, Tooltip } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import Page, { Content, Header } from 'Page';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import EditUser from '../editUser';
 import './UserHome.scss';
 
@@ -16,6 +15,7 @@ class User extends Component {
     super(props);
     this.linkToChange = this.linkToChange.bind(this);
     this.state = {
+      submitting: false,
       open: false,
       edit: false,
       id: '',
@@ -188,9 +188,20 @@ class User extends Component {
         }}
         onSubmit={() => {
           this.setState({
+            submitting: true,
+          });
+        }}
+        onSuccess={() => {
+          this.setState({
             visible: false,
+            submitting: false,
           });
           this.loadUser();
+        }}
+        onError={() => {
+          this.setState({
+            submitting: false,
+          });
         }}
       />
     );
@@ -198,7 +209,7 @@ class User extends Component {
 
   render() {
     const { UserStore, AppState } = this.props;
-    const { filters, pagination, visible, edit } = this.state;
+    const { filters, pagination, visible, edit, submitting } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const orgname = menuType.name;
@@ -307,101 +318,72 @@ class User extends Component {
         key: 'action',
         width: '130px',
         render: (text, record) => (
-          record.locked
-            ? <div>
+          <div>
+            <Permission
+              service={['iam-service.organization-user.update']}
+              type={type}
+              organizationId={organizationId}
+            >
+              <Tooltip
+                title="修改"
+                placement="bottom"
+              >
+                <Button
+                  icon="mode_edit"
+                  shape="circle"
+                  onClick={this.onEdit.bind(this, record.id)}
+                />
+              </Tooltip>
+            </Permission>
+            {record.enabled ? (
               <Permission
-                service={['iam-service.organization-user.update']}
+                service={['iam-service.organization-user.disableUser']}
                 type={type}
                 organizationId={organizationId}
               >
-                <Popover
-                  trigger="hover"
-                  content="修改"
+                <Tooltip
+                  title="停用"
                   placement="bottom"
                 >
                   <Button
-                    icon="mode_edit"
-                    shape="circle"
-                    onClick={this.onEdit.bind(this, record.id)}
-                  />
-                </Popover>
-              </Permission>
-              <Permission
-                service={
-                  [
-                    'iam-service.organization-user.disableUser',
-                    'iam-service.organization-user.enableUser',
-                  ]
-                }
-                type={type}
-                organizationId={organizationId}
-              >
-                <Popover
-                  trigger="hover"
-                  content={record.enabled ? '停用' : '启用'}
-                  placement="bottom"
-                >
-                  <Button
-                    icon={record.enabled ? 'remove_circle_outline' : 'finished'}
+                    icon="remove_circle_outline"
                     shape="circle"
                     onClick={this.handleAble.bind(this, record)}
                   />
-                </Popover>
+                </Tooltip>
               </Permission>
+            ) : (
+              <Permission
+                service={['iam-service.organization-user.enableUser']}
+                type={type}
+                organizationId={organizationId}
+              >
+                <Tooltip
+                  title="启用"
+                  placement="bottom"
+                >
+                  <Button
+                    icon="finished"
+                    shape="circle"
+                    onClick={this.handleAble.bind(this, record)}
+                  />
+                </Tooltip>
+              </Permission>
+            )
+            }
+            {record.locked ?
               <Permission
                 service={['iam-service.organization-user.unlock']}
                 type={type}
                 organizationId={organizationId}
               >
-                <Popover
-                  trigger="hover"
-                  content="解锁"
+                <Tooltip
+                  title="解锁"
                   placement="bottom"
                 >
                   <Button icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
-                </Popover>
-              </Permission>
-            </div> :
-            <div>
-              <Permission
-                service={['iam-service.organization-user.update']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Popover
-                  trigger="hover"
-                  content="修改"
-                  placement="bottom"
-                >
-                  <Button
-                    icon="mode_edit"
-                    shape="circle"
-                    onClick={this.onEdit.bind(this, record.id)}
-                  />
-                </Popover>
-              </Permission>
-              <Permission
-                service={
-                  [
-                    'iam-service.organization-user.disableUser',
-                    'iam-service.organization-user.enableUser',
-                  ]
-                }
-                type={type}
-                organizationId={organizationId}
-              >
-                <Popover
-                  trigger="hover"
-                  content={record.enabled ? '停用' : '启用'}
-                  placement="bottom"
-                >
-                  <Button
-                    icon={record.enabled ? 'remove_circle_outline' : 'finished'}
-                    shape="circle"
-                    onClick={this.handleAble.bind(this, record)}
-                  />
-                </Popover>
-              </Permission>
+                </Tooltip>
+              </Permission> :
               <Permission
                 service={['iam-service.organization-user.unlock']}
                 type={type}
@@ -409,7 +391,8 @@ class User extends Component {
               >
                 <Button icon="lock_open" shape="circle" disabled />
               </Permission>
-            </div>
+            }
+          </div>
         ),
       }];
     return (
@@ -427,19 +410,13 @@ class User extends Component {
               {Choerodon.getMessage('创建用户', 'createUser')}
             </Button>
           </Permission>
-          <Permission
-            service={['iam-service.organization-user.list']}
-            type={type}
-            organizationId={organizationId}
+          <Button
+            funcType="flat"
+            onClick={() => this.loadUser()}
           >
-            <Button
-              funcType="flat"
-              onClick={() => this.loadUser()}
-            >
-              <Icon type="refresh" />
-              {Choerodon.getMessage('刷新', 'flush')}
-            </Button>
-          </Permission>
+            <Icon type="refresh" />
+            {Choerodon.getMessage('刷新', 'flush')}
+          </Button>
         </Header>
         <Content
           title={`组织“${orgname}”的用户管理`}
@@ -459,17 +436,16 @@ class User extends Component {
           <Sidebar
             title={this.renderSideTitle()}
             visible={visible}
+            okText={edit ? '保存' : '创建'}
+            cancelText="取消"
+            onOk={e => this.editUser.handleSubmit(e)}
             onCancel={() => {
               this.setState({
                 visible: false,
                 selectedData: '',
               });
             }}
-            onOk={() => {
-              this.editUser.handleSubmit(event);
-            }}
-            cancelText="取消"
-            okText={edit ? '保存' : '创建'}
+            confirmLoading={submitting}
           >
             {
               this.renderSideBar()

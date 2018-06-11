@@ -154,12 +154,16 @@ class OrganizationHome extends Component {
               submitting: false,
               visible: false,
             });
-            Choerodon.prompt(message);
-            this.loadOrganizations();
-            if (isCreate) {
-              HeaderStore.addOrg(data);
+            if (data.failed) {
+              Choerodon.prompt(data.message);
             } else {
-              HeaderStore.updateOrg(data);
+              Choerodon.prompt(message);
+              this.loadOrganizations();
+              if (isCreate) {
+                HeaderStore.addOrg(data);
+              } else {
+                HeaderStore.updateOrg(data);
+              }
             }
           })
           .catch(error => {
@@ -241,7 +245,7 @@ class OrganizationHome extends Component {
                     whitespace: true,
                     message: Choerodon.getMessage('请输入组织编码', 'please input organization code'),
                   }, {
-                    maxLength: 15,
+                    max: 15,
                     message: Choerodon.getMessage('组织编码不能超过15个字符', 'code should less than 15 characters'),
                   }, {
                     pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,

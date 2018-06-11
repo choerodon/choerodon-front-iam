@@ -8,6 +8,7 @@
 
 "microservice": "微服务管理"
 "microservice.route-management": "路由管理"
+"microservice.config-management": "配置管理"
 
 "rentsetting": 组织设置
 # organization

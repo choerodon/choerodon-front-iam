@@ -265,8 +265,8 @@ class RootUserSetting extends Component {
                   total: '',
                 },
                 sort: {
-                  columnKey: null,
-                  order: null,
+                  columnKey: 'id',
+                  order: 'descend',
                 },
               }, () => {
                 this.reload();

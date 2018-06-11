@@ -310,7 +310,8 @@ class MemberRole extends Component {
             label="请选择一个角色"
             getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
             filterOption={(input, option) => {
-              return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              const childNode = option.props.children;
+              return childNode && childNode.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
             }}
             onChange={(value) => roleIds[index] = value}
             filter

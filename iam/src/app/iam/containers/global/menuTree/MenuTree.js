@@ -6,9 +6,11 @@ import { Button, Form, Icon, IconSelect, Input, Modal, Table, Tabs, Tooltip } fr
 import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import './MenuTree.scss';
 
 const { MenuStore } = stores;
+const intlPrefix = 'global.menusetting';
 
 let currentDropOverItem;
 let currentDropSide;
@@ -129,13 +131,16 @@ class MenuTree extends Component {
     this.setState({
       menuGroup,
     });
-    Choerodon.prompt(Choerodon.getMessage('删除成功，请点击保存。', 'Success'));
+    Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.delete.success`}/>);
   };
 
   handleDelete = (record) => {
+    const { intl } = this.props;
     Modal.confirm({
-      title: '删除自设目录',
-      content: `确认删除自设目录"${record.name}"吗?`,
+      title: intl.formatMessage({id: `${intlPrefix}.delete.owntitle`}),
+      content:intl.formatMessage({id: `${intlPrefix}.delete.owncontent`}, {
+        name: record.name,
+      }),
       onOk: () => {
         this.deleteMenu(record);
       },
@@ -172,12 +177,12 @@ class MenuTree extends Component {
             };
             defineLevel(menu, 0);
             menuGroup[type].push(menu);
-            Choerodon.prompt('创建目录成功，请点击保存。');
+            Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.create.success`}/>);
             break;
           case 'edit':
             selectMenuDetail.name = name;
             selectMenuDetail.icon = icon;
-            Choerodon.prompt('修改目录成功，请点击保存。');
+            Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.modify.success`}/>);
             break;
         }
         this.setState({
@@ -192,32 +197,32 @@ class MenuTree extends Component {
   getSidebarTitle = (selectType) => {
     switch (selectType) {
       case 'create':
-        return '创建目录';
+        return <FormattedMessage id={`${intlPrefix}.create.org`}/>;
       case 'edit':
-        return '修改目录';
+        return <FormattedMessage id={`${intlPrefix}.modify.org`}/>;
       case 'detail':
-        return '查看详情';
+        return <FormattedMessage id={`${intlPrefix}.detail`}/>;
     }
   };
 
   //创建3个状态的sidebar渲染
   getSidebarContent(selectType) {
     const { selectMenuDetail: { name } } = this.state;
-    let formDom, pageFirstLineTitle, FirstLineContent;
+    let formDom, code, values;
     switch (selectType) {
       case 'create':
-        pageFirstLineTitle = `在平台”${process.env.HEADER_TITLE_NAME || 'Choerodon'}“中创建目录`;
-        FirstLineContent = '请在下面输入目录名称、编码，选择目录图标创建目录。您创建的目录为自设目录，自设目录可以修改、删除。而平台内置的目录为预置目录，您不能创建、修改、删除预置目录。';
+        code=`${intlPrefix}.create`;
+        values={name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`};
         formDom = this.getDirNameDom();
         break;
       case 'edit':
-        pageFirstLineTitle = `对目录“${name}”进行修改`;
-        FirstLineContent = '您可以在此修改目录名称、图标。';
+        code=`${intlPrefix}.modify`;
+        values={name};
         formDom = this.getDirNameDom();
         break;
       case 'detail':
-        pageFirstLineTitle = `查看菜单“${name}”详情`;
-        FirstLineContent = '您可以在此查看菜单的名称、编码、层级、所属预置目录、权限。菜单是平台内置的，您不能创建、修改、删除菜单。';
+        code=`${intlPrefix}.detail`;
+        values={name};
         formDom = this.getDetailDom();
         break;
     }
@@ -225,9 +230,8 @@ class MenuTree extends Component {
       <div>
         <Content
           className="sidebar-content"
-          title={pageFirstLineTitle}
-          description={FirstLineContent}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
+          code={code}
+          values={values}
         >
           {formDom}
         </Content>
@@ -246,7 +250,7 @@ class MenuTree extends Component {
             <Input
               value={name}
               autocomplete="off"
-              label="菜单名称"
+              label={<FormattedMessage id={`${intlPrefix}.menu.name`}/>}
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -257,7 +261,7 @@ class MenuTree extends Component {
             <Input
               value={code}
               autocomplete="off"
-              label="菜单编码"
+              label={<FormattedMessage id={`${intlPrefix}.menu.code`}/>}
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -267,7 +271,7 @@ class MenuTree extends Component {
           >
             <Input
               value={level}
-              label="菜单层级"
+              label={<FormattedMessage id={`${intlPrefix}.menu.level`}/>}
               autocomplete="off"
               disabled={true}
               style={{ width: inputWidth }}
@@ -278,7 +282,7 @@ class MenuTree extends Component {
           >
             <Input
               value={__parent_name__}
-              label="所属根目录"
+              label={<FormattedMessage id={`${intlPrefix}.belong.root`}/>}
               disabled={true}
               autocomplete="off"
               style={{ width: inputWidth }}
@@ -286,11 +290,11 @@ class MenuTree extends Component {
           </FormItem>
         </Form>
         <div className="permission-list" style={{ width: inputWidth }}>
-          <p>菜单所具有权限:</p>
+          <p><FormattedMessage id={`${intlPrefix}.menu.permission`}/></p>
           {
             permissions && permissions.length > 0 ? permissions.map(
               ({ code }) => <div key={code}><span>{code}</span></div>,
-            ) : '此菜单无对应权限'
+            ) : <FormattedMessage id={`${intlPrefix}.menu.withoutpermission`}/>
           }
         </div>
       </div>
@@ -299,6 +303,7 @@ class MenuTree extends Component {
 
   //created FormDom渲染
   getDirNameDom() {
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const selectMenuDetail = this.state.selectMenuDetail || {};
     return (
@@ -310,14 +315,14 @@ class MenuTree extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('请输入目录名称', 'This field is required.'),
+              message: intl.formatMessage({id: `${intlPrefix}.directory.name.require`}),
             }],
             validateTrigger: 'onBlur',
             initialValue: selectMenuDetail.name,
           })(
             <Input
               autocomplete="off"
-              label="目录名称"
+              label={<FormattedMessage id={`${intlPrefix}.directory.name`}/>}
               style={{ width: inputWidth }}
             />,
           )}
@@ -329,10 +334,10 @@ class MenuTree extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('请输入目录编码', 'This field is required.'),
+              message: intl.formatMessage({id: `${intlPrefix}.directory.code.require`}),
             }, {
               pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
-              message: Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'This field is required.'),
+              message: intl.formatMessage({id: `${intlPrefix}.directory.code.pattern`}),
             }],
             validateTrigger: 'onBlur',
             validateFirst: true,
@@ -340,7 +345,7 @@ class MenuTree extends Component {
           })(
             <Input
               autoComplete="off"
-              label="目录编码"
+              label={<FormattedMessage id={`${intlPrefix}.directory.code`}/>}
               style={{ width: inputWidth }}
             />,
           )}
@@ -351,15 +356,14 @@ class MenuTree extends Component {
           {getFieldDecorator('icon', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('请选择一个图标', 'icon is required'),
+              message: intl.formatMessage({id: `${intlPrefix}.icon.require`}),
             }],
             validateTrigger: 'onChange',
             initialValue: selectMenuDetail.icon,
           })(
             <IconSelect
-              label="请选择一个图标"
+              label={<FormattedMessage id={`${intlPrefix}.icon`}/>}
               style={{ width: inputWidth }}
-              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
             />,
           )}
         </FormItem>
@@ -524,7 +528,7 @@ class MenuTree extends Component {
           Choerodon.prompt(menus.message);
         } else {
           MenuStore.setMenuData(_.clone(menus), type);
-          Choerodon.prompt('保存成功');
+          Choerodon.prompt(<FormattedMessage id="save.success"/>);
           menuGroup[type] = normalizeMenus(menus);
           this.setState({
             menuGroup,
@@ -540,11 +544,11 @@ class MenuTree extends Component {
   getOkText = (selectType) => {
     switch (selectType) {
       case 'create':
-        return '添加';
+        return <FormattedMessage id="add"/>;
       case 'detail':
-        return '返回';
+        return <FormattedMessage id="return"/>;
       default:
-        return '确定';
+        return <FormattedMessage id="ok"/>;
     }
   };
 
@@ -552,7 +556,7 @@ class MenuTree extends Component {
     const menuType = this.props.AppState.currentMenuType.type;
     const { menuGroup, type: typeState, selectType, sidebar, submitting } = this.state;
     const columns = [{
-      title: '目录 / 菜单',
+      title: <FormattedMessage id={`${intlPrefix}.directory`}/>,
       dataIndex: 'name',
       key: 'name',
       render: (text, { type, default: dft }) => {
@@ -570,22 +574,22 @@ class MenuTree extends Component {
       },
       onCell: this.handleCell,
     }, {
-      title: '图标',
+      title: <FormattedMessage id={`${intlPrefix}.icon`}/>,
       dataIndex: 'icon',
       key: 'icon',
       render: (text) => {
         return <Icon type={text} style={{ fontSize: 18 }} />;
       },
     }, {
-      title: '编码',
+      title: <FormattedMessage id={`${intlPrefix}.code`}/>,
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: '所属预设目录',
+      title: <FormattedMessage id={`${intlPrefix}.belong`}/>,
       dataIndex: '__parent_name__',
       key: '__parent_name__',
     }, {
-      title: '类型',
+      title:  <FormattedMessage id={`${intlPrefix}.type`}/>,
       dataIndex: 'default',
       key: 'default',
       render: (text, { type, default: dft }) => {
@@ -607,12 +611,13 @@ class MenuTree extends Component {
           return (
             <Permission service={['iam-service.menu.query']} type={menuType}>
               <Tooltip
-                title="详情"
+                title={<FormattedMessage id="detail"/>}
                 placement="bottom"
               >
                 <Button
                   shape="circle"
                   icon="find_in_page"
+                  size="small"
                   onClick={this.detailMenu.bind(this, record)}
                 />
               </Tooltip>
@@ -623,11 +628,12 @@ class MenuTree extends Component {
           return (<span>
             <Permission service={['iam-service.menu.update']} type={menuType}>
               <Tooltip
-                title="修改"
+                title={<FormattedMessage id="modify" />}
                 placement="bottom"
               >
                 <Button
                   shape="circle"
+                  size="small"
                   onClick={this.changeMenu.bind(this, record)}
                   icon="mode_edit"
                 />
@@ -636,12 +642,13 @@ class MenuTree extends Component {
             <Permission service={['iam-service.menu.delete']} type={menuType}>
               {canDel ? (
                 <Tooltip
-                  title="删除"
+                  title={<FormattedMessage id="delete"/>}
                   placement="bottom"
                 >
                   <Button
                     onClick={this.handleDelete.bind(this, record)}
                     shape="circle"
+                    size="small"
                     icon="delete_forever"
                   />
                 </Tooltip>
@@ -653,6 +660,7 @@ class MenuTree extends Component {
                   <Button
                     disabled
                     shape="circle"
+                    size="small"
                     icon="delete_forever"
                   />
                 </Tooltip>
@@ -663,36 +671,42 @@ class MenuTree extends Component {
       },
     }];
     return (
-      <Page>
-        <Header title={'菜单配置'}>
+      <Page
+        service={[
+          'iam-service.menu.create',
+          'iam-service.menu.saveListTree',
+          'iam-service.menu.query',
+          'iam-service.menu.update',
+          'iam-service.menu.delete',
+        ]}
+      >
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Permission service={['iam-service.menu.create']}>
             <Button
               onClick={this.addDir}
               icon="playlist_add"
             >
-              {Choerodon.languageChange('menu.createDir')}
+              <FormattedMessage id={`${intlPrefix}.create.org`} />
             </Button>
           </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的菜单配置`}
-          description="菜单是左侧导航栏。菜单配置包括您对菜单名称、图标、层级关系、顺序的配置。菜单的类型分目录和菜单两种。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
+          code={intlPrefix}
         >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
-            <TabPane tab="平台" key="site">
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`}/>} key="site">
             </TabPane>
-            <TabPane tab="组织" key="organization">
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.org`}/>} key="organization">
             </TabPane>
-            <TabPane tab="项目" key="project">
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.pro`}/>} key="project">
             </TabPane>
-            <TabPane tab="个人中心" key="user">
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.personcenter`}/>} key="user">
             </TabPane>
           </Tabs>
           <Table
@@ -709,7 +723,7 @@ class MenuTree extends Component {
             title={this.getSidebarTitle(selectType)}
             onOk={selectType === 'detail' ? this.closeSidebar : this.handleOk}
             okText={this.getOkText(selectType)}
-            cancelText="取消"
+            cancelText={<FormattedMessage id="cancel"/>}
             okCancel={selectType !== 'detail'}
             onCancel={this.closeSidebar}
             visible={sidebar}
@@ -723,13 +737,13 @@ class MenuTree extends Component {
                 type="primary"
                 onClick={this.saveMenu}
                 loading={submitting}
-              >{Choerodon.languageChange('save')}</Button>
+              ><FormattedMessage id="save"/></Button>
               <Button
                 funcType="raised"
                 onClick={this.handleRefresh}
                 style={{ marginLeft: 16 }}
                 disabled={submitting}
-              >取消</Button>
+              ><FormattedMessage id="cancel"/></Button>
             </div>
           </Permission>
         </Content>
@@ -738,4 +752,4 @@ class MenuTree extends Component {
   }
 }
 
-export default Form.create({})(withRouter(MenuTree));
+export default Form.create({})(withRouter(injectIntl(MenuTree)));

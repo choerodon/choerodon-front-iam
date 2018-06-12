@@ -6,7 +6,10 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const Organization = asyncRouter(() => (import('./orgHome')), () => import('../../../stores/globalStores/organization'));
+const Organization = asyncRouter(
+  () => (import('./Organization')),
+  () => import('../../../stores/globalStores/organization')
+);
 
 const OrganizationIndex = ({ match }) => (
   <Switch>

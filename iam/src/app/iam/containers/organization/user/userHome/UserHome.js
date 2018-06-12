@@ -396,7 +396,19 @@ class User extends Component {
         ),
       }];
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.organization-user.create',
+          'iam-service.organization-user.list',
+          'iam-service.organization-user.query',
+          'iam-service.organization-user.update',
+          'iam-service.organization-user.delete',
+          'iam-service.organization-user.disableUser',
+          'iam-service.organization-user.enableUser',
+          'iam-service.organization-user.unlock',
+          'iam-service.organization-user.check',
+        ]}
+      >
         <Header title={Choerodon.getMessage('用户管理', 'user management')}>
           <Permission
             service={['iam-service.organization-user.create']}

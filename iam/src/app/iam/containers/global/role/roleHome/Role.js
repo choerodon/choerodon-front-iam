@@ -401,7 +401,25 @@ class Role extends Component {
       onChange: this.changeSelects,
     };
     return (
-      <Page className="choerodon-role">
+      <Page
+        service={[
+          'iam-service.role.createBaseOnRoles',
+          'iam-service.role.update',
+          'iam-service.role.disableRole',
+          'iam-service.role.enableRole',
+          'iam-service.role.create',
+          'iam-service.role.check',
+          'iam-service.role.listRolesWithUserCountOnOrganizationLevel',
+          'iam-service.role.listRolesWithUserCountOnProjectLevel',
+          'iam-service.role.list',
+          'iam-service.role.listRolesWithUserCountOnSiteLevel',
+          'iam-service.role.queryWithPermissionsAndLabels',
+          'iam-service.role.pagingQueryUsersByRoleIdOnOrganizationLevel',
+          'iam-service.role.pagingQueryUsersByRoleIdOnProjectLevel',
+          'iam-service.role.pagingQueryUsersByRoleIdOnSiteLevel',
+        ]}
+        className="choerodon-role"
+      >
         <Remove
           open={open}
           handleCancel={this.handleClose}

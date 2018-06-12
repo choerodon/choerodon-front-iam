@@ -421,7 +421,16 @@ class ProjectHome extends Component {
 
 
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.organization-project.list',
+          'iam-service.organization-project.create',
+          'iam-service.organization-project.check',
+          'iam-service.organization-project.update',
+          'iam-service.organization-project.disableProject',
+          'iam-service.organization-project.enableProject',
+        ]}
+      >
         <Header title={Choerodon.getMessage('项目管理', 'project title')}>
           <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
             <Button

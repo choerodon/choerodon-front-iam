@@ -517,7 +517,14 @@ class LDAP extends Component {
     </div>);
 
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.ldap.disableLdap',
+          'iam-service.ldap.enableLdap',
+          'iam-service.ldap.latestHistory',
+          'iam-service.ldap.delete',
+        ]}
+      >
         <Header title={Choerodon.getMessage('修改LDAP', 'edit LDAP')}>
           <Button
             icon={ldapData && ldapData.enabled ? 'remove_circle_outline' : 'finished'}

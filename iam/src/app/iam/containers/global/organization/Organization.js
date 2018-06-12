@@ -347,6 +347,9 @@ class OrganizationHome extends Component {
     return (
       <Page
         service={[
+          'iam-service.organization.list',
+          'iam-service.organization.check',
+          'iam-service.organization.query',
           'organization-service.organization.create',
           'iam-service.organization.update',
           'iam-service.organization.disableOrganization',

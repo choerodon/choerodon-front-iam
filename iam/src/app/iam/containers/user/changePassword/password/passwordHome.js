@@ -98,7 +98,11 @@ class ChangePassword extends Component {
     const { submitting } = this.state;
     const user = UserInfoStore.getUserInfo;
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.user.selfUpdatePassword',
+        ]}
+      >
         <Header title={'修改密码'}>
           <Button onClick={this.reload} icon="refresh">
             {Choerodon.getMessage('刷新', 'flush')}

@@ -1,0 +1,19 @@
+.createConfigContainer {
+  margin-bottom: 32px;
+  padding: 32px;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.createConfigContent {
+  margin-left: 36px;
+  padding-top: 32px;
+
+  p {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+    line-height: 20px;
+    text-align: justify;
+    max-width: 512px;
+  }
+}

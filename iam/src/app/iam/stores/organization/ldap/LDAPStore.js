@@ -85,6 +85,7 @@ class LDAPStore {
   }
 
   loadLDAP = (organizationId) => {
+    this.cleanData();
     this.setIsLoading(true);
     return axios.get(`/iam/v1/organizations/${organizationId}/ldaps`).then((data) => {
       if (data) {

@@ -28,14 +28,14 @@ let timer = null;
 class TestConnect extends Component {
   state = this.getInitState();
 
-  componentWillMount() {
-    this.props.onRef(this);
-  }
-
   getInitState() {
     return {
       organizationId: this.props.AppState.currentMenuType.id,
     };
+  }
+
+  componentWillMount() {
+    this.props.onRef(this);
   }
 
   getSyncInfoOnce = () => {
@@ -72,7 +72,7 @@ class TestConnect extends Component {
 
   loading () {
     window.clearInterval(timer);
-    timer = window.setInterval(this.getSyncInfoOnce, 3000);
+    timer = window.setInterval(this.getSyncInfoOnce, 9000);
     return <SyncLoading />;
   }
 
@@ -116,7 +116,7 @@ class TestConnect extends Component {
     if (timer) {
       window.clearInterval(timer);
     };
-    if (!syncData) {
+    if (!Object.getOwnPropertyNames(syncData).length) {
       return (
         <div className="syncContainer">
           <p>
@@ -246,7 +246,8 @@ class TestConnect extends Component {
     } else if (showWhich === 'sync') {
       LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
         if (data.failed) {
-          Choerodon.prompt(data.message);
+          if (data.message === 'ldap的服务地址为空')
+          Choerodon.prompt('LDAP的服务地址为空，请先填写LDAP信息');
         } else {
           LDAPStore.setIsSyncLoading(true);
         }

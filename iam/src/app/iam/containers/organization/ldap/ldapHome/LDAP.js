@@ -56,8 +56,8 @@ class LDAP extends Component {
   /* 获取同步用户信息 */
   getSyncInfo() {
     const { LDAPStore } = this.props;
-    const ldapData = LDAPStore.getLDAPData;
     const { organizationId } = this.state;
+    const ldapData = LDAPStore.getLDAPData;
     LDAPStore.getSyncInfo(organizationId, ldapData.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
@@ -146,32 +146,28 @@ class LDAP extends Component {
   openSidebar(status) {
     const { LDAPStore } = this.props;
     LDAPStore.setIsShowResult(false);
+    LDAPStore.setIsSyncLoading(false);
     if (this.TestLdap) {
       const { resetFields } = this.TestLdap.props.form;
       resetFields();
-      LDAPStore.setIsSyncLoading(false);
-    }
-
-    if (status === 'connect') {
-      LDAPStore.setIsConfirmLoading(false);
     }
 
     this.setState({
       sidebar: true,
       showWhich: status,
+    }, () => {
+      if (status === 'connect') {
+        LDAPStore.setIsConfirmLoading(false);
+      } else if (status === 'sync') {
+        this.getSyncInfo();
+      }
     });
-    if (status === 'sync') {
-      this.getSyncInfo();
-    }
   }
 
   /* 关闭侧边栏 */
   closeSidebar = () => {
     const { showWhich } = this.state;
     const { LDAPStore } = this.props;
-    // if (showWhich === 'sync') {
-    //
-    // }
     this.setState({
       sidebar: false,
     }, () => {

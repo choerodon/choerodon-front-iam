@@ -354,4 +354,4 @@ const zh_CN = {
   ...pageDetail,
 
 };
-export default zh_CN;  
+export default zh_CN;

@@ -129,7 +129,13 @@ class UpdatePasswordPolicy extends Component {
     const loginSecurity = loading ?
       <LoadingBar /> : <LoginForm form={form} />;
     return (
-      <Page className="PasswordPolicy">
+      <Page
+        className="PasswordPolicy"
+        service={[
+          'iam-service.password-policy.update',
+          'iam-service.password-policy.queryByOrganizationId',
+        ]}
+      >
         <Header title={Choerodon.languageChange('policy.title')}>
           <Button
             onClick={this.reload}

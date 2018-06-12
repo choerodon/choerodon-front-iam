@@ -124,6 +124,17 @@ class MenuTree extends Component {
       selectMenuDetail: record,
     });
   };
+  checkCode = (rule, value, callback) => {
+    const { intl } = this.props;
+    axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value }))
+      .then((mes) => {
+        if (mes.failed) {
+          callback(intl.formatMessage({id: `${intlPrefix}.directory.code.onlymsg`}));
+        } else {
+          callback();
+        }
+      });
+  };
   //删除菜单
   deleteMenu = (record) => {
     const { menuGroup, type } = this.state;
@@ -308,6 +319,32 @@ class MenuTree extends Component {
     const selectMenuDetail = this.state.selectMenuDetail || {};
     return (
       <Form layout="vertical">
+
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('code', {
+            rules: [{
+              required: true,
+              whitespace: true,
+              message: intl.formatMessage({id: `${intlPrefix}.directory.code.require`}),
+            }, {
+              pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
+              message: intl.formatMessage({id: `${intlPrefix}.directory.code.pattern`}),
+            }, {
+              validator: this.checkCode,
+            }],
+            validateTrigger: 'onBlur',
+            validateFirst: true,
+            initialValue: selectMenuDetail.code,
+          })(
+            <Input
+              autoComplete="off"
+              label={<FormattedMessage id={`${intlPrefix}.directory.code`}/>}
+              style={{ width: inputWidth }}
+            />,
+          )}
+        </FormItem>
         <FormItem
           {...formItemLayout}
         >
@@ -323,29 +360,6 @@ class MenuTree extends Component {
             <Input
               autocomplete="off"
               label={<FormattedMessage id={`${intlPrefix}.directory.name`}/>}
-              style={{ width: inputWidth }}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('code', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: intl.formatMessage({id: `${intlPrefix}.directory.code.require`}),
-            }, {
-              pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
-              message: intl.formatMessage({id: `${intlPrefix}.directory.code.pattern`}),
-            }],
-            validateTrigger: 'onBlur',
-            validateFirst: true,
-            initialValue: selectMenuDetail.code,
-          })(
-            <Input
-              autoComplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.directory.code`}/>}
               style={{ width: inputWidth }}
             />,
           )}
@@ -678,6 +692,10 @@ class MenuTree extends Component {
           'iam-service.menu.query',
           'iam-service.menu.update',
           'iam-service.menu.delete',
+          'iam-service.menu.queryMenusWithPermissions',
+          'iam-service.menu.listTree',
+          'iam-service.menu.listAfterTestPermission',
+          'iam-service.menu.listTreeMenusWithPermissions',
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>

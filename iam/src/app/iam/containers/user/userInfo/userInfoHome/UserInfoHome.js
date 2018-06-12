@@ -289,7 +289,17 @@ class UserInfo extends Component {
   render() {
     const user = UserInfoStore.getUserInfo;
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.user.query',
+          'iam-service.user.check',
+          'iam-service.user.querySelf',
+          'iam-service.user.queryInfo',
+          'iam-service.user.updateInfo',
+          'iam-service.user.uploadPhoto',
+          'iam-service.user.queryProjects',
+        ]}
+      >
         <Header
           title={Choerodon.getMessage('个人信息', 'userInfo')}
         >

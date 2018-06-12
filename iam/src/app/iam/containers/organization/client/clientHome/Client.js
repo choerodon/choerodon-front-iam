@@ -525,7 +525,17 @@ class Client extends Component {
       },
     ];
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.client.create',
+          'iam-service.client.update',
+          'iam-service.client.delete',
+          'iam-service.client.list',
+          'iam-service.client.check',
+          'iam-service.client.queryByName',
+          'iam-service.client.query',
+        ]}
+      >
         <Header title={Choerodon.languageChange('client.title')}>
           <Permission
             service={['iam-service.client.create']}

@@ -939,7 +939,31 @@ class MemberRole extends Component {
     const okText = selectType === 'create' ? '添加' : '保存';
     const { createService, deleteService } = this.getPermission();
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.role-member.createOrUpdateOnSiteLevel',
+          'iam-service.role-member.deleteOnSiteLevel',
+          'iam-service.role-member.createOrUpdateOnOrganizationLevel',
+          'iam-service.role-member.deleteOnOrganizationLevel',
+          'iam-service.role-member.createOnProjectLevel',
+          'iam-service.role-member.deleteOnProjectLevel',
+          'iam-service.role-member.createOrUpdateOnOrganizationLevel1',
+          'iam-service.role-member.deleteOnOrganizationLevel1',
+          'iam-service.role-member.pagingQueryUsersByRoleIdOnOrganizationLevel',
+          'iam-service.role-member.listRolesWithUserCountOnOrganizationLevel',
+          'iam-service.role-member.pagingQueryUsersWithOrganizationLevelRoles',
+          'iam-service.role-member.createOnProjectLevel1',
+          'iam-service.role-member.deleteOnProjectLevel1',
+          'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel',
+          'iam-service.role-member.listRolesWithUserCountOnProjectLevel',
+          'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles',
+          'iam-service.role-member.createOrUpdateOnSiteLevel1',
+          'iam-service.role-member.deleteOnSiteLevel1',
+          'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel',
+          'iam-service.role-member.listRolesWithUserCountOnSiteLevel',
+          'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles',
+        ]}
+      >
         <Header title={'角色分配'}>
           <Permission
             service={createService}

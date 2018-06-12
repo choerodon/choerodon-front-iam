@@ -240,7 +240,14 @@ class RootUserSetting extends Component {
     const { AppState, form } = this.props;
     const { type } = AppState.currentMenuType;
     return (
-      <Page className="root-user-setting">
+      <Page
+        className="root-user-setting"
+        service={[
+          'iam-service.user.pagingQueryAdminUsers',
+          'iam-service.user.addDefaultUsers',
+          'iam-service.user.deleteDefaultUser',
+        ]}
+      >
         <Header title={'Root用户设置'}>
           <Permission
             service={['iam-service.user.addDefaultUsers']}

@@ -731,7 +731,16 @@ class Route extends Component {
       render: (text, record) => this.renderAction(record),
     }];
     return (
-      <Page className="container">
+      <Page
+        className="container"
+        service={[
+          'manager-service.route.list',
+          'manager-service.route.check',
+          'manager-service.route.update',
+          'manager-service.route.delete',
+          'manager-service.route.create',
+        ]}
+      >
         <Header
           title="路由管理"
         >

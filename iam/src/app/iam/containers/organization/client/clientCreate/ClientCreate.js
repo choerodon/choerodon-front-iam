@@ -292,7 +292,7 @@ class CreateClient extends Component {
         <Content
           style={{ padding: 0 }}
           title={`在组织“${organizationName}”中创建客户端`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
           description="请在下面输入客户端ID、密钥，选择授权类型。您可以选择性输入访问授权超时、授权超时、重定向地址、附加信息。"
         >
           {mainContent}

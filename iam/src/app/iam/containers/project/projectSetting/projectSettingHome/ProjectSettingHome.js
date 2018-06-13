@@ -118,7 +118,7 @@ class ProjectSettingHome extends Component {
         <Content
           title={projectInfo.enabled ? `对项目“${JSON.parse(sessionStorage.menType).name}”进行项目设置` : `项目“${projectInfo.code}”已被停用`}
           description="您可以在此修改项目名称、停用项目。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/project/pro_info/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/project/pro_info/"
         >
           <div className="proSettingStyle">
             <Form onSubmit={this.handleSave.bind(this)}>

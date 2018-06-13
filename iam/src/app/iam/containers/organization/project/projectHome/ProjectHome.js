@@ -360,7 +360,7 @@ class ProjectHome extends Component {
         <Content
           style={{ padding: 0 }}
           title={`在组织“${orgname}”中创建项目`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
           description="请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。"
         >
           <Form layout="vertical" className="rightForm">
@@ -406,7 +406,7 @@ class ProjectHome extends Component {
         <Content
           style={{ padding: 0 }}
           title={`对项目“${this.state.projectDatas.code}”进行修改`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
           description="您可以在此修改项目名称。"
         >
           <Form>
@@ -567,7 +567,7 @@ class ProjectHome extends Component {
         </Header>
         <Content
           title={`组织“${orgname}”的项目管理`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
           description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
         >
           <Table

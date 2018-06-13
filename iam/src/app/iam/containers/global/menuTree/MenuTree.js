@@ -222,7 +222,7 @@ class MenuTree extends Component {
           title={pageFirstLineTitle}
           description={(<div>
             {FirstLineContent}
-            <a href="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">
+            <a href="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">
               了解详情
             <span className="icon-open_in_new" />
             </a>
@@ -848,7 +848,7 @@ class MenuTree extends Component {
           title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的菜单配置`}
           description={(<div>
             菜单是左侧导航栏。菜单配置包括您对菜单名称、图标、层级关系、顺序的配置。菜单的类型分目录和菜单两种。
-          <a href="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">
+          <a href="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">
               了解详情
             </a>
             <span className="icon-open_in_new" />

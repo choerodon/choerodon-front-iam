@@ -313,7 +313,7 @@ class EditClient extends Component {
           style={{ padding: 0 }}
           title={`对客户端“${client && client.name}”进行修改`}
           description="您可以在此修改客户端密钥、授权类型、访问授权超时、授权超时、重定向地址、附加信息。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
         >
           {mainContent}
         </Content>

@@ -317,7 +317,7 @@ class Client extends Component {
         <Content
           title={`组织“${organizationName}”的客户端`}
           description="用户在使用oauth2.0的客户端授权模式认证时需要指定所属的客户端，根据客户端对应的密钥，作用域，认证有效时长和重定向地址等进行认证。客户端还可用于区分微服务环境下的不同模块。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
+          link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
         >
           <Table
             size="middle"

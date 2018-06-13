@@ -127,7 +127,7 @@ class ChangePassword extends Component {
           title={`对用户“${user.realName}”密码进行修改`}
           description={(<div>
             您可以在此修改您的密码
-            <a href="http://choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/">
+            <a href="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/">
               了解详情
             </a>
             <span className="icon-open_in_new" />

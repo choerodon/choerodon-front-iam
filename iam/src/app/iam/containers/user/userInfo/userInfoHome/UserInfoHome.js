@@ -215,7 +215,7 @@ class UserInfo extends Component {
           description={(
             <div>
               您可以在此修改您的头像、用户名、邮箱、语言、时区。
-              <a target="_blank" href="http://choerodon.io/zh/docs/user-guide/system-configuration/person/information/">了解详情</a>
+              <a target="_blank" href="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/person/information/">了解详情</a>
               <span className="icon-open_in_new" />
             </div>
           )}

@@ -135,7 +135,7 @@ npm run lint
 * Mobx: [https://github.com/mobxjs/mobx](https://github.com/mobxjs/mobx)
 * webpack: [https://webpack.docschina.org](https://webpack.docschina.org)
 * gulp: [https://gulpjs.com](https://gulpjs.com)
-* Front-end development documentation of Choerodon: [http://choerodon.io/zh/docs/development-guide/front/](http://choerodon.io/zh/docs/development-guide/front/)
+* Front-end development documentation of Choerodon: [http://v0-5.choerodon.io/zh/docs/development-guide/front/](http://v0-5.choerodon.io/zh/docs/development-guide/front/)
 
 ## FAQ
 

@@ -238,7 +238,7 @@ class EditRole extends Component {
           <Content
             title={`对角色“${name}”进行修改`}
             description="您可以在此修改角色名称、标签、权限。"
-            link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+            link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
           >
             <Form layout="vertical">
               <FormItem
@@ -416,7 +416,7 @@ class EditRole extends Component {
             style={{ padding: 0 }}
             title={`向角色“${name}”添加权限`}
             description="您可以在此为角色添加一个或多个权限。"
-            link="http://choerodon.io/zh/docs/user-guide/system-configuration/iam/site4_role/"
+            link="http://v0-5.choerodon.io/zh/docs/user-guide/system-configuration/iam/site4_role/"
           >
             <Table
               style={{

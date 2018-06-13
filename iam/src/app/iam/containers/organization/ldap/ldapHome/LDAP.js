@@ -548,7 +548,7 @@ class LDAP extends Component {
         </Header>
         <Content
           title={`组织“${organizationName}”的LDAP`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/"
           description="LDAP管理是对组织应用的LDAP信息设置的管理。LDAP只针对LDAP用户，LDAP用户的登录名和密码取自LDAP指向的外部系统中的数据。"
         >
           <div className="ldapContainer">

@@ -74,13 +74,13 @@ class Client extends Component {
       case 'create':
         return {
           title: `在组织“${organizationName}”中创建客户端`,
-          link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
+          link: 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
           description: '请在下面输入客户端ID、密钥，选择授权类型。您可以选择性输入访问授权超时、授权超时、重定向地址、附加信息。',
         };
       case 'edit':
         return {
           title: `对客户端“${client && client.name}”进行修改`,
-          link: 'http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
+          link: 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
           description: '您可以在此修改客户端密钥、授权类型、访问授权超时、授权超时、重定向地址、附加信息。',
         };
       default:
@@ -547,7 +547,7 @@ class Client extends Component {
         <Content
           title={`组织“${organizationName}”的客户端`}
           description="用户在使用oauth2.0的客户端授权模式认证时需要指定所属的客户端，根据客户端对应的密钥，作用域，认证有效时长和重定向地址等进行认证。客户端还可用于区分微服务环境下的不同模块。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
         >
           <Table
             size="middle"

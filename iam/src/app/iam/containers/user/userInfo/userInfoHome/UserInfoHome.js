@@ -300,7 +300,7 @@ class UserInfo extends Component {
         <Content
           title={`用户“${user.realName}”的个人信息`}
           description="您可以在此修改您的头像、用户名、邮箱、语言、时区。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/person/information/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/person/information/"
         >
           {this.renderForm(user)}
         </Content>

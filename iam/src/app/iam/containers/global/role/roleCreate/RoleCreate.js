@@ -265,7 +265,7 @@ class CreateRole extends Component {
         <Content
           title={`在平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”中创建角色`}
           description="自定义角色可让您对权限进行分组，并将其分配给您平台、组织或项目的成员。您可以手动选择权限，也可以从其他角色导入权限。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
         >
           <div>
             <Form layout="vertical">
@@ -456,7 +456,7 @@ class CreateRole extends Component {
                 className="sidebar-content"
                 title="向当前创建角色添加权限"
                 description="您可以在此为当前角色添加一个或多个权限。"
-                link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+                link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
               >
                 <Table
                   style={{

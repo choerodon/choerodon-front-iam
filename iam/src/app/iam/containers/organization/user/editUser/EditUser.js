@@ -269,7 +269,7 @@ class EditUser extends Component {
         description={
           edit ? '您可以在此修改用户名、邮箱、语言、时区。' : '用户是全平台唯一的。您创建的用户只属于这个组织，但在平台的其他组织中能被分配角色。'
         }
-        link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/user/"
+        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/user/"
       >
         <Form onSubmit={this.handleSubmit.bind(this)} layout="vertical">
           <FormItem

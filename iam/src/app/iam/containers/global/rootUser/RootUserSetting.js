@@ -278,7 +278,7 @@ class RootUserSetting extends Component {
         </Header>
         <Content
           title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的Root用户设置`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/rootuser/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/rootuser/"
           description="Root用户能管理平台以及平台中的所有组织和项目。平台中可以有一个或多个Root用户。您可以添加和移除Root用户。"
         >
           {this.renderTable()}
@@ -294,7 +294,7 @@ class RootUserSetting extends Component {
             <Content
               style={{ padding: 0 }}
               title={`在平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”中添加Root用户`}
-              link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/rootuser/"
+              link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/rootuser/"
               description="您可以在此添加一个或多个用户，被添加的用户为Root用户"
             >
               <Form>

@@ -503,7 +503,7 @@ class Route extends Component {
       <Content
         title={title}
         description={description}
-        link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
         className="sidebar-content formContainer"
       >
         <Form>
@@ -753,7 +753,7 @@ class Route extends Component {
         <Content
           title={`平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"的路由管理`}
           description="路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
         >
           <Table
             columns={columns}

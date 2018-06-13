@@ -441,7 +441,7 @@ class Role extends Component {
         <Content
           title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的角色管理`}
           description="角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
         >
           <Table
             columns={columns}

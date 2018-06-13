@@ -107,7 +107,7 @@ class ChangePassword extends Component {
         <Content
           title={`对用户“${user.realName}”密码进行修改`}
           description="非LDAP用户可以修改自己的登录密码。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/"
         >
           <div className="ldapContainer">
             <Form onSubmit={this.handleSubmit} layout="vertical">

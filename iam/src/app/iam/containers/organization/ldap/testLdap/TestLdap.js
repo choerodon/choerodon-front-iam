@@ -277,7 +277,7 @@ class TestConnect extends Component {
         style={{ padding: 0 }}
         title={title}
         description={description}
-        link="http://choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
       >
         {this.getSidebarContent()}
       </Content>

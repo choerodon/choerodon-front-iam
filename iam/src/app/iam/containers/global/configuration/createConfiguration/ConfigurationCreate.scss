@@ -16,4 +16,12 @@
     text-align: justify;
     max-width: 512px;
   }
+
+  .serviceSection {
+    padding-top: 26px;
+  }
+}
+
+.step-disabled {
+  pointer-events: none;
 }

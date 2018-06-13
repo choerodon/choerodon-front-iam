@@ -73,7 +73,7 @@ class ConfigurationStore {
   }
 
   loadService() {
-    return axios.get('manager/v1/services/page')
+    return axios.get('manager/v1/services')
       .then(datas => this.handleProptError(datas));
   }
 

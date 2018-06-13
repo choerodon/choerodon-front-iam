@@ -113,7 +113,7 @@ class CreateConfig extends Component {
         <Content
           title={`平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"的配置管理`}
           description="配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
         >
           <div className="createConfigContainer">
             <Steps>

@@ -49,7 +49,7 @@ class MemberRoleType {
         break;
     }
     this.title = `${typeDesc}“${name || 'Choerodon'}”的角色分配`;
-    this.link = `http://choerodon.io/zh/docs/user-guide/system-configuration/${linkName}/role-assignment/`;
+    this.link = `http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/${linkName}/role-assignment/`;
     this.urlUsers = `${apiGetway}/role_members/users`;
     this.urlRoles = `${apiGetway}/role_members/users/roles`;
     this.urlRoleMember = `${apiGetway}/role_members`;
@@ -419,11 +419,11 @@ class MemberRole extends Component {
     const { title, data: { name } } = this.roles;
     let contentTitle = `在${title}“${name || 'Choerodon'}”中添加成员角色`;
     let contentDescription = '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。';
-    let contentLink = 'http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
+    let contentLink = 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
     if (selectType === 'edit') {
       contentTitle = `对成员${currentMemberData.loginName}的角色进行修改`;
       contentDescription = '您可以在此为成员删除、添加角色。';
-      contentLink = 'http://choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
+      contentLink = 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
     }
     return {
       title: contentTitle,

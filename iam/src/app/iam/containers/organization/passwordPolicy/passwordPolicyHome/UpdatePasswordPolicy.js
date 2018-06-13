@@ -146,7 +146,7 @@ class UpdatePasswordPolicy extends Component {
         </Header>
         <Content
           title={`组织“${AppState.currentMenuType.name}“的密码策略`}
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/secret_policy/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/secret_policy/"
           description="密码策略包括密码安全策略、登录安全策略。密码安全策略是设置密码时的密码规则，登录安全策略是用户登录平台时的认证策略。选择启用并保存，策略将生效。"
         >
           <div className="policyType">

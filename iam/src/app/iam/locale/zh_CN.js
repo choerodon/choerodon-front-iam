@@ -1,5 +1,5 @@
 /*eslint-disable*/
-const docServer = 'http://choerodon.io/zh/docs';
+const docServer = 'http://v0-6.choerodon.io/zh/docs';
 const pageDetail = {
 
   // menusetting

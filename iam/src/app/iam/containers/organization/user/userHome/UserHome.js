@@ -433,7 +433,7 @@ class User extends Component {
         <Content
           title={`组织“${orgname}”的用户管理`}
           description="用户是平台的使用者。您可以在组织下创建用户，则用户属于这个组织。"
-          link="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/user/"
+          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/user/"
         >
           <Table
             size="middle"

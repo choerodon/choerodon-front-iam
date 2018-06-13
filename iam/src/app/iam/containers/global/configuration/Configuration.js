@@ -34,7 +34,7 @@ class Configuration extends Component {
 
   getInitState() {
     return {
-      viseble: false,
+      visible: false,
       loading: false,
       pagination: {
         current: 1,
@@ -46,7 +46,7 @@ class Configuration extends Component {
         order: 'descend',
       },
       filters: {},
-      params: [],
+      params: '',
     }
   }
 
@@ -90,7 +90,7 @@ class Configuration extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    this.fetch(ConfigurationStore.getCurrentService.id, pagination, sort, filters, params)
+    this.fetch(ConfigurationStore.getCurrentService.name, pagination, sort, filters, params)
       .then((data) => {
         this.setState({
           sort,
@@ -102,7 +102,7 @@ class Configuration extends Component {
             total: data.totalElements,
           },
         });
-        ConfigurationStore.setConfigData(data.content),
+        ConfigurationStore.setConfigData(data.content.slice()),
         ConfigurationStore.setLoading(false);
       })
       .catch((error) => {
@@ -110,17 +110,15 @@ class Configuration extends Component {
       });
   }
 
-  fetch(serviceId, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { id, configVersion, publicTime, isDefault}, params) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, configVersion, isDefault}, params) {
     ConfigurationStore.setLoading(true);
     const queryObj = {
-      serviceId,
       page: current - 1,
       size: pageSize,
-      id,
+      name,
       configVersion,
-      publicTime,
+      isDefault,
       params,
-      default: isDefault,
     };
     if (columnKey) {
       const sorter = [];
@@ -130,7 +128,7 @@ class Configuration extends Component {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/manager/v1/configs?${querystring.stringify(queryObj)}`);
+    return axios.get(`/manager/v1/services/${serviceName}/configs?${querystring.stringify(queryObj)}`);
   }
 
 
@@ -149,8 +147,8 @@ class Configuration extends Component {
     this.props.history.push('configuration/create');
   }
 
-  handleChange(serviceId) {
-    const currentService = ConfigurationStore.service.find(service => service.id === serviceId);
+  handleChange(serviceName) {
+    const currentService = ConfigurationStore.service.find(service => service.name === serviceName);
     ConfigurationStore.setCurrentService(currentService);
     this.setState({
       pagination: {
@@ -163,7 +161,7 @@ class Configuration extends Component {
         order: 'descend',
       },
       filters: {},
-      params: {},
+      params: '',
     }, () => this.loadConfig());
   }
 
@@ -175,8 +173,8 @@ class Configuration extends Component {
     return (
       <div>
         <Select
-          style={{ width: '512px', marginBottom: '16px' }}
-          value={ConfigurationStore.currentService.id}
+          style={{ width: '512px', marginBottom: '32px' }}
+          value={ConfigurationStore.currentService.name}
           label="请选择微服务"
           filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -184,8 +182,8 @@ class Configuration extends Component {
           onChange={this.handleChange.bind(this)}
         >
           {
-            ConfigurationStore.service.map(({ name, id }) => (
-              <Option value={id} key={name}>{name}</Option>
+            ConfigurationStore.service.map(({ name }) => (
+              <Option key={name}>{name}</Option>
             ))
           }
         </Select>
@@ -211,14 +209,18 @@ class Configuration extends Component {
       title: '配置创建时间',
       dataIndex: 'publicTime',
       key: 'publicTime',
-      filters: [],
-      filteredValue: filters.publicTime || [],
     }, {
       title: '是否为默认',
-      dataIndex: 'default',
-      key: 'default',
-      filters: [],
-      filteredValue: filters.default || [],
+      dataIndex: 'isDefault',
+      key: 'isDefault',
+      filters: [{
+        text: '是',
+        value: 'true',
+      }, {
+        text: '否',
+        value: 'false',
+      }],
+      filteredValue: filters.isDefault || [],
       render: (text) => {
       return text ? '是' : '否';
     }
@@ -288,7 +290,7 @@ class Configuration extends Component {
           <Table
             loading={ConfigurationStore.loading}
             columns={columns}
-            dataSource={ConfigurationStore.configData.slice()}
+            dataSource={ConfigurationStore.getConfigData.slice()}
             pagination={pagination}
             filters={this.state.filters.params}
             onChange={this.handlePageChange}

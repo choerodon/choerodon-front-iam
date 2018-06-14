@@ -6,7 +6,7 @@ import { inject, observer } from 'mobx-react';
 import { Button,  Form, Icon, Modal, Progress, Select, Table } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import classnames from 'classnames';
+import ApplyConfig from './applyConfig';
 import querystring from 'query-string';
 import './Configuration.scss';
 import ConfigurationStore from '../../../stores/globalStores/configuration';
@@ -23,7 +23,6 @@ class Configuration extends Component {
   getInitState() {
     return {
       visible: false,
-      loading: false,
       pagination: {
         current: 1,
         pageSize: 10,
@@ -40,6 +39,8 @@ class Configuration extends Component {
 
   componentDidMount() {
     this.loadInitData();
+    ConfigurationStore.setCurrentConfigId(null);
+    ConfigurationStore.setStatus('create');
   }
 
   loadInitData = () => {
@@ -113,6 +114,7 @@ class Configuration extends Component {
     return axios.get(`/manager/v1/services/${serviceName}/configs?${querystring.stringify(queryObj)}`);
   }
 
+
   handlePageChange = (pagination, filters, sorter, params) => {
     this.loadConfig(pagination, sorter, filters, params);
   };
@@ -128,7 +130,7 @@ class Configuration extends Component {
 
   /* 跳转至配置管理 */
   goCreate = () => {
-    this.props.history.push('configuration/create');
+    this.props.history.push('/iam/configuration/create');
   }
 
   /* 刷新 */
@@ -219,8 +221,54 @@ class Configuration extends Component {
     })
   }
 
+  /* 开启sidebar */
+  handleOpen = (record) => {
+    this.setState({visible: true});
+  }
+
+  /* 关闭sidebar */
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+
+
+  /**
+   * 基于此创建
+   * @param record 当前行数据
+   */
+  createByThis = (record) => {
+    ConfigurationStore.setCurrentConfigId(record.id);
+    ConfigurationStore.setStatus('baseon');
+    this.goCreate();
+  }
+
+  /**
+   * 修改
+   * @param record 当前行数据
+   */
+  handleEdit = (record) => {
+    ConfigurationStore.setEditConfig(record);
+    ConfigurationStore.setCurrentConfigId(record.id);
+    ConfigurationStore.setStatus('edit');
+    this.goCreate();
+  }
+
+  /* 渲染侧边栏内容 */
+  renderSidebarContent() {
+    return (
+     <ApplyConfig
+       service={ConfigurationStore.getCurrentService}
+       onRef={(node) => {
+         this.ApplyConfig = node;
+       }}
+     />
+    )
+  }
+
   render() {
-    const { sort: { columnKey, order }, filters, pagination } = this.state;
+    const { sort: { columnKey, order }, filters, pagination, visible } = this.state;
     const columns = [{
       title: '配置ID',
       dataIndex: 'name',
@@ -262,7 +310,7 @@ class Configuration extends Component {
           type: 'site',
           icon: '',
           text: '基于此配置创建',
-          action: ''
+          action: this.createByThis.bind(this, record),
         }, {
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',
@@ -274,13 +322,13 @@ class Configuration extends Component {
           type: 'site',
           icon: '',
           text: '应用配置',
-          action: ''
+          action: this.handleOpen.bind(this, record)
         }, {
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',
           icon: '',
           text: '修改',
-          action: ''
+          action: this.handleEdit.bind(this, record)
         }];
         if (!record.isDefault) {
           actionsDatas.push({
@@ -328,6 +376,15 @@ class Configuration extends Component {
             rowkey="id"
             filterBarPlaceholder="过滤表"
           />
+          <Sidebar
+            title="应用配置"
+            visible={visible}
+            okText="保存"
+            cancelText="取消"
+            onCancel={this.handleCancel}
+          >
+            {this.renderSidebarContent()}
+          </Sidebar>
         </Content>
       </Page>
     )

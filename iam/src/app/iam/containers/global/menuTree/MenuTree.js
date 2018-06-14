@@ -126,7 +126,8 @@ class MenuTree extends Component {
   };
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
-    axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value }))
+    const { type } = this.state;
+    axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value, level: type, type: 'dir' }))
       .then((mes) => {
         if (mes.failed) {
           callback(intl.formatMessage({id: `${intlPrefix}.directory.code.onlymsg`}));
@@ -241,14 +242,8 @@ class MenuTree extends Component {
       <div>
         <Content
           className="sidebar-content"
-<<<<<<< HEAD
           code={code}
           values={values}
-=======
-          title={pageFirstLineTitle}
-          description={FirstLineContent}
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
->>>>>>> hotfix-C7NF-970
         >
           {formDom}
         </Content>
@@ -625,6 +620,7 @@ class MenuTree extends Component {
       title: '',
       width: 100,
       key: 'action',
+      align: 'right',
       render: (text, record) => {
         const { type, default: dft } = record;
         if (type === 'menu') {
@@ -674,7 +670,7 @@ class MenuTree extends Component {
                 </Tooltip>
               ) : (
                 <Tooltip
-                  title="该目录下有菜单，将菜单移空后即可删除目录"
+                  title={<FormattedMessage id={`${intlPrefix}.delete.disable.tooltip`}/>}
                   placement="bottomRight"
                 >
                   <Button
@@ -721,13 +717,7 @@ class MenuTree extends Component {
           </Button>
         </Header>
         <Content
-<<<<<<< HEAD
           code={intlPrefix}
-=======
-          title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的菜单配置`}
-          description="菜单是左侧导航栏。菜单配置包括您对菜单名称、图标、层级关系、顺序的配置。菜单的类型分目录和菜单两种。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/"
->>>>>>> hotfix-C7NF-970
         >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`}/>} key="site">

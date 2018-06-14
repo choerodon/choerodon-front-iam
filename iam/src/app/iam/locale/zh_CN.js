@@ -20,6 +20,54 @@ const pageDetail = {
   "global.menusetting.detail.description": "您可以在此查看菜单的名称、编码、层级、所属预置目录、权限。菜单是平台内置的，您不能创建、修改、删除菜单。",
   "global.menusetting.detail.link": `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
 
+
+  // rootuser
+  "global.rootuser.title": "平台\"{name}\"的Root用户设置",
+  "global.rootuser.description": "Root用户能管理平台以及平台中的所有组织和项目。平台中可以有一个或多个Root用户。您可以添加和移除Root用户。",
+  "global.rootuser.link": `${docServer}/user-guide/system-configuration/platform/rootuser/`,
+  // add
+  "global.rootuser.add.title": "在平台\"{name}\"中添加Root用户",
+  "global.rootuser.add.description": "您可以在此添加一个或多个用户，被添加的用户为Root用户。",
+  "global.rootuser.add.link": `${docServer}/user-guide/system-configuration/platform/rootuser/`,
+
+  // route
+  "global.route.title": "平台\"{name}\"的路由管理",
+  "global.route.description":"路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。",
+  "global.route.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  //create
+  "global.route.create.title": "在平台\"{name}\"中创建路由",
+  "global.route.create.description":"请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。",
+  "global.route.create.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  // modify
+  "global.route.modify.title": "对路由\"{name}\"进行修改",
+  "global.route.modify.description": "您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。",
+  "global.route.modify.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  // detail
+  "global.route.detail.title": "查看路由\"{name}\"的详情",
+  "global.route.detail.description": "预定义路由为平台初始化设置，您不能修改预定义路由。",
+  "global.route.detail.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+
+   // project setting
+  "organization.project.title": "组织\"{name}\"的项目管理",
+  "organization.project.description": "项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。",
+  "organization.project.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
+  // create
+  "organization.project.create.title": "在组织\"{name}\"中创建项目",
+  "organization.project.create.description": "请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。",
+  "organization.project.create.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
+  // modify
+  "organization.project.modify.title": "对项目\"{name}\"进行修改",
+  "organization.project.modify.description": "您可以在此修改项目名称。",
+  "organization.project.modify.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
+
+  "project.info.title": "对项目\"{name}\"进行项目设置",
+  "project.info.description": "您可以在此修改项目名称、停用项目。",
+  "project.info.link": `${docServer}/user-guide/system-configuration/project/pro_info/`,
+  "project.info.disabled.title": "项目\"{name}\"已被停用",
+  "project.info.disabled.description": "您可以在此修改项目名称、停用项目。",
+  "project.info.disabled.link": `${docServer}/user-guide/system-configuration/project/pro_info/`,
+
 };
 const zh_CN = {
   "user.preferences": "用户首选项",
@@ -276,6 +324,7 @@ const zh_CN = {
 // status
 // success
   "operation.success": "操作成功",
+  "add.success": "添加成功",
   "create.success": "创建成功",
   "modify.success": "修改成功",
   "save.success": "保存成功",
@@ -285,6 +334,7 @@ const zh_CN = {
   "disable.success": "停用成功",
 // error
   "operation.error": "操作失败",
+  "add.error": "添加失败",
   "create.error": "创建失败",
   "modify.error": "修改失败",
   "save.error": "保存失败",
@@ -300,9 +350,7 @@ const zh_CN = {
   "global.organization.description": "组织是项目的上一级。通过组织您可以管理项目、用户。您可以创建组织，创建后平台默认您是这个组织的组织管理员。",
   "global.organization.name": "组织名称",
   "global.organization.code": "组织编码",
-  "global.organization.status": "启用状态",
-  "global.organization.enable": "启用",
-  "global.organization.disable": "停用",
+  "global.organization.status.enabled": "启用状态",
   "global.organization.modify": "修改组织",
   "global.organization.modify.title": "对组织\"{name}\"进行修改",
   "global.organization.modify.description": "您可以在此修改组织名称",
@@ -347,8 +395,76 @@ const zh_CN = {
   "global.menusetting.belong.root": "所属根目录",
   "global.menusetting.menu.withoutpermission": "此菜单无对应权限",
   "global.menusetting.menu.permission": "菜单所具有权限:",
+  "global.menusetting.delete.disable.tooltip": "该目录下有菜单，将菜单移空后即可删除目录",
 
-  // 角色管理
+  // Root用户管理
+  "global.rootuser.header.title": "Root用户设置",
+  "global.rootuser.remove.title": "移除Root用户",
+  "global.rootuser.remove.content": "确定要移除Root用户\"{name}\"吗？移除后此用户将不能管理平台及所有组织、项目。",
+  "global.rootuser.loginname": "登录名",
+  "global.rootuser.realname": "用户名",
+  "global.rootuser.status.enabled": "启用状态",
+  "global.rootuser.status.locked": "安全状态",
+  "global.rootuser.locked": "锁定",
+  "global.rootuser.normal": "正常",
+  "global.rootuser.remove.disable.tooltip": "平台至少需要一个Root用户。要移除当前的Root用户，请先添加另一个Root用户",
+  "global.rootuser.add": "添加Root用户",
+  "global.rootuser.user": "用户",
+
+  // 路由管理
+  "global.route.delete.title": "删除路由",
+  "global.route.delete.content": "确定要删除路由\"{name}\"吗？",
+  "global.route.name.exist.msg": "路由名称已存在，请输入其他路由名称",
+  "global.route.path.exist.msg": "路由路径已存在，请输入其他路由路径",
+  "global.route.builtin.predefined": "预定义",
+  "global.route.builtin.custom": "自定义",
+  "global.route.create": "创建路由",
+  "global.route.modify": "修改路由",
+  "global.route.detail": "路由详情",
+  "global.route.name.require.msg": "请输入路由名称",
+  "global.route.name": "路由名称",
+  "global.route.name.tip": "路由表中的唯一标识",
+  "global.route.path": "路径",
+  "global.route.path.require.msg": "请输入路径",
+  "global.route.path.tip": "路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径",
+  "global.route.service": "对应微服务",
+  "global.route.service.require.msg": "必须选择一个微服务",
+  "global.route.stripprefix": "是否去除前缀",
+  "global.route.stripprefix.tip": "默认情况下，请求转发时会将路由规则中的前缀去除",
+  "global.route.retryable": "是否重试",
+  "global.route.retryable.tip": "'默认为否，如果为是，请求失败时会自动重试3次",
+  "global.route.customsensitiveheaders": "是否过滤敏感头信息",
+  "global.route.customsensitiveheaders.tip": "请求转发时，会将Headers中的敏感信息随HTTP转发，如果想过滤一些敏感信息，请选择是",
+  "global.route.sensitiveheaders.require.msg": "请输入敏感头信息",
+  "global.route.sensitiveheaders": "敏感头信息",
+  "global.route.helperservice.require.msg": "请输入Helper服务名",
+  "global.route.helperservice": "Helper服务名",
+  "global.route.helperservice.tip": "该路由规则对应的自定义网关处理器服务，默认为gateway-helper",
+  "global.route.builtin": "路由来源",
+  "global.route.header.title": "路由管理",
+
+  // 组织层
+
+  // 项目管理
+  "organization.project.code.exist.msg": "项目编码已存在，请输入其他项目编码",
+  "organization.project.code.require.msg": "请输入项目编码",
+  "organization.project.code.pattern.msg": "编码只能由小写字母、数字、\"-\"组成，且以小写字母开头，不能以\"-\"结尾",
+  "organization.project.code.length.msg": "项目编码不能超过14个字符",
+  "organization.project.create": "创建项目",
+  "organization.project.modify": "修改项目",
+  "organization.project.code": "项目编码",
+  "organization.project.name": "项目名称",
+  "organization.project.name.require.msg": "请输入项目名称",
+  "organization.project.status.enabled": "启用状态",
+  "organization.project.header.title": "项目管理",
+
+
+  // 项目层
+  "project.info.disable.title": "停用项目",
+  "project.info.disable.content": "确定要停用项目\"${name}\"吗？停用后，您和项目下其他成员将无法进入此项目。",
+  "project.info.header.title": "项目信息",
+  "project.info.name": "项目名称",
+  "project.info.code": "项目编码",
 
   // page
   ...pageDetail,

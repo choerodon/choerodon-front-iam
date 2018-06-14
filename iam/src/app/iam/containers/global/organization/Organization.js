@@ -295,24 +295,23 @@ class OrganizationHome extends Component {
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
     }, {
-      title: <FormattedMessage id="global.organization.status"/>,
+      title: <FormattedMessage id="global.organization.status.enabled"/>,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{
-        text: <FormattedMessage id="global.organization.enable"/>,
+        text: intl.formatMessage({id: 'enable'}),
         value: 'true',
       }, {
-        text: <FormattedMessage id="global.organization.disable"/>,
+        text: intl.formatMessage({id: 'disable'}),
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
-      render: (text) => {
-        return <FormattedMessage id={text ? 'global.organization.enable' : 'global.organization.disable'} />;
-      },
+      render: enable => intl.formatMessage({id: enable ? 'enable' : 'disable'}),
     }, {
       title: '',
       width: '100px',
       key: 'action',
+      align: 'right',
       render: (text, record) => (
         <div className="operation">
           <Permission service={['iam-service.organization.update']}>
@@ -330,7 +329,7 @@ class OrganizationHome extends Component {
           </Permission>
           <Permission service={['iam-service.organization.disableOrganization', 'iam-service.organization.enableOrganization']}>
             <Tooltip
-              title={<FormattedMessage id={record.enabled ? 'global.organization.enable' : 'global.organization.disable'}/>}
+              title={<FormattedMessage id={record.enabled ? 'enable' : 'disable'}/>}
               placement="bottom"
             >
               <Button

@@ -3,12 +3,14 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Input, Modal } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import './ProjectSettingHome.scss';
 import ProjectSettingStore from '../../../../stores/project/projectSetting/ProjectSettingStore';
 
 const {HeaderStore} = stores;
 const FormItem = Form.Item;
+const intlPrefix = 'project.info';
 
 @inject('AppState')
 @observer
@@ -42,7 +44,7 @@ class ProjectSettingHome extends Component {
         ProjectSettingStore.axiosSaveProjectInfo(body)
           .then((data) => {
             this.setState({ submitting: false });
-            Choerodon.prompt('保存成功');
+            Choerodon.prompt(<FormattedMessage id="save.success"/>);
             ProjectSettingStore.setProjectInfo(data);
             HeaderStore.updateProject(data);
             history.replace(`${location.pathname}?type=project&id=${id}&name=${encodeURIComponent(data.name)}&organizationId=${organizationId}`);
@@ -56,17 +58,17 @@ class ProjectSettingHome extends Component {
   }
 
   handleEnabled = (name) => {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     this.setState({ stopping: true });
     Modal.confirm({
-      title: '停用项目',
-      content: `确定要停用项目"${name}"吗？停用后，您和项目下其他成员将无法进入此项目。`,
+      title: intl.formatMessage({id: `${intlPrefix}.disable.title`}),
+      content: intl.formatMessage({id: `${intlPrefix}.disable.content`},{name}),
       onOk: () => ProjectSettingStore.disableProject(AppState.currentMenuType.id)
         .then((data) => {
           this.setState({
             stopping: false,
           });
-          Choerodon.prompt('停用成功');
+          Choerodon.prompt(<FormattedMessage id="disable.success"/>);
           ProjectSettingStore.setProjectInfo(data);
           HeaderStore.updateProject(data);
           this.props.history.push('/');
@@ -98,8 +100,7 @@ class ProjectSettingHome extends Component {
           'iam-service.project.list',
         ]}
       >
-<<<<<<< HEAD
-        <Header title="项目信息">
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Permission service={['iam-service.project.disableProject']}>
             <div>
               <Button
@@ -107,71 +108,14 @@ class ProjectSettingHome extends Component {
                 onClick={this.handleEnabled.bind(this, name)}
                 disabled={!enabled}
               >
-                停用
+                <FormattedMessage id="disable"/>
               </Button>
-=======
-        <Page>
-          <Header title="项目信息">
-            <Permission service={['iam-service.project.disableProject']}>
-              <div>
-                <Button
-                  icon="remove_circle_outline"
-                  onClick={this.handleEnabled.bind(this, name)}
-                  disabled={!enabled}
-                >
-                  停用
-                </Button>
-              </div>
-            </Permission>
-          </Header>
-          <Content
-            title={enabled ? `对项目“${name}”进行项目设置` : `项目“${code}”已被停用`}
-            description="您可以在此修改项目名称、停用项目。"
-            link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/project/pro_info/"
-          >
-            <div className="proSettingStyle">
-              <Form onSubmit={this.handleSave.bind(this)}>
-                <FormItem>
-                  {getFieldDecorator('name', {
-                    initialValue: name,
-                  })(
-                    <Input autocomplete="off" label="项目名" disabled={!enabled} style={{ width: 512 }} />,
-                  )}
-                </FormItem>
-                <FormItem>
-                  {getFieldDecorator('code', {
-                    initialValue: code,
-                  })(
-                    <Input autocomplete="off" label="项目编码" disabled style={{ width: 512 }} />,
-                  )}
-                </FormItem>
-                <Permission service={['iam-service.project.update']}>
-                  <div className="btnGroup">
-                    <Button
-                      funcType="raised"
-                      htmlType="submit"
-                      type="primary"
-                      loading={submitting}
-                      disabled={!enabled}
-                    >{Choerodon.languageChange('save')}</Button>
-                    <Button
-                      funcType="raised"
-                      onClick={this.cancelValue}
-                      disabled={!enabled}
-                    >
-                      {Choerodon.languageChange('cancel')}
-                    </Button>
-                  </div>
-                </Permission>
-              </Form>
->>>>>>> hotfix-C7NF-970
             </div>
           </Permission>
         </Header>
         <Content
-          title={enabled ? `对项目“${name}”进行项目设置` : `项目“${code}”已被停用`}
-          description="您可以在此修改项目名称、停用项目。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/project/pro_info/"
+          code={enabled ? intlPrefix : `${intlPrefix}.disabled`}
+          values={{name: enabled ? name : code}}
         >
           <div className="proSettingStyle">
             <Form onSubmit={this.handleSave.bind(this)}>
@@ -179,14 +123,14 @@ class ProjectSettingHome extends Component {
                 {getFieldDecorator('name', {
                   initialValue: name,
                 })(
-                  <Input autocomplete="off" label="项目名" disabled={!enabled} style={{ width: 512 }} />,
+                  <Input autocomplete="off" label={<FormattedMessage id={`${intlPrefix}.name`}/>} disabled={!enabled} style={{ width: 512 }} />,
                 )}
               </FormItem>
               <FormItem>
                 {getFieldDecorator('code', {
                   initialValue: code,
                 })(
-                  <Input autocomplete="off" label="项目编码" disabled style={{ width: 512 }} />,
+                  <Input autocomplete="off" label={<FormattedMessage id={`${intlPrefix}.code`}/>} disabled style={{ width: 512 }} />,
                 )}
               </FormItem>
               <Permission service={['iam-service.project.update']}>
@@ -197,13 +141,13 @@ class ProjectSettingHome extends Component {
                     type="primary"
                     loading={submitting}
                     disabled={!enabled}
-                  >{Choerodon.languageChange('save')}</Button>
+                  ><FormattedMessage id="save"/></Button>
                   <Button
                     funcType="raised"
                     onClick={this.cancelValue}
                     disabled={!enabled}
                   >
-                    {Choerodon.languageChange('cancel')}
+                    <FormattedMessage id="cancel"/>
                   </Button>
                 </div>
               </Permission>
@@ -215,5 +159,5 @@ class ProjectSettingHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(ProjectSettingHome));
+export default Form.create({})(withRouter(injectIntl(ProjectSettingHome)));
 

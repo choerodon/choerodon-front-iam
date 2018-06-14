@@ -194,13 +194,15 @@ class CreateConfig extends Component {
                 required: true,
                 whitespace: true,
                 message: '请输入配置版本',
+              }, {
+                pattern: /^[0-9a-zA-Z\.]+$/,
+                message: '版本号只能包含数字，英文，小数点'
               }],
             })(
               <Input
                 label="配置版本"
                 autoComplete="off"
                 style={{ width: inputWidth }}
-                disabled
               />,
             )}
           </FormItem>

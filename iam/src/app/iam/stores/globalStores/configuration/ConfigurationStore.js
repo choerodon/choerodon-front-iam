@@ -86,42 +86,9 @@ class ConfigurationStore {
     axios.get(`/manager/v1/configs?${querystring.stringify(queryObj)}`).then(data => this.setCurrentServiceConfig(data.content.slice()))
   }
 
-  // loadConfig(
-  //   serviceId,
-  //   { current = 1, pageSize = 10 },
-  //   { columnKey = 'id', order = 'descend' },
-  //   params) {
-  //   this.setLoading(true);
-  //   const queryObj = {
-  //     serviceId,
-  //     page: current - 1,
-  //     size: pageSize,
-  //     params,
-  //   };
-  //   if (columnKey) {
-  //     const sorter = [];
-  //     sorter.push(columnKey);
-  //     if (order === 'descend') {
-  //       sorter.push('desc');
-  //     }
-  //     queryObj.sort = sorter.join(',');
-  //   }
-  //   axios.get(`/manager/v1/configs?${querystring.stringify(queryObj)}`).then((res) => {
-  //     const response = this.handleProptError(res);
-  //     if (response) {
-  //       this.setConfigData(res.content || []);
-  //       this.setPagination({
-  //         current: res.number + 1,
-  //         pageSize: res.size,
-  //         total: res.totalElements,
-  //       });
-  //     }
-  //     this.setLoading(false);
-  //   }).catch((error) => {
-  //     this.setLoading(false);
-  //     Choerodon.prompt(error.message);
-  //   });
-  // }
+  deleteConfig = (configId) => axios.delete(`manager/v1/configs/${configId}`);
+
+  setDefaultConfig = (configId) => axios.put(`manager/v1/configs/${configId}/default`)
 
   handleProptError = (error) => {
     if (error && error.failed) {

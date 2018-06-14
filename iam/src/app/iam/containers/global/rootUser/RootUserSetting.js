@@ -4,10 +4,12 @@ import { inject, observer } from 'mobx-react';
 import { Button, Form, Modal, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import RootUserStore from '../../../stores/globalStores/rootUser/RootUserStore';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
 
 const { Sidebar } = Modal;
+const intlPrefix = 'global.rootuser';
 
 @inject('AppState')
 @observer
@@ -98,15 +100,18 @@ class RootUserSetting extends Component {
   }
 
   handleDelete = (record) => {
+    const { intl } = this.props;
     Modal.confirm({
-      title: '移除Root用户',
-      content: `确定要移除Root用户"${record.realName}"吗？移除后此用户将不能管理平台及所有组织、项目。`,
+      title: intl.formatMessage({id: `${intlPrefix}.remove.title`}),
+      content: intl.formatMessage({id: `${intlPrefix}.remove.content`},{
+        name: record.realName,
+      }),
       onOk: () => {
         return RootUserStore.deleteRootUser(record.id).then(({ failed, message }) => {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt('移除成功');
+            Choerodon.prompt(<FormattedMessage id="remove.success" />);
             this.reload();
           }
         });
@@ -132,7 +137,7 @@ class RootUserSetting extends Component {
               if (failed) {
                 Choerodon.prompt(message);
               } else {
-                Choerodon.prompt('添加成功');
+                Choerodon.prompt(<FormattedMessage id="add.success" />);
                 this.closeSidebar();
                 this.reload();
               }
@@ -144,13 +149,13 @@ class RootUserSetting extends Component {
   };
 
   renderTable() {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     const { type } = AppState.currentMenuType;
     const { filters, sort: { columnKey, order }, } = this.state;
     const rootUserData = RootUserStore.getRootUserData.slice();
     const columns = [
       {
-        title: '登录名',
+        title: <FormattedMessage id={`${intlPrefix}.loginname`}/>,
         key: 'loginName',
         dataIndex: 'loginName',
         filters: [],
@@ -159,43 +164,44 @@ class RootUserSetting extends Component {
         sortOrder: columnKey === 'loginName' && order,
       },
       {
-        title: '用户名',
+        title: <FormattedMessage id={`${intlPrefix}.realname`}/>,
         key: 'realName',
         dataIndex: 'realName',
         filters: [],
         filteredValue: filters.realName || [],
       },
       {
-        title: '启用状态',
+        title: <FormattedMessage id={`${intlPrefix}.status.enabled`}/>,
         key: 'enabled',
         dataIndex: 'enabled',
-        render: enabled => enabled ? '启用' : '禁用',
+        render: enabled => intl.formatMessage({id: enabled ? 'enable' : 'disable'}),
         filters: [{
-          text: '启用',
+          text: intl.formatMessage({id: 'enable'}),
           value: 'true',
         }, {
-          text: '禁用',
+          text: intl.formatMessage({id: 'disable'}),
           value: 'false',
         }],
         filteredValue: filters.enabled || [],
       },
       {
-        title: '安全状态',
+        title: <FormattedMessage id={`${intlPrefix}.status.locked`}/>,
         key: 'locked',
         dataIndex: 'locked',
         filters: [{
-          text: '正常',
+          text: intl.formatMessage({id: `${intlPrefix}.normal`}),
           value: 'false',
         }, {
-          text: '锁定',
+          text: intl.formatMessage({id: `${intlPrefix}.locked`}),
           value: 'true',
         }],
         filteredValue: filters.locked || [],
-        render: lock => lock ? '锁定' : '正常',
+        render: lock => intl.formatMessage({id: lock ? `${intlPrefix}.locked` : `${intlPrefix}.normal`}),
       },
       {
         title: '',
         width: 100,
+        align: 'right',
         render: (text, record) => {
           const { onlyRootUser } = this.state;
           return (
@@ -205,11 +211,12 @@ class RootUserSetting extends Component {
                 type={type}
               >
                 <Tooltip
-                  title={onlyRootUser ? '平台至少需要一个Root用户。要移除当前的Root用户，请先添加另一个Root用户' : '移除'}
-                  placement="bottomRight"
+                  title={onlyRootUser ? <FormattedMessage id={`${intlPrefix}.remove.disable.tooltip`}/> : <FormattedMessage id="remove"/>}
+                  placement={onlyRootUser ? 'bottomRight' : 'bottom'}
                   overlayStyle={{ maxWidth: '300px'}}
                 >
                   <Button
+                    size="small"
                     disabled={onlyRootUser}
                     onClick={this.handleDelete.bind(this, record)}
                     shape="circle"
@@ -232,7 +239,7 @@ class RootUserSetting extends Component {
         filters={this.state.params}
         rowKey="id"
         onChange={this.tableChange}
-        filterBarPlaceholder="过滤表"
+        filterBarPlaceholder={intl.formatMessage({id: "filtertable"})}
       />
     );
   }
@@ -248,7 +255,7 @@ class RootUserSetting extends Component {
           'iam-service.user.deleteDefaultUser',
         ]}
       >
-        <Header title={'Root用户设置'}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Permission
             service={['iam-service.user.addDefaultUsers']}
             type={type}
@@ -257,7 +264,7 @@ class RootUserSetting extends Component {
               onClick={this.openSidebar}
               icon="playlist_add"
             >
-              添加
+              <FormattedMessage id="add"/>
             </Button>
           </Permission>
           <Button
@@ -280,32 +287,28 @@ class RootUserSetting extends Component {
               });
             }}
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的Root用户设置`}
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/rootuser/"
-          description="Root用户能管理平台以及平台中的所有组织和项目。平台中可以有一个或多个Root用户。您可以添加和移除Root用户。"
+          code={intlPrefix}
         >
           {this.renderTable()}
           <Sidebar
-            title="添加Root用户"
+            title={<FormattedMessage id={`${intlPrefix}.add`}/>}
             onOk={this.handleOk}
-            okText="添加"
-            cancelText="取消"
+            okText={<FormattedMessage id="add"/>}
+            cancelText={<FormattedMessage id="cancel"/>}
             onCancel={this.closeSidebar}
             visible={this.state.visible}
             confirmLoading={this.state.submitting}
           >
             <Content
-              style={{ padding: 0 }}
-              title={`在平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”中添加Root用户`}
-              link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/rootuser/"
-              description="您可以在此添加一个或多个用户，被添加的用户为Root用户"
+              className="sidebar-content"
+              code={`${intlPrefix}.add`}
             >
-              <Form>
-                <MemberLabel label="用户" style={{ marginTop: '-15px'}} form={form} />
+              <Form layout="vertical">
+                <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`}/>} style={{ marginTop: '-15px'}} form={form} />
               </Form>
             </Content>
           </Sidebar>
@@ -315,4 +318,4 @@ class RootUserSetting extends Component {
   }
 }
 
-export default Form.create({})(withRouter(RootUserSetting));
+export default Form.create({})(withRouter(injectIntl(RootUserSetting)));

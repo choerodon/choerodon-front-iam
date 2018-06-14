@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { Form, Select } from 'choerodon-ui';
 import { axios } from 'choerodon-front-boot';
+import { injectIntl } from 'react-intl';
 import classnames from 'classnames';
 import './MemberLabel.scss';
 
@@ -36,6 +37,7 @@ class MemberLabel extends Component {
   }
 
   validateMember = (rule, value, callback) => {
+    const { intl } = this.props;
     if (value && value.length) {
       const { validedMembers } = this.state;
       let errorMsg;
@@ -48,10 +50,10 @@ class MemberLabel extends Component {
               .then(({ failed, enabled }) => {
                 let success = true;
                 if (enabled === false) {
-                  errorMsg = '用户已被停用，无法给此用户分配角色，请先启用此用户';
+                  errorMsg = intl.formatMessage({id: 'memberlabel.member.disabled.msg'});
                   success = false;
                 } else if (failed) {
-                  errorMsg = '不存在此用户，请输入正确的登录名';
+                  errorMsg = intl.formatMessage({id: 'memberlabel.member.notexist.msg'});
                   success = false;
                 }
                 resolve(success);
@@ -70,7 +72,7 @@ class MemberLabel extends Component {
           errorMsg,
       ));
     } else {
-      callback(Choerodon.getMessage('必须至少输入一个成员', 'Please input one member at least'));
+      callback(intl.formatMessage({id: 'memberlabel.member.require.msg'}));
     }
   };
 
@@ -142,4 +144,4 @@ class MemberLabel extends Component {
   }
 }
 
-export default MemberLabel;
+export default injectIntl(MemberLabel);

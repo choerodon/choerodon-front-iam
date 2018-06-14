@@ -4,6 +4,7 @@ import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
 import querystring from 'query-string';
 import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
@@ -31,25 +32,21 @@ class MemberRoleType {
     const { AppState } = this.context.props;
     const { type, id, name } = this.data = AppState.currentMenuType;
     let apiGetway = `/iam/v1/${type}s/${id}`;
-    let typeDesc;
-    let linkName;
+    let codePrefix;
     switch (type) {
       case 'organization':
-        typeDesc = '组织';
-        linkName = 'tenant';
+        codePrefix = 'organization';
         break;
       case 'project':
-        typeDesc = '项目';
-        linkName = 'project';
+        codePrefix = 'project';
         break;
       case 'site':
-        typeDesc = '平台';
-        linkName = 'platform';
+        codePrefix = 'global';
         apiGetway = `/iam/v1/${type}`;
         break;
     }
-    this.title = `${typeDesc}“${name || 'Choerodon'}”的角色分配`;
-    this.link = `http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/${linkName}/role-assignment/`;
+    this.code = `${codePrefix}.memberrole`;
+    this.values = {name: name || 'Choerodon'};
     this.urlUsers = `${apiGetway}/role_members/users`;
     this.urlRoles = `${apiGetway}/role_members/users/roles`;
     this.urlRoleMember = `${apiGetway}/role_members`;
@@ -59,12 +56,6 @@ class MemberRoleType {
   }
 
   //fetch分配角色（post）
-  // body  array
-  // {
-  //   "memberId": 0, 成员id
-  //   "roleId": 0, 角色id
-  //   "sourceId": 0, 层级id 平台为0
-  // }
   fetchRoleMember(memberIds, body, isEdit) {
     let str = `member_ids=${memberIds.join(',')}`;
     if (isEdit === true) {
@@ -228,6 +219,13 @@ class MemberRole extends Component {
     });
   };
 
+  formatMessage = (id, values = {}) => {
+    const { intl } = this.props;
+    return intl.formatMessage({
+      id,
+    },values);
+  }
+
   //创建编辑角色 状态
   getOption = (current) => {
     const { roleData = [], roleIds } = this.state;
@@ -283,13 +281,13 @@ class MemberRole extends Component {
       style.display = 'none';
     }
     return (
-      <MemberLabel label="成员" style={style} value={member} form={this.props.form} />
+      <MemberLabel label={<FormattedMessage id="memberrole.member"/>} style={style} value={member} form={this.props.form} />
     );
   }
 
   getRoleFormItems = () => {
     const { selectType, roleIds } = this.state;
-    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const formItems = roleIds.map((id, index) => {
       const key = id === undefined ? `role-index-${index}` : String(id);
       return (<FormItem
@@ -300,18 +298,21 @@ class MemberRole extends Component {
           rules: [
             {
               required: true,
-              message: Choerodon.getMessage('必须至少选择一个角色', 'Please choose one role at least'),
+              message: this.formatMessage('memberrole.role.require.msg'),
             },
           ],
           initialValue: id,
         })(
           <Select
             style={{ width: 300 }}
-            label="请选择一个角色"
+            label={<FormattedMessage id="memberrole.role.label"/>}
             getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
             filterOption={(input, option) => {
               const childNode = option.props.children;
-              return childNode && childNode.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              if (childNode && React.isValidElement(childNode)) {
+                return childNode.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              }
+              return false;
             }}
             onChange={(value) => roleIds[index] = value}
             filter
@@ -346,10 +347,10 @@ class MemberRole extends Component {
 
   deleteRoleByMultiple = () => {
     const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
-    const content = showMember ? '确认移除当前选中的成员下的所有角色?' : '确认移除当前选中的成员的这些角色?';
+    const content = showMember ? 'memberrole.remove.select.all.content' : 'memberrole.remove.select.content';
     Modal.confirm({
-      title: '移除角色',
-      content: content,
+      title: this.formatMessage('memberrole.remove.title'),
+      content: this.formatMessage(content),
       onOk: () => {
         if (showMember) {
           return this.deleteRolesByIds(selectMemberRoles);
@@ -369,8 +370,11 @@ class MemberRole extends Component {
 
   deleteRoleByRole = (record) => {
     Modal.confirm({
-      title: '移除角色',
-      content: `确认移除成员"${record.loginName}"的角色"${record.roleName}"?`,
+      title: this.formatMessage('memberrole.remove.title'),
+      content: this.formatMessage('memberrole.remove.content',{
+        member: record.loginName,
+        role: record.roleName,
+      }),
       onOk: () => this.deleteRolesByIds({ [record.roleId]: [record.id] }),
     });
   };
@@ -395,7 +399,7 @@ class MemberRole extends Component {
       if (failed) {
         Choerodon.prompt(message);
       } else {
-        Choerodon.prompt('移除成功');
+        Choerodon.prompt(this.formatMessage('remove.success'));
         this.roles.fetch();
       }
     });
@@ -408,34 +412,26 @@ class MemberRole extends Component {
   getSidebarTitle() {
     const { selectType } = this.state;
     if (selectType === 'create') {
-      return '添加成员角色';
+      return <FormattedMessage id="memberrole.add"/>;
     } else if (selectType === 'edit') {
-      return '修改成员角色';
+      return <FormattedMessage id="memberrole.modify"/>;
     }
   }
 
   getHeader() {
     const { selectType, currentMemberData } = this.state;
-    const { title, data: { name } } = this.roles;
-    let contentTitle = `在${title}“${name || 'Choerodon'}”中添加成员角色`;
-    let contentDescription = '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。';
-    let contentLink = 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
-    if (selectType === 'edit') {
-      contentTitle = `对成员${currentMemberData.loginName}的角色进行修改`;
-      contentDescription = '您可以在此为成员删除、添加角色。';
-      contentLink = 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role-assignment/';
-    }
+    const { code, values } = this.roles;
+    const modify = selectType === 'edit';
     return {
-      title: contentTitle,
-      link: contentLink,
-      description: contentDescription,
+      code: modify ? `${code}.modify` : `${code}.add`,
+      values: modify ? {name: currentMemberData.loginName} : values,
     };
   }
 
   getAddOtherBtn(disabled) {
     return (
       <Button type="primary" disabled={disabled} className="add-other-role" icon="add" onClick={this.addRoleList}>
-        添加其他角色
+        <FormattedMessage id="memberrole.add.other"/>
       </Button>
     );
   }
@@ -486,7 +482,7 @@ class MemberRole extends Component {
                   if (failed) {
                     Choerodon.prompt(message);
                   } else {
-                    Choerodon.prompt('添加成功');
+                    Choerodon.prompt(<FormattedMessage id="add.success"/>);
                     this.closeSidebar();
                     this.roles.fetch();
                   }
@@ -506,7 +502,7 @@ class MemberRole extends Component {
               if (failed) {
                 Choerodon.prompt(message);
               } else {
-                Choerodon.prompt('修改成功');
+                Choerodon.prompt(<FormattedMessage id="modify.success"/>);
                 this.closeSidebar();
                 this.roles.fetch();
               }
@@ -539,8 +535,8 @@ class MemberRole extends Component {
 
   handleDelete = (record) => {
     Modal.confirm({
-      title: '移除角色',
-      content: `确认移除成员"${record.loginName}"下的所有角色?`,
+      title: this.formatMessage('memberrole.remove.title'),
+      content: this.formatMessage('memberrole.remove.all.content', {name: record.loginName}),
       onOk: () => this.deleteRolesByIds({
         [record.id]: record.roles.map(({ id }) => id),
       }),
@@ -630,7 +626,7 @@ class MemberRole extends Component {
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     const columns = [
       {
-        title: '成员',
+        title: <FormattedMessage id="memberrole.member"/>,
         dataIndex: 'loginName',
         key: 'loginName',
         filters: [],
@@ -638,7 +634,7 @@ class MemberRole extends Component {
         render: (text, { enabled }) => {
           if (enabled === false) {
             return (
-              <Tooltip title="该成员已停用">
+              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip"/>}>
                 <span className="text-disabled">
                   {text}
                 </span>
@@ -649,7 +645,7 @@ class MemberRole extends Component {
         },
       },
       {
-        title: '名称',
+        title: <FormattedMessage id="memberrole.name"/>,
         dataIndex: 'realName',
         key: 'realName',
         filters: [],
@@ -657,7 +653,7 @@ class MemberRole extends Component {
         render: (text, { enabled }) => {
           if (enabled === false) {
             return (
-              <Tooltip title="该成员已停用">
+              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip"/>}>
                 <span className="text-disabled">
                   {text}
                 </span>
@@ -668,7 +664,7 @@ class MemberRole extends Component {
         },
       },
       {
-        title: '成员类型',
+        title: <FormattedMessage id="memberrole.member.type"/>,
         dataIndex: 'organizationId',
         key: 'organizationId',
         render: (record, text) => {
@@ -676,7 +672,7 @@ class MemberRole extends Component {
         },
       },
       {
-        title: '角色',
+        title: <FormattedMessage id="memberrole.role"/>,
         dataIndex: 'roles',
         key: 'roles',
         filters: filtersRole,
@@ -688,7 +684,7 @@ class MemberRole extends Component {
             if (enabled === false) {
               wrapclass.push('text-disabled');
               item = (
-                <Tooltip title="该角色已停用">
+                <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip"/>}>
                   {item}
                 </Tooltip>
               );
@@ -704,6 +700,7 @@ class MemberRole extends Component {
       {
         title: '',
         width: 100,
+        align:'right',
         render: (text, record) => {
           return (
             <div>
@@ -711,12 +708,12 @@ class MemberRole extends Component {
                 service={createService}
               >
                 <Tooltip
-                  title="修改"
+                  title={<FormattedMessage id="modify"/>}
                   placement="bottom"
                 >
                   <Button onClick={() => {
                     this.editRole(record);
-                  }} shape="circle" icon="mode_edit" />
+                  }} size="small" shape="circle" icon="mode_edit" />
                 </Tooltip>
               </Permission>
               <Permission
@@ -726,10 +723,10 @@ class MemberRole extends Component {
                 projectId={projectId}
               >
                 <Tooltip
-                  title="移除"
+                  title={<FormattedMessage id="remove"/>}
                   placement="bottom"
                 >
-                  <Button shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
+                  <Button size="small" shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
                 </Tooltip>
               </Permission>
             </div>
@@ -759,7 +756,7 @@ class MemberRole extends Component {
         filters={this.state.params}
         onChange={this.memberRoleTableChange}
         dataSource={memberDatas}
-        filterBarPlaceholder="过滤表"
+        filterBarPlaceholder={this.formatMessage("filtertable")}
         rowKey={({ id }) => id}
       />
     );
@@ -778,15 +775,15 @@ class MemberRole extends Component {
     }
     const columns = [
       {
-        title: '成员',
+        title: <FormattedMessage id="memberrole.member"/>,
         key: 'loginName',
         hidden: true,
         filters: [],
         filteredValue: roleMemberFilters.loginName || [],
       },
       {
-        title: '角色/成员',
-        filterTitle: '角色',
+        title: <FormattedMessage id="memberrole.rolemember"/>,
+        filterTitle: <FormattedMessage id="memberrole.role"/>,
         key: 'name',
         dataIndex: 'name',
         filters: filtersData,
@@ -811,7 +808,7 @@ class MemberRole extends Component {
             const item = <span className={classnames({ 'text-disabled': !enabled })}>{name} ({userCount}) {more}</span>;
             if (enabled === false) {
               return (
-                <Tooltip title="该角色已停用">
+                <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip"/>}>
                   {item}
                 </Tooltip>
               );
@@ -822,7 +819,7 @@ class MemberRole extends Component {
         },
       },
       {
-        title: '名称',
+        title: <FormattedMessage id="memberrole.name"/>,
         key: 'realName',
         dataIndex: 'realName',
         filteredValue: roleMemberFilters.realName || [],
@@ -831,6 +828,7 @@ class MemberRole extends Component {
       {
         title: '',
         width: 100,
+        align:'right',
         render: (text, record) => {
           if ('roleId' in record) {
             return (
@@ -838,14 +836,18 @@ class MemberRole extends Component {
                 <Permission
                   service={createService}
                 >
-                  <Button onClick={() => {
-                    this.handleEditRole(record);
-                  }} size="small" shape="circle" icon="mode_edit" />
+                  <Tooltip title={<FormattedMessage id="modify"/>}>
+                    <Button onClick={() => {
+                      this.handleEditRole(record);
+                    }} size="small" shape="circle" icon="mode_edit" />
+                  </Tooltip>
                 </Permission>
                 <Permission
                   service={deleteService}
                 >
-                  <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
+                  <Tooltip title={<FormattedMessage id="remove"/>}>
+                     <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
+                  </Tooltip>
                 </Permission>
               </div>
             );
@@ -882,7 +884,7 @@ class MemberRole extends Component {
         onChange={this.roleMemberTableChange}
         onExpand={this.handleExpand}
         onExpandedRowsChange={this.handleExpandedRowsChange}
-        filterBarPlaceholder="过滤表"
+        filterBarPlaceholder={this.formatMessage('filtertable')}
       />
     );
   }
@@ -936,7 +938,7 @@ class MemberRole extends Component {
 
   render() {
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting } = this.state;
-    const okText = selectType === 'create' ? '添加' : '保存';
+    const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');
     const { createService, deleteService } = this.getPermission();
     return (
       <Page
@@ -964,7 +966,7 @@ class MemberRole extends Component {
           'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles',
         ]}
       >
-        <Header title={'角色分配'}>
+        <Header title={<FormattedMessage id={`${this.roles.code}.header.title`}/>}>
           <Permission
             service={createService}
           >
@@ -972,7 +974,7 @@ class MemberRole extends Component {
               onClick={this.createRole}
               icon="playlist_add"
             >
-              添加
+              <FormattedMessage id="add"/>
             </Button>
           </Permission>
           <Permission
@@ -983,42 +985,43 @@ class MemberRole extends Component {
               icon="delete"
               disabled={!(showMember ? Object.keys(selectMemberRoles) : selectRoleMemberKeys).length}
             >
-              {'移除'}
+              <FormattedMessage id="remove"/>
             </Button>
           </Permission>
           <Button
             onClick={this.reload}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={this.roles.title}
-          link={this.roles.link}
-          description="角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。"
+          code={this.roles.code}
+          values={this.roles.values}
         >
           <div className="member-role-btns">
-            <span className="text">查看方式:</span>
+            <span className="text">
+              <FormattedMessage id="memberrole.view"/>
+            </span>
             <Button
               className={this.getMemberRoleClass('member')}
               onClick={() => {
                 this.showMemberTable(true);
               }}
-              type="primary">成员</Button>
+              type="primary"><FormattedMessage id="memberrole.member" /></Button>
             <Button
               className={this.getMemberRoleClass('role')}
               onClick={() => {
                 this.showMemberTable(false);
               }}
-              type="primary">角色</Button>
+              type="primary"><FormattedMessage id="memberrole.role" /></Button>
           </div>
           {showMember ? this.renderMemberTable() : this.renderRoleTable()}
           <Sidebar
             title={this.getSidebarTitle()}
             visible={sidebar}
             okText={okText}
-            cancelText="取消"
+            cancelText={<FormattedMessage id="cancel" />}
             onOk={this.handleOk}
             onCancel={this.closeSidebar}
             confirmLoading={submitting}
@@ -1031,4 +1034,4 @@ class MemberRole extends Component {
   }
 }
 
-export default Form.create({})(withRouter(MemberRole));
+export default Form.create({})(withRouter(injectIntl(MemberRole)));

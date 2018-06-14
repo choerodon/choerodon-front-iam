@@ -30,6 +30,7 @@ const pageDetail = {
   "global.rootuser.add.description": "您可以在此添加一个或多个用户，被添加的用户为Root用户。",
   "global.rootuser.add.link": `${docServer}/user-guide/system-configuration/platform/rootuser/`,
 
+
   // route
   "global.route.title": "平台\"{name}\"的路由管理",
   "global.route.description":"路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。",
@@ -48,7 +49,20 @@ const pageDetail = {
   "global.route.detail.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
 
-   // project setting
+  // 角色分配
+  "global.memberrole.title": "平台\"{name}\"的角色分配",
+  "global.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
+  "global.memberrole.link": `${docServer}user-guide/system-configuration/platform/role-assignment/`,
+  // add
+  "global.memberrole.add.title": "在平台\"{name}\"中添加成员角色",
+  "global.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
+  "global.memberrole.add.link": `${docServer}user-guide/system-configuration/platform/role-assignment/`,
+  // modify
+  "global.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
+  "global.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
+  "global.memberrole.modify.link": `${docServer}user-guide/system-configuration/platform/role-assignment/`,
+
+  // project setting
   "organization.project.title": "组织\"{name}\"的项目管理",
   "organization.project.description": "项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。",
   "organization.project.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
@@ -61,12 +75,38 @@ const pageDetail = {
   "organization.project.modify.description": "您可以在此修改项目名称。",
   "organization.project.modify.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
 
+  // 角色分配
+  "organization.memberrole.title": "组织\"{name}\"的角色分配",
+  "organization.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
+  "organization.memberrole.link": `${docServer}user-guide/system-configuration/tenant/role-assignment/`,
+  // add
+  "organization.memberrole.add.title": "在组织\"{name}\"中添加成员角色",
+  "organization.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
+  "organization.memberrole.add.link": `${docServer}user-guide/system-configuration/tenant/role-assignment/`,
+  // modify
+  "organization.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
+  "organization.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
+  "organization.memberrole.modify.link": `${docServer}user-guide/system-configuration/tenant/role-assignment/`,
+
   "project.info.title": "对项目\"{name}\"进行项目设置",
   "project.info.description": "您可以在此修改项目名称、停用项目。",
   "project.info.link": `${docServer}/user-guide/system-configuration/project/pro_info/`,
   "project.info.disabled.title": "项目\"{name}\"已被停用",
   "project.info.disabled.description": "您可以在此修改项目名称、停用项目。",
   "project.info.disabled.link": `${docServer}/user-guide/system-configuration/project/pro_info/`,
+
+  // 角色分配
+  "project.memberrole.title": "项目\"{name}\"的角色分配",
+  "project.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
+  "project.memberrole.link": `${docServer}user-guide/system-configuration/project/role-assignment/`,
+  // add
+  "project.memberrole.add.title": "在项目\"{name}\"中添加成员角色",
+  "project.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
+  "project.memberrole.add.link": `${docServer}user-guide/system-configuration/project/role-assignment/`,
+  // modify
+  "project.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
+  "project.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
+  "project.memberrole.modify.link": `${docServer}user-guide/system-configuration/project/role-assignment/`,
 
 };
 const zh_CN = {
@@ -321,6 +361,10 @@ const zh_CN = {
   "enable": "启用",
   "disable": "停用",
 
+  //type
+  "global": "平台",
+  "project": "项目",
+  "organization": "组织",
 // status
 // success
   "operation.success": "操作成功",
@@ -443,6 +487,7 @@ const zh_CN = {
   "global.route.builtin": "路由来源",
   "global.route.header.title": "路由管理",
 
+
   // 组织层
 
   // 项目管理
@@ -465,6 +510,36 @@ const zh_CN = {
   "project.info.header.title": "项目信息",
   "project.info.name": "项目名称",
   "project.info.code": "项目编码",
+
+
+  // 角色分配
+  "global.memberrole.header.title": "平台角色分配",
+  "organization.memberrole.header.title": "组织角色分配",
+  "project.memberrole.header.title": "项目角色分配",
+
+  "memberrole.member": "成员",
+  "memberrole.role.require.msg": "必须至少选择一个角色",
+  "memberrole.role.label": "请选择一个角色",
+  "memberrole.remove.select.all.content": "确认移除当前选中的成员下的所有角色?",
+  "memberrole.remove.select.content": "确认移除当前选中的成员的这些角色?",
+  "memberrole.remove.all.content": "确认移除成员\"{name}\"下的所有角色?",
+  "memberrole.remove.content": "确认移除成员\"{member}\"的角色\"{role}\"?",
+  "memberrole.remove.title": "移除角色",
+  "memberrole.add": "添加成员角色",
+  "memberrole.modify": "修改成员角色",
+  "memberrole.add.other": "添加其他角色",
+  "memberrole.member.disabled.tip": "该成员已停用",
+  "memberrole.name": "名称",
+  "memberrole.member.type": "成员类型",
+  "memberrole.role": "角色",
+  "memberrole.role.disabled.tip": "该角色已停用",
+  "memberrole.rolemember": "角色/成员",
+  "memberrole.view": "查看方式",
+
+  //MemberLabel
+  "memberlabel.member.disabled.msg": "用户已被停用，无法给此用户分配角色，请先启用此用户",
+  "memberlabel.member.notexist.msg": "不存在此用户，请输入正确的登录名",
+  "memberlabel.member.require.msg": "必须至少输入一个成员",
 
   // page
   ...pageDetail,

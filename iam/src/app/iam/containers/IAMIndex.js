@@ -12,7 +12,7 @@ const LDAPIndex = asyncRouter(() => import('./organization/ldap'));
 // global
 const OrganizationIndex = asyncRouter(() => import('./global/organization'));
 const RoleIndex = asyncRouter(() => import('./global/role'));
-const MemberRole = asyncRouter(() => import('./global/MemberRole'));
+const MemberRole = asyncRouter(() => import('./global/memberRole'));
 const menuTree = asyncRouter(() => import('./global/menuTree'));
 const ConfigurationIndex = asyncRouter(() => import('./global/configuration'));
 const RouteIndex = asyncRouter(() => import('./global/route'));

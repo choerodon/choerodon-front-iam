@@ -8,7 +8,6 @@ const config = {
   },
   cookieServer: '', //子域名token共享
   server: 'http://api.choerodon.com.cn',
-  // server: 'http://api.staging.saas.hand-china.com',
 };
 
 module.exports = config;

@@ -14,18 +14,6 @@ import ConfigurationStore from '../../../stores/globalStores/configuration';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
-const pageSize = 10;
-const FormItemNumLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 10 },
-  },
-};
-
 @inject('AppState')
 @observer
 
@@ -70,12 +58,6 @@ class Configuration extends Component {
         }
       }
     })
-  }
-
-  handleRefresh = () => {
-    this.setState(this.getInitState(), () => {
-      this.loadInitData();
-    });
   }
 
   loadConfig(paginationIn, sortIn, filtersIn, paramsIn) {
@@ -131,8 +113,9 @@ class Configuration extends Component {
     return axios.get(`/manager/v1/services/${serviceName}/configs?${querystring.stringify(queryObj)}`);
   }
 
-
-
+  handlePageChange = (pagination, filters, sorter, params) => {
+    this.loadConfig(pagination, sorter, filters, params);
+  };
 
   handleProptError = (error) => {
     if (error && error.failed) {
@@ -143,32 +126,19 @@ class Configuration extends Component {
     }
   }
 
+  /* 跳转至配置管理 */
   goCreate = () => {
     this.props.history.push('configuration/create');
   }
 
-  handleChange(serviceName) {
-    const currentService = ConfigurationStore.service.find(service => service.name === serviceName);
-    ConfigurationStore.setCurrentService(currentService);
-    this.setState({
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      sort: {
-        columnKey: 'id',
-        order: 'descend',
-      },
-      filters: {},
-      params: '',
-    }, () => this.loadConfig());
+  /* 刷新 */
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadInitData();
+    });
   }
 
-  handlePageChange = (pagination, filters, sorter, params) => {
-    this.loadConfig(pagination, sorter, filters, params);
-  };
-
+  /* 微服务下拉框 */
   get filterBar() {
     return (
       <div>
@@ -189,6 +159,64 @@ class Configuration extends Component {
         </Select>
       </div>
     )
+  }
+
+  /**
+   * 微服务下拉框改变事件
+   * @param serviceName 服务名称
+   */
+  handleChange(serviceName) {
+    const currentService = ConfigurationStore.service.find(service => service.name === serviceName);
+    ConfigurationStore.setCurrentService(currentService);
+    this.setState({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      sort: {
+        columnKey: 'id',
+        order: 'descend',
+      },
+      filters: {},
+      params: '',
+    }, () => this.loadConfig());
+  }
+
+  /**
+   * 删除配置
+   * @param record 当前行数据
+   */
+  deleteConfig = (record) => {
+    Modal.confirm({
+      title: "删除配置",
+      content: `确定要删除配置${record.name}吗？`,
+      onOk: () => {
+        ConfigurationStore.deleteConfig(record.id).then(({ failed, message }) => {
+          if (failed) {
+            Choerodon.prompt(message);
+          } else {
+            Choerodon.prompt("删除成功");
+            this.loadConfig();
+          }
+        })
+      },
+    });
+  }
+
+  /**
+   * 设置默认配置
+   * @param configId 配置id
+   */
+  setDefaultConfig = (configId) => {
+    ConfigurationStore.setDefaultConfig(configId). then(({ failed, message }) => {
+      if (failed) {
+        Choerodon.prompt(message);
+      } else {
+        Choerodon.prompt("修改成功");
+        this.loadConfig();
+      }
+    })
   }
 
   render() {
@@ -240,7 +268,7 @@ class Configuration extends Component {
           type: 'site',
           icon: '',
           text: '设为默认配置',
-          action: ''
+          action: this.setDefaultConfig.bind(this, record.id)
         }, {
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',
@@ -253,13 +281,16 @@ class Configuration extends Component {
           icon: '',
           text: '修改',
           action: ''
-        }, {
-          service: ['iam-service.role.createBaseOnRoles'],
-          type: 'site',
-          icon: '',
-          text: '删除',
-          action: ''
-        }]
+        }];
+        if (!record.isDefault) {
+          actionsDatas.push({
+            service: ['iam-service.role.createBaseOnRoles'],
+            type: 'site',
+            icon: '',
+            text: '删除',
+            action: this.deleteConfig.bind(this, record),
+          })
+        }
         return <Action data={actionsDatas} />
       },
     }];

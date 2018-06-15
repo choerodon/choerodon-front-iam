@@ -82,6 +82,10 @@ class CreateConfig extends Component {
     })
   }
 
+  /**
+   * 选择微服务
+   * @param serviceName 服务名称
+   */
   handleChange = (serviceName) => {
     const { setFieldsValue, getFieldValue } = this.props.form;
     const service = getFieldValue('service');
@@ -103,6 +107,10 @@ class CreateConfig extends Component {
     }
   }
 
+  /**
+   * 选择配置模板
+   * @param configId 模板id
+   */
   generateVersion(configId) {
     const {setFieldsValue, getFieldValue } = this.props.form;
     const template = getFieldValue('template');
@@ -126,6 +134,10 @@ class CreateConfig extends Component {
     }
   }
 
+  /**
+   * 根据所选微服务 获取配置模板
+   * @param serviceName 微服务名称
+   */
   loadCurrentServiceConfig(serviceName) {
     const queryObj = {
       page: 0,
@@ -135,18 +147,26 @@ class CreateConfig extends Component {
       if(data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        this.setState({
-          yamlData: null,
-          templateDisable: false,
-          currentServiceConfig: data.content,
-        });
+        if (ConfigurationStore.getStatus !== 'edit') {
+          this.setState({
+            yamlData: null,
+            templateDisable: false,
+            currentServiceConfig: data.content,
+          });
+        } else {
+          this.setState({
+            yamlData: null,
+            currentServiceConfig: data.content,
+          });
+        }
       }
     })
   }
 
+  /* 渲染配置模板下拉框 */
   getSelect() {
     const { templateDisable } = this.state;
-    if (ConfigurationStore.currentServiceConfig && templateDisable) {
+    if (ConfigurationStore.getStatus !== 'edit' && ConfigurationStore.currentServiceConfig && templateDisable) {
       return (
         <Select
           disabled={templateDisable}
@@ -181,14 +201,100 @@ class CreateConfig extends Component {
           }
         </Select>
       )
+    } else if (templateDisable && ConfigurationStore.getStatus === 'edit') {
+      const { currentServiceConfig } = this.state;
+      return (
+        <Select
+          disabled={templateDisable}
+          style={{ width: '512px' }}
+          label="配置模板"
+          filterOption={
+            (input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+          filter
+          onChange={this.generateVersion.bind(this)}
+          onSelect={this.test}
+        >
+          {
+            currentServiceConfig && currentServiceConfig.map(({ name, id }) => (
+              <Option value={id} key={name}>{name}</Option>
+            ))
+          }
+        </Select>
+      )
     }
   }
+
+  /* 获取步骤条状态 */
+  getStatus = (index) => {
+    const { current } = this.state;
+    let status = 'process';
+    if (index === current) {
+      status = 'process';
+    } else if (index > current) {
+      status = 'wait';
+    } else {
+      status = 'finish';
+    }
+    return status;
+  }
+
+
+  /**
+   * 步骤条改变
+   * @param index
+   */
+  changeStep = (index) => {
+    const {version, service, template, yamlData, current } = this.state;
+    if (current ===1 && index === 2) {
+      this.handleSubmit()
+    } else if (current === 3 && index === 2) {
+      this.setState({ current: index })
+    } else if (index === 3 && version && service && template && yamlData) {
+      this.setState({ current: index })
+    } else if (index === 1) {
+      this.setState({ current: index })
+    }
+  }
+
+  /* 获取配置yaml */
+  getConfigYaml() {
+    const configId = this.state.configId || ConfigurationStore.getCurrentConfigId;
+    axios.get(`manager/v1/configs/${configId}/yaml`).then((data) => {
+      if(data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setState({
+          yamlData: data.yaml,
+          totalLine: data.totalLine,
+          current: 2
+        });
+      }
+    })
+  }
+
+  /**
+   * 获取编辑器内容
+   * @param value 编辑器内容
+   */
+  handleChangeValue = (value) => {
+    this.setState({yamlData : value});
+  }
+
 
   /* 第一步 */
   handleRenderService = () => {
     const { templateDisable, service, template, version } = this.state;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = 512;
+    let btnStatus;
+    if (ConfigurationStore.getStatus === 'edit') {
+      btnStatus = false;
+    } else {
+      btnStatus = templateDisable;
+    }
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -274,7 +380,7 @@ class CreateConfig extends Component {
           <Button
             type="primary"
             funcType="raised"
-            disabled={templateDisable}
+            disabled={btnStatus}
             onClick={this.handleSubmit}
           >
             下一步
@@ -303,73 +409,6 @@ class CreateConfig extends Component {
         })
       }
     })
-  }
-
-  /*第二步-下一步*/
-  jumpToEnd = () => {
-    this.setState({
-      current: 3
-    });
-  }
-
-  changeStep = (index) => {
-    const {version, service, template, yamlData, current } = this.state;
-    if (current ===1 && index === 2) {
-      this.handleSubmit()
-    } else if (current === 3 && index === 2) {
-      this.setState({ current: index })
-    } else if (index === 3 && version && service && template && yamlData) {
-      this.setState({ current: index })
-    } else if (index === 1) {
-      this.setState({ current: index })
-    }
-  }
-
-  /* 获取配置yaml */
-  getConfigYaml() {
-    const configId = this.state.configId || ConfigurationStore.getCurrentConfigId;
-    axios.get(`manager/v1/configs/${configId}/yaml`).then((data) => {
-      if(data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        this.setState({
-          yamlData: data.yaml,
-          totalLine: data.totalLine,
-          current: 2
-        });
-      }
-    })
-  }
-
-  handleChangeValue = (value) => {
-    this.setState({yamlData : value});
-  }
-
-  createConfig = () => {
-    const {service, version, yamlData} = this.state;
-    const data = {
-      serviceName: service,
-      version,
-      yaml: yamlData,
-      name: service + '-' + version
-    }
-    ConfigurationStore.createConfig(data).then(({ failed, message }) => {
-      if (failed) {
-        Choerodon.prompt(message);
-      } else {
-        Choerodon.prompt("创建成功");
-        this.props.history.push('/iam/configuration');
-      }
-    })
-  }
-
-  cancelAll = () => {
-    if (ConfigurationStore.getCurrentConfigId) {
-      this.loadCurrentServiceConfig(ConfigurationStore.getCurrentService.name);
-    }
-    this.setState(this.getInitState(), () => {
-      this.loadInitData();
-    });
   }
 
   /* 第二步 */
@@ -403,6 +442,12 @@ class CreateConfig extends Component {
     )
   }
 
+  /*第二步-下一步*/
+  jumpToEnd = () => {
+    this.setState({
+      current: 3
+    });
+  }
 
   /* 第三步 */
   handleRenderConfirm = () => {
@@ -431,32 +476,74 @@ class CreateConfig extends Component {
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
         />
         <section className="serviceSection">
-          <Button
-            type="primary"
-            funcType="raised"
-            onClick={this.createConfig}
-          >
-            创建
-          </Button>
+          {ConfigurationStore.getStatus !== 'edit' ? (
+            <Button
+              type="primary"
+              funcType="raised"
+              onClick={this.createConfig}
+            >
+              创建
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              funcType="raised"
+              onClick={this.editConfig}
+            >
+              修改
+            </Button>
+          )}
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
           <Button funcType="raised" onClick={this.cancelAll}>取消</Button>
         </section>
       </div>
     )
   }
-  /* 获取滚动条状态 */
-  getStatus = (index) => {
-    const { current } = this.state;
-    let status = 'process';
-    if (index === current) {
-      status = 'process';
-    } else if (index > current) {
-      status = 'wait';
-    } else {
-      status = 'finish';
+
+  /* 创建配置 */
+  createConfig = () => {
+    const {service, version, yamlData} = this.state;
+    const data = {
+      serviceName: service,
+      version,
+      yaml: yamlData,
+      name: service + '-' + version
     }
-    return status;
+    ConfigurationStore.createConfig(data).then(({ failed, message }) => {
+      if (failed) {
+        Choerodon.prompt(message);
+      } else {
+        Choerodon.prompt("创建成功");
+        this.props.history.push('/iam/configuration');
+      }
+    })
   }
+
+  /* 修改配置 */
+  editConfig = () => {
+    const data = JSON.parse(JSON.stringify(ConfigurationStore.getEditConfig));
+    data.txt = this.state.yamlData;
+    const configId = ConfigurationStore.getEditConfig.id;
+    ConfigurationStore.modifyConfig(configId, 'yaml', data).then((res) => {
+      if (res.failed) {
+        Choerodon.prompt(res.message);
+      } else {
+        Choerodon.prompt("修改成功");
+        this.props.history.push('/iam/configuration');
+      }
+    })
+  }
+
+  /* 取消 */
+  cancelAll = () => {
+    if (ConfigurationStore.getCurrentConfigId) {
+      this.loadCurrentServiceConfig(ConfigurationStore.getCurrentService.name);
+    }
+    this.setState(this.getInitState(), () => {
+      this.loadInitData();
+    });
+  }
+
 
   render() {
     const { current, service, template, version } = this.state;

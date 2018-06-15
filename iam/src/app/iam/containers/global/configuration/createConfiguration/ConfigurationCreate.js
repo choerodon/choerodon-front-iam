@@ -146,7 +146,6 @@ class CreateConfig extends Component {
 
   getSelect() {
     const { templateDisable } = this.state;
-    debugger;
     if (ConfigurationStore.currentServiceConfig && templateDisable) {
       return (
         <Select

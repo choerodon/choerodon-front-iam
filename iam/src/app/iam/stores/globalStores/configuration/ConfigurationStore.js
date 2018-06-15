@@ -11,12 +11,29 @@ class ConfigurationStore {
   @observable service = [];
   @observable currentService = {};
   @observable configData = [];
+  @observable instanceData = [];
   @observable pagination = {};
   @observable loading = true;
+  @observable instanceLoading = true;
   @observable currentServiceConfig = {};
+  @observable currentConfigId = null;
+  @observable status = 'create';
+  @observable editConfig = null;
+
+  @action setStatus(data) {
+    this.status = data;
+  }
+
+  @computed get getStatus(){
+    return this.status;
+  }
 
   @action setLoading(flag) {
     this.loading = flag;
+  }
+
+  @action setInstanceLoading(flag) {
+    this.instanceLoading = flag;
   }
 
   @action setService(data) {
@@ -29,10 +46,6 @@ class ConfigurationStore {
 
   @computed get getCurrentService() {
     return this.currentService;
-  }
-
-  @action setPagination(data) {
-    this.pagination = data;
   }
 
   @action setConfigData(data) {
@@ -51,25 +64,28 @@ class ConfigurationStore {
     return this.currentServiceConfig;
   }
 
-  loadInitData = () => {
-    this.setLoading(true);
-    this.setConfigData([]);
-    this.loadService().then((res) => {
-      this.setService(res.content || []);
-      const response = this.handleProptError(res);
-      if (response) {
-        const { content } = res;
-        if (content.length) {
-          const defaultService = content[0];
-          this.setCurrentService(defaultService);
-          this.loadConfig(defaultService.id,
-            { current: 1, pageSize: 10 },
-            { columnKey: 'id', order: 'descend' });
-        } else {
-          this.setLoading(false);
-        }
-      }
-    })
+  @action setInstanceData(data) {
+    this.instanceData = data;
+  }
+
+  @computed get getInstanceData() {
+    return this.instanceData;
+  }
+
+  @action setCurrentConfigId(data) {
+    this.currentConfigId = data;
+  }
+
+  @computed get getCurrentConfigId() {
+    return this.currentConfigId;
+  }
+
+  @action setEditConfig(data) {
+    this.editConfig = data;
+  }
+
+  @computed get getEditConfig(){
+    return this.editConfig;
   }
 
   loadService() {
@@ -89,6 +105,8 @@ class ConfigurationStore {
   deleteConfig = (configId) => axios.delete(`manager/v1/configs/${configId}`);
 
   setDefaultConfig = (configId) => axios.put(`manager/v1/configs/${configId}/default`)
+
+  createConfig = (data) => axios.post(`manager/v1/configs`, JSON.stringify(data))
 
   handleProptError = (error) => {
     if (error && error.failed) {

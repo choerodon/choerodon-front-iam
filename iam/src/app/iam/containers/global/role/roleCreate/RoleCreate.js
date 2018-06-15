@@ -43,6 +43,7 @@ class CreateRole extends Component {
     this.setState({
       currentPermission: permissions.map(item => item.id),
     });
+    window.console.log(this.state.currentPermission)
     RoleStore.getAllRoleLabel();
   }
 

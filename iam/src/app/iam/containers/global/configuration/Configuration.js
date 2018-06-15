@@ -6,7 +6,6 @@ import { inject, observer } from 'mobx-react';
 import { Button,  Form, Icon, Modal, Progress, Select, Table } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import ApplyConfig from './applyConfig';
 import querystring from 'query-string';
 import './Configuration.scss';
 import ConfigurationStore from '../../../stores/globalStores/configuration';
@@ -34,6 +33,17 @@ class Configuration extends Component {
       },
       filters: {},
       params: '',
+      instancePagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      instanceSort: {
+        columnKey: 'id',
+        order: 'descend',
+      },
+      instanceParams: '',
+      selectedRowKeys: [],
     }
   }
 
@@ -86,7 +96,7 @@ class Configuration extends Component {
           },
         });
         ConfigurationStore.setConfigData(data.content.slice()),
-          ConfigurationStore.setLoading(false);
+        ConfigurationStore.setLoading(false);
       })
       .catch((error) => {
         Choerodon.handleResponseError(error);
@@ -118,6 +128,53 @@ class Configuration extends Component {
   handlePageChange = (pagination, filters, sorter, params) => {
     this.loadConfig(pagination, sorter, filters, params);
   };
+
+  loadInstance(paginationIn, sortIn, paramsIn) {
+    ConfigurationStore.setInstanceLoading(true);
+    const {
+      instancePagination: paginationState,
+      instanceSort: sortState,
+      instanceParams: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const params = paramsIn || paramsState;
+    this.fetchInstance(ConfigurationStore.getCurrentService.name, pagination, sort, params)
+      .then((data) => {
+        this.setState({
+          instanceSort: sort,
+          instanceParams: params,
+          instancePagination: {
+            current: data.number + 1,
+            pageSize: data.size,
+            total: data.totalElements,
+          },
+        });
+        ConfigurationStore.setInstanceData(data.content.slice());
+        ConfigurationStore.setInstanceLoading(false);
+      })
+      .catch((error) => {
+        Choerodon.handleResponseError(error);
+      });
+  }
+
+  fetchInstance(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, params) {
+    ConfigurationStore.setInstanceLoading(true);
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+      params,
+    };
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/manager/v1/services/${serviceName}/instances?${querystring.stringify(queryObj)}`);
+  }
 
   handleProptError = (error) => {
     if (error && error.failed) {
@@ -223,7 +280,8 @@ class Configuration extends Component {
 
   /* 开启sidebar */
   handleOpen = (record) => {
-    this.setState({visible: true});
+    this.setState({visible: true, selectedRowKeys: []});
+    this.loadInstance();
   }
 
   /* 关闭sidebar */
@@ -255,15 +313,42 @@ class Configuration extends Component {
     this.goCreate();
   }
 
+  onSelectChange = (selectedRowKeys) => {
+    window.console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  }
+
   /* 渲染侧边栏内容 */
   renderSidebarContent() {
+    const { instancePagination, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
     return (
-      <ApplyConfig
-        service={ConfigurationStore.getCurrentService}
-        onRef={(node) => {
-          this.ApplyConfig = node;
-        }}
-      />
+      <Content
+        className="sidebar-content"
+        title="将配置应用到实例"
+        description="一个实例只能应用一个配置，但一个配置可以被多个实例应用。你可以选择个多个实例进行批量应用。勾选要应用该配置的实例后，点击保存，使配置的应用生效。"
+        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+      >
+        <Table
+          rowSelection={rowSelection}
+          loading={ConfigurationStore.instanceLoading}
+          dataSource={ConfigurationStore.getInstanceData.slice()}
+          pagination={instancePagination}
+          rowkey="id"
+          filterBarPlaceholder="过滤表"
+          style={{
+            width: '512px',
+          }}
+          columns={[{
+            title: '实例ID',
+            dataIndex: 'instanceId',
+            key: 'instanceId'
+          }]}
+        />
+      </Content>
     )
   }
 
@@ -317,12 +402,6 @@ class Configuration extends Component {
           icon: '',
           text: '设为默认配置',
           action: this.setDefaultConfig.bind(this, record.id)
-        }, {
-          service: ['iam-service.role.createBaseOnRoles'],
-          type: 'site',
-          icon: '',
-          text: '应用配置',
-          action: this.handleOpen.bind(this, record)
         }, {
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',

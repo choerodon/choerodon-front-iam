@@ -161,6 +161,7 @@ class CreateConfig extends Component {
         />
       )
     } else if (!templateDisable){
+      const { currentServiceConfig } = this.state;
       return (
         <Select
           disabled={templateDisable}
@@ -175,7 +176,7 @@ class CreateConfig extends Component {
           onSelect={this.test}
         >
           {
-            this.state.currentServiceConfig.map(({ name, id }) => (
+            currentServiceConfig && currentServiceConfig.map(({ name, id }) => (
               <Option value={id} key={name}>{name}</Option>
             ))
           }
@@ -238,14 +239,14 @@ class CreateConfig extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('template', {
-            rules: [{
-              required: true,
-              message: '请选择配置模板',
-            }],
+              rules: [{
+                required: true,
+                message: '请选择配置模板',
+              }],
               initialValue: template || undefined,
-          })(
+            })(
               this.getSelect()
-          )}
+            )}
           </FormItem>
           <FormItem
             {...formItemLayout}
@@ -436,7 +437,7 @@ class CreateConfig extends Component {
             funcType="raised"
             onClick={this.createConfig}
           >
-           创建
+            创建
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
           <Button funcType="raised" onClick={this.cancelAll}>取消</Button>

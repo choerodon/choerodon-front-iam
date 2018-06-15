@@ -86,7 +86,7 @@ class Configuration extends Component {
           },
         });
         ConfigurationStore.setConfigData(data.content.slice()),
-        ConfigurationStore.setLoading(false);
+          ConfigurationStore.setLoading(false);
       })
       .catch((error) => {
         Choerodon.handleResponseError(error);
@@ -258,12 +258,12 @@ class Configuration extends Component {
   /* 渲染侧边栏内容 */
   renderSidebarContent() {
     return (
-     <ApplyConfig
-       service={ConfigurationStore.getCurrentService}
-       onRef={(node) => {
-         this.ApplyConfig = node;
-       }}
-     />
+      <ApplyConfig
+        service={ConfigurationStore.getCurrentService}
+        onRef={(node) => {
+          this.ApplyConfig = node;
+        }}
+      />
     )
   }
 
@@ -298,8 +298,8 @@ class Configuration extends Component {
       }],
       filteredValue: filters.isDefault || [],
       render: (text) => {
-      return text ? '是' : '否';
-    }
+        return text ? '是' : '否';
+      }
     }, {
       title: '',
       width: '100px',

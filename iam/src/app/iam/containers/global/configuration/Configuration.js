@@ -38,9 +38,9 @@ class Configuration extends Component {
   }
 
   componentDidMount() {
-    this.loadInitData();
     ConfigurationStore.setCurrentConfigId(null);
     ConfigurationStore.setStatus('create');
+    this.loadInitData();
   }
 
   loadInitData = () => {

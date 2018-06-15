@@ -30,8 +30,7 @@ class CreateConfig extends Component {
       return {
         current: 1,
         templateDisable: false,
-        currentServiceConfig: [],
-        templateLabel: '请选择配置模板',
+        currentServiceConfig: null,
         initVersion: undefined,
         configId: null,
         yamlData: null,
@@ -42,9 +41,8 @@ class CreateConfig extends Component {
     } else if (ConfigurationStore.getStatus === 'edit'){
       return {
         current: 1,
-        templateDisable: false,
-        currentServiceConfig: [],
-        templateLabel: '请选择配置模板',
+        templateDisable: true,
+        currentServiceConfig: null,
         initVersion: undefined,
         configId: null,
         yamlData: null,
@@ -56,8 +54,7 @@ class CreateConfig extends Component {
       return {
         current: 1,
         templateDisable: true,
-        currentServiceConfig: [],
-        templateLabel: '配置模板',
+        currentServiceConfig: null,
         initVersion: undefined,
         configId: null,
         yamlData: null,
@@ -142,7 +139,6 @@ class CreateConfig extends Component {
           yamlData: null,
           templateDisable: false,
           currentServiceConfig: data.content,
-          templateLabel: '请选择配置模板'
         });
       }
     })
@@ -150,6 +146,7 @@ class CreateConfig extends Component {
 
   getSelect() {
     const { templateDisable } = this.state;
+    debugger;
     if (ConfigurationStore.currentServiceConfig && templateDisable) {
       return (
         <Select
@@ -168,7 +165,7 @@ class CreateConfig extends Component {
         <Select
           disabled={templateDisable}
           style={{ width: '512px' }}
-          label={this.state.templateLabel}
+          label="配置模板"
           filterOption={
             (input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -219,6 +216,7 @@ class CreateConfig extends Component {
               initialValue: service || undefined,
             })(
               <Select
+                disabled={ConfigurationStore.getStatus==='edit'}
                 style={{ width: inputWidth }}
                 label="微服务"
                 filterOption={
@@ -264,6 +262,7 @@ class CreateConfig extends Component {
               initialValue: version || undefined,
             })(
               <Input
+                disabled={ConfigurationStore.getStatus==='edit'}
                 label="配置版本"
                 autoComplete="off"
                 style={{ width: inputWidth }}

@@ -52,15 +52,36 @@ const pageDetail = {
   // 角色分配
   "global.memberrole.title": "平台\"{name}\"的角色分配",
   "global.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
-  "global.memberrole.link": `${docServer}user-guide/system-configuration/platform/role-assignment/`,
+  "global.memberrole.link": `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
   // add
   "global.memberrole.add.title": "在平台\"{name}\"中添加成员角色",
   "global.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
-  "global.memberrole.add.link": `${docServer}user-guide/system-configuration/platform/role-assignment/`,
+  "global.memberrole.add.link": `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
   // modify
   "global.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
   "global.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
-  "global.memberrole.modify.link": `${docServer}user-guide/system-configuration/platform/role-assignment/`,
+  "global.memberrole.modify.link": `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
+
+  //角色管理
+  "global.role.title": "平台\"{name}\"的角色分配",
+  "global.role.description": "角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。",
+  "global.role.link": `${docServer}/user-guide/system-configuration/platform/role/`,
+  //create
+  "global.role.create.title": "在平台\"{name}\"中创建角色",
+  "global.role.create.description": "自定义角色可让您对权限进行分组，并将其分配给您平台、组织或项目的成员。您可以手动选择权限，也可以从其他角色导入权限。",
+  "global.role.create.link": `${docServer}/user-guide/system-configuration/platform/role/`,
+  "global.role.create.addpermission.title": "向当前创建角色添加权限",
+  "global.role.create.addpermission.description": "您可以在此修改角色名称、标签、权限。",
+  "global.role.create.addpermission.link": `${docServer}/user-guide/system-configuration/platform/role/`,
+  //modify
+  "global.role.modify.title": "对角色\"{name}\"进行修改",
+  "global.role.modify.description": "您可以在此修改角色名称、标签、权限。",
+  "global.role.modify.link": `${docServer}/user-guide/system-configuration/platform/role/`,
+  "global.role.modify.addpermission.title": "向角色\"{name}\"添加权限",
+  "global.role.modify.addpermission.description": "您可以在此为角色添加一个或多个权限。",
+  "global.role.modify.addpermission.link": `${docServer}/user-guide/system-configuration/platform/role/`,
+
+
 
   // project setting
   "organization.project.title": "组织\"{name}\"的项目管理",
@@ -78,15 +99,15 @@ const pageDetail = {
   // 角色分配
   "organization.memberrole.title": "组织\"{name}\"的角色分配",
   "organization.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
-  "organization.memberrole.link": `${docServer}user-guide/system-configuration/tenant/role-assignment/`,
+  "organization.memberrole.link": `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
   // add
   "organization.memberrole.add.title": "在组织\"{name}\"中添加成员角色",
   "organization.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
-  "organization.memberrole.add.link": `${docServer}user-guide/system-configuration/tenant/role-assignment/`,
+  "organization.memberrole.add.link": `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
   // modify
   "organization.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
   "organization.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
-  "organization.memberrole.modify.link": `${docServer}user-guide/system-configuration/tenant/role-assignment/`,
+  "organization.memberrole.modify.link": `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
   "project.info.title": "对项目\"{name}\"进行项目设置",
   "project.info.description": "您可以在此修改项目名称、停用项目。",
@@ -98,15 +119,15 @@ const pageDetail = {
   // 角色分配
   "project.memberrole.title": "项目\"{name}\"的角色分配",
   "project.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
-  "project.memberrole.link": `${docServer}user-guide/system-configuration/project/role-assignment/`,
+  "project.memberrole.link": `${docServer}/user-guide/system-configuration/project/role-assignment/`,
   // add
   "project.memberrole.add.title": "在项目\"{name}\"中添加成员角色",
   "project.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
-  "project.memberrole.add.link": `${docServer}user-guide/system-configuration/project/role-assignment/`,
+  "project.memberrole.add.link": `${docServer}/user-guide/system-configuration/project/role-assignment/`,
   // modify
   "project.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
   "project.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
-  "project.memberrole.modify.link": `${docServer}user-guide/system-configuration/project/role-assignment/`,
+  "project.memberrole.modify.link": `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
 };
 const zh_CN = {
@@ -362,7 +383,8 @@ const zh_CN = {
   "disable": "停用",
 
   //type
-  "global": "平台",
+  "global": "全局",
+  "site": "平台",
   "project": "项目",
   "organization": "组织",
 // status
@@ -487,6 +509,39 @@ const zh_CN = {
   "global.route.builtin": "路由来源",
   "global.route.header.title": "路由管理",
 
+   // 角色管理
+  "global.role.create.byselect.level": "选择的角色具有不同层级的权限!",
+  "global.role.builtin.predefined": "预定义",
+  "global.role.builtin.custom": "自定义",
+  "global.role.create": "创建角色",
+  "global.role.modify": "修改角色",
+  "global.role.name": "角色名称",
+  "global.role.code": "角色编码",
+  "global.role.level": "角色层级",
+  "global.role.label": "角色标签",
+  "global.role.builtin": "角色来源",
+  "global.role.status.enabled": "启用状态",
+  "global.role.create.byone": "基于该角色创建",
+  "global.role.header.title": "角色管理",
+  "global.role.create.byselect": "基于所选角色创建",
+  "global.role.getinfo.error.msg": "获取角色信息失败",
+  "global.role.all.service": "所有服务",
+  "global.role.all.type": "所有类型",
+  "global.role.name.require.msg": "请输入角色名称",
+  "global.role.add.permission": "添加权限",
+  "global.role.permission.count.msg": "{count}个已分配权限",
+  "global.role.permission.nothing.msg": "没有已分配权限",
+  "global.role.permission.require.msg": "必须至少分配一个权限",
+  "global.role.permission.code": "权限",
+  "global.role.permission.desc": "描述",
+  "global.role.code.exist.msg": "角色编码已存在，请输入其他角色编码",
+  "global.role.name.exist.msg": "该角色名已创建",
+  "global.role.modify.level.title": "修改角色层级",
+  "global.role.modify.level.content": "确定要修改角色的层级吗？更换角色层级将清空您已选的权限。",
+  "global.role.level.require.msg": "请选择角色层级",
+  "global.role.code.require.msg": "请输入角色编码",
+  "global.role.code.pattern.msg": "编码只能由小写字母、数字、\"-\"组成，且以小写字母开头，不能以\"-\"结尾",
+  "global.role.level.nothing.msg": "请先选择角色层级",
 
   // 组织层
 

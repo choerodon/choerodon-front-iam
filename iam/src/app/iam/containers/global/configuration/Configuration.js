@@ -406,12 +406,6 @@ class Configuration extends Component {
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',
           icon: '',
-          text: '应用配置',
-          action: this.handleOpen.bind(this, record)
-        }, {
-          service: ['iam-service.role.createBaseOnRoles'],
-          type: 'site',
-          icon: '',
           text: '修改',
           action: this.handleEdit.bind(this, record)
         }];

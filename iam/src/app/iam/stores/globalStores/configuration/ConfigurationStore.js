@@ -99,14 +99,18 @@ class ConfigurationStore {
       page: 0,
       size: 200,
     };
-    axios.get(`/manager/v1/configs?${querystring.stringify(queryObj)}`).then(data => this.setCurrentServiceConfig(data.content.slice()))
+    axios.get(`/manager/v1/configs?${querystring.stringify(queryObj)}`).then(data => this.setCurrentServiceConfig(data.content.slice()));
+  }
+
+  modifyConfig(configId, type, data) {
+    return axios.put(`manager/v1/configs/${configId}?type=${type}`, data);
   }
 
   deleteConfig = (configId) => axios.delete(`manager/v1/configs/${configId}`);
 
-  setDefaultConfig = (configId) => axios.put(`manager/v1/configs/${configId}/default`)
+  setDefaultConfig = (configId) => axios.put(`manager/v1/configs/${configId}/default`);
 
-  createConfig = (data) => axios.post(`manager/v1/configs`, JSON.stringify(data))
+  createConfig = (data) => axios.post(`manager/v1/configs`, JSON.stringify(data));
 
   handleProptError = (error) => {
     if (error && error.failed) {

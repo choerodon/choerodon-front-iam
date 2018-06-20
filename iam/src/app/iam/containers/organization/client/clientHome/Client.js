@@ -457,7 +457,7 @@ class Client extends Component {
     const clientData = ClientStore.getClients;
     const columns = [
       {
-        title: intl.formatMessage({id: `${intlPrefix}.name`}),
+        title: intl.formatMessage({id: 'name'}),
         dataIndex: 'name',
         key: 'name',
         filters: [],

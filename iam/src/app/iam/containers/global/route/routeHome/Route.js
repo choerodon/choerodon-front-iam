@@ -517,7 +517,7 @@ class Route extends Component {
       <Content
         code={code}
         values={values}
-        className="sidebar-content formContainer"
+        className="sidebar-content route-form-container"
       >
         <Form layout="vertical">
           <FormItem
@@ -710,7 +710,7 @@ class Route extends Component {
     }, []);
 
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.name`}/>,
+      title: <FormattedMessage id="name"/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -728,7 +728,7 @@ class Route extends Component {
       filters: filtersService,
       filteredValue: filters.serviceId || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.builtin`}/>,
+      title: <FormattedMessage id="source"/>,
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{

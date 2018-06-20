@@ -279,7 +279,7 @@ class OrganizationHome extends Component {
       params, content, loading, visible, show, submitting,
     } = this.state;
     const columns = [{
-      title: <FormattedMessage id="global.organization.name"/>,
+      title: <FormattedMessage id="name"/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -288,7 +288,7 @@ class OrganizationHome extends Component {
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
-      title: <FormattedMessage id="global.organization.code"/>,
+      title: <FormattedMessage id="code"/>,
       dataIndex: 'code',
       key: 'code',
       filters: [],
@@ -296,7 +296,7 @@ class OrganizationHome extends Component {
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
     }, {
-      title: <FormattedMessage id="global.organization.status.enabled"/>,
+      title: <FormattedMessage id="status"/>,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{

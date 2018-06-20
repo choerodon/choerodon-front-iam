@@ -359,7 +359,7 @@ class ProjectHome extends Component {
 
     const type = menuType.type;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.name`}/>,
+      title: <FormattedMessage id="name"/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -367,14 +367,14 @@ class ProjectHome extends Component {
       sorter: (a, b) => (a.name > b.name ? 1 : 0),
       render: (text, record) => <span>{text}</span>,
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.code`}/>,
+      title: <FormattedMessage id="code"/>,
       dataIndex: 'code',
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
       sorter: (a, b) => (a.code > b.code ? 1 : 0),
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.status.enabled`}/>,
+      title: <FormattedMessage id="status"/>,
       dataIndex: 'enabled',
       filters: [{
         text: intl.formatMessage({id: 'enable'}),
@@ -388,7 +388,6 @@ class ProjectHome extends Component {
       render: text => <span className="titleNameStyle">{intl.formatMessage({id: text ? 'enable' : 'disable'})}</span>,
     }, {
       title: '',
-      className: 'operateIcons',
       key: 'action',
       width: '100px',
       align: 'right',

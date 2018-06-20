@@ -389,7 +389,7 @@ class OrganizationHome extends Component {
             visible={visible}
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun}
-            okText={<FormattedMessage id={show === 'create' ? 'create' : 'modify'}/>}
+            okText={<FormattedMessage id={show === 'create' ? 'create' : 'save'}/>}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={submitting}
           >

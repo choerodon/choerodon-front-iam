@@ -510,7 +510,7 @@ class CreateConfig extends Component {
               funcType="raised"
               onClick={this.editConfig}
             >
-              <FormattedMessage id="modify"/>
+              <FormattedMessage id="save"/>
             </Button>
           )}
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>

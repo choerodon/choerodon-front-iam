@@ -211,7 +211,7 @@ class Route extends Component {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt(<FormattedMessage id="delete.success"/>);
+            Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
             this.loadRouteList();
           }
         });
@@ -291,7 +291,7 @@ class Route extends Component {
             if (failed) {
               Choerodon.prompt(message);
             } else {
-              Choerodon.prompt(<FormattedMessage id="create.success"/>);
+              Choerodon.prompt(this.props.intl.formatMessage({id: 'create.success'}));
               this.loadRouteList();
               this.setState({
                 submitting: false,
@@ -323,7 +323,7 @@ class Route extends Component {
             if (failed) {
               Choerodon.prompt(message);
             } else {
-              Choerodon.prompt(<FormattedMessage id="modify.success"/>);
+              Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
               this.loadRouteList();
               this.setState({
                 submitting: false,

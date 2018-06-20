@@ -3,15 +3,16 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Progress, Select, Table } from 'choerodon-ui';
+import { Button,  Form, Modal, Select, Table } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
 import ConfigurationStore from '../../../stores/globalStores/configuration';
 
-const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const intlPrefix = 'global.configuration';
 
 @inject('AppState')
 @observer
@@ -135,7 +136,7 @@ class Configuration extends Component {
         <Select
           style={{ width: '512px', marginBottom: '32px' }}
           value={ConfigurationStore.currentService.name}
-          label="请选择微服务"
+          label={<FormattedMessage id={`${intlPrefix}.service`}/>}
           filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
@@ -168,15 +169,16 @@ class Configuration extends Component {
    * @param record 当前行数据
    */
   deleteConfig = (record) => {
+    const { intl } = this.props;
     Modal.confirm({
-      title: "删除配置",
-      content: `确定要删除配置${record.name}吗？`,
+      title: intl.formatMessage({id: `${intlPrefix}.delete.title`}),
+      content: intl.formatMessage({id: `${intlPrefix}.delete.content`},{name: record.name}),
       onOk: () => {
         ConfigurationStore.deleteConfig(record.id).then(({ failed, message }) => {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt("删除成功");
+            Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
             this.loadConfig();
           }
         })
@@ -189,11 +191,12 @@ class Configuration extends Component {
    * @param configId 配置id
    */
   setDefaultConfig = (configId) => {
+    const { intl } = this.props;
     ConfigurationStore.setDefaultConfig(configId). then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
       } else {
-        Choerodon.prompt("修改成功");
+        Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
         this.loadConfig();
       }
     })
@@ -234,60 +237,62 @@ class Configuration extends Component {
 
 
   render() {
+    const { intl } = this.props;
     const { sort: { columnKey, order }, filters, pagination } = this.state;
     const columns = [{
-      title: '配置ID',
+      title: <FormattedMessage id={`${intlPrefix}.id`}/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
     }, {
-      title: '配置版本',
+      title: <FormattedMessage id={`${intlPrefix}.version`}/>,
       dataIndex: 'configVersion',
       key: 'configVersion',
       filters: [],
       filteredValue: filters.configVersion || [],
     }, {
-      title: '配置创建时间',
+      title: <FormattedMessage id={`${intlPrefix}.publictime`}/>,
       dataIndex: 'publicTime',
       key: 'publicTime',
     }, {
-      title: '是否为默认',
+      title: <FormattedMessage id={`${intlPrefix}.isdefault`}/>,
       dataIndex: 'isDefault',
       key: 'isDefault',
       filters: [{
-        text: '是',
+        text: intl.formatMessage({id: 'yes'}),
         value: 'true',
       }, {
-        text: '否',
+        text: intl.formatMessage({id: 'no'}),
         value: 'false',
       }],
       filteredValue: filters.isDefault || [],
       render: (text) => {
-        return text ? '是' : '否';
+        return intl.formatMessage({id: text ? 'yes' : 'no'});
       }
     }, {
       title: '',
       width: '100px',
       key: 'action',
+      align: 'right',
       render: (text, record) => {
         const actionsDatas = [{
           service: ['manager-service.config.create'],
           type: 'site',
           icon: '',
-          text: '基于此配置创建',
+          text: intl.formatMessage({id: `${intlPrefix}.create.base`}),
           action: this.createByThis.bind(this, record),
         }, {
           service: ['manager-service.config.updateConfigDefault'],
           type: 'site',
           icon: '',
-          text: '设为默认配置',
+          text: intl.formatMessage({id: `${intlPrefix}.setdefault`}),
           action: this.setDefaultConfig.bind(this, record.id)
         }, {
           service: ['manager-service.config.updateConfig'],
           type: 'site',
           icon: '',
-          text: '修改',
+          text: intl.formatMessage({id: 'modify'}),
           action: this.handleEdit.bind(this, record)
         }];
         if (!record.isDefault) {
@@ -295,7 +300,7 @@ class Configuration extends Component {
             service: ['manager-service.config.delete'],
             type: 'site',
             icon: '',
-            text: '删除',
+            text: intl.formatMessage({id: 'delete'}),
             action: this.deleteConfig.bind(this, record),
           })
         }
@@ -312,27 +317,26 @@ class Configuration extends Component {
         ]}
       >
         <Header
-          title="配置管理"
+          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
         >
           <Permission service={['manager-service.config.create']}>
             <Button
               icon="playlist_add"
               onClick={this.creatConfig}
             >
-              创建配置
+              <FormattedMessage id={`${intlPrefix}.create`}/>
             </Button>
           </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"的配置管理`}
-          description="配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+          code={intlPrefix}
+          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
         >
           {this.filterBar}
           <Table
@@ -343,7 +347,7 @@ class Configuration extends Component {
             filters={this.state.filters.params}
             onChange={this.handlePageChange}
             rowkey="id"
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
         </Content>
       </Page>
@@ -351,4 +355,4 @@ class Configuration extends Component {
   }
 }
 
-export default Form.create({})(withRouter(Configuration));
+export default Form.create({})(withRouter(injectIntl(Configuration)));

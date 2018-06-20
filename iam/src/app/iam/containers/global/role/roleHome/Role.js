@@ -91,14 +91,15 @@ class Role extends Component {
   };
 
   handleEnable = (record) => {
+    const { intl } = this.props;
     if (record.enabled) {
       RoleStore.disableRole(record.id).then(() => {
-        Choerodon.prompt(<FormattedMessage id="disable.success"/>);
+        Choerodon.prompt(intl.formatMessage({id: 'disable.success'}));
         this.loadRole();
       });
     } else {
       RoleStore.enableRole(record.id).then(() => {
-        Choerodon.prompt(<FormattedMessage id="enable.success"/>);
+        Choerodon.prompt(intl.formatMessage({id: 'enable.success'}));
         this.loadRole();
       });
     }
@@ -132,9 +133,10 @@ class Role extends Component {
   }
 
   createByMultiple = () => {
+    const { intl } = this.props;
     const levels = Object.values(this.state.selectedRoleIds);
     if (levels.some((level, index) => levels[index + 1] && levels[index + 1] !== level)) {
-      Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.create.byselect.level`}/>);
+      Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.create.byselect.level`}));
     } else {
       this.createBased();
     }

@@ -138,12 +138,13 @@ class MenuTree extends Component {
   };
   //删除菜单
   deleteMenu = (record) => {
+    const { intl } = this.props;
     const { menuGroup, type } = this.state;
     deleteNode(menuGroup[type], record);
     this.setState({
       menuGroup,
     });
-    Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.delete.success`}/>);
+    Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.delete.success`}));
   };
 
   handleDelete = (record) => {
@@ -172,6 +173,7 @@ class MenuTree extends Component {
   //创建添加的状态请求
   handleOk = (e) => {
     e.preventDefault();
+    const { intl } = this.props;
     this.props.form.validateFields((err, { code, name, icon }) => {
       if (!err) {
         const { selectType, menuGroup, selectMenuDetail, type } = this.state;
@@ -189,12 +191,12 @@ class MenuTree extends Component {
             };
             defineLevel(menu, 0);
             menuGroup[type].push(menu);
-            Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.create.success`}/>);
+            Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.create.success`}));
             break;
           case 'edit':
             selectMenuDetail.name = name;
             selectMenuDetail.icon = icon;
-            Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.modify.success`}/>);
+            Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.modify.success`}));
             break;
         }
         this.setState({
@@ -534,6 +536,7 @@ class MenuTree extends Component {
 
   //储存菜单
   saveMenu = () => {
+    const { intl } = this.props;
     const { type, menuGroup } = this.state;
     this.setState({ submitting: true });
     axios.post(`/iam/v1/menus/tree?level=${type}`, JSON.stringify(adjustSort(menuGroup[type])))
@@ -543,7 +546,7 @@ class MenuTree extends Component {
           Choerodon.prompt(menus.message);
         } else {
           MenuStore.setMenuData(_.clone(menus), type);
-          Choerodon.prompt(<FormattedMessage id="save.success"/>);
+          Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
           menuGroup[type] = normalizeMenus(menus);
           this.setState({
             menuGroup,

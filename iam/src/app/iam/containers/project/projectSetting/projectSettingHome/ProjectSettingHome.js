@@ -44,7 +44,7 @@ class ProjectSettingHome extends Component {
         ProjectSettingStore.axiosSaveProjectInfo(body)
           .then((data) => {
             this.setState({ submitting: false });
-            Choerodon.prompt(<FormattedMessage id="save.success"/>);
+            Choerodon.prompt(this.props.intl.formatMessage({id: 'save.success'}));
             ProjectSettingStore.setProjectInfo(data);
             HeaderStore.updateProject(data);
             history.replace(`${location.pathname}?type=project&id=${id}&name=${encodeURIComponent(data.name)}&organizationId=${organizationId}`);
@@ -68,7 +68,7 @@ class ProjectSettingHome extends Component {
           this.setState({
             stopping: false,
           });
-          Choerodon.prompt(<FormattedMessage id="disable.success"/>);
+          Choerodon.prompt(this.props.intl.formatMessage({id: 'disable.success'}));
           ProjectSettingStore.setProjectInfo(data);
           HeaderStore.updateProject(data);
           this.props.history.push('/');

@@ -111,7 +111,7 @@ class RootUserSetting extends Component {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt(<FormattedMessage id="remove.success" />);
+            Choerodon.prompt(intl.formatMessage({id: 'remove.success'}));
             this.reload();
           }
         });
@@ -120,6 +120,7 @@ class RootUserSetting extends Component {
   }
 
   handleOk = (e) => {
+    const { intl } = this.props;
     const { validateFields } = this.props.form;
     e.preventDefault();
     validateFields((err, values) => {
@@ -137,7 +138,7 @@ class RootUserSetting extends Component {
               if (failed) {
                 Choerodon.prompt(message);
               } else {
-                Choerodon.prompt(<FormattedMessage id="add.success" />);
+                Choerodon.prompt(intl.formatMessage({id: 'add.success'}));
                 this.closeSidebar();
                 this.reload();
               }

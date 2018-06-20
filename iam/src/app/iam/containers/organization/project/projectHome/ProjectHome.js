@@ -135,7 +135,7 @@ class ProjectHome extends Component {
             .then((value) => {
               this.setState({ submitting: false });
               if (value) {
-                Choerodon.prompt(<FormattedMessage id="create.success"/>);
+                Choerodon.prompt(this.props.intl.formatMessage({id: 'create.success'}));
                 this.handleTabClose();
                 this.loadProjects();
                 value.type = 'project';
@@ -167,7 +167,7 @@ class ProjectHome extends Component {
             this.state.projectDatas.id).then((value) => {
             this.setState({ submitting: false, buttonClicked: false });
             if (value) {
-              Choerodon.prompt(<FormattedMessage id="modify.success"/>);
+              Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
               this.handleTabClose();
               this.loadProjects();
               value.type = 'project';
@@ -183,12 +183,12 @@ class ProjectHome extends Component {
 
   /* 停用启用 */
   handleEnable = (record) => {
-    const { ProjectStore, AppState } = this.props;
+    const { ProjectStore, AppState,intl } = this.props;
     const userId = AppState.getUserId;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
     ProjectStore.enableProject(orgId, record.id, record.enabled).then((value) => {
-      Choerodon.prompt(<FormattedMessage id={record.enabled ? 'disable.success' : 'enable.success'} />);
+      Choerodon.prompt(intl.formatMessage({id: record.enabled ? 'disable.success' : 'enable.success'}));
       this.loadProjects();
       HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
         org[0].map(value => {
@@ -201,7 +201,7 @@ class ProjectHome extends Component {
         HeaderStore.setProData(org[1]);
       });
     }).catch((error) => {
-      Choerodon.prompt(<FormattedMessage id='operation.error' />);
+      Choerodon.prompt(intl.formatMessage({id: 'operation.error'}));
     });
   };
 

@@ -482,7 +482,7 @@ class MemberRole extends Component {
                   if (failed) {
                     Choerodon.prompt(message);
                   } else {
-                    Choerodon.prompt(<FormattedMessage id="add.success"/>);
+                    Choerodon.prompt(this.formatMessage('add.success'));
                     this.closeSidebar();
                     this.roles.fetch();
                   }
@@ -502,7 +502,7 @@ class MemberRole extends Component {
               if (failed) {
                 Choerodon.prompt(message);
               } else {
-                Choerodon.prompt(<FormattedMessage id="modify.success"/>);
+                Choerodon.prompt(this.formatMessage('modify.success'));
                 this.closeSidebar();
                 this.roles.fetch();
               }

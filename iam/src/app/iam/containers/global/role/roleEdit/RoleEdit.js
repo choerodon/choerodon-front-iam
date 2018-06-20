@@ -97,6 +97,7 @@ class EditRole extends Component {
   };
 
   handleEdit = () => {
+    const { intl } = this.props;
     this.props.form.validateFieldsAndScroll((err) => {
       if (!err) {
         const { currentPermission } = this.state;
@@ -121,13 +122,13 @@ class EditRole extends Component {
             .then((data) => {
               this.setState({ submitting: false });
               if (data) {
-                Choerodon.prompt(<FormattedMessage id="modify.success"/>);
+                Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
                 this.linkToChange('/iam/role');
               }
             })
             .catch((errors) => {
               this.setState({ submitting: false });
-              Choerodon.prompt(<FormattedMessage id="modify.error"/>);
+              Choerodon.prompt(intl.formatMessage({id: 'modify.error'}));
             });
         }
       }

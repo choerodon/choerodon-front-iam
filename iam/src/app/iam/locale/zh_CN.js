@@ -77,6 +77,21 @@ const pageDetail = {
   "global.role.modify.addpermission.description": "您可以在此为角色添加一个或多个权限。",
   "global.role.modify.addpermission.link": `${docServer}/user-guide/system-configuration/platform/role/`,
 
+  // 配置管理
+  "global.configuration.title": "平台\"{name}\"的配置管理",
+  "global.configuration.description": "配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。",
+  "global.configuration.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  "global.configuration.create.title": "在平台\"{name}\"中创建配置",
+  "global.configuration.create.description": "一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。",
+  "global.configuration.create.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  "global.configuration.create.base.title": "在平台\"{name}\"中创建配置",
+  "global.configuration.create.base.description": "您可自定义您的配置版本。系统将自动生成您的配置ID。",
+  "global.configuration.create.base.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  "global.configuration.modify.title": "对配置\"{name}\"进行修改",
+  "global.configuration.modify.description": "配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。",
+  "global.configuration.modify.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // 项目管理
   "organization.project.title": "组织\"{name}\"的项目管理",
@@ -384,6 +399,39 @@ const zh_CN = {
   "global.role.code.require.msg": "请输入角色编码",
   "global.role.code.pattern.msg": "编码只能由小写字母、数字、\"-\"组成，且以小写字母开头，不能以\"-\"结尾",
   "global.role.level.nothing.msg": "请先选择角色层级",
+
+  // 配置管理
+  "global.configuration.service": "所属微服务",
+  "global.configuration.delete.title": "删除配置",
+  "global.configuration.delete.content": "确定要删除配置\"{name}\"吗？",
+  "global.configuration.id": "配置ID",
+  "global.configuration.version": "配置版本",
+  "global.configuration.publictime": "创建时间",
+  "global.configuration.isdefault": "是否为默认",
+  "global.configuration.create.base": "基于此配置创建",
+  "global.configuration.setdefault": "设为默认配置",
+  "global.configuration.header.title": "配置管理",
+  "global.configuration.create": "创建配置",
+  "global.configuration.modify": "修改配置",
+  "global.configuration.step1.title": "选择微服务及填写配置基本信息",
+  "global.configuration.step1.description": "一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。",
+  "global.configuration.step2.description": " 您可以通过yaml文件编辑配置的详细信息。",
+  "global.configuration.step2.title": "修改配置信息",
+  "global.configuration.step3.create.title": "确认信息并创建",
+  "global.configuration.step3.modify.title": "确认信息并修改",
+  "global.configuration.service.modify.title": "修改微服务",
+  "global.configuration.service.modify.content": "确认修改微服务吗？更换微服务将重新生成您的配置信息。",
+  "global.configuration.template": "配置模板",
+  "global.configuration.template.modify.title": "修改配置模板",
+  "global.configuration.template.modify.content": "确认修改配置模板吗？更换配置模板将重新生成您的配置信息。",
+  "global.configuration.service.require.msg": "请选择微服务",
+  "global.configuration.template.require.msg": "请选择配置模板",
+  "global.configuration.version.require.msg": "请输入配置版本",
+  "global.configuration.version.pattern.msg": "版本号只能包含数字，小写字母，小数点，'-'",
+  "global.configuration.step.next": "下一步",
+  "global.configuration.step.prev": "上一步",
+  "global.configuration.info": "配置信息",
+
 
   // 组织层
 

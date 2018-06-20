@@ -177,9 +177,10 @@ class OrganizationHome extends Component {
     });
   };
 
-  handleDisable({ enabled, id }) {
+  handleDisable = ({ enabled, id }) => {
+    const { intl } = this.props;
     axios.put(`/iam/v1/organizations/${id}/${enabled ? 'disable' : 'enable'}`).then((data) => {
-      Choerodon.prompt(<FormattedMessage id={enabled ? 'disable.success' : 'enable.success'} />);
+      Choerodon.prompt(intl.formatMessage({id: enabled ? 'disable.success' : 'enable.success'}));
       this.loadOrganizations();
     }).catch(Choerodon.handleResponseError);
   }

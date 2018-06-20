@@ -152,16 +152,16 @@ class CreateRole extends Component {
             .then((data) => {
               this.setState({ submitting: false });
               if (data) {
-                Choerodon.prompt(<FormattedMessage id="create.success"/>);
+                Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
                 this.linkToChange('/iam/role');
               }
             })
             .catch((errors) => {
               this.setState({ submitting: false });
               if (errors.response.data.message === 'error.role.roleNameExist') {
-                Choerodon.prompt(<FormattedMessage id={`${intlPrefix}.name.exist.msg`}/>);
+                Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
               } else {
-                Choerodon.prompt(<FormattedMessage id="create.error"/>);
+                Choerodon.prompt(intl.formatMessage({id: 'create.error'}));
               }
             });
         }

@@ -7,7 +7,7 @@ import { inject, observer } from 'mobx-react';
 import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
 import { Input, Button, Form, Steps, Select, Modal, Row, Col } from 'choerodon-ui';
 import querystring from 'query-string';
-import brace from 'brace';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import AceEditor from 'react-ace';
 import 'brace/mode/yaml';
 import 'brace/theme/dawn';
@@ -18,6 +18,7 @@ const confirm = Modal.confirm;
 const Step = Steps.Step;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const intlPrefix = 'global.configuration';
 
 @inject('AppState')
 @observer
@@ -83,12 +84,13 @@ class CreateConfig extends Component {
    * @param serviceName 服务名称
    */
   handleChange = (serviceName) => {
+    const { intl } = this.props;
     const { setFieldsValue, getFieldValue } = this.props.form;
     const service = getFieldValue('service');
     if (service && this.state.yamlData) {
       confirm({
-        title: '修改微服务',
-        content: '确认修改微服务吗？更换微服务将重新生成您的配置信息。',
+        title: intl.formatMessage({id: `${intlPrefix}.service.modify.title`}),
+        content: intl.formatMessage({id: `${intlPrefix}.service.modify.content`}),
         onOk: () => {
           setFieldsValue({ template: undefined, version: undefined });
           this.loadCurrentServiceConfig(serviceName);
@@ -108,12 +110,13 @@ class CreateConfig extends Component {
    * @param configId 模板id
    */
   generateVersion(configId) {
+    const { intl } = this.props;
     const { setFieldsValue, getFieldValue } = this.props.form;
     const template = getFieldValue('template');
     if (template && this.state.yamlData) {
       confirm({
-        title: '修改配置模板',
-        content: '确认修改配置模板吗？更换配置模板将重新生成您的配置信息。',
+        title: intl.formatMessage({id: `${intlPrefix}.template.modify.title`}),
+        content: intl.formatMessage({id: `${intlPrefix}.template.modify.content`}),
         onOk: () => {
           const version = this.getDate();
           setFieldsValue({ version });
@@ -161,7 +164,7 @@ class CreateConfig extends Component {
           <Select
             disabled={templateDisable}
             style={{ width: '512px' }}
-            label="配置模板"
+            label={<FormattedMessage id={`${intlPrefix}.template`}/>}
             filterOption={
               (input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -184,7 +187,7 @@ class CreateConfig extends Component {
             <Select
               disabled={templateDisable}
               style={{ width: '512px' }}
-              label="配置模板"
+              label={<FormattedMessage id={`${intlPrefix}.template`}/>}
               filterOption={
                 (input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -197,7 +200,7 @@ class CreateConfig extends Component {
             <Select
               disabled={templateDisable}
               style={{ width: '512px' }}
-              label="配置模板"
+              label={<FormattedMessage id={`${intlPrefix}.template`}/>}
               filterOption={
                 (input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -287,6 +290,7 @@ class CreateConfig extends Component {
 
   /* 第一步 */
   handleRenderService = () => {
+    const { intl } = this.props;
     const { templateDisable, service, template, version } = this.state;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = 512;
@@ -319,7 +323,7 @@ class CreateConfig extends Component {
     return (
       <div>
         <p>
-          一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。
+          <FormattedMessage id={`${intlPrefix}.step1.description`}/>
         </p>
         <Form>
           <FormItem
@@ -328,14 +332,14 @@ class CreateConfig extends Component {
             {getFieldDecorator('service', {
               rules: [{
                 required: true,
-                message: '请选择微服务',
+                message: intl.formatMessage({id: `${intlPrefix}.service.require.msg`}),
               }],
               initialValue: service || undefined,
             })(
               <Select
                 disabled={ConfigurationStore.getStatus !== 'create'}
                 style={{ width: inputWidth }}
-                label="微服务"
+                label={<FormattedMessage id={`${intlPrefix}.service`}/>}
                 filterOption={
                   (input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -357,7 +361,7 @@ class CreateConfig extends Component {
             {getFieldDecorator('template', {
               rules: [{
                 required: true,
-                message: '请选择配置模板',
+                message: intl.formatMessage({id: `${intlPrefix}.template.require.msg`}),
               }],
               initialValue: template || undefined,
             })(
@@ -371,16 +375,16 @@ class CreateConfig extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: '请输入配置版本',
+                message: intl.formatMessage({id: `${intlPrefix}.version.require.msg`}),
               }, {
                 pattern: /^[a-z0-9\.-]*$/g,
-                message: "版本号只能包含数字，小写字母，小数点，'-'"
+                message: intl.formatMessage({id: `${intlPrefix}.version.pattern.msg`}),
               }],
               initialValue: version || undefined,
             })(
               <Input
                 disabled={versionStatus}
-                label="配置版本"
+                label={<FormattedMessage id={`${intlPrefix}.version`}/>}
                 autoComplete="off"
                 style={{ width: inputWidth }}
               />,
@@ -395,7 +399,7 @@ class CreateConfig extends Component {
               disabled={btnStatus}
               onClick={this.handleSubmit}
             >
-              下一步
+              <FormattedMessage id={`${intlPrefix}.step.next`}/>
             </Button>
           </Permission>
         </section>
@@ -430,9 +434,9 @@ class CreateConfig extends Component {
     return (
       <div>
         <p>
-          您可以通过yaml文件编辑配置的详细信息。
+          <FormattedMessage id={`${intlPrefix}.step2.description`}/>
         </p>
-        <span className="yamlInfoTitle">配置信息</span>
+        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`}/></span>
         <AceEditor
           onChange={this.handleChangeValue}
           showPrintMargin={false}
@@ -447,9 +451,11 @@ class CreateConfig extends Component {
             funcType="raised"
             onClick={this.jumpToEnd}
           >
-            下一步
+           <FormattedMessage id={`${intlPrefix}.step.next`}/>
           </Button>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 1)}>上一步</Button>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 1)}>
+             <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+          </Button>
         </section>
       </div>
     )
@@ -470,17 +476,17 @@ class CreateConfig extends Component {
       <div className="confirmContainer">
         <div>
           <Row>
-            <Col span={3}>配置ID：</Col><Col
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.id`}/>：</Col><Col
             span={21}>{ConfigurationStore.getStatus !== 'edit' ? service + '-' + version : ConfigurationStore.getEditConfig.name}</Col>
           </Row>
           <Row>
-            <Col span={3}>配置版本：</Col><Col span={21}>{version}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.version`}/>：</Col><Col span={21}>{version}</Col>
           </Row>
           <Row>
-            <Col span={3}>所属微服务：</Col><Col span={13}>{service}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`}/>：</Col><Col span={13}>{service}</Col>
           </Row>
         </div>
-        <span className="finalyamTitle">配置信息</span>
+        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`}/>：</span>
         <AceEditor
           readOnly
           showPrintMargin={false}
@@ -496,7 +502,7 @@ class CreateConfig extends Component {
               funcType="raised"
               onClick={this.createConfig}
             >
-              创建
+              <FormattedMessage id="create"/>
             </Button>
           ) : (
             <Button
@@ -504,11 +510,15 @@ class CreateConfig extends Component {
               funcType="raised"
               onClick={this.editConfig}
             >
-              修改
+              <FormattedMessage id="modify"/>
             </Button>
           )}
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
-          <Button funcType="raised" onClick={this.cancelAll}>取消</Button>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>
+            <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+          </Button>
+          <Button funcType="raised" onClick={this.cancelAll}>
+            <FormattedMessage id="cancel"/>
+          </Button>
         </section>
       </div>
     )
@@ -516,6 +526,7 @@ class CreateConfig extends Component {
 
   /* 创建配置 */
   createConfig = () => {
+    const { intl } = this.props;
     const { service, version, yamlData } = this.state;
     const data = {
       serviceName: service,
@@ -529,7 +540,7 @@ class CreateConfig extends Component {
       } else {
         const currentService = ConfigurationStore.service.find(service => service.name === data.serviceName);
         ConfigurationStore.setRelatedService(currentService);
-        Choerodon.prompt("创建成功");
+        Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
         this.props.history.push('/iam/configuration');
       }
     })
@@ -544,7 +555,7 @@ class CreateConfig extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        Choerodon.prompt("修改成功");
+        Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
         this.props.history.push('/iam/configuration');
       }
     })
@@ -558,18 +569,20 @@ class CreateConfig extends Component {
 
   render() {
     const { current, service, template, version } = this.state;
-    let title;
-    let description;
+    let code;
+    let values;
     if (ConfigurationStore.getStatus !== 'edit') {
-      title = `在平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"中创建配置`;
+      values = {name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`};
       if (ConfigurationStore.getStatus === 'create') {
-        description = "一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。";
+        code = `${intlPrefix}.create`;
       } else {
-        description = "您可自定义您的配置版本。系统将自动生成您的配置ID。"
+        code = `${intlPrefix}.create.base`;
       }
     } else {
-      title = `对配置"${ConfigurationStore.getEditConfig.name}"进行修改`;
-      description = "配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。";
+      code = `${intlPrefix}.modify`;
+      values = {
+        name: ConfigurationStore.getEditConfig.name,
+      };
     }
     return (
       <Page
@@ -578,29 +591,33 @@ class CreateConfig extends Component {
         ]}
       >
         <Header
-          title={ConfigurationStore.getStatus !== 'edit' ? '创建配置' : '修改配置'}
+          title={<FormattedMessage id={ConfigurationStore.getStatus !== 'edit' ? `${intlPrefix}.create` : `${intlPrefix}.modify`} />}
           backPath="/iam/configuration"
         />
         <Content
-          title={title}
-          description={description}
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+          code={code}
+          values={values}
         >
           <div className="createConfigContainer">
             <Steps current={current}>
               <Step
-                title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>选择微服务及填写配置基本信息</span>}
+                title={
+                  <span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>
+                    <FormattedMessage id={`${intlPrefix}.step1.title`}/>
+                  </span>}
                 status={this.getStatus(1)}
               />
               <Step
-                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>修改配置信息</span>}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}><FormattedMessage id={`${intlPrefix}.step2.title`}/></span>}
                 status={this.getStatus(2)}
               />
               <Step
                 title={<span style={{
                   color: current === 3 ? '#3F51B5' : '',
                   fontSize: 14
-                }}>确认信息并{ConfigurationStore.getStatus !== 'edit' ? '创建' : '修改'}</span>}
+                }}>
+                  <FormattedMessage id={ConfigurationStore.getStatus !== 'edit' ?`${intlPrefix}.step3.create.title` : `${intlPrefix}.step3.modify.title`}/>
+                </span>}
                 status={this.getStatus(3)}
               />
             </Steps>
@@ -616,4 +633,4 @@ class CreateConfig extends Component {
   }
 }
 
-export default Form.create({})(withRouter(CreateConfig));
+export default Form.create({})(withRouter(injectIntl(CreateConfig)));

@@ -37,7 +37,6 @@ class Configuration extends Component {
 
   componentDidMount() {
     ConfigurationStore.setCurrentConfigId(null);
-    // ConfigurationStore.setStatus('create');
     this.loadInitData();
   }
 
@@ -47,14 +46,13 @@ class Configuration extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        ConfigurationStore.setService(res.content || []);
-        const { content } = res;
-        if (content.length) {
+        ConfigurationStore.setService(res || []);
+        if (res.length) {
           let defaultService;
           if (ConfigurationStore.getRelatedService.name) {
             defaultService = ConfigurationStore.getRelatedService;
           } else {
-            defaultService = content[0];
+            defaultService = res[0];
           }
           ConfigurationStore.setCurrentService(defaultService);
           this.loadConfig();
@@ -275,19 +273,19 @@ class Configuration extends Component {
       key: 'action',
       render: (text, record) => {
         const actionsDatas = [{
-          service: ['iam-service.role.createBaseOnRoles'],
+          service: ['manager-service.config.create'],
           type: 'site',
           icon: '',
           text: '基于此配置创建',
           action: this.createByThis.bind(this, record),
         }, {
-          service: ['iam-service.role.createBaseOnRoles'],
+          service: ['manager-service.config.updateConfigDefault'],
           type: 'site',
           icon: '',
           text: '设为默认配置',
           action: this.setDefaultConfig.bind(this, record.id)
         }, {
-          service: ['iam-service.role.createBaseOnRoles'],
+          service: ['manager-service.config.updateConfig'],
           type: 'site',
           icon: '',
           text: '修改',
@@ -295,7 +293,7 @@ class Configuration extends Component {
         }];
         if (!record.isDefault) {
           actionsDatas.push({
-            service: ['iam-service.role.createBaseOnRoles'],
+            service: ['manager-service.config.delete'],
             type: 'site',
             icon: '',
             text: '删除',
@@ -306,16 +304,25 @@ class Configuration extends Component {
       },
     }];
     return (
-      <Page>
+      <Page
+        service={[
+          'manager-service.config.create',
+          'manager-service.config.query',
+          'manager-service.config.updateConfig',
+          'manager-service.config.updateConfigDefault',
+        ]}
+      >
         <Header
           title="配置管理"
         >
-          <Button
-            icon="playlist_add"
-            onClick={this.creatConfig}
-          >
-            创建配置
-          </Button>
+          <Permission service={['manager-service.config.create']}>
+            <Button
+              icon="playlist_add"
+              onClick={this.creatConfig}
+            >
+              创建配置
+            </Button>
+          </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

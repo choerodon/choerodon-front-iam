@@ -65,9 +65,9 @@ class Route extends Component {
 
   /* 获取所有微服务 */
   getService() {
-    axios.get('manager/v1/services').then(({ content }) => {
+    axios.get('manager/v1/services').then((res) => {
       this.setState({
-        serviceArr: content,
+        serviceArr: res,
       });
     });
   }

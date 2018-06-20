@@ -11,14 +11,12 @@ class ConfigurationStore {
   @observable service = [];
   @observable currentService = {};
   @observable configData = [];
-  @observable instanceData = [];
-  @observable pagination = {};
   @observable loading = true;
-  @observable instanceLoading = true;
   @observable currentServiceConfig = {};
-  @observable currentConfigId = null;
+  @observable currentConfigId = null;  // 当前配置id
   @observable status = 'create';
   @observable editConfig = null;
+  @observable relatedService = {}; // 联动service
 
   @action setStatus(data) {
     this.status = data;
@@ -28,12 +26,16 @@ class ConfigurationStore {
     return this.status;
   }
 
-  @action setLoading(flag) {
-    this.loading = flag;
+  @action setRelatedService(data) {
+    this.relatedService = data;
   }
 
-  @action setInstanceLoading(flag) {
-    this.instanceLoading = flag;
+  @computed get getRelatedService(){
+    return this.relatedService;
+  }
+
+  @action setLoading(flag) {
+    this.loading = flag;
   }
 
   @action setService(data) {
@@ -64,14 +66,6 @@ class ConfigurationStore {
     return this.currentServiceConfig;
   }
 
-  @action setInstanceData(data) {
-    this.instanceData = data;
-  }
-
-  @computed get getInstanceData() {
-    return this.instanceData;
-  }
-
   @action setCurrentConfigId(data) {
     this.currentConfigId = data;
   }
@@ -88,10 +82,7 @@ class ConfigurationStore {
     return this.editConfig;
   }
 
-  loadService() {
-    return axios.get('manager/v1/services')
-      .then(datas => this.handleProptError(datas));
-  }
+  loadService = () => axios.get('manager/v1/services');
 
   loadCurrentServiceConfig(serviceId) {
     const queryObj = {

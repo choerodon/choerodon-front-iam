@@ -1,9 +1,9 @@
 /**
- * Created by hand on 2018/6/11.
+ * Created by hulingfangzi on 2018/6/11.
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Icon, Modal, Progress, Select, Table } from 'choerodon-ui';
+import { Button,  Form, Modal, Progress, Select, Table } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
@@ -13,15 +13,14 @@ import ConfigurationStore from '../../../stores/globalStores/configuration';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
+
 @inject('AppState')
 @observer
-
 class Configuration extends Component {
   state = this.getInitState();
 
   getInitState() {
     return {
-      visible: false,
       pagination: {
         current: 1,
         pageSize: 10,
@@ -33,35 +32,30 @@ class Configuration extends Component {
       },
       filters: {},
       params: '',
-      instancePagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      instanceSort: {
-        columnKey: 'id',
-        order: 'descend',
-      },
-      instanceParams: '',
-      selectedRowKeys: [],
     }
   }
 
   componentDidMount() {
     ConfigurationStore.setCurrentConfigId(null);
-    ConfigurationStore.setStatus('create');
+    // ConfigurationStore.setStatus('create');
     this.loadInitData();
   }
 
   loadInitData = () => {
     ConfigurationStore.setLoading(true);
     ConfigurationStore.loadService().then((res) => {
-      ConfigurationStore.setService(res.content || []);
-      const response = this.handleProptError(res);
-      if (response) {
+      if (res.failed) {
+        Choerodon.prompt(res.message);
+      } else {
+        ConfigurationStore.setService(res.content || []);
         const { content } = res;
         if (content.length) {
-          const defaultService = content[0];
+          let defaultService;
+          if (ConfigurationStore.getRelatedService.name) {
+            defaultService = ConfigurationStore.getRelatedService;
+          } else {
+            defaultService = content[0];
+          }
           ConfigurationStore.setCurrentService(defaultService);
           this.loadConfig();
         } else {
@@ -129,66 +123,6 @@ class Configuration extends Component {
     this.loadConfig(pagination, sorter, filters, params);
   };
 
-  loadInstance(paginationIn, sortIn, paramsIn) {
-    ConfigurationStore.setInstanceLoading(true);
-    const {
-      instancePagination: paginationState,
-      instanceSort: sortState,
-      instanceParams: paramsState,
-    } = this.state;
-    const pagination = paginationIn || paginationState;
-    const sort = sortIn || sortState;
-    const params = paramsIn || paramsState;
-    this.fetchInstance(ConfigurationStore.getCurrentService.name, pagination, sort, params)
-      .then((data) => {
-        this.setState({
-          instanceSort: sort,
-          instanceParams: params,
-          instancePagination: {
-            current: data.number + 1,
-            pageSize: data.size,
-            total: data.totalElements,
-          },
-        });
-        ConfigurationStore.setInstanceData(data.content.slice());
-        ConfigurationStore.setInstanceLoading(false);
-      })
-      .catch((error) => {
-        Choerodon.handleResponseError(error);
-      });
-  }
-
-  fetchInstance(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, params) {
-    ConfigurationStore.setInstanceLoading(true);
-    const queryObj = {
-      page: current - 1,
-      size: pageSize,
-      params,
-    };
-    if (columnKey) {
-      const sorter = [];
-      sorter.push(columnKey);
-      if (order === 'descend') {
-        sorter.push('desc');
-      }
-      queryObj.sort = sorter.join(',');
-    }
-    return axios.get(`/manager/v1/services/${serviceName}/instances?${querystring.stringify(queryObj)}`);
-  }
-
-  handleProptError = (error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
-
-  /* 跳转至配置管理 */
-  goCreate = () => {
-    this.props.history.push('/iam/configuration/create');
-  }
 
   /* 刷新 */
   handleRefresh = () => {
@@ -227,19 +161,9 @@ class Configuration extends Component {
   handleChange(serviceName) {
     const currentService = ConfigurationStore.service.find(service => service.name === serviceName);
     ConfigurationStore.setCurrentService(currentService);
-    this.setState({
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      sort: {
-        columnKey: 'id',
-        order: 'descend',
-      },
-      filters: {},
-      params: '',
-    }, () => this.loadConfig());
+    this.setState(this.getInitState(), () => {
+      this.loadConfig();
+    });
   }
 
   /**
@@ -278,17 +202,10 @@ class Configuration extends Component {
     })
   }
 
-  /* 开启sidebar */
-  handleOpen = (record) => {
-    this.setState({visible: true, selectedRowKeys: []});
-    this.loadInstance();
-  }
-
-  /* 关闭sidebar */
-  handleCancel = () => {
-    this.setState({
-      visible: false,
-    });
+  /*创建配置*/
+  creatConfig = () => {
+    ConfigurationStore.setStatus('create');
+    this.goCreate();
   }
 
 
@@ -313,47 +230,14 @@ class Configuration extends Component {
     this.goCreate();
   }
 
-  onSelectChange = (selectedRowKeys) => {
-    window.console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
+  /* 跳转至创建配置 */
+  goCreate = () => {
+    this.props.history.push('/iam/configuration/create');
   }
 
-  /* 渲染侧边栏内容 */
-  renderSidebarContent() {
-    const { instancePagination, selectedRowKeys } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
-    return (
-      <Content
-        className="sidebar-content"
-        title="将配置应用到实例"
-        description="一个实例只能应用一个配置，但一个配置可以被多个实例应用。你可以选择个多个实例进行批量应用。勾选要应用该配置的实例后，点击保存，使配置的应用生效。"
-        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
-      >
-        <Table
-          rowSelection={rowSelection}
-          loading={ConfigurationStore.instanceLoading}
-          dataSource={ConfigurationStore.getInstanceData.slice()}
-          pagination={instancePagination}
-          rowkey="id"
-          filterBarPlaceholder="过滤表"
-          style={{
-            width: '512px',
-          }}
-          columns={[{
-            title: '实例ID',
-            dataIndex: 'instanceId',
-            key: 'instanceId'
-          }]}
-        />
-      </Content>
-    )
-  }
 
   render() {
-    const { sort: { columnKey, order }, filters, pagination, visible } = this.state;
+    const { sort: { columnKey, order }, filters, pagination } = this.state;
     const columns = [{
       title: '配置ID',
       dataIndex: 'name',
@@ -428,7 +312,7 @@ class Configuration extends Component {
         >
           <Button
             icon="playlist_add"
-            onClick={this.goCreate}
+            onClick={this.creatConfig}
           >
             创建配置
           </Button>
@@ -455,15 +339,6 @@ class Configuration extends Component {
             rowkey="id"
             filterBarPlaceholder="过滤表"
           />
-          <Sidebar
-            title="应用配置"
-            visible={visible}
-            okText="保存"
-            cancelText="取消"
-            onCancel={this.handleCancel}
-          >
-            {this.renderSidebarContent()}
-          </Sidebar>
         </Content>
       </Page>
     )

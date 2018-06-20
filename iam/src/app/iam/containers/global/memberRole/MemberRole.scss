@@ -40,8 +40,13 @@
   cursor: default;
 }
 
-.member-role-table tr td {
-  vertical-align: text-top;
+.member-role-table {
+  tr td {
+    vertical-align: text-top;
+  }
+  .memberrole-roles {
+    vertical-align: inherit;
+  }
 }
 
 .member-role-btns {

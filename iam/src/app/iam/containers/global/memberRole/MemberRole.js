@@ -677,6 +677,7 @@ class MemberRole extends Component {
         key: 'roles',
         filters: filtersRole,
         filteredValue: memberRoleFilters.roles || [],
+        className: 'memberrole-roles',
         render: (text) => {
           return text.map(({ id, name, enabled }) => {
             const wrapclass = ['role-table'];

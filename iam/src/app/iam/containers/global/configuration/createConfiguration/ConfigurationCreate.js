@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
-import { Content, Header, Page, axios } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
 import { Input, Button, Form, Steps, Select, Modal, Row, Col } from 'choerodon-ui';
 import querystring from 'query-string';
 import brace from 'brace';
@@ -73,7 +73,7 @@ class CreateConfig extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        ConfigurationStore.setService(data.content || []);
+        ConfigurationStore.setService(data || []);
       }
     })
   }
@@ -388,14 +388,16 @@ class CreateConfig extends Component {
           </FormItem>
         </Form>
         <section className="serviceSection">
-          <Button
-            type="primary"
-            funcType="raised"
-            disabled={btnStatus}
-            onClick={this.handleSubmit}
-          >
-            下一步
-          </Button>
+          <Permission service={['manager-service.config.queryYaml']}>
+            <Button
+              type="primary"
+              funcType="raised"
+              disabled={btnStatus}
+              onClick={this.handleSubmit}
+            >
+              下一步
+            </Button>
+          </Permission>
         </section>
       </div>
     )
@@ -570,7 +572,11 @@ class CreateConfig extends Component {
       description = "配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。";
     }
     return (
-      <Page>
+      <Page
+        service={[
+          'manager-service.config.queryYaml'
+        ]}
+      >
         <Header
           title={ConfigurationStore.getStatus !== 'edit' ? '创建配置' : '修改配置'}
           backPath="/iam/configuration"

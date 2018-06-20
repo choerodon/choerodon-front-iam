@@ -384,7 +384,7 @@ class CreateConfig extends Component {
             })(
               <Input
                 disabled={versionStatus}
-                label={<FormattedMessage id={`${intlPrefix}.version`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.configversion`}/>}
                 autoComplete="off"
                 style={{ width: inputWidth }}
               />,
@@ -476,11 +476,11 @@ class CreateConfig extends Component {
       <div className="confirmContainer">
         <div>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.id`}/>：</Col><Col
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`}/>：</Col><Col
             span={21}>{ConfigurationStore.getStatus !== 'edit' ? service + '-' + version : ConfigurationStore.getEditConfig.name}</Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.version`}/>：</Col><Col span={21}>{version}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`}/>：</Col><Col span={21}>{version}</Col>
           </Row>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.service`}/>：</Col><Col span={13}>{service}</Col>

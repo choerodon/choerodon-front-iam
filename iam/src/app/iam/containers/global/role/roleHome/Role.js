@@ -192,7 +192,7 @@ class Role extends Component {
       hidden: true,
       sortOrder: columnKey === 'id' && order,
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.name`} />,
+      title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -200,7 +200,7 @@ class Role extends Component {
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.code`} />,
+      title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
       filters: [],
@@ -208,7 +208,7 @@ class Role extends Component {
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.level`} />,
+      title: <FormattedMessage id="level" />,
       dataIndex: 'level',
       key: 'level',
       filters: [
@@ -227,7 +227,7 @@ class Role extends Component {
       sortOrder: columnKey === 'level' && order,
       filteredValue: filters.level || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.builtin`} />,
+      title: <FormattedMessage id="source" />,
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{
@@ -242,7 +242,7 @@ class Role extends Component {
       sortOrder: columnKey === 'builtIn' && order,
       filteredValue: filters.builtIn || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.status.enabled`} />,
+      title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{

@@ -201,6 +201,7 @@ const pageDetail = {
 
 };
 const zh_CN = {
+
   "yes":"是",
   "no":"否",
   "save":"保存",
@@ -237,11 +238,6 @@ const zh_CN = {
   "enable": "启用",
   "disable": "停用",
 
-  //type
-  "global": "全局",
-  "site": "平台",
-  "project": "项目",
-  "organization": "组织",
 // status
 // success
   "success": "成功",
@@ -265,6 +261,19 @@ const zh_CN = {
   "remove.error": "移除失败",
   "enabled.error": "启用失败",
   "disable.error": "停用失败",
+
+  // 统一字段
+  "name": "名称",
+  "code": "编码",
+  "status": "状态",
+  "level": "层级",
+  "source": "来源",
+
+  //type
+  "global": "全局",
+  "site": "平台",
+  "project": "项目",
+  "organization": "组织",
 
   //组织管理
   "global.organization.header.title": "组织管理",
@@ -367,7 +376,7 @@ const zh_CN = {
   "global.route.header.title": "路由管理",
 
    // 角色管理
-  "global.role.create.byselect.level": "选择的角色具有不同层级的权限!",
+  "global.role.create.byselect.level": "请选择相同层级的角色!",
   "global.role.builtin.predefined": "预定义",
   "global.role.builtin.custom": "自定义",
   "global.role.create": "创建角色",
@@ -404,8 +413,10 @@ const zh_CN = {
   "global.configuration.service": "所属微服务",
   "global.configuration.delete.title": "删除配置",
   "global.configuration.delete.content": "确定要删除配置\"{name}\"吗？",
-  "global.configuration.id": "配置ID",
-  "global.configuration.version": "配置版本",
+  "global.configuration.id": "ID",
+  "global.configuration.version": "版本",
+  "global.configuration.configid": "配置ID",
+  "global.configuration.configversion": "配置版本",
   "global.configuration.publictime": "创建时间",
   "global.configuration.isdefault": "是否为默认",
   "global.configuration.create.base": "基于此配置创建",

@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Checkbox, Form, Input, InputNumber, Row, Col, Button, Select, Radio } from 'choerodon-ui';
+import { Form, Input, Select, Radio } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import './PasswordForm.scss';
 
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const inputPrefix = 'organization.pwdpolicy';
 
 @inject('AppState')
 @observer
@@ -41,7 +43,7 @@ class LoginForm extends Component {
   }
 
   render() {
-    const { AppState } = this.props;
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const passwordPolicy = passwordPolicyStore.getPasswordPolicy;
     const ableStatus = passwordPolicy && passwordPolicy.enableSecurity ? 'enabled' : 'disabled';
@@ -63,9 +65,9 @@ class LoginForm extends Component {
           {getFieldDecorator('enableSecurity', {
             initialValue: ableStatus,
           })(
-            <RadioGroup label="是否启用" className="radioGroup">
-              <Radio value={'enabled'}>是</Radio>
-              <Radio value={'disabled'}>否</Radio>
+            <RadioGroup label={<FormattedMessage id={`${inputPrefix}.enabled.security`}/>} className="radioGroup">
+              <Radio value={'enabled'}><FormattedMessage id="yes"/></Radio>
+              <Radio value={'disabled'}><FormattedMessage id="no"/></Radio>
             </RadioGroup>,
           )}
         </FormItem>
@@ -76,31 +78,30 @@ class LoginForm extends Component {
             initialValue: this.state.codeStatus,
           })(
             <RadioGroup
-              label="是否开启验证码"
+              label={<FormattedMessage id={`${inputPrefix}.enabled.captcha`}/>}
               className="radioGroup"
               onChange={this.changeCodeStatus.bind(this)}
             >
-              <Radio value={'enableCode'}>是</Radio>
-              <Radio value={'disableCode'}>否</Radio>
+              <Radio value={'enableCode'}><FormattedMessage id="yes"/></Radio>
+              <Radio value={'disableCode'}><FormattedMessage id="no"/></Radio>
             </RadioGroup>,
           )}
         </FormItem>
         {
           this.state.codeStatus === 'enableCode' ? (
             <FormItem
-              label="输错次数"
             >
               {getFieldDecorator('maxCheckCaptcha', {
                 rules: [{
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
-                  message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+                  message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
                 }],
                 initialValue: passwordPolicy ? passwordPolicy.maxCheckCaptcha : undefined,
               })(
                 <Input
                   autocomplete="off"
                   type="number"
-                  label="输错次数"
+                  label={<FormattedMessage id={`${inputPrefix}.maxerror.count`}/>}
                   style={{ width: 300 }}
                 />,
               )}
@@ -114,28 +115,32 @@ class LoginForm extends Component {
             initialValue: this.state.lockStatus,
           })(
             <RadioGroup
-              label="是否开启锁定"
+              label={<FormattedMessage id={`${inputPrefix}.enabled.lock`}/>}
               className="radioGroup"
               onChange={this.changeLockStatus.bind(this)}
             >
-              <Radio value={'enableLock'}>是</Radio>
-              <Radio value={'disableLock'}>否</Radio>
+              <Radio value={'enableLock'}><FormattedMessage id="yes"/></Radio>
+              <Radio value={'disableLock'}><FormattedMessage id="no"/></Radio>
             </RadioGroup>,
           )}
         </FormItem>
         {this.state.lockStatus === 'enableLock' ? (
           <div>
             <FormItem
-              label="输错次数"
             >
               {getFieldDecorator('maxErrorTime', {
                 rules: [{
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
-                  message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+                  message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
                 }],
                 initialValue: passwordPolicy ? passwordPolicy.maxErrorTime : undefined,
               })(
-                <Input autocomplete="off" type="number" label="输错次数" style={{ width: 300 }} />,
+                <Input
+                  autocomplete="off"
+                  type="number"
+                  label={<FormattedMessage id={`${inputPrefix}.maxerror.count`}/>}
+                  style={{ width: 300 }}
+                />,
               )}
             </FormItem>
             {/* <FormItem
@@ -163,4 +168,4 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm;
+export default injectIntl(LoginForm);

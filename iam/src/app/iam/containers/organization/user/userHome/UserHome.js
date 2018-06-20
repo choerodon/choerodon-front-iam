@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Icon, Modal, Table, Tooltip } from 'choerodon-ui';
+import { Button, Modal, Table, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -7,6 +8,7 @@ import EditUser from '../editUser';
 import './UserHome.scss';
 
 const { Sidebar } = Modal;
+const intlPrefix = 'organization.user';
 
 @inject('AppState')
 @observer
@@ -87,37 +89,15 @@ class User extends Component {
     });
   };
 
-  handleDelete = () => {
-    const { AppState, UserStore } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
-    const { userId } = this.state;
-    const lastDatas = UserStore.totalSize % 10;
-    UserStore.deleteUserById(organizationId, userId).then((data) => {
-      if (data.status === 204) {
-        this.loadUser();
-        Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
-      }
-      this.setState({
-        open: false,
-      });
-    }).catch((error) => {
-      Choerodon.handleResponseError(error);
-      this.setState({
-        open: false,
-      });
-    });
-  };
-
   /*
   * 解锁
   * */
   handleUnLock = (record) => {
-    const { AppState, UserStore } = this.props;
+    const { AppState, UserStore, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     UserStore.unLockUser(organizationId, record.id).then(() => {
-      Choerodon.prompt('解锁成功');
+      Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.unlock.success`}));
       this.loadUser();
     }).catch((error) => {
       window.console.log(error);
@@ -127,24 +107,24 @@ class User extends Component {
   * 启用停用
   * */
   handleAble = (record) => {
-    const { UserStore, AppState } = this.props;
+    const { UserStore, AppState, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     if (record.enabled) {
       // 禁用
       // debugger;
       UserStore.UnenableUser(organizationId, record.id, !record.enabled).then(() => {
-        Choerodon.prompt('操作成功');
+        Choerodon.prompt(intl.formatMessage({id: 'disable.success'}));
         this.loadUser();
       }).catch((error) => {
-        Choerodon.prompt(`操作失败 ${error}`);
+        Choerodon.prompt(intl.formatMessage({id: 'disable.error'}));
       });
     } else {
       UserStore.EnableUser(organizationId, record.id, !record.enabled).then(() => {
-        Choerodon.prompt('操作成功');
+        Choerodon.prompt(intl.formatMessage({id: 'enable.success'}));
         this.loadUser();
       }).catch((error) => {
-        Choerodon.prompt(`操作失败 ${error}`);
+        Choerodon.prompt(intl.formatMessage({id: 'enable.error'}));
       });
     }
   };
@@ -152,7 +132,7 @@ class User extends Component {
     if (code === 'zh_CN') {
       return '简体中文';
     } else if (code === 'en_US') {
-      return '英语（美国）';
+      return 'English';
     }
     return null;
   };
@@ -170,9 +150,9 @@ class User extends Component {
 
   renderSideTitle() {
     if (this.state.edit) {
-      return '修改用户';
+      return <FormattedMessage id={`${intlPrefix}.modify`}/>;
     } else {
-      return '创建用户';
+      return <FormattedMessage id={`${intlPrefix}.create`}/>;
     }
   }
 
@@ -208,7 +188,7 @@ class User extends Component {
   }
 
   render() {
-    const { UserStore, AppState } = this.props;
+    const { UserStore, AppState, intl } = this.props;
     const { filters, pagination, visible, edit, submitting } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
@@ -227,39 +207,39 @@ class User extends Component {
     }
     const columns = [
       {
-        title: Choerodon.getMessage('登录名', 'loginName'),
+        title: <FormattedMessage id={`${intlPrefix}.loginname`}/>,
         dataIndex: 'loginName',
         key: 'loginName',
         filters: [],
         filteredValue: filters.loginName || [],
       }, {
-        title: Choerodon.getMessage('用户名', 'userName'),
+        title: <FormattedMessage id={`${intlPrefix}.realname`}/>,
         key: 'realName',
         dataIndex: 'realName',
         filters: [],
         filteredValue: filters.realName || [],
       },
       {
-        title: Choerodon.getMessage('认证来源', 'source'),
+        title: <FormattedMessage id={`${intlPrefix}.source`}/>,
         key: 'ldap',
         render: (text, record) => (
           record.ldap
-            ? <span>{Choerodon.getMessage('LDAP 用户', 'user ldap')}</span>
-            : <span>{Choerodon.getMessage('非LDAP用户', 'user noLdap')}</span>
+            ? <FormattedMessage id={`${intlPrefix}.ldap`}/>
+            : <FormattedMessage id={`${intlPrefix}.notldap`}/>
         ),
         filters: [
           {
-            text: 'LDAP 用户',
+            text: intl.formatMessage({id: `${intlPrefix}.ldap`}),
             value: 'true',
           }, {
-            text: '非LDAP用户',
+            text: intl.formatMessage({id: `${intlPrefix}.notldap`}),
             value: 'false',
           },
         ],
         filteredValue: filters.ldap || [],
       },
       {
-        title: Choerodon.getMessage('语言', 'user language'),
+        title: <FormattedMessage id={`${intlPrefix}.language`}/>,
         dataIndex: 'language',
         key: 'language',
         render: (text, record) => (
@@ -270,52 +250,52 @@ class User extends Component {
             text: '简体中文',
             value: 'zh_CN',
           }, {
-            text: '英语（美国）',
+            text: 'English',
             value: 'en_US',
           },
         ],
         filteredValue: filters.language || [],
       },
       {
-        title: Choerodon.getMessage('启用状态', 'user statue'),
+        title: <FormattedMessage id={`${intlPrefix}.enabled`}/>,
         key: 'enabled',
         render: (text, record) => (
           record.enabled
-            ? <span>{Choerodon.getMessage('启用', 'enable')}</span>
-            : <span>{Choerodon.getMessage('停用', 'disable')}</span>
+            ? <FormattedMessage id="enable"/>
+            : <FormattedMessage id="disable"/>
         ),
         filters: [
           {
-            text: '启用',
+            text: intl.formatMessage({id: 'enable'}),
             value: 'true',
           }, {
-            text: '停用',
+            text: intl.formatMessage({id: 'disable'}),
             value: 'false',
           },
         ],
         filteredValue: filters.enabled || [],
       }, {
-        title: Choerodon.getMessage('安全状态', 'locked'),
+        title: <FormattedMessage id={`${intlPrefix}.locked`}/>,
         key: 'locked',
         render: (text, record) => (
           record.locked
-            ? <span>{Choerodon.getMessage('锁定', 'ok')}</span>
-            : <span>{Choerodon.getMessage('正常', 'no')}</span>
+            ? <FormattedMessage id={`${intlPrefix}.lock`}/>
+            : <FormattedMessage id={`${intlPrefix}.normal`}/>
         ),
         filters: [
           {
-            text: '锁定',
+            text: intl.formatMessage({id: `${intlPrefix}.lock`}),
             value: 'true',
           }, {
-            text: '正常',
+            text: intl.formatMessage({id: `${intlPrefix}.normal`}),
             value: 'false',
           },
         ],
         filteredValue: filters.locked || [],
       }, {
         title: '',
-        className: 'operateIcons',
         key: 'action',
+        align: 'right',
         width: '130px',
         render: (text, record) => (
           <div>
@@ -325,10 +305,11 @@ class User extends Component {
               organizationId={organizationId}
             >
               <Tooltip
-                title="修改"
+                title={<FormattedMessage id="modify"/>}
                 placement="bottom"
               >
                 <Button
+                  size="small"
                   icon="mode_edit"
                   shape="circle"
                   onClick={this.onEdit.bind(this, record.id)}
@@ -342,12 +323,13 @@ class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title="停用"
+                  title={<FormattedMessage id="disable"/>}
                   placement="bottom"
                 >
                   <Button
                     icon="remove_circle_outline"
                     shape="circle"
+                    size="small"
                     onClick={this.handleAble.bind(this, record)}
                   />
                 </Tooltip>
@@ -359,12 +341,13 @@ class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title="启用"
+                  title={<FormattedMessage id="enable"/>}
                   placement="bottom"
                 >
                   <Button
                     icon="finished"
                     shape="circle"
+                    size="small"
                     onClick={this.handleAble.bind(this, record)}
                   />
                 </Tooltip>
@@ -378,10 +361,10 @@ class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title="解锁"
+                  title={<FormattedMessage id={`${intlPrefix}.unlock`}/>}
                   placement="bottom"
                 >
-                  <Button icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
+                  <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
                 </Tooltip>
               </Permission> :
               <Permission
@@ -389,7 +372,7 @@ class User extends Component {
                 type={type}
                 organizationId={organizationId}
               >
-                <Button icon="lock_open" shape="circle" disabled />
+                <Button size="small" icon="lock_open" shape="circle" disabled />
               </Permission>
             }
           </div>
@@ -409,7 +392,7 @@ class User extends Component {
           'iam-service.organization-user.check',
         ]}
       >
-        <Header title={Choerodon.getMessage('用户管理', 'user management')}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Permission
             service={['iam-service.organization-user.create']}
             type={type}
@@ -417,23 +400,21 @@ class User extends Component {
           >
             <Button
               onClick={this.openNewPage}
+              icon="playlist_add"
             >
-              <Icon type="playlist_add" />
-              {Choerodon.getMessage('创建用户', 'createUser')}
+              <FormattedMessage id={`${intlPrefix}.create`}/>
             </Button>
           </Permission>
           <Button
-            funcType="flat"
             onClick={() => this.loadUser()}
+            icon="refresh"
           >
-            <Icon type="refresh" />
-            {Choerodon.getMessage('刷新', 'flush')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`组织“${orgname}”的用户管理`}
-          description="用户是平台的使用者。您可以在组织下创建用户，则用户属于这个组织。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/user/"
+          code={intlPrefix}
+          values={{name: orgname}}
         >
           <Table
             size="middle"
@@ -443,13 +424,13 @@ class User extends Component {
             rowKey="id"
             onChange={this.handlePageChange.bind(this)}
             loading={UserStore.isLoading}
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar
             title={this.renderSideTitle()}
             visible={visible}
-            okText={edit ? '保存' : '创建'}
-            cancelText="取消"
+            okText={<FormattedMessage id={edit ? 'save' : 'create'}/>}
+            cancelText={<FormattedMessage id="cancel"/>}
             onOk={e => this.editUser.handleSubmit(e)}
             onCancel={() => {
               this.setState({
@@ -469,4 +450,4 @@ class User extends Component {
   }
 }
 
-export default withRouter(User);
+export default withRouter(injectIntl(User));

@@ -4,14 +4,16 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Form, Button, Input, Select, Row, Col, message, Upload, Icon } from 'choerodon-ui';
-import { Action, Content, Header, Page, Permission, Remove } from 'choerodon-front-boot';
+import { Form, Button, Input, Select, Upload, Icon } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
 import './Userinfo.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const inputWidth = 480;
+const intlPrefix = 'user.userinfo';
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -44,11 +46,11 @@ class UserInfo extends Component {
   };
 
   checkEmailAddress = (rule, value, callback) => {
-    const { edit } = this.props;
+    const { edit, intl } = this.props;
     if (!edit || value !== this.state.userInfo.email) {
       UserInfoStore.checkEmailAddress(value).then(({ failed }) => {
         if (failed) {
-          callback(Choerodon.getMessage('该邮箱已被使用，请输入其他邮箱', 'Email is already exists'));
+          callback(intl.formatMessage({id: `${intlPrefix}.email.used.msg`}));
         } else {
           callback();
         }
@@ -59,7 +61,7 @@ class UserInfo extends Component {
   };
 
   handleSubmit = (e) => {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     const originUser = UserInfoStore.getUserInfo;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -75,7 +77,7 @@ class UserInfo extends Component {
         UserInfoStore.updateUserInfo(user).then((data) => {
           if (data) {
             UserInfoStore.setUserInfo(data);
-            Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
+            Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
             this.setState({ submitting: false });
             AppState.setUserInfo(data);
           }
@@ -93,8 +95,8 @@ class UserInfo extends Component {
       return language.content.map(({ code, name }) => (<Option key={code} value={code}>{name}</Option>));
     } else {
       return [
-        <Option key="zh_CN" value="zh_CN">简体中文</Option>,
-        // <Option key="en_US" value="en_US">English</Option>,
+        <Option key="zh_CN" value="zh_CN"><FormattedMessage id={`${intlPrefix}.language.zhcn`}/></Option>,
+        // <Option key="en_US" value="en_US"><FormattedMessage id={`${intlPrefix}.language.enus`}/></Option>,
       ];
     }
   }
@@ -105,13 +107,14 @@ class UserInfo extends Component {
       return timeZone.map(({ code, description }) => (<Option key={code} value={code}>{description}</Option>));
     } else {
       return [
-        <Option key="CTT" value="CTT">中国</Option>,
-        // <Option key="EST" value="EST">America</Option>,
+        <Option key="CTT" value="CTT"><FormattedMessage id={`${intlPrefix}.timezone.ctt`}/></Option>,
+        // <Option key="EST" value="EST"><FormattedMessage id={`${intlPrefix}.timezone.est`}/></Option>,
       ];
     }
   }
 
   getAvatar({ id, realName }) {
+    const { intl } = this.props;
     const props = {
       name: 'file',
       accept: 'image/jpeg, image/png, image/jpg',
@@ -122,7 +125,7 @@ class UserInfo extends Component {
       showUploadList: false,
       beforeUpload: ({ size }) => {
         if (size > 256 * 1024) {
-          Choerodon.prompt('图标大小不能大于256KB');
+          Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.avatar.size.msg`}));
           return false;
         }
       },
@@ -130,7 +133,7 @@ class UserInfo extends Component {
         const { status, response } = file;
         if (status === 'done') {
           UserInfoStore.setAvatar(response);
-          Choerodon.prompt(`头像上传成功，请点击保存。`);
+          Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.avatar.success`}));
         } else if (status === 'error') {
           Choerodon.prompt(`${response.message}`);
         }
@@ -165,6 +168,7 @@ class UserInfo extends Component {
   }
 
   renderForm(user) {
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { submitting } = this.state;
     const { realName, email, language, timeZone } = user;
@@ -180,7 +184,7 @@ class UserInfo extends Component {
               {
                 required: true,
                 whitespace: true,
-                message: Choerodon.getMessage('请输入用户名', 'required'),
+                message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
               },
             ],
             validateTrigger: 'onBlur',
@@ -188,7 +192,7 @@ class UserInfo extends Component {
           })(
             <Input
               autocomplete="off"
-              label="用户名"
+              label={<FormattedMessage id={`${intlPrefix}.name`}/>}
               style={{ width: inputWidth }}
             />,
           )}
@@ -202,11 +206,11 @@ class UserInfo extends Component {
               {
                 required: true,
                 whitespace: true,
-                message: Choerodon.getMessage('请输入邮箱', 'The field is required'),
+                message: intl.formatMessage({id: `${intlPrefix}.email.require.msg`}),
               },
               {
                 type: 'email',
-                message: Choerodon.getMessage('请输入正确的邮箱', 'Please enter the correct email format'),
+                message: intl.formatMessage({id: `${intlPrefix}.email.pattern.msg`}),
               },
               {
                 validator: this.checkEmailAddress,
@@ -218,7 +222,7 @@ class UserInfo extends Component {
           })(
             <Input
               autocomplete="off"
-              label="邮箱"
+              label={<FormattedMessage id={`${intlPrefix}.email`}/>}
               style={{ width: inputWidth }}
             />,
           )}
@@ -230,13 +234,14 @@ class UserInfo extends Component {
           {getFieldDecorator('language', {
             rules: [
               {
-                required: true, message: Choerodon.getMessage('请选择语言', 'Language is required'),
+                required: true,
+                message: intl.formatMessage({id: `${intlPrefix}.language.require.msg`}),
               },
             ],
             initialValue: language || 'zh_CN',
           })(
             <Select
-              label="语言"
+              label={<FormattedMessage id={`${intlPrefix}.language`}/>}
               style={{ width: inputWidth }}>
               {this.getLanguageOptions()}
             </Select>,
@@ -249,12 +254,13 @@ class UserInfo extends Component {
           {getFieldDecorator('timeZone', {
             rules: [
               {
-                required: true, message: Choerodon.getMessage('请选择时区', 'Timezone is required'),
+                required: true,
+                message: intl.formatMessage({id: `${intlPrefix}.timezone.require.msg`}),
               }],
             initialValue: timeZone || 'CTT',
           })(
             <Select
-              label="时区"
+              label={<FormattedMessage id={`${intlPrefix}.timezone`}/>}
               style={{ width: inputWidth }}>
               {this.getTimeZoneOptions()}
             </Select>,
@@ -267,19 +273,17 @@ class UserInfo extends Component {
           <FormItem>
             <hr className='user-info-divider' />
             <Button
-              text={Choerodon.languageChange('save')}
               htmlType="submit"
               funcType="raised"
               type="primary"
               loading={submitting}
-            >保存</Button>
+            ><FormattedMessage id="save"/></Button>
             <Button
-              text={Choerodon.languageChange('save')}
               funcType="raised"
               onClick={this.refresh}
               style={{ marginLeft: 16 }}
               disabled={submitting}
-            >取消</Button>
+            ><FormattedMessage id="cancel"/></Button>
           </FormItem>
         </Permission>
       </Form>
@@ -301,16 +305,15 @@ class UserInfo extends Component {
         ]}
       >
         <Header
-          title={Choerodon.getMessage('个人信息', 'userInfo')}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
         >
           <Button onClick={this.refresh} icon="refresh">
-            {Choerodon.getMessage('刷新', 'flush')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`用户“${user.realName}”的个人信息`}
-          description="您可以在此修改您的头像、用户名、邮箱、语言、时区。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/person/information/"
+          code={intlPrefix}
+          values={{name: user.realName}}
         >
           {this.renderForm(user)}
         </Content>
@@ -319,4 +322,4 @@ class UserInfo extends Component {
   }
 }
 
-export default Form.create({})(UserInfo);
+export default Form.create({})(injectIntl(UserInfo));

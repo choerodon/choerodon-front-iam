@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Checkbox, Form, Input, Select, Icon } from 'choerodon-ui';
+import { Form, Input, Icon } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content } from 'choerodon-front-boot';
@@ -11,6 +12,7 @@ import LDAPStore from '../../../../stores/organization/ldap/LDAPStore';
 
 const FormItem = Form.Item;
 const inputWidth = 512; // input框的长度
+const intlPrefix = 'organization.ldap';
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -51,6 +53,13 @@ class TestConnect extends Component {
   }
 
   getSpentTime = (startTime, endTime) => {
+    const { intl } = this.props;
+    const timeUnit = {
+      day: intl.formatMessage({id: 'day'}),
+      hour: intl.formatMessage({id: 'hour'}),
+      minute: intl.formatMessage({id: 'minute'}),
+      second: intl.formatMessage({id: 'second'}),
+    };
     const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
     // 天数
     const days = Math.floor(spentTime / (24 * 3600 * 1000));
@@ -63,10 +72,10 @@ class TestConnect extends Component {
     // 秒数
     const leave3 = leave2 % (60 * 1000); //  计算分钟数后剩余的毫秒数
     const seconds = Math.round(leave3 / 1000);
-    const resultDays = days ? (days + '天') : '';
-    const resultHours = hours ? (hours + '小时') : '';
-    const resultMinutes = minutes ? (minutes + '分钟') : '';
-    const resultSeconds = seconds ? (seconds + '秒') : '';
+    const resultDays = days ? (days + timeUnit.day) : '';
+    const resultHours = hours ? (hours + timeUnit.hour) : '';
+    const resultMinutes = minutes ? (minutes + timeUnit.minute) : '';
+    const resultSeconds = seconds ? (seconds + timeUnit.second) : '';
     return resultDays + resultHours + resultMinutes + resultSeconds;
   }
 
@@ -84,26 +93,55 @@ class TestConnect extends Component {
     const adminStatus = adminAccount && adminPassword;
     return (
       <div>
-        <p className="testTitle">测试结果</p>
+        <p className="testTitle">
+          <FormattedMessage id={`${intlPrefix}.test.result`}/>
+        </p>
         <div className="resultContainer">
           <div className="resultInfo">
             <div>
               <Icon type={testData.canLogin ? 'check_circle' : 'cancel'} className={testData.canLogin ? 'successIcon' : 'failedIcon'} />
-              <span>LDAP登录：</span><span>{testData.canLogin ? '成功' : '失败'}</span>
+              <FormattedMessage id={`${intlPrefix}.test.login`}/>
+              <FormattedMessage id={testData.canLogin ? 'success' : 'error'}/>
             </div>
             <div>
               <Icon type={testData.canConnectServer ? 'check_circle' : 'cancel'} className={testData.canConnectServer ? 'successIcon' : 'failedIcon'} />
-              <span>基础连接：</span><span>{testData.canConnectServer ? '成功' : '失败'}</span>
+              <FormattedMessage id={`${intlPrefix}.test.connect`}/>
+              <FormattedMessage id={testData.canConnectServer ? 'success' : 'error'}/>
             </div>
             <div>
               <Icon type={testData.matchAttribute ? 'check_circle' : 'cancel'} className={testData.matchAttribute ? 'successIcon' : 'failedIcon'} />
-              <span>用户属性连接：</span><span>{testData.matchAttribute ? '成功' : '失败'}</span>
+              <FormattedMessage id={`${intlPrefix}.test.user`}/>
+              <FormattedMessage id={testData.matchAttribute ? 'success' : 'error'}/>
             </div>
             <ul className="info">
-              <li style={{ display: ldapData.loginNameField ? 'inline' : 'none' }} className={ldapData.loginNameField === testData.loginNameField ? 'toRed' : ''}><span>登录名属性：</span><span>{ldapData.loginNameField}</span></li>
-              <li style={{ display: ldapData.realNameField && adminStatus ? 'inline' : 'none' }} className={ldapData.realNameField === testData.realNameField ? 'toRed' : ''}><span>用户名属性：</span><span>{ldapData.realNameField}</span></li>
-              <li style={{ display: ldapData.phoneField && adminStatus ? 'inline' : 'none' }} className={ldapData.phoneField === testData.phoneField ? 'toRed' : ''}><span>手机号属性：</span><span>{ldapData.phoneField}</span></li>
-              <li style={{ display: ldapData.emailField ? 'inline' : 'none' }} className={ldapData.emailField === testData.emailField ? 'toRed' : ''}><span>邮箱属性：</span><span>{ldapData.emailField}</span></li>
+              <li
+                style={{ display: ldapData.loginNameField ? 'inline' : 'none' }}
+                className={ldapData.loginNameField === testData.loginNameField ? 'toRed' : ''}
+              >
+                <FormattedMessage id={`${intlPrefix}.loginname`}/>
+                <span>{ldapData.loginNameField}</span>
+              </li>
+              <li
+                style={{ display: ldapData.realNameField && adminStatus ? 'inline' : 'none' }}
+                className={ldapData.realNameField === testData.realNameField ? 'toRed' : ''}
+              >
+                <FormattedMessage id={`${intlPrefix}.realname`}/>
+                <span>{ldapData.realNameField}</span>
+              </li>
+              <li
+                style={{ display: ldapData.phoneField && adminStatus ? 'inline' : 'none' }}
+                className={ldapData.phoneField === testData.phoneField ? 'toRed' : ''}
+              >
+                <FormattedMessage id={`${intlPrefix}.phone`}/>
+                <span>{ldapData.phoneField}</span>
+              </li>
+              <li
+                style={{ display: ldapData.emailField ? 'inline' : 'none' }}
+                className={ldapData.emailField === testData.emailField ? 'toRed' : ''}
+              >
+                <FormattedMessage id={`${intlPrefix}.email`}/>
+                <span>{ldapData.emailField}</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -120,15 +158,23 @@ class TestConnect extends Component {
       return (
         <div className="syncContainer">
           <p>
-            当前没有同步用户记录。
+           <FormattedMessage id={`${intlPrefix}.sync.norecord`}/>
           </p>
         </div>
       );
     } else if (syncData && syncData.syncEndTime) {
       return (
         <div className="syncContainer">
-          <p><span>上次同步时间</span> {syncData.syncEndTime}</p>
-          <p><span>（耗时</span>{this.getSpentTime(syncData.syncBeginTime, syncData.syncEndTime)}<span>），同步</span>{syncData.updateUserCount + syncData.newUserCount}<span>个用户</span></p>
+          <p><FormattedMessage id={`${intlPrefix}.sync.lasttime`}/> {syncData.syncEndTime}</p>
+          <p>
+            <FormattedMessage
+              id={`${intlPrefix}.sync.time`}
+              values={{
+                time: this.getSpentTime(syncData.syncBeginTime, syncData.syncEndTime),
+                count: syncData.updateUserCount + syncData.newUserCount,
+              }}
+            />
+          </p>
         </div>
       );
     } else if (!syncData.syncEndTime) {
@@ -137,7 +183,7 @@ class TestConnect extends Component {
   }
 
   getSidebarContent() {
-    const { showWhich } = this.props;
+    const { showWhich, intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const testData = LDAPStore.getTestData;
     const ldapData = LDAPStore.getLDAPData;
@@ -153,12 +199,12 @@ class TestConnect extends Component {
                 rules: [{
                   required: true,
                   whitespace: true,
-                  message: '请输入LDAP登录名',
+                  message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
                 }],
               })(
                 <Input
                   autocomplete="off"
-                  label="LDAP登录名"
+                  label={intl.formatMessage({id: `${intlPrefix}.name`})}
                   style={{ width: inputWidth }}
                 />,
               )}
@@ -170,13 +216,13 @@ class TestConnect extends Component {
                 rules: [{
                   required: true,
                   whitespace: true,
-                  message: '请输入LDAP密码',
+                  message: intl.formatMessage({id: `${intlPrefix}.password.require.msg`}),
                 }],
               })(
                 <Input
                   autocomplete="off"
                   type="password"
-                  label="LDAP密码"
+                  label={intl.formatMessage({id: `${intlPrefix}.password`})}
                   style={{ width: inputWidth }}
                 />,
               )}
@@ -209,7 +255,7 @@ class TestConnect extends Component {
   }
 
   handleSubmit = (e) => {
-    const { showWhich } = this.props;
+    const { showWhich, intl } = this.props;
     const { organizationId } = this.state;
     e.preventDefault();
     if (showWhich === 'connect') {
@@ -246,8 +292,8 @@ class TestConnect extends Component {
     } else if (showWhich === 'sync') {
       LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
         if (data.failed) {
-          if (data.message === 'ldap的服务地址为空')
-          Choerodon.prompt('LDAP的服务地址为空，请先填写LDAP信息');
+          if (data.message === intl.formatMessage({id: `${intlPrefix}.address.msg`}))
+          Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.address.require.msg`}));
         } else {
           LDAPStore.setIsSyncLoading(true);
         }
@@ -257,28 +303,19 @@ class TestConnect extends Component {
 
 
   render() {
-    const { AppState, showWhich, sidebar } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationName = menuType.name;
-    const { getFieldDecorator } = this.props.form;
-    let title;
-    let description;
+    const { showWhich } = this.props;
+    let code;
     if (showWhich === 'connect') {
-      title = '测试LDAP连接';
-      description = '登录您的LDAP服务器需要对您的身份进行验证。请在下面输入您在LDAP服务器中的登录名和密码。';
+      code = `${intlPrefix}.connect`;
     } else if (showWhich === 'adminConnect') {
-      title = '测试LDAP连接';
-      description = '对您输入的LDAP信息进行测试。';
+      code = `${intlPrefix}.adminconnect`;
     } else if (showWhich === 'sync') {
-      title = '同步用户';
-      description = '您可以在此将LDAP服务器中的用户信息同步到平台中。';
+      code = `${intlPrefix}.sync`;
     }
     return (
       <Content
         style={{ padding: 0 }}
-        title={title}
-        description={description}
-        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+        code={code}
       >
         {this.getSidebarContent()}
       </Content>
@@ -286,4 +323,4 @@ class TestConnect extends Component {
   }
 }
 
-export default Form.create({})(withRouter(TestConnect));
+export default Form.create({})(withRouter(injectIntl(TestConnect)));

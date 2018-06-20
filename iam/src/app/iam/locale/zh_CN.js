@@ -1,63 +1,59 @@
 /*eslint-disable*/
 const docServer = 'http://v0-6.choerodon.io/zh/docs';
 const pageDetail = {
-
   // menusetting
   // home
   "global.menusetting.title": "平台\"{name}\"的菜单配置",
   "global.menusetting.description" : "菜单是左侧导航栏。菜单配置包括您对菜单名称、图标、层级关系、顺序的配置。菜单的类型分目录和菜单两种。",
   "global.menusetting.link": `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
-  // create
+
   "global.menusetting.create.title": "在平台\"{name}\"中创建目录",
   "global.menusetting.create.description": "请在下面输入目录名称、编码，选择目录图标创建目录。您创建的目录为自设目录，自设目录可以修改、删除。而平台内置的目录为预置目录，您不能创建、修改、删除预置目录。",
   "global.menusetting.create.link": `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
-  // modify
+
   "global.menusetting.modify.title": "对目录\"{name}\"进行修改",
   "global.menusetting.modify.description": "您可以在此修改目录名称、图标。",
   "global.menusetting.modify.link": `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
-  // detail
+
   "global.menusetting.detail.title": "查看菜单\"{name}\"详情",
   "global.menusetting.detail.description": "您可以在此查看菜单的名称、编码、层级、所属预置目录、权限。菜单是平台内置的，您不能创建、修改、删除菜单。",
   "global.menusetting.detail.link": `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
-
 
   // rootuser
   "global.rootuser.title": "平台\"{name}\"的Root用户设置",
   "global.rootuser.description": "Root用户能管理平台以及平台中的所有组织和项目。平台中可以有一个或多个Root用户。您可以添加和移除Root用户。",
   "global.rootuser.link": `${docServer}/user-guide/system-configuration/platform/rootuser/`,
-  // add
+
   "global.rootuser.add.title": "在平台\"{name}\"中添加Root用户",
   "global.rootuser.add.description": "您可以在此添加一个或多个用户，被添加的用户为Root用户。",
   "global.rootuser.add.link": `${docServer}/user-guide/system-configuration/platform/rootuser/`,
-
 
   // route
   "global.route.title": "平台\"{name}\"的路由管理",
   "global.route.description":"路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。",
   "global.route.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-  //create
+
   "global.route.create.title": "在平台\"{name}\"中创建路由",
   "global.route.create.description":"请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。",
   "global.route.create.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-  // modify
+
   "global.route.modify.title": "对路由\"{name}\"进行修改",
   "global.route.modify.description": "您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。",
   "global.route.modify.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-  // detail
+
   "global.route.detail.title": "查看路由\"{name}\"的详情",
   "global.route.detail.description": "预定义路由为平台初始化设置，您不能修改预定义路由。",
   "global.route.detail.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-
 
   // 角色分配
   "global.memberrole.title": "平台\"{name}\"的角色分配",
   "global.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
   "global.memberrole.link": `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
-  // add
+
   "global.memberrole.add.title": "在平台\"{name}\"中添加成员角色",
   "global.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
   "global.memberrole.add.link": `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
-  // modify
+
   "global.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
   "global.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
   "global.memberrole.modify.link": `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
@@ -66,14 +62,14 @@ const pageDetail = {
   "global.role.title": "平台\"{name}\"的角色分配",
   "global.role.description": "角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。",
   "global.role.link": `${docServer}/user-guide/system-configuration/platform/role/`,
-  //create
+
   "global.role.create.title": "在平台\"{name}\"中创建角色",
   "global.role.create.description": "自定义角色可让您对权限进行分组，并将其分配给您平台、组织或项目的成员。您可以手动选择权限，也可以从其他角色导入权限。",
   "global.role.create.link": `${docServer}/user-guide/system-configuration/platform/role/`,
   "global.role.create.addpermission.title": "向当前创建角色添加权限",
   "global.role.create.addpermission.description": "您可以在此修改角色名称、标签、权限。",
   "global.role.create.addpermission.link": `${docServer}/user-guide/system-configuration/platform/role/`,
-  //modify
+
   "global.role.modify.title": "对角色\"{name}\"进行修改",
   "global.role.modify.description": "您可以在此修改角色名称、标签、权限。",
   "global.role.modify.link": `${docServer}/user-guide/system-configuration/platform/role/`,
@@ -82,33 +78,76 @@ const pageDetail = {
   "global.role.modify.addpermission.link": `${docServer}/user-guide/system-configuration/platform/role/`,
 
 
-
-  // project setting
+  // 项目管理
   "organization.project.title": "组织\"{name}\"的项目管理",
   "organization.project.description": "项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。",
   "organization.project.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
-  // create
+
   "organization.project.create.title": "在组织\"{name}\"中创建项目",
   "organization.project.create.description": "请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。",
   "organization.project.create.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
-  // modify
+
   "organization.project.modify.title": "对项目\"{name}\"进行修改",
   "organization.project.modify.description": "您可以在此修改项目名称。",
   "organization.project.modify.link": `${docServer}/user-guide/system-configuration/tenant/project/`,
 
-  // 角色分配
+  // 组织角色分配
   "organization.memberrole.title": "组织\"{name}\"的角色分配",
   "organization.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
   "organization.memberrole.link": `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
-  // add
+
   "organization.memberrole.add.title": "在组织\"{name}\"中添加成员角色",
   "organization.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
   "organization.memberrole.add.link": `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
-  // modify
+
   "organization.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
   "organization.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
   "organization.memberrole.modify.link": `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
+  // 客户端
+  "organization.client.title": "组织\"{name}\"的客户端",
+  "organization.client.description": "用户在使用oauth2.0的客户端授权模式认证时需要指定所属的客户端，根据客户端对应的密钥，作用域，认证有效时长和重定向地址等进行认证。客户端还可用于区分微服务环境下的不同模块。",
+  "organization.client.link": `${docServer}/user-guide/system-configuration/tenant/client/`,
+
+  "organization.client.create.title": "在组织\"{name}\"中创建客户端",
+  "organization.client.create.description": "请在下面输入客户端ID、密钥，选择授权类型。您可以选择性输入访问授权超时、授权超时、重定向地址、附加信息。",
+  "organization.client.create.link": `${docServer}/user-guide/system-configuration/tenant/client/`,
+
+  "organization.client.modify.title": "对客户端\"{name}\"进行修改",
+  "organization.client.modify.description": "您可以在此修改客户端密钥、授权类型、访问授权超时、授权超时、重定向地址、附加信息。",
+  "organization.client.modify.link": `${docServer}/user-guide/system-configuration/tenant/client/`,
+
+  // ldap
+  "organization.ldap.title": "组织\"{name}\"的LDAP",
+  "organization.ldap.description": "LDAP管理是对组织应用的LDAP信息设置的管理。LDAP只针对LDAP用户，LDAP用户的登录名和密码取自LDAP指向的外部系统中的数据。",
+  "organization.ldap.link": `${docServer}/user-guide/system-configuration/tenant/ldap/`,
+
+  "organization.ldap.connect.title": "测试LDAP连接",
+  "organization.ldap.connect.description": "登录您的LDAP服务器需要对您的身份进行验证。请在下面输入您在LDAP服务器中的登录名和密码。",
+  "organization.ldap.connect.link": `${docServer}/user-guide/system-configuration/tenant/ldap/`,
+
+  "organization.ldap.adminconnect.title": "测试LDAP连接",
+  "organization.ldap.adminconnect.description": "对您输入的LDAP信息进行测试。",
+  "organization.ldap.adminconnect.link": `${docServer}/user-guide/system-configuration/tenant/ldap/`,
+
+  "organization.ldap.sync.title": "同步用户",
+  "organization.ldap.sync.description": "您可以在此将LDAP服务器中的用户信息同步到平台中。",
+  "organization.ldap.sync.link": `${docServer}/user-guide/system-configuration/tenant/ldap/`,
+
+  // 用户管理
+  "organization.user.title": "组织\"{name}\"的用户管理",
+  "organization.user.description": "用户是平台的使用者。您可以在组织下创建用户，则用户属于这个组织。",
+  "organization.user.link": `${docServer}/user-guide/system-configuration/tenant/user/`,
+
+  "organization.user.create.title": "在组织\"{name}\"中创建用户",
+  "organization.user.create.description": "用户是全平台唯一的。您创建的用户只属于这个组织，但在平台的其他组织中能被分配角色。",
+  "organization.user.create.link": `${docServer}/user-guide/system-configuration/tenant/user/`,
+
+  "organization.user.modify.title": "对用户\"{name}\"进行修改",
+  "organization.user.modify.description": "您可以在此修改用户名、邮箱、语言、时区。",
+  "organization.user.modify.link": `${docServer}/user-guide/system-configuration/tenant/user/`,
+
+  //项目设置
   "project.info.title": "对项目\"{name}\"进行项目设置",
   "project.info.description": "您可以在此修改项目名称、停用项目。",
   "project.info.link": `${docServer}/user-guide/system-configuration/project/pro_info/`,
@@ -116,255 +155,56 @@ const pageDetail = {
   "project.info.disabled.description": "您可以在此修改项目名称、停用项目。",
   "project.info.disabled.link": `${docServer}/user-guide/system-configuration/project/pro_info/`,
 
-  // 角色分配
+  // 密码策略
+  "organization.pwdpolicy.title": "组织\"{name}\"的密码策略",
+  "organization.pwdpolicy.description": "密码策略包括密码安全策略、登录安全策略。密码安全策略是设置密码时的密码规则，登录安全策略是用户登录平台时的认证策略。选择启用并保存，策略将生效。",
+  "organization.pwdpolicy.link": `${docServer}/user-guide/system-configuration/tenant/secret_policy/`,
+
+  // 项目角色分配
   "project.memberrole.title": "项目\"{name}\"的角色分配",
   "project.memberrole.description":"角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。",
   "project.memberrole.link": `${docServer}/user-guide/system-configuration/project/role-assignment/`,
-  // add
+
   "project.memberrole.add.title": "在项目\"{name}\"中添加成员角色",
   "project.memberrole.add.description": "请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。",
   "project.memberrole.add.link": `${docServer}/user-guide/system-configuration/project/role-assignment/`,
-  // modify
+
   "project.memberrole.modify.title": "对成员\"{name}\"的角色进行修改",
   "project.memberrole.modify.description": "您可以在此为成员删除、添加角色。",
   "project.memberrole.modify.link": `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
+
+  // 个人信息
+  "user.userinfo.title": "用户\"{name}\"的个人信息",
+  "user.userinfo.description": "您可以在此修改您的头像、用户名、邮箱、语言、时区。",
+  "user.userinfo.link": `${docServer}/user-guide/system-configuration/person/information/`,
+
+  // 修改密码
+  "user.changepwd.title": "对用户\"{name}\"密码进行修改",
+  "user.changepwd.description": "非LDAP用户可以修改自己的登录密码。",
+  "user.changepwd.link": `${docServer}/user-guide/system-configuration/person/secret_change/`,
+
 };
 const zh_CN = {
-  "user.preferences": "用户首选项",
-  "signOut": "安全退出",
-  "choose": "请选择",
-  "new":"新增",
-  "confirm.delete.tip":"当你点击删除后，该条数据将被永久删除，不可恢复!",
   "yes":"是",
   "no":"否",
   "save":"保存",
-  "close":"删除",
+  "close":"关闭",
   "type":"类型",
-  "member":"成员",
-  "role":"角色",
   "stop":"停止",
   "restart":"重启",
   "upgrade":"升级",
-
-  //form
-  "required":"该字段是必输的",
-  "form.create":"创建",
-  "form.update":"修改",
-  "form.cancel":"取消",
-  "form.return":"返回",
-  "form.edit.fail":"更新失败",
-  "form.edit.success":"更新成功",
-
-  //client
-  "client.id":"客户端ID",
-  "client.name":"客户端名称",
-  "client.detail":"客户端详情",
-  "client.authorizedNumber":"授权类型数",
-  "client.authorizedGrantTypes":"授权类型",
-  "client.authorizedGrantTypes.select":"请选择授权类型",
-  "client.title":"客户端管理",
-  "client.create":"创建客户端",
-  "client.edit":"编辑客户端",
-  "client.secret":"密钥",
-  "client.accessTokenValidity":"访问授权超时",
-  "client.refreshTokenValidity":"授权超时",
-  "client.webServerRedirectUri":"重定向地址",
-  "client.additionalInformation":"附加信息",
-  "client.tokenType": '授权类型',
-
-  //passwordPolicy
-  "policy.title":"密码策略",
-  "policy.name":"名称",
-  "policy.lock":"开启密码输错锁定",
-  "policy.passwordCheck":"开启密码检查",
-  "policy.lockedTime":"密码输错锁定时间（秒）",
-  "policy.maxErrorTimes":"最大输错次数",
-  "policy.create":"创建",
-  "policy.update":"更新密码策略",
-  "policy.deviceOffline":"下线其他设备",
-  "policy.passwordMinLength":"最小密码长度",
-  "policy.uppercaseCount":"最少大写字母数",
-  "policy.specialCharCount":"最少特殊字符数",
-  "policy.maxRecentPassword":"最大近期密码数",
-  "policy.passwordExpire":"密码失效时长（秒）",
-  "policy.maxCheckNumber":"输错次数",
-  "policy.lowercaseCount": "最少小写字母数",
-  "policy.regular": "密码规则",
-
-
-  //user
-  "user.password.update":"修改密码",
-  "user.password.origin":"原始密码",
-  "user.password.origin.required":"原始密码是必须的",
-  "user.password.new":"新密码",
-  "user.password.new.required":"新密码是必须的",
-  "user.password.confirm":"确认密码",
-  "user.password.required":"密码是必须的",
-
-  // ldap
-  "ldap.name":"名称",
-  "ldap.serverAddress":"服务器地址",
-  "ldap.encryption":"加密方式",
-  "ldap.baseDn":"基础 DN",
-  "ldap.ldapAttributeName":"LDAP 属性名",
-  "ldap.status":"状态",
-  "ldap.enable":"启用",
-  "ldap.unenable":"未启用",
-  "ldap.description":"描述",
-  "ldap.operations":"操作",
-  "ldap.edit":"编辑",
-  "ldap.LDAP":"LDAP 管理",
-  "ldap.createLDAP":"创建 LDAP",
-  "ldap.refresh":"刷新",
-  "ldap.nameExist":"该名称已经存在了",
-  "ldap.create":"创建",
-  "ldap.cancel":"取消",
-  "ldap.save":"保存",
-  "ldap.updateLDAP":"更新 LDAP",
-  "ldap.fieldRequired":"该字段是必输的",
-
-  //organization
-  "organization.id":"组织ID",
-  "organization.title":"组织管理",
-  "organization.name":"组织名字",
-  "organization.idTip":"组织ID不能为空！",
-  "organization.nameTip":"组织名字不能为空",
-  "organization.editWarn":"组织名字和之前相同",
-
-  //service
-  "service.id":"ID",
-  "service.code":"服务编码",
-  "service.name":"服务名称",
-  "service.describe":"描述",
-  "service.organization":"服务管理",
-  "service.refresh":"刷新",
-
-  // token
-  "token.clientName":"设备名称",
-  "token.loginCounter":"创建时间",
-  "token.lastLogin":"上次登录",
-  "token.token":"授权管理",
-  "token.name":"名称",
-  "token.description":"描述",
-  "token.timeout":"过期时间",
-  "token.value":"值",
-  "token.create":"创建 Token",
-  //role
-  "role.title":"角色管理",
-  "role.name":"名称",
-  "role.level":"角色级别",
-  "role.description":"描述",
-  "role.action":"操作",
-  "role.edit":"编辑",
-  "role.updateRole":"编辑角色",
-  "role.delete":"删除",
-  "role.organization":"组织",
-  "role.project":"项目",
-  "role.resource":"资源",
-  "role.warn":"角色级别是必须的",
-  "role.serviceName":"服务名称",
-  "role.createSuccess": "创建成功",
-  "role.createFail": "创建失败",
-  "role.createRole": "创建角色",
-  "role.nameRole": "请输入角色名",
-  "role.instruction": "说明",
-  "role.enterIns": "输入说明",
-  "role.addPermission": "添加权限",
-  "role.chosePermission": "请选择权限",
-  "role.orgLevel": "组织层",
-  "role.gloLevel": "global层",
-  "role.proLevel": "项目层",
-  "role.filterPermission": "过滤权限",
-  "role.AllServer": "所有服务",
-  "role.AllType": "所有类型",
-  "role.permissionAlready": "已选择权限",
-  "role.editable": "是否可编辑",
-  "role.enable": "是否启用",
-  "role.create": "创建",
-  "role.getInfoError": "获取角色信息失败",
-  "role.EnterRoleName": "请输入角色名",
-
-  //project
-  "project.id":"项目标识",
-  "project.title":"项目管理",
-  "project.create":"创建项目",
-  "project.edit":"编辑项目",
-  "project.name":"项目名称",
-  "project.code":"项目编码",
-
-  //user
-  "user.userName":"用户名",
-  "user.detail":"用户详情",
-  "user.email":"邮箱",
-  "user.emailInvalid":"邮箱格式不合法，请输入正确的邮箱！",
-  "user.fieldRequired":"该字段是必输的！",
-  "user.language":"语言",
-  "user.timeZone":"时区",
-  "user.source":"认证来源",
-  "user.ldap":"LDAP 用户",
-  "user.noLdap":"非LDAP用户",
-  "user.statue":"状态",
-  "user.statue.enable":"启用",
-  "user.statue.disable":"未启用",
-  "user.locked":"是否锁住",
-  "user.locked.ok":"锁住",
-  "user.locked.no":"未锁住",
-  "user.addtionInfo":"附加信息",
-  "user":"用户管理",
-  "user.create":"创建用户",
-  "user.organization":"组织名称",
-  "user.password":"密码",
-  "user.edit":"编辑用户",
-  "user.userInfo":"个人信息",
-
-  //organizationMember
-
-  "organizationMemberRole.type":"类型",
-  "organizationMemberRole.member":"成员",
-  "organizationMemberRole.user":"用户",
-  "organizationMemberRole.organization":"组织",
-  "organizationMemberRole.role":"角色",
-  "organizationMemberRole.operate":"操作",
-  "organizationMemberRole.cancel":"删除",
-  "organizationMemberRole.MemberRoleOrganization":"成员角色管理",
-  "organizationMemberRole.add":"添加",
-  "organizationMemberRole.lookMethod":"查看方式",
-  "organizationMemberRole.refresh":"刷新",
-  "organizationMemberRole.save":"保存",
-  "organizationMemberRole.sureDelete": "确认删除?",
-  "organizationMemberRole.deleteMessage": "当你点击删除后,该条数据将被永久删除,不可恢复!",
-  "organizationMemberRole.successDelete": "删除成功",
-  "organizationMemberRole.failDelete": "删除失败",
-  "organizationMemberRole.failAdd": "添加失败",
-
-  //projectMemberRole
-
-  "projectMemberRole.type":"类型",
-  "projectMemberRole.member":"成员",
-  "projectMemberRole.user":"用户",
-  "projectMemberRole.organization":"组织",
-  "projectMemberRole.role":"角色",
-  "projectMemberRole.operate":"操作",
-  "projectMemberRole.cancel":"删除",
-  "projectMemberRole.MemberRoleOrganization":"成员角色管理",
-  "projectMemberRole.add":"添加",
-  "projectMemberRole.lookMethod":"查看方式",
-  "projectMemberRole.refresh":"刷新",
-
-  // Permission
-  'permission.name': '名称',
-  'permission.detail': '权限详情',
-
-  //菜单配置
-  'menu.createDir': '创建自设目录',
-
   "learnmore": "了解更多",
   "signout": "安全退出",
   "select": "选择",
   "return": "返回",
   "filtertable": "过滤表",
   "ok": "确定",
+
+  "day": "天",
+  "hour": "小时",
+  "minute": "分钟",
+  "second": "秒",
 
 // operation
   "operation": "操作",
@@ -389,6 +229,7 @@ const zh_CN = {
   "organization": "组织",
 // status
 // success
+  "success": "成功",
   "operation.success": "操作成功",
   "add.success": "添加成功",
   "create.success": "创建成功",
@@ -399,6 +240,7 @@ const zh_CN = {
   "enable.success": "启用成功",
   "disable.success": "停用成功",
 // error
+  "error": "失败",
   "operation.error": "操作失败",
   "add.error": "添加失败",
   "create.error": "创建失败",
@@ -558,14 +400,170 @@ const zh_CN = {
   "organization.project.status.enabled": "启用状态",
   "organization.project.header.title": "项目管理",
 
+  // 客户端
+  "organization.client.header.title": "客户端",
+  "organization.client.create": "创建客户端",
+  "organization.client.modify": "修改客户端",
+  "organization.client.delete.title": "删除客户端",
+  "organization.client.delete.content": "确认删除客户端\"{name}\"吗?",
+  "organization.client.name": "客户端名称",
+  "organization.client.name.exist.msg": "客户端名称已存在，请输入其他客户端名称",
+  "organization.client.name.require.msg": "客户端名称必填",
+  "organization.client.secret": "密钥",
+  "organization.client.secret.require.msg": "密钥必填",
+  "organization.client.granttypes": "授权类型",
+  "organization.client.granttypes.require.msg": "授权类型必填",
+  "organization.client.accesstokenvalidity": "访问授权超时",
+  "organization.client.tokenvalidity": "授权超时",
+  "organization.client.redirect": "重定向地址",
+  "organization.client.additional": "附加信息",
+  "organization.client.additional.pattern.msg": "请输入正确的json字符串",
+
+  // LDAP
+  "organization.ldap.notfound.msg": "暂无LDAP相关信息",
+  "organization.ldap.disable.title": "停用LDAP",
+  "organization.ldap.disable.content": "确定要停用LDAP吗？停用LDAP后，之前所同步的用户将无法登录平台，且无法使用测试连接和同步用户功能。",
+  "organization.ldap.connect": "测试连接",
+  "organization.ldap.syncuser": "同步用户",
+  "organization.ldap.hostname.tip": "运行 LDAP 的服务器主机名。例如：ldap.example.com",
+  "organization.ldap.ssl.tip": "是否使用SSL会对端口号有影响",
+  "organization.ldap.basedn.tip": "LDAP目录树的最顶部的根，从根节点搜索用户。例如：cn=users,dc=example,dc=com",
+  "organization.ldap.loginname.tip": "用户登录到 LDAP。例如：user@domain.name 或 cn =用户, dc =域、dc =名称",
+  "organization.ldap.username.tip": "为空时系统将默认获取登录名的值",
+  "organization.ldap.server.setting": "服务器设置",
+  "organization.ldap.directorytype": "目录类型",
+  "organization.ldap.directorytype.require.msg": "请选择目录类型",
+  "organization.ldap.directorytype.mad.tip": "微软Windows Server中，负责架构中大型网络环境的集中式目录管理服务",
+  "organization.ldap.directorytype.openldap.tip": "由OpenLDAP项目开发的轻量级目录访问协议（LDAP）的免费开源实现",
+  "organization.ldap.serveraddress": "主机名",
+  "organization.ldap.serveraddress.require.msg": "请输入主机名",
+  "organization.ldap.usessl.suffix": "是否使用SSL",
+  "organization.ldap.port.pattern.msg": "请输入大于零的整数",
+  "organization.ldap.port": "端口号",
+  "organization.ldap.basedn": "基准DN",
+  "organization.ldap.admin.loginname": "管理员登录名",
+  "organization.ldap.admin.password": "管理员密码",
+  "organization.ldap.user.setting": "用户属性设置",
+  "organization.ldap.objectclass": "用户对象类",
+  "organization.ldap.objectclass.require.msg": "请输入用户对象类",
+  "organization.ldap.loginname": "登录名属性",
+  "organization.ldap.loginname.require.msg": "请输入登录名属性",
+  "organization.ldap.email": "邮箱属性",
+  "organization.ldap.email.require.msg": "请输入邮箱属性",
+  "organization.ldap.realname": "用户名属性",
+  "organization.ldap.phone": "手机号属性",
+  "organization.ldap.saveandtest": "保存并测试",
+  "organization.ldap.header.title": "LDAP",
+  "organization.ldap.sync": "同步",
+  "organization.ldap.test": "测试",
+  "organization.ldap.sync.loading": "正在同步中",
+  "organization.ldap.sync.loading.tip": "(本次同步将会耗时较长，您可以先返回页面进行其他操作)",
+  "organization.ldap.test.loading": "正在测试中",
+  "organization.ldap.test.result": "测试结果",
+  "organization.ldap.test.login": "LDAP登录： ",
+  "organization.ldap.test.connect": "基础连接： ",
+  "organization.ldap.test.user": "用户属性连接： ",
+  "organization.ldap.sync.norecord": "当前没有同步用户记录。",
+  "organization.ldap.sync.lasttime": "上次同步时间",
+  "organization.ldap.sync.time": "（耗时{time}），同步{count}个用户",
+  "organization.ldap.name": "LDAP登录名",
+  "organization.ldap.name.require.msg": "请输入LDAP登录名",
+  "organization.ldap.password": "LDAP密码",
+  "organization.ldap.password.require.msg": "请输入LDAP密码",
+  "organization.ldap.address.msg": "ldap的服务地址为空",
+  "organization.ldap.address.require.msg": "LDAP的服务地址为空，请先填写LDAP信息",
+
+  // 密码策略
+  "organization.pwdpolicy.header.title": "密码策略",
+  "organization.pwdpolicy.password": "密码安全策略",
+  "organization.pwdpolicy.login": "登录安全策略",
+  "organization.pwdpolicy.enabled.security": "是否启用",
+  "organization.pwdpolicy.enabled.captcha": "是否开启验证码",
+  "organization.pwdpolicy.enabled.lock": "是否开启锁定",
+  "organization.pwdpolicy.maxerror.count": "输错次数",
+  "organization.pwdpolicy.enabled.password": "是否启用",
+  "organization.pwdpolicy.notusername": "是否允许与登录名相同",
+  "organization.pwdpolicy.originalpassword": "新用户默认密码",
+  "organization.pwdpolicy.number.pattern.msg": "请输入大于或等于0的整数",
+  "organization.pwdpolicy.minlength": "最小密码长度",
+  "organization.pwdpolicy.maxlength": "最大密码长度",
+  "organization.pwdpolicy.digitscount": "最少数字数",
+  "organization.pwdpolicy.lowercasecount": "最少小写字母数",
+  "organization.pwdpolicy.uppercasecount": "最少大写字母数",
+  "organization.pwdpolicy.specialcharcount": "最少特殊字符数",
+  "organization.pwdpolicy.notrecentcount": "最大近期密码数",
+  "organization.pwdpolicy.regularexpression": "密码正则",
+
+  // 用户管理
+  "organization.user.unlock": "解锁",
+  "organization.user.unlock.success": "解锁成功",
+  "organization.user.language": "语言",
+  "organization.user.create": "创建用户",
+  "organization.user.modify": "修改用户",
+  "organization.user.loginname": "登录名",
+  "organization.user.realname": "用户名",
+  "organization.user.source": "认证来源",
+  "organization.user.ldap": "LDAP用户",
+  "organization.user.notldap": "非LDAP用户",
+  "organization.user.enabled": "启用状态",
+  "organization.user.locked": "安全状态",
+  "organization.user.lock": "锁定",
+  "organization.user.normal": "正常",
+  "organization.user.header.title": "用户管理",
+  "organization.user.name.space.msg": "输入存在空格，请检查",
+  "organization.user.name.samepwd.msg": "登录名不能与密码相同",
+  "organization.user.name.exist.msg": "已存在该登录名，请输入其他登录名",
+  "organization.user.password.unrepeat.msg": "两次密码输入不一致",
+  "organization.user.email.used.msg": "该邮箱已被使用，请输入其他邮箱",
+  "organization.user.addinfo.pattern.msg": "请输入json格式的数据",
+  "organization.user.loginname.require.msg": "请输入登录名",
+  "organization.user.realname.require.msg": "请输入用户名",
+  "organization.user.email.require.msg": "请输入邮箱",
+  "organization.user.email.pattern.msg": "请输入正确的邮箱",
+  "organization.user.email": "邮箱",
+  "organization.user.password.require.msg": "请输入密码",
+  "organization.user.password": "密码",
+  "organization.user.repassword": "确认密码",
+  "organization.user.repassword.require.msg": "请确认密码",
+  "organization.user.timezone": "时区",
+
 
   // 项目层
+  // 项目信息
   "project.info.disable.title": "停用项目",
   "project.info.disable.content": "确定要停用项目\"${name}\"吗？停用后，您和项目下其他成员将无法进入此项目。",
   "project.info.header.title": "项目信息",
   "project.info.name": "项目名称",
   "project.info.code": "项目编码",
 
+  // 个人中心
+  // 个人信息
+  "user.userinfo.header.title": "个人信息",
+  "user.userinfo.avatar.size.msg": "图标大小不能大于256KB",
+  "user.userinfo.avatar.success": "头像上传成功，请点击保存。",
+  "user.userinfo.name.require.msg": "请输入用户名",
+  "user.userinfo.name": "用户名",
+  "user.userinfo.email": "邮箱",
+  "user.userinfo.email.require.msg": "请输入邮箱",
+  "user.userinfo.email.pattern.msg": "请输入正确的邮箱",
+  "user.userinfo.email.used.msg": "该邮箱已被使用，请输入其他邮箱",
+  "user.userinfo.language": "语言",
+  "user.userinfo.language.zhcn": "简体中文",
+  "user.userinfo.language.enus": "English",
+  "user.userinfo.language.require.msg": "请选择语言",
+  "user.userinfo.timezone": "时区",
+  "user.userinfo.timezone.est": "America",
+  "user.userinfo.timezone.ctt": "中国",
+  "user.userinfo.timezone.require.msg": "请选择时区",
+  // 修改密码
+  "user.changepwd.twopwd.pattern.msg": "两次密码输入不一致",
+  "user.changepwd.header.title": "修改密码",
+  "user.changepwd.oldpassword": "原密码",
+  "user.changepwd.oldpassword.require.msg": "请输入原密码",
+  "user.changepwd.newpassword": "新密码",
+  "user.changepwd.newpassword.require.msg": "请输入新密码",
+  "user.changepwd.confirmpassword.require.msg": "请确认密码",
+  "user.changepwd.confirmpassword": "确认密码",
 
   // 角色分配
   "global.memberrole.header.title": "平台角色分配",

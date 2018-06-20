@@ -3,7 +3,10 @@
  */
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
+import { FormattedMessage } from 'react-intl';
 import './testLoading.scss';
+
+const intlPrefix = 'organization.ldap';
 
 @observer
 export default class TestLoading extends Component {
@@ -15,7 +18,7 @@ export default class TestLoading extends Component {
             <circle className="connectPath" cx="50" cy="50" r="22" fill="none" strokeWidth="3" strokeMiterlimit="10" />
           </svg>
         </div>
-        <p className="loadingText">正在测试中</p>
+        <p className="loadingText"><FormattedMessage id={`${intlPrefix}.test.loading`}/></p>
       </div>
     );
   }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Checkbox, Col, Form, Input, InputNumber, Modal, Row, Tabs } from 'choerodon-ui';
+import { Button, Form, Tabs } from 'choerodon-ui';
+import { FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import PasswordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
@@ -10,8 +11,8 @@ import PasswordForm from '../passwordPolicyComponent/PasswordForm';
 import LoginForm from '../passwordPolicyComponent/LoginForm';
 import './UpdatePasswordPolicy.scss';
 
-
-const TabPane = Tabs.TabPane;
+const { TabPane } = Tabs;
+const inputPrefix = 'organization.pwdpolicy';
 
 @inject('AppState')
 @observer
@@ -39,6 +40,7 @@ class UpdatePasswordPolicy extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    const { intl } = this.props;
     this.props.form.validateFieldsAndScroll((err, datas) => {
       if (!err) {
         const value = Object.assign({}, passwordPolicyStore.getPasswordPolicy, datas);
@@ -70,7 +72,7 @@ class UpdatePasswordPolicy extends Component {
           this.props.AppState.currentMenuType.id, newValue.id, newValue)
           .then((data) => {
             this.setState({ submitting: false });
-            Choerodon.prompt('保存成功');
+            Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
             passwordPolicyStore.setPasswordPolicy(data);
           })
           .catch((error) => {
@@ -136,24 +138,23 @@ class UpdatePasswordPolicy extends Component {
           'iam-service.password-policy.queryByOrganizationId',
         ]}
       >
-        <Header title={Choerodon.languageChange('policy.title')}>
+        <Header title={<FormattedMessage id={`${inputPrefix}.header.title`}/>}>
           <Button
             onClick={this.reload}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`组织“${AppState.currentMenuType.name}“的密码策略`}
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/secret_policy/"
-          description="密码策略包括密码安全策略、登录安全策略。密码安全策略是设置密码时的密码规则，登录安全策略是用户登录平台时的认证策略。选择启用并保存，策略将生效。"
+          code={inputPrefix}
+          values={{name: AppState.currentMenuType.name}}
         >
           <div className="policyType">
             <Form onSubmit={this.handleSubmit} style={{ width: 512 }}>
               <Tabs activeKey={tabKey} onChange={this.changeTab}>
-                <TabPane tab="密码安全策略" key="pwdpolicy">{passwordSecurity}</TabPane>
-                <TabPane tab="登录安全策略" key="loginpolicy">{loginSecurity}</TabPane>
+                <TabPane tab={<FormattedMessage id={`${inputPrefix}.password`}/>} key="pwdpolicy">{passwordSecurity}</TabPane>
+                <TabPane tab={<FormattedMessage id={`${inputPrefix}.login`}/>} key="loginpolicy">{loginSecurity}</TabPane>
               </Tabs>
               <div className="password-policy-btngroup">
                 <Permission service={['iam-service.password-policy.update']}>
@@ -162,7 +163,9 @@ class UpdatePasswordPolicy extends Component {
                     type="primary"
                     htmlType="submit"
                     loading={submitting}
-                  >{Choerodon.languageChange('save')}</Button>
+                  >
+                    <FormattedMessage id="save"/>
+                  </Button>
                 </Permission>
                 <Button
                   funcType="raised"
@@ -171,7 +174,8 @@ class UpdatePasswordPolicy extends Component {
                     resetFields();
                   }}
                   disabled={submitting}
-                >{Choerodon.languageChange('cancel')}
+                >
+                  <FormattedMessage id="cancel"/>
                 </Button>
               </div>
             </Form>

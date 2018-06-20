@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import { Button, Form, Icon, Input, Modal, Popover, Radio, Select, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
@@ -13,7 +14,7 @@ const Sidebar = Modal.Sidebar;
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
-
+const intlPrefix = 'organization.ldap';
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -111,7 +112,7 @@ class LDAP extends Component {
 
   /* 加载LDAP */
   loadLDAP = () => {
-    const { LDAPStore } = this.props;
+    const { LDAPStore, intl } = this.props;
     const { organizationId } = this.state;
     LDAPStore.loadLDAP(organizationId).catch((error) => {
       LDAPStore.cleanData();
@@ -124,7 +125,7 @@ class LDAP extends Component {
             Choerodon.prompt(mess);
             break;
           case 404:
-            Choerodon.prompt('Not Found!');
+            Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.notfound.msg`}));
             break;
           default:
             break;
@@ -166,8 +167,6 @@ class LDAP extends Component {
 
   /* 关闭侧边栏 */
   closeSidebar = () => {
-    const { showWhich } = this.state;
-    const { LDAPStore } = this.props;
     this.setState({
       sidebar: false,
     }, () => {
@@ -198,18 +197,18 @@ class LDAP extends Component {
   }
 
   enableLdap = () => {
-    const { LDAPStore, AppState, form } = this.props;
+    const { LDAPStore, intl } = this.props;
     const {  organizationId } = this.state;
     const ldapData = LDAPStore.getLDAPData;
     if (ldapData.enabled) {
       Modal.confirm({
-        title: '停用LDAP',
-        content: '确定要停用LDAP吗？停用LDAP后，之前所同步的用户将无法登录平台，且无法使用测试连接和同步用户功能。',
+        title: intl.formatMessage({id: `${intlPrefix}.disable.title`}),
+        content: intl.formatMessage({id: `${intlPrefix}.disable.content`}),
         onOk: () => LDAPStore.disabledLdap(organizationId, ldapData.id).then((data) => {
           if (data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            Choerodon.prompt(Choerodon.getMessage('停用成功！', 'disabled success!'));
+            Choerodon.prompt(intl.formatMessage({id: `disable.success`}));
             LDAPStore.setLDAPData(data);
           }
         })
@@ -219,7 +218,7 @@ class LDAP extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          Choerodon.prompt(Choerodon.getMessage('启用成功！', 'enabled success!'));
+          Choerodon.prompt(intl.formatMessage({id: `enable.success`}));
           LDAPStore.setLDAPData(data);
         }
       })
@@ -235,7 +234,7 @@ class LDAP extends Component {
     });
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { LDAPStore } = this.props;
+        const { LDAPStore, intl } = this.props;
         const original = LDAPStore.getLDAPData;
         const ldapStatus = values.useSSL === 'Y';
         const ladp = {
@@ -254,7 +253,7 @@ class LDAP extends Component {
           .then((data) => {
             if (data) {
               LDAPStore.setLDAPData(data);
-              Choerodon.prompt(Choerodon.getMessage('保存成功！', 'update success!'));
+              Choerodon.prompt(intl.formatMessage({id: `save.success`}));
               this.setState({
                 saving: false,
               });
@@ -274,7 +273,7 @@ class LDAP extends Component {
                   });
               }
             } else {
-              Choerodon.prompt(Choerodon.getMessage('保存失败！', 'update failed!'));
+              Choerodon.prompt(intl.formatMessage({id: 'save.error'}));
             }
           })
           .catch((error) => {
@@ -289,11 +288,12 @@ class LDAP extends Component {
 
   /* 渲染侧边栏头部 */
   renderSidebarTitle() {
+    const { intl } = this.props;
     const { showWhich } = this.state;
     if (showWhich === 'connect' || showWhich === 'adminConnect') {
-      return '测试连接';
+      return intl.formatMessage({id: `${intlPrefix}.connect`});
     } else {
-      return '同步用户';
+      return intl.formatMessage({id: `${intlPrefix}.syncuser`});
     }
   }
 
@@ -312,7 +312,7 @@ class LDAP extends Component {
   }
 
   render() {
-    const { LDAPStore, AppState, form } = this.props;
+    const { LDAPStore, AppState, form, intl } = this.props;
     const { saving, sidebar, showWhich } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
@@ -320,16 +320,16 @@ class LDAP extends Component {
     const { getFieldDecorator } = form;
     const inputWidth = 512;
     const tips = {
-      hostname: '运行 LDAP 的服务器主机名。例如：ldap.example.com',
-      ssl: '是否使用SSL会对端口号有影响',
-      basedn: 'LDAP目录树的最顶部的根，从根节点搜索用户。例如：cn=users,dc=example,dc=com',
-      loginname: '用户登录到 LDAP。例如：user@domain.name 或 cn =用户, dc =域、dc =名称',
-      username: '为空时系统将默认获取登录名的值',
+      hostname: intl.formatMessage({id: `${intlPrefix}.hostname.tip`}),
+      ssl: intl.formatMessage({id: `${intlPrefix}.ssl.tip`}),
+      basedn: intl.formatMessage({id: `${intlPrefix}.basedn.tip`}),
+      loginname: intl.formatMessage({id: `${intlPrefix}.loginname.tip`}),
+      username: intl.formatMessage({id: `${intlPrefix}.username.tip`}),
     };
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
       <div className="serverContainer">
         <Button shape="circle" funcType="raised" icon={this.state.showServer ? 'expand_more' : 'expand_less'} onClick={this.isShowServerSetting} />
-        <span>服务器设置</span>
+        <FormattedMessage id={`${intlPrefix}.server.setting`}/>
       </div>
       <Form onSubmit={this.handleSubmit} layout="vertical" className="ldapForm">
         <div style={{ display: this.state.showServer ? 'block' : 'none' }}>
@@ -339,22 +339,30 @@ class LDAP extends Component {
             {getFieldDecorator('directoryType', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请选择目录类型', 'Please choose category type'),
+                message: intl.formatMessage({id: `${intlPrefix}.directorytype.require.msg`}),
               }],
               initialValue: ldapData.directoryType ? ldapData.directoryType : undefined,
             })(
               <Select
                 getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-                label={Choerodon.getMessage('目录类型', 'category type')}
+                label={intl.formatMessage({id: `${intlPrefix}.directorytype`})}
                 style={{ width: inputWidth }}
               >
                 <Option value="Microsoft Active Directory">
-                  <Tooltip placement="right" title="微软Windows Server中，负责架构中大型网络环境的集中式目录管理服务" overlayStyle={{ maxWidth: '300px' }}>
+                  <Tooltip
+                    placement="right"
+                    title={intl.formatMessage({id: `${intlPrefix}.directorytype.mad.tip`})}
+                    overlayStyle={{ maxWidth: '300px' }}
+                  >
                     <span style={{ display: 'inline-block', width: '100%' }}>Microsoft Active Directory</span>
                   </Tooltip>
                 </Option>
                 <Option value="OpenLDAP">
-                  <Tooltip placement="right" title="由OpenLDAP项目开发的轻量级目录访问协议（LDAP）的免费开源实现" overlayStyle={{ maxWidth: '300px' }}>
+                  <Tooltip
+                    placement="right"
+                    title={intl.formatMessage({id: `${intlPrefix}.directorytype.openldap.tip`})}
+                    overlayStyle={{ maxWidth: '300px' }}
+                  >
                     <span style={{ display: 'inline-block', width: '100%' }}>OpenLDAP</span>
                   </Tooltip>
                 </Option>
@@ -367,11 +375,11 @@ class LDAP extends Component {
             {getFieldDecorator('serverAddress', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入主机名', 'Please input host name'),
+                message: intl.formatMessage({id: `${intlPrefix}.serveraddress.require.msg`}),
               }],
               initialValue: ldapData.serverAddress ? ldapData.serverAddress : undefined,
             })(
-              <Input label="主机名" style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.serveraddress`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -380,9 +388,13 @@ class LDAP extends Component {
             {getFieldDecorator('useSSL', {
               initialValue: ldapData.useSSL ? 'Y' : 'N',
             })(
-              <RadioGroup className="ldapRadioGroup" label={this.labelSuffix('是否使用SSL', tips.ssl)} onChange={this.changeSsl.bind(this)}>
-                <Radio value={'Y'}>是</Radio>
-                <Radio value={'N'}>否</Radio>
+              <RadioGroup
+                className="ldapRadioGroup"
+                label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.usessl.suffix`}), tips.ssl)}
+                onChange={this.changeSsl.bind(this)}
+              >
+                <Radio value={'Y'}><FormattedMessage id="yes"/></Radio>
+                <Radio value={'N'}><FormattedMessage id="no"/></Radio>
               </RadioGroup>,
             )}
           </FormItem>
@@ -392,11 +404,11 @@ class LDAP extends Component {
             {getFieldDecorator('port', {
               rules: [{
                 pattern: /^[1-9]\d*$/,
-                message: Choerodon.getMessage('请输入大于零的整数', 'port must be positive integer'),
+                message: intl.formatMessage({id: `${intlPrefix}.port.pattern.msg`}),
               }],
               initialValue: ldapData.port || (ldapData.useSSL ? '636' : '389'),
             })(
-              <Input label="端口号" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.port`})} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -405,7 +417,7 @@ class LDAP extends Component {
             {getFieldDecorator('baseDn', {
               initialValue: ldapData.baseDn ? ldapData.baseDn : undefined,
             })(
-              <Input label="基准DN" suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.basedn`})} suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -414,7 +426,7 @@ class LDAP extends Component {
             {getFieldDecorator('account', {
               initialValue: ldapData.account ? ldapData.account : undefined,
             })(
-              <Input label="管理员登录名" suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.loginname`})} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -423,13 +435,13 @@ class LDAP extends Component {
             {getFieldDecorator('password', {
               initialValue: ldapData.password ? ldapData.password : undefined,
             })(
-              <Input label="管理员密码" type="password" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.password`})} type="password" style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
         </div>
         <div className="serverContainer">
           <Button shape="circle" funcType="raised" icon={this.state.showUser ? 'expand_more' : 'expand_less'} onClick={this.isShowUserSetting} />
-          <span>用户属性设置</span>
+          <FormattedMessage id={`${intlPrefix}.user.setting`}/>
         </div>
         <div style={{ display: this.state.showUser ? 'block' : 'none' }}>
           <FormItem
@@ -438,11 +450,11 @@ class LDAP extends Component {
             {getFieldDecorator('objectClass', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入用户对象类', 'Please input user object class'),
+                message: intl.formatMessage({id: `${intlPrefix}.objectclass.require.msg`}),
               }],
               initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
             })(
-              <Input label="用户对象类" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.objectclass`})} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -451,11 +463,11 @@ class LDAP extends Component {
             {getFieldDecorator('loginNameField', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入登录名属性', 'Please input login name'),
+                message: intl.formatMessage({id: `${intlPrefix}.loginname.require.msg`}),
               }],
               initialValue: ldapData.loginNameField ? ldapData.loginNameField : undefined,
             })(
-              <Input label="登录名属性" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.loginname`})} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -464,11 +476,11 @@ class LDAP extends Component {
             {getFieldDecorator('emailField', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('请输入邮箱属性', 'Please input email'),
+                message: intl.formatMessage({id: `${intlPrefix}.email.require.msg`}),
               }],
               initialValue: ldapData.emailField ? ldapData.emailField : undefined,
             })(
-              <Input label="邮箱属性" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.email`})} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -477,7 +489,7 @@ class LDAP extends Component {
             {getFieldDecorator('realNameField', {
               initialValue: ldapData.realNameField ? ldapData.realNameField : undefined,
             })(
-              <Input label="用户名属性" style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.realname`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autocomplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -486,7 +498,7 @@ class LDAP extends Component {
             {getFieldDecorator('phoneField', {
               initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
             })(
-              <Input label="手机号属性" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.phone`})} style={{ width: inputWidth }} autocomplete="off" />,
             )}
           </FormItem>
         </div>
@@ -497,7 +509,9 @@ class LDAP extends Component {
               type="primary"
               htmlType="submit"
               loading={saving}
-            >{ldapData.enabled ? '保存并测试' : '保存'}</Button>
+            >
+              <FormattedMessage id={ldapData.enabled ? `${intlPrefix}.saveandtest` : 'save'}/>
+            </Button>
             <Button
               funcType="raised"
               onClick={() => {
@@ -505,7 +519,8 @@ class LDAP extends Component {
                 resetFields();
               }}
               disabled={saving}
-            >{Choerodon.languageChange('cancel')}
+            >
+              <FormattedMessage id="cancel"/>
             </Button>
           </div>
         </Permission>
@@ -521,38 +536,37 @@ class LDAP extends Component {
           'iam-service.ldap.delete',
         ]}
       >
-        <Header title={Choerodon.getMessage('修改LDAP', 'edit LDAP')}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Button
             icon={ldapData && ldapData.enabled ? 'remove_circle_outline' : 'finished'}
             onClick={this.enableLdap}
           >
-            {ldapData && ldapData.enabled ? '停用' : '启用'}
+            <FormattedMessage id={ldapData && ldapData.enabled ? 'disable' : 'enable'}/>
           </Button>
           <Button
             icon="low_priority"
             onClick={this.openSidebar.bind(this, 'connect')}
             disabled={!(ldapData && ldapData.enabled)}
           >
-            {Choerodon.getMessage('测试连接', 'test contact')}
+            <FormattedMessage id={`${intlPrefix}.connect`}/>
           </Button>
           <Button
             icon="sync"
             onClick={this.openSidebar.bind(this, 'sync')}
             disabled={!(ldapData && ldapData.enabled)}
           >
-            {Choerodon.getMessage('同步用户', 'update users')}
+            <FormattedMessage id={`${intlPrefix}.syncuser`}/>
           </Button>
           <Button
             onClick={this.reload}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`组织“${organizationName}”的LDAP`}
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/"
-          description="LDAP管理是对组织应用的LDAP信息设置的管理。LDAP只针对LDAP用户，LDAP用户的登录名和密码取自LDAP指向的外部系统中的数据。"
+          code={intlPrefix}
+          values={{name: organizationName}}
         >
           <div className="ldapContainer">
             {mainContent}
@@ -561,8 +575,8 @@ class LDAP extends Component {
             className="connectContainer"
             title={this.renderSidebarTitle()}
             visible={sidebar}
-            okText={showWhich === 'sync' ? '同步' : '测试'}
-            cancelText={showWhich === 'sync' ? '返回' : '取消'}
+            okText={<FormattedMessage id={showWhich === 'sync' ? `${intlPrefix}.sync` : `${intlPrefix}.test`}/>}
+            cancelText={<FormattedMessage id={showWhich === 'sync' ? 'return' : 'cancel'}/>}
             onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
             confirmLoading={showWhich === 'sync' ? false : LDAPStore.confirmLoading}
@@ -575,4 +589,4 @@ class LDAP extends Component {
   }
 }
 
-export default Form.create({})(withRouter(LDAP));
+export default Form.create({})(withRouter(injectIntl(LDAP)));

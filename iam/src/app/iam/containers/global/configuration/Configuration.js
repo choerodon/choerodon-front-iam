@@ -7,7 +7,6 @@ import { Button,  Form, Modal, Progress, Select, Table } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
-import './Configuration.scss';
 import ConfigurationStore from '../../../stores/globalStores/configuration';
 
 const { Sidebar } = Modal;

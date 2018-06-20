@@ -566,7 +566,7 @@ class MenuTree extends Component {
       case 'detail':
         return <FormattedMessage id="return"/>;
       default:
-        return <FormattedMessage id="ok"/>;
+        return <FormattedMessage id="save"/>;
     }
   };
 

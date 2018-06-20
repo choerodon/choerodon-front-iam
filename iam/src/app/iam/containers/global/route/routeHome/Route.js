@@ -468,7 +468,7 @@ class Route extends Component {
     if (show === 'create') {
       return <FormattedMessage id="create"/>;
     } else if (show === 'edit') {
-      return <FormattedMessage id="modify"/>;
+      return <FormattedMessage id="save"/>;
     } else {
       return <FormattedMessage id="return"/>;
     }

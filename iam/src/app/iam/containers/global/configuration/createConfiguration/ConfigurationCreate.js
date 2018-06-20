@@ -476,7 +476,7 @@ class CreateConfig extends Component {
       <div className="confirmContainer">
         <div>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`}/>：</Col><Col
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col><Col
             span={21}>{ConfigurationStore.getStatus !== 'edit' ? service + '-' + version : ConfigurationStore.getEditConfig.name}</Col>
           </Row>
           <Row>
@@ -555,6 +555,8 @@ class CreateConfig extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
+        const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
+        ConfigurationStore.setRelatedService(currentService);
         Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
         this.props.history.push('/iam/configuration');
       }
@@ -563,6 +565,12 @@ class CreateConfig extends Component {
 
   /* 取消 */
   cancelAll = () => {
+    if (ConfigurationStore.getStatus !== 'create') {
+      const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
+      ConfigurationStore.setRelatedService(currentService);
+    } else {
+      ConfigurationStore.setRelatedService(ConfigurationStore.getCurrentService);
+    }
     this.props.history.push('/iam/configuration');
   }
 

@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Progress, Select, Table } from 'choerodon-ui';
+import { Button,  Form, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
@@ -90,11 +90,14 @@ class Instance extends Component {
       });
   }
 
-  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { instanceId, version }, params) {
     InstanceStore.setLoading(true);
     const queryObj = {
       page: current - 1,
       size: pageSize,
+      instanceId,
+      version,
+      params,
     };
     if (columnKey) {
       const sorter = [];
@@ -107,6 +110,18 @@ class Instance extends Component {
     return axios.get(`/manager/v1/services/${serviceName}/instances?${querystring.stringify(queryObj)}`);
   }
 
+  handlePageChange = (pagination, filters, sorter, params) => {
+    this.loadInstanceData(pagination, sorter, filters, params);
+  };
+
+  /* 刷新 */
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadInitData();
+    });
+  }
+
+
   /**
    * 微服务下拉框改变事件
    * @param serviceName 服务名称
@@ -118,8 +133,6 @@ class Instance extends Component {
       this.loadInstanceData();
     });
   }
-
-
 
   /* 微服务下拉框 */
   get filterBar() {
@@ -144,35 +157,45 @@ class Instance extends Component {
     )
   }
 
-  handlePageChange = (pagination, filters, sorter, params) => {
-    this.loadConfig(pagination, sorter, filters, params);
-  };
-
-
   render() {
     const { sort: { columnKey, order }, filters, pagination } = this.state;
     const columns = [{
       title: 'ID',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'instanceId',
+      key: 'instanceId',
       filters: [],
-      filteredValue: filters.name || [],
+      filteredValue: filters.instanceId || [],
     }, {
       title: '版本',
-      dataIndex: 'configVersion',
-      key: 'configVersion',
+      dataIndex: 'version',
+      key: 'version',
       filters: [],
-      filteredValue: filters.configVersion || [],
+      filteredValue: filters.version || [],
     }, {
       title: '端口号',
-      dataIndex: 'publicTime',
-      key: 'publicTime',
+      dataIndex: 'pod',
+      key: 'pod',
     }, {
       title: '注册时间',
-      dataIndex: 'isDefault',
-      key: 'isDefault',
-      filters: [],
-      filteredValue: filters.isDefault || [],
+      dataIndex: 'registrationTime',
+      key: 'registrationTime',
+    }, {
+      title: '',
+      width: '100px',
+      key: 'action',
+      align: 'right',
+      render: (text, record) => (
+        <Tooltip
+          title="详情"
+          placement="bottom"
+        >
+          <Button
+            size="small"
+            icon="find_in_page"
+            shape="circle"
+          />
+        </Tooltip>
+      )
     }];
     return (
       <Page>
@@ -180,6 +203,7 @@ class Instance extends Component {
           title="实例管理"
         >
           <Button
+            onClick={this.handleRefresh}
             icon="refresh"
           >
             {Choerodon.languageChange('refresh')}
@@ -194,6 +218,7 @@ class Instance extends Component {
         <Table
           loading={InstanceStore.loading}
           columns={columns}
+          dataSource={InstanceStore.getInstanceData.slice()}
           pagination={pagination}
           filters={this.state.filters.params}
           onChange={this.handlePageChange}

@@ -668,7 +668,7 @@ class MemberRole extends Component {
         dataIndex: 'organizationId',
         key: 'organizationId',
         render: (record, text) => {
-          return <div><Icon type="person" style={{ verticalAlign: 'text-bottom', }} />用户</div>;
+          return <div><Icon type="person" style={{ verticalAlign: 'text-bottom', marginRight: '4px' }} /><span>用户</span></div>;
         },
       },
       {

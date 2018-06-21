@@ -439,6 +439,7 @@ const zh_CN = {
   "global.configuration.template.require.msg": "请选择配置模板",
   "global.configuration.version.require.msg": "请输入配置版本",
   "global.configuration.version.pattern.msg": "版本号只能包含数字，小写字母，小数点，'-'",
+  "global.configuration.version.only.msg": "该配置版本已存在，请输入其他配置版本",
   "global.configuration.step.next": "下一步",
   "global.configuration.step.prev": "上一步",
   "global.configuration.info": "配置信息",

@@ -240,6 +240,25 @@ class CreateConfig extends Component {
     return time;
   }
 
+  checkVersion = (rule, value, callback) => {
+    const { intl } = this.props;
+    const { getFieldValue } = this.props.form;
+    const serviceName = getFieldValue('service');
+    const name = getFieldValue('template');
+    const data = {
+      configVersion: value,
+      name,
+      serviceName,
+    };
+    ConfigurationStore.versionCheck(data).then((data) => {
+      if (data.failed) {
+        callback(intl.formatMessage({id: 'global.configuration.version.only.msg'}));
+      } else {
+        callback();
+      }
+    })
+  }
+
   /* 获取步骤条状态 */
   getStatus = (index) => {
     const { current } = this.state;
@@ -379,8 +398,11 @@ class CreateConfig extends Component {
               }, {
                 pattern: /^[a-z0-9\.-]*$/g,
                 message: intl.formatMessage({id: `${intlPrefix}.version.pattern.msg`}),
+              }, {
+                validator: ConfigurationStore.getStatus !== 'edit' ? this.checkVersion : '',
               }],
               initialValue: version || undefined,
+              validateFirst: true,
             })(
               <Input
                 disabled={versionStatus}
@@ -477,7 +499,7 @@ class CreateConfig extends Component {
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col><Col
-            span={21}>{ConfigurationStore.getStatus !== 'edit' ? service + '-' + version : ConfigurationStore.getEditConfig.name}</Col>
+            span={21}>{ConfigurationStore.getStatus !== 'edit' ? service + '.' + version : ConfigurationStore.getEditConfig.name}</Col>
           </Row>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`}/>：</Col><Col span={21}>{version}</Col>
@@ -532,7 +554,7 @@ class CreateConfig extends Component {
       serviceName: service,
       version,
       yaml: yamlData,
-      name: service + '-' + version
+      name: service + '.' + version
     }
     ConfigurationStore.createConfig(data).then(({ failed, message }) => {
       if (failed) {

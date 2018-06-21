@@ -289,7 +289,7 @@ class EditRole extends Component {
                     <Select
                       mode="multiple"
                       size="default"
-                      label={<FormattedMessage id={`${intlPrefix}.level`}/>}
+                      label={<FormattedMessage id={`${intlPrefix}.label`}/>}
                       getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                       style={{
                         width: '512px',

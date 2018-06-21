@@ -103,14 +103,8 @@ class ConfigurationStore {
 
   createConfig = (data) => axios.post(`manager/v1/configs`, JSON.stringify(data));
 
-  handleProptError = (error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
+  versionCheck = (data) => axios.post(`manager/v1/configs/check`, JSON.stringify(data));
+
 }
 const configurationStore = new ConfigurationStore();
 export default configurationStore;

@@ -50,6 +50,7 @@ class Instance extends Component {
           let defaultService;
           defaultService = res[0];
           InstanceStore.setCurrentService(defaultService);
+          this.loadInstanceData();
         } else {
           InstanceStore.setLoading(false);
         }
@@ -57,7 +58,7 @@ class Instance extends Component {
     })
   }
 
-  loadConfig(paginationIn, sortIn, filtersIn, paramsIn) {
+  loadInstanceData(paginationIn, sortIn, filtersIn, paramsIn) {
     InstanceStore.setLoading(true);
     const {
       pagination: paginationState,
@@ -89,12 +90,11 @@ class Instance extends Component {
       });
   }
 
-  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, params) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }) {
     InstanceStore.setLoading(true);
     const queryObj = {
       page: current - 1,
       size: pageSize,
-      params,
     };
     if (columnKey) {
       const sorter = [];
@@ -104,8 +104,21 @@ class Instance extends Component {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/manager/v1/instances/${serviceName}?${querystring.stringify(queryObj)}`);
+    return axios.get(`/manager/v1/services/${serviceName}/instances?${querystring.stringify(queryObj)}`);
   }
+
+  /**
+   * 微服务下拉框改变事件
+   * @param serviceName 服务名称
+   */
+  handleChange(serviceName) {
+    const currentService = InstanceStore.service.find(service => service.name === serviceName);
+    InstanceStore.setCurrentService(currentService);
+    this.setState(this.getInitState(), () => {
+      this.loadInstanceData();
+    });
+  }
+
 
 
   /* 微服务下拉框 */
@@ -119,6 +132,7 @@ class Instance extends Component {
           filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
+          onChange={this.handleChange.bind(this)}
         >
           {
             InstanceStore.service.map(({ name }) => (
@@ -129,6 +143,10 @@ class Instance extends Component {
       </div>
     )
   }
+
+  handlePageChange = (pagination, filters, sorter, params) => {
+    this.loadConfig(pagination, sorter, filters, params);
+  };
 
 
   render() {

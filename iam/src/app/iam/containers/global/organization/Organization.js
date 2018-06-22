@@ -120,6 +120,7 @@ class OrganizationHome extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, { code, name }) => {
       if (!err) {
+        const { intl } = this.props;
         const { show, editData: { id, code: originCode, objectVersionNumber } } = this.state;
         const isCreate = show === 'create';
         let url;
@@ -132,7 +133,7 @@ class OrganizationHome extends Component {
             name,
             code,
           };
-          message = <FormattedMessage id="create.success" />;
+          message = intl.formatMessage({id: 'create.success'});
           method = 'post';
         } else {
           url = `/iam/v1/organizations/${id}`;
@@ -141,7 +142,7 @@ class OrganizationHome extends Component {
             objectVersionNumber,
             code: originCode,
           };
-          message = <FormattedMessage id="modify.success" />;
+          message = intl.formatMessage({id: 'modify.success'});
           method = 'put';
         }
         this.setState({ submitting: true });

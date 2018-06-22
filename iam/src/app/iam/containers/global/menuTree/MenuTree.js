@@ -319,24 +319,24 @@ class MenuTree extends Component {
   getDirNameDom() {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const selectMenuDetail = this.state.selectMenuDetail || {};
+    const { selectType, selectMenuDetail = {} } = this.state;
+    const codeRules = selectType === 'create' && [{
+        required: true,
+        whitespace: true,
+        message: intl.formatMessage({id: `${intlPrefix}.directory.code.require`}),
+      }, {
+        pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
+        message: intl.formatMessage({id: `${intlPrefix}.directory.code.pattern`}),
+      }, {
+        validator: this.checkCode,
+      }];
     return (
       <Form layout="vertical">
-
         <FormItem
           {...formItemLayout}
         >
           {getFieldDecorator('code', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: intl.formatMessage({id: `${intlPrefix}.directory.code.require`}),
-            }, {
-              pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
-              message: intl.formatMessage({id: `${intlPrefix}.directory.code.pattern`}),
-            }, {
-              validator: this.checkCode,
-            }],
+            rules: codeRules || [],
             validateTrigger: 'onBlur',
             validateFirst: true,
             initialValue: selectMenuDetail.code,
@@ -345,6 +345,7 @@ class MenuTree extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.directory.code`}/>}
               style={{ width: inputWidth }}
+              disabled={selectType === 'edit'}
             />,
           )}
         </FormItem>

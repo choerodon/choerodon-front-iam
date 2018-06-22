@@ -19,10 +19,11 @@ const intlPrefix = 'global.role';
 class CreateRole extends Component {
   constructor(props) {
     super(props);
+    const level = RoleStore.getChosenLevel !== '';
     this.state = {
       visible: false,
       selectedLevel: 'site',
-      roleName: '',
+      code: '',
       description: '',
       page: 1,
       pageSize: 10,
@@ -34,6 +35,7 @@ class CreateRole extends Component {
       selectedSideBar: [],
       currentPermission: [],
       firstLoad: true,
+      initLevel: level,
     };
   }
 
@@ -43,7 +45,6 @@ class CreateRole extends Component {
     this.setState({
       currentPermission: permissions.map(item => item.id),
     });
-    window.console.log(this.state.currentPermission)
     RoleStore.getAllRoleLabel();
   }
 
@@ -82,7 +83,6 @@ class CreateRole extends Component {
   showModal = () => {
     this.setState({
       visible: true,
-      firstLoad: false,
     });
     const { currentPermission } = this.state;
     const selected = RoleStore.getSelectedRolesPermission
@@ -121,6 +121,7 @@ class CreateRole extends Component {
   handleCancel = () => {
     this.setState({
       visible: false,
+      firstLoad: false,
     });
   };
 
@@ -131,6 +132,7 @@ class CreateRole extends Component {
     });
     this.props.form.validateFieldsAndScroll((err) => {
       if (!err) {
+        const { intl } = this.props;
         const { currentPermission } = this.state;
         const rolePermissionss = [];
         currentPermission.forEach(id =>
@@ -176,30 +178,30 @@ class CreateRole extends Component {
   handleModal = (value) => {
     const { form, intl } = this.props;
     const that = this;
-    const { getFieldValue, setFieldsValue } = this.props.form;
-    if (getFieldValue('code')) {
-      form.validateFields(['code'], { force: true });
-    }
+    const { getFieldValue, setFieldsValue } = form;
     const { currentPermission } = this.state;
     const level = getFieldValue('level');
-    if (level && currentPermission.length) {
+    const code = getFieldValue('code');
+    if (level && (currentPermission.length || code)) {
       confirm({
         title: intl.formatMessage({id: `${intlPrefix}.modify.level.title`}),
         content: intl.formatMessage({id: `${intlPrefix}.modify.level.content`}),
         onOk() {
           RoleStore.setChosenLevel(value);
           RoleStore.setSelectedRolesPermission([]);
+          setFieldsValue({code: ''});
           that.setState({
             currentPermission: [],
           });
         },
         onCancel() {
-          setFieldsValue({ level });
+          setFieldsValue({level});
         },
       });
     } else {
       RoleStore.setChosenLevel(value);
       RoleStore.setSelectedRolesPermission([]);
+      setFieldsValue({code: ''});
       this.setState({
         currentPermission: [],
       });
@@ -223,7 +225,7 @@ class CreateRole extends Component {
   };
 
   render() {
-    const { currentPermission, firstLoad, submitting } = this.state;
+    const { currentPermission, firstLoad, submitting, initLevel } = this.state;
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
@@ -241,7 +243,8 @@ class CreateRole extends Component {
     const pagination = RoleStore.getPermissionPage[RoleStore.getChosenLevel];
     const selectedPermission = RoleStore.getSelectedRolesPermission || [];
     const changePermission = RoleStore.getInitSelectedPermission || [];
-    const codePrefix = `role/${RoleStore.getChosenLevel || 'level'}/custom/`;
+    const level = RoleStore.getChosenLevel;
+    const codePrefix = `role/${level || 'level'}/custom/`;
     return (
       <Page className="choerodon-roleCreate">
         <Header
@@ -261,7 +264,7 @@ class CreateRole extends Component {
                     required: true,
                     message: intl.formatMessage({id: `${intlPrefix}.level.require.msg`}),
                   }],
-                  initialValue: RoleStore.getChosenLevel !== '' ? RoleStore.getChosenLevel : undefined,
+                  initialValue: level !== '' ? level : undefined,
                 })(
                   <Select
                     label={<FormattedMessage id={`${intlPrefix}.level`}/>}
@@ -272,6 +275,7 @@ class CreateRole extends Component {
                     }}
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     onChange={this.handleModal}
+                    disabled={initLevel}
                   >
                     <Option value="site">{intl.formatMessage({id: 'global'})}</Option>
                     <Option value="organization">{intl.formatMessage({id: 'organization'})}</Option>
@@ -304,6 +308,7 @@ class CreateRole extends Component {
                     style={{
                       width: '512px',
                     }}
+                    disabled={level === ''}
                   />,
                 )}
               </FormItem>

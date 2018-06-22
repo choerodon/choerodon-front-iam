@@ -403,7 +403,7 @@ const zh_CN = {
   "global.role.code.exist.msg": "角色编码已存在，请输入其他角色编码",
   "global.role.name.exist.msg": "该角色名已创建",
   "global.role.modify.level.title": "修改角色层级",
-  "global.role.modify.level.content": "确定要修改角色的层级吗？更换角色层级将清空您已选的权限。",
+  "global.role.modify.level.content": "确定要修改角色的层级吗？更换角色层级将清空您的角色编码和已选权限。",
   "global.role.level.require.msg": "请选择角色层级",
   "global.role.code.require.msg": "请输入角色编码",
   "global.role.code.pattern.msg": "编码只能由小写字母、数字、\"-\"组成，且以小写字母开头，不能以\"-\"结尾",

@@ -570,6 +570,7 @@ class CreateConfig extends Component {
 
   /* 修改配置 */
   editConfig = () => {
+    const { intl } = this.props;
     const data = JSON.parse(JSON.stringify(ConfigurationStore.getEditConfig));
     data.txt = this.state.yamlData;
     const configId = ConfigurationStore.getEditConfig.id;

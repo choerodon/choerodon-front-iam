@@ -28,31 +28,26 @@ class CreateConfig extends Component {
 
   getInitState() {
     let initData = {};
-    const commonInitData = {
-      current: 1,
-      templateDisable: true,
-      currentServiceConfig: null,
-      initVersion: undefined,
-      configId: null,
-      yamlData: null,
-    }
     if (ConfigurationStore.getStatus === 'baseon') {
       initData = {
-        ...commonInitData,
+        current: 1,
+        templateDisable: true,
+        currentServiceConfig: null,
+        initVersion: undefined,
+        configId: null,
+        yamlData: null,
         service: ConfigurationStore.getCurrentService.name,
         template: ConfigurationStore.getCurrentConfigId,
         version: this.getDate(),
       }
-    } else if (ConfigurationStore.getStatus === 'edit') {
-      initData = {
-        ...commonInitData,
-        service: ConfigurationStore.getCurrentService.name,
-        template: ConfigurationStore.getCurrentConfigId,
-        version: ConfigurationStore.getEditConfig.configVersion,
-      }
     } else {
       initData = {
-        ...commonInitData,
+        current: 1,
+        templateDisable: true,
+        currentServiceConfig: null,
+        initVersion: undefined,
+        configId: null,
+        yamlData: null,
         service: '',
         template: '',
         version: ''
@@ -64,7 +59,7 @@ class CreateConfig extends Component {
   componentDidMount() {
     this.loadInitData();
     ConfigurationStore.setRelatedService({});  // 保存时的微服务信息
-    if (ConfigurationStore.getStatus !== 'create') {
+    if (ConfigurationStore.getStatus === 'baseon') {
       this.loadCurrentServiceConfig(ConfigurationStore.getCurrentService.name);
     }
   }
@@ -89,8 +84,8 @@ class CreateConfig extends Component {
     const service = getFieldValue('service');
     if (service && this.state.yamlData) {
       confirm({
-        title: intl.formatMessage({id: `${intlPrefix}.service.modify.title`}),
-        content: intl.formatMessage({id: `${intlPrefix}.service.modify.content`}),
+        title: intl.formatMessage({ id: `${intlPrefix}.service.modify.title` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.service.modify.content` }),
         onOk: () => {
           setFieldsValue({ template: undefined, version: undefined });
           this.loadCurrentServiceConfig(serviceName);
@@ -115,8 +110,8 @@ class CreateConfig extends Component {
     const template = getFieldValue('template');
     if (template && this.state.yamlData) {
       confirm({
-        title: intl.formatMessage({id: `${intlPrefix}.template.modify.title`}),
-        content: intl.formatMessage({id: `${intlPrefix}.template.modify.content`}),
+        title: intl.formatMessage({ id: `${intlPrefix}.template.modify.title` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.template.modify.content` }),
         onOk: () => {
           const version = this.getDate();
           setFieldsValue({ version });
@@ -148,7 +143,7 @@ class CreateConfig extends Component {
       } else {
         this.setState({
           yamlData: null,
-          templateDisable: ConfigurationStore.getStatus !== 'create',
+          templateDisable: ConfigurationStore.getStatus === 'baseon',
           currentServiceConfig: data.content,
         });
       }
@@ -159,12 +154,48 @@ class CreateConfig extends Component {
   /* 渲染配置模板下拉框 */
   getSelect() {
     const { templateDisable, currentServiceConfig } = this.state;
-      if (ConfigurationStore.getStatus === 'edit' || ConfigurationStore.getStatus === 'baseon') {
+    if (ConfigurationStore.getStatus === 'baseon') {
+      return (
+        <Select
+          disabled={templateDisable}
+          style={{ width: '512px' }}
+          label={<FormattedMessage id={`${intlPrefix}.template`} />}
+          filterOption={
+            (input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+          filter
+          onChange={this.generateVersion.bind(this)}
+        >
+          {
+            currentServiceConfig && currentServiceConfig.map(({ name, id }) => (
+              <Option value={id} key={name}>{name}</Option>
+            ))
+          }
+        </Select>
+      )
+    } else {
+      const { getFieldValue } = this.props.form;
+      const service = getFieldValue('service');
+      if (!service) {
         return (
           <Select
             disabled={templateDisable}
             style={{ width: '512px' }}
-            label={<FormattedMessage id={`${intlPrefix}.template`}/>}
+            label={<FormattedMessage id={`${intlPrefix}.template`} />}
+            filterOption={
+              (input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            filter
+          />
+        )
+      } else {
+        return (
+          <Select
+            disabled={templateDisable}
+            style={{ width: '512px' }}
+            label={<FormattedMessage id={`${intlPrefix}.template`} />}
             filterOption={
               (input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -179,44 +210,8 @@ class CreateConfig extends Component {
             }
           </Select>
         )
-      } else {
-        const { getFieldValue } = this.props.form;
-        const service = getFieldValue('service');
-        if (!service) {
-          return (
-            <Select
-              disabled={templateDisable}
-              style={{ width: '512px' }}
-              label={<FormattedMessage id={`${intlPrefix}.template`}/>}
-              filterOption={
-                (input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              filter
-            />
-          )
-        } else {
-          return (
-            <Select
-              disabled={templateDisable}
-              style={{ width: '512px' }}
-              label={<FormattedMessage id={`${intlPrefix}.template`}/>}
-              filterOption={
-                (input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              filter
-              onChange={this.generateVersion.bind(this)}
-            >
-              {
-                currentServiceConfig && currentServiceConfig.map(({ name, id }) => (
-                  <Option value={id} key={name}>{name}</Option>
-                ))
-              }
-            </Select>
-          )
-        }
       }
+    }
   }
 
   /* 版本时间处理 */
@@ -240,6 +235,7 @@ class CreateConfig extends Component {
     return time;
   }
 
+  /* 配置版本唯一性校验 */
   checkVersion = (rule, value, callback) => {
     const { intl } = this.props;
     const { getFieldValue } = this.props.form;
@@ -252,7 +248,7 @@ class CreateConfig extends Component {
     };
     ConfigurationStore.versionCheck(data).then((data) => {
       if (data.failed) {
-        callback(intl.formatMessage({id: 'global.configuration.version.only.msg'}));
+        callback(intl.formatMessage({ id: 'global.configuration.version.only.msg' }));
       } else {
         callback();
       }
@@ -313,22 +309,8 @@ class CreateConfig extends Component {
     const { templateDisable, service, template, version } = this.state;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = 512;
-    let btnStatus;
-    if (ConfigurationStore.getStatus !== 'create') {
-      btnStatus = false;
-    } else {
-      btnStatus = templateDisable;
-    }
-
     let versionStatus;
-    if (ConfigurationStore.getStatus === 'edit') {
-      versionStatus = true;
-    } else if (ConfigurationStore.getStatus === 'baseon') {
-      versionStatus = false;
-    } else {
-      versionStatus = templateDisable;
-    }
-
+    versionStatus = ConfigurationStore.getStatus === 'baseon' ? false : templateDisable;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -342,7 +324,7 @@ class CreateConfig extends Component {
     return (
       <div>
         <p>
-          <FormattedMessage id={`${intlPrefix}.step1.description`}/>
+          <FormattedMessage id={`${intlPrefix}.step1.description`} />
         </p>
         <Form>
           <FormItem
@@ -351,14 +333,14 @@ class CreateConfig extends Component {
             {getFieldDecorator('service', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.service.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.service.require.msg` }),
               }],
               initialValue: service || undefined,
             })(
               <Select
                 disabled={ConfigurationStore.getStatus !== 'create'}
                 style={{ width: inputWidth }}
-                label={<FormattedMessage id={`${intlPrefix}.service`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.service`} />}
                 filterOption={
                   (input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -380,7 +362,7 @@ class CreateConfig extends Component {
             {getFieldDecorator('template', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.template.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.template.require.msg` }),
               }],
               initialValue: template || undefined,
             })(
@@ -394,10 +376,10 @@ class CreateConfig extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({id: `${intlPrefix}.version.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.version.require.msg` }),
               }, {
                 pattern: /^[a-z0-9\.-]*$/g,
-                message: intl.formatMessage({id: `${intlPrefix}.version.pattern.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.version.pattern.msg` }),
               }, {
                 validator: ConfigurationStore.getStatus !== 'edit' ? this.checkVersion : '',
               }],
@@ -406,7 +388,7 @@ class CreateConfig extends Component {
             })(
               <Input
                 disabled={versionStatus}
-                label={<FormattedMessage id={`${intlPrefix}.configversion`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.configversion`} />}
                 autoComplete="off"
                 style={{ width: inputWidth }}
               />,
@@ -418,10 +400,10 @@ class CreateConfig extends Component {
             <Button
               type="primary"
               funcType="raised"
-              disabled={btnStatus}
+              disabled={versionStatus}
               onClick={this.handleSubmit}
             >
-              <FormattedMessage id={`${intlPrefix}.step.next`}/>
+              <FormattedMessage id={`${intlPrefix}.step.next`} />
             </Button>
           </Permission>
         </section>
@@ -456,9 +438,9 @@ class CreateConfig extends Component {
     return (
       <div>
         <p>
-          <FormattedMessage id={`${intlPrefix}.step2.description`}/>
+          <FormattedMessage id={`${intlPrefix}.step2.description`} />
         </p>
-        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`}/></span>
+        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`} /></span>
         <AceEditor
           onChange={this.handleChangeValue}
           showPrintMargin={false}
@@ -473,10 +455,10 @@ class CreateConfig extends Component {
             funcType="raised"
             onClick={this.jumpToEnd}
           >
-           <FormattedMessage id={`${intlPrefix}.step.next`}/>
+            <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 1)}>
-             <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+            <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
         </section>
       </div>
@@ -492,23 +474,22 @@ class CreateConfig extends Component {
 
   /* 第三步 */
   handleRenderConfirm = () => {
-    const { yamlData, totalLine } = this.state;
-    const { version, service } = this.state;
+    const { yamlData, totalLine, version, service } = this.state;
     return (
       <div className="confirmContainer">
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col><Col
-            span={21}>{ConfigurationStore.getStatus !== 'edit' ? service + '.' + version : ConfigurationStore.getEditConfig.name}</Col>
+            span={21}>{ service + '.' + version }</Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`}/>：</Col><Col span={21}>{version}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{version}</Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`}/>：</Col><Col span={13}>{service}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`} />：</Col><Col span={13}>{service}</Col>
           </Row>
         </div>
-        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`}/>：</span>
+        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
         <AceEditor
           readOnly
           showPrintMargin={false}
@@ -518,28 +499,18 @@ class CreateConfig extends Component {
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
         />
         <section className="serviceSection">
-          {ConfigurationStore.getStatus !== 'edit' ? (
-            <Button
-              type="primary"
-              funcType="raised"
-              onClick={this.createConfig}
-            >
-              <FormattedMessage id="create"/>
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              funcType="raised"
-              onClick={this.editConfig}
-            >
-              <FormattedMessage id="save"/>
-            </Button>
-          )}
+          <Button
+            type="primary"
+            funcType="raised"
+            onClick={this.createConfig}
+          >
+            <FormattedMessage id="create" />
+          </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>
-            <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+            <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
           <Button funcType="raised" onClick={this.cancelAll}>
-            <FormattedMessage id="cancel"/>
+            <FormattedMessage id="cancel" />
           </Button>
         </section>
       </div>
@@ -562,25 +533,7 @@ class CreateConfig extends Component {
       } else {
         const currentService = ConfigurationStore.service.find(service => service.name === data.serviceName);
         ConfigurationStore.setRelatedService(currentService);
-        Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
-        this.props.history.push('/iam/configuration');
-      }
-    })
-  }
-
-  /* 修改配置 */
-  editConfig = () => {
-    const { intl } = this.props;
-    const data = JSON.parse(JSON.stringify(ConfigurationStore.getEditConfig));
-    data.txt = this.state.yamlData;
-    const configId = ConfigurationStore.getEditConfig.id;
-    ConfigurationStore.modifyConfig(configId, 'yaml', data).then((res) => {
-      if (res.failed) {
-        Choerodon.prompt(res.message);
-      } else {
-        const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
-        ConfigurationStore.setRelatedService(currentService);
-        Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
         this.props.history.push('/iam/configuration');
       }
     })
@@ -588,12 +541,7 @@ class CreateConfig extends Component {
 
   /* 取消 */
   cancelAll = () => {
-    if (ConfigurationStore.getStatus !== 'create') {
-      const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
-      ConfigurationStore.setRelatedService(currentService);
-    } else {
-      ConfigurationStore.setRelatedService(ConfigurationStore.getCurrentService);
-    }
+    ConfigurationStore.setRelatedService(ConfigurationStore.getCurrentService);
     this.props.history.push('/iam/configuration');
   }
 
@@ -602,18 +550,11 @@ class CreateConfig extends Component {
     const { current, service, template, version } = this.state;
     let code;
     let values;
-    if (ConfigurationStore.getStatus !== 'edit') {
-      values = {name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`};
-      if (ConfigurationStore.getStatus === 'create') {
-        code = `${intlPrefix}.create`;
-      } else {
-        code = `${intlPrefix}.create.base`;
-      }
+    values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
+    if (ConfigurationStore.getStatus === 'create') {
+      code = `${intlPrefix}.create`;
     } else {
-      code = `${intlPrefix}.modify`;
-      values = {
-        name: ConfigurationStore.getEditConfig.name,
-      };
+      code = `${intlPrefix}.create.base`;
     }
     return (
       <Page
@@ -622,7 +563,8 @@ class CreateConfig extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={ConfigurationStore.getStatus !== 'edit' ? `${intlPrefix}.create` : `${intlPrefix}.modify`} />}
+          title={<FormattedMessage
+            id={`${intlPrefix}.create`} />}
           backPath="/iam/configuration"
         />
         <Content
@@ -634,12 +576,13 @@ class CreateConfig extends Component {
               <Step
                 title={
                   <span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>
-                    <FormattedMessage id={`${intlPrefix}.step1.title`}/>
+                    <FormattedMessage id={`${intlPrefix}.step1.title`} />
                   </span>}
                 status={this.getStatus(1)}
               />
               <Step
-                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}><FormattedMessage id={`${intlPrefix}.step2.title`}/></span>}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}><FormattedMessage
+                  id={`${intlPrefix}.step2.title`} /></span>}
                 status={this.getStatus(2)}
               />
               <Step
@@ -647,7 +590,8 @@ class CreateConfig extends Component {
                   color: current === 3 ? '#3F51B5' : '',
                   fontSize: 14
                 }}>
-                  <FormattedMessage id={ConfigurationStore.getStatus !== 'edit' ?`${intlPrefix}.step3.create.title` : `${intlPrefix}.step3.modify.title`}/>
+                  <FormattedMessage
+                    id={`${intlPrefix}.step3.create.title`} />
                 </span>}
                 status={this.getStatus(3)}
               />

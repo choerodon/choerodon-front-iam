@@ -40,7 +40,13 @@ class Configuration extends Component {
     this.loadInitData();
   }
 
+  componentWillUnmount() {
+    ConfigurationStore.setRelatedService({});  // 保存时的微服务信息
+  }
+
   loadInitData = () => {
+    ConfigurationStore.setCurrentService({});
+    ConfigurationStore.setService([]);
     ConfigurationStore.setLoading(true);
     ConfigurationStore.loadService().then((res) => {
       if (res.failed) {
@@ -64,6 +70,7 @@ class Configuration extends Component {
   }
 
   loadConfig(paginationIn, sortIn, filtersIn, paramsIn) {
+    ConfigurationStore.setConfigData([]);
     ConfigurationStore.setLoading(true);
     const {
       pagination: paginationState,
@@ -205,7 +212,7 @@ class Configuration extends Component {
   /*创建配置*/
   creatConfig = () => {
     ConfigurationStore.setStatus('create');
-    this.goCreate();
+    this.props.history.push('/iam/configuration/create');
   }
 
 
@@ -216,7 +223,7 @@ class Configuration extends Component {
   createByThis = (record) => {
     ConfigurationStore.setCurrentConfigId(record.id);
     ConfigurationStore.setStatus('baseon');
-    this.goCreate();
+    this.props.history.push('/iam/configuration/create');
   }
 
   /**
@@ -224,17 +231,8 @@ class Configuration extends Component {
    * @param record 当前行数据
    */
   handleEdit = (record) => {
-    ConfigurationStore.setEditConfig(record);
-    ConfigurationStore.setCurrentConfigId(record.id);
-    ConfigurationStore.setStatus('edit');
-    this.goCreate();
+    this.props.history.push(`/iam/configuration/edit/${ConfigurationStore.getCurrentService.name}/${record.id}`);
   }
-
-  /* 跳转至创建配置 */
-  goCreate = () => {
-    this.props.history.push('/iam/configuration/create');
-  }
-
 
   render() {
     const { intl } = this.props;

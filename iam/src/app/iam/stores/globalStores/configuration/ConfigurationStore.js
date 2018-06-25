@@ -14,9 +14,10 @@ class ConfigurationStore {
   @observable loading = true;
   @observable currentServiceConfig = {};
   @observable currentConfigId = null;  // 当前配置id
-  @observable status = 'create';
+  @observable status = '';
   @observable editConfig = null;
   @observable relatedService = {}; // 联动service
+  @observable lastPath = 'configuration';  // 记录上次路径
 
   @action setStatus(data) {
     this.status = data;
@@ -82,6 +83,14 @@ class ConfigurationStore {
     return this.editConfig;
   }
 
+  @action setLastPath(data) {
+    this.lastPath = data;
+  }
+
+  @computed get getLastPath() {
+    return this.lastPath;
+  }
+
   loadService = () => axios.get('manager/v1/services');
 
   loadCurrentServiceConfig(serviceId) {
@@ -102,6 +111,8 @@ class ConfigurationStore {
   setDefaultConfig = (configId) => axios.put(`manager/v1/configs/${configId}/default`);
 
   createConfig = (data) => axios.post(`manager/v1/configs`, JSON.stringify(data));
+
+  getEditConfigData = (id) => axios.get(`manager/v1/configs/${id}`);
 
   versionCheck = (data) => axios.post(`manager/v1/configs/check`, JSON.stringify(data));
 

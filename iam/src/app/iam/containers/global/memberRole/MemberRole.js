@@ -1002,7 +1002,7 @@ class MemberRole extends Component {
         >
           <div className="member-role-btns">
             <span className="text">
-              <FormattedMessage id="memberrole.view"/>
+              <FormattedMessage id="memberrole.view"/>：
             </span>
             <Button
               className={this.getMemberRoleClass('member')}

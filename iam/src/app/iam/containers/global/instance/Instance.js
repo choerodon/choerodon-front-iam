@@ -32,11 +32,16 @@ class Instance extends Component {
       },
       filters: {},
       params: '',
+      defaultService: 'total'
     }
   }
 
   componentDidMount() {
     this.loadInitData();
+  }
+
+  componentWillUnmount() {
+    InstanceStore.setCurrentService([]);
   }
 
   loadInitData = () => {
@@ -47,8 +52,7 @@ class Instance extends Component {
       } else {
         InstanceStore.setService(res || []);
         if (res.length) {
-          let defaultService;
-          defaultService = res[0];
+          let defaultService = {name: 'total'}
           InstanceStore.setCurrentService(defaultService);
           this.loadInstanceData();
         } else {
@@ -70,7 +74,8 @@ class Instance extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    this.fetch(InstanceStore.getCurrentService.name, pagination, sort, filters, params)
+    let service = InstanceStore.getCurrentService.name === 'total' ? '' : InstanceStore.getCurrentService.name;
+    this.fetch(service, pagination, sort, filters, params)
       .then((data) => {
         this.setState({
           sort,
@@ -98,6 +103,7 @@ class Instance extends Component {
       instanceId,
       version,
       params,
+      service: serviceName,
     };
     if (columnKey) {
       const sorter = [];
@@ -107,7 +113,7 @@ class Instance extends Component {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/manager/v1/services/${serviceName}/instances?${querystring.stringify(queryObj)}`);
+    return axios.get(`/manager/v1/instances?${querystring.stringify(queryObj)}`);
   }
 
   handlePageChange = (pagination, filters, sorter, params) => {
@@ -116,6 +122,8 @@ class Instance extends Component {
 
   /* 刷新 */
   handleRefresh = () => {
+    let defaultService = {name: 'total'}
+    InstanceStore.setCurrentService(defaultService);
     this.setState(this.getInitState(), () => {
       this.loadInitData();
     });
@@ -127,7 +135,12 @@ class Instance extends Component {
    * @param serviceName 服务名称
    */
   handleChange(serviceName) {
-    const currentService = InstanceStore.service.find(service => service.name === serviceName);
+    let currentService;
+    if (serviceName !== 'total') {
+      currentService = InstanceStore.service.find(service => service.name === serviceName);
+    } else {
+      currentService = {name: 'total'};
+    }
     InstanceStore.setCurrentService(currentService);
     this.setState(this.getInitState(), () => {
       this.loadInstanceData();
@@ -135,26 +148,18 @@ class Instance extends Component {
   }
 
   /* 微服务下拉框 */
-  get filterBar() {
-    return (
-      <div>
-        <Select
-          style={{ width: '512px', marginBottom: '32px' }}
-          value={InstanceStore.currentService.name}
-          label="请选择微服务"
-          filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleChange.bind(this)}
-        >
-          {
-            InstanceStore.service.map(({ name }) => (
-              <Option key={name}>{name}</Option>
-            ))
-          }
-        </Select>
-      </div>
-    )
+  getOptionList() {
+    const service = InstanceStore.service;
+    return service && service.length > 0 ? [<Option key="total" value="total">所有微服务</Option>].concat(
+      InstanceStore.service.map(({ name }) => (
+        <Option key={name} value={name}>{name}</Option>
+      )),
+    ) : <Option value="total">无服务</Option>;
+  }
+
+  /* 跳转详情页 */
+  goDetail = (record) => {
+    this.props.history.push(`/iam/instance/detail/${record.instanceId}`);
   }
 
   render() {
@@ -193,6 +198,7 @@ class Instance extends Component {
             size="small"
             icon="find_in_page"
             shape="circle"
+            onClick={this.goDetail.bind(this, record)}
           />
         </Tooltip>
       )
@@ -214,17 +220,27 @@ class Instance extends Component {
           description="实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。"
           link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
         >
-        {this.filterBar}
-        <Table
-          loading={InstanceStore.loading}
-          columns={columns}
-          dataSource={InstanceStore.getInstanceData.slice()}
-          pagination={pagination}
-          filters={this.state.filters.params}
-          onChange={this.handlePageChange}
-          rowkey="id"
-          filterBarPlaceholder="过滤表"
-        />
+          <Select
+            style={{ width: '512px', marginBottom: '32px' }}
+            value={InstanceStore.currentService.name}
+            label="请选择微服务"
+            filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filter
+            onChange={this.handleChange.bind(this)}
+          >
+            {this.getOptionList()}
+          </Select>
+          <Table
+            loading={InstanceStore.loading}
+            columns={columns}
+            dataSource={InstanceStore.getInstanceData.slice()}
+            pagination={pagination}
+            filters={this.state.filters.params}
+            onChange={this.handlePageChange}
+            rowkey="id"
+            filterBarPlaceholder="过滤表"
+          />
         </Content>
       </Page>
     )

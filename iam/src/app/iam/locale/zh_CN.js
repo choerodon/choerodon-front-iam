@@ -93,6 +93,11 @@ const pageDetail = {
   "global.configuration.modify.description": "配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。",
   "global.configuration.modify.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
+  // 实例管理
+  "global.instance.detail.title": "平台\"{name}\"的实例详情",
+  "global.instance.detail.description": "实例属于一个微服务。您可以在此查看实例的详细信息。",
+  "global.instance.detail.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
   // 项目管理
   "organization.project.title": "组织\"{name}\"的项目管理",
   "organization.project.description": "项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。",
@@ -444,6 +449,8 @@ const zh_CN = {
   "global.configuration.step.prev": "上一步",
   "global.configuration.info": "配置信息",
 
+  // 实例管理
+  "global.instance.service": "所属微服务",
 
   // 组织层
 

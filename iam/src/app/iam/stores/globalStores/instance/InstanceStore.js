@@ -9,9 +9,10 @@ import querystring from 'query-string';
 @store('InstanceStore')
 class InstanceStore {
   @observable service = [];
-  @observable currentService = {};
+  @observable currentService = {name: 'total'};
   @observable loading = true;
   @observable instanceData = [];
+  @observable instanceDetail = null;
 
   @action setLoading(flag) {
     this.loading = flag;
@@ -37,7 +38,17 @@ class InstanceStore {
     this.service = data;
   }
 
+  @action setInstanceDetail(data) {
+    this.instanceDetail = data;
+  }
+
+  @computed get getInstanceDetail() {
+    return this.instanceDetail;
+  }
+
   loadService = () => axios.get('manager/v1/services');
+
+  loadInstanceInfo = (instanceId) => axios.get(`manager/v1/instances/${instanceId}`)
 }
 
 const instanceStore = new InstanceStore();

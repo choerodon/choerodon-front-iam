@@ -101,17 +101,17 @@ class EditUser extends Component {
     const { edit, AppState, intl } = this.props;
     if (!edit || username !== this.state.userInfo.loginName) {
       if (/\s/.test(username)) {
-        callback(intl.formatMessage({id: `${intlPrefix}.space.msg`}));
+        callback(intl.formatMessage({id: `${intlPrefix}.name.space.msg`}));
         return;
       }
       if (username && this.checkUsernameAndPwd()) {
-        callback(intl.formatMessage({id: `${intlPrefix}.samepwd.msg`}));
+        callback(intl.formatMessage({id: `${intlPrefix}.name.samepwd.msg`}));
         return;
       }
       const id = AppState.currentMenuType.id;
       CreateUserStore.checkUsername(id, username).then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.exist.msg`}));
+          callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
         } else {
           callback();
         }
@@ -131,7 +131,7 @@ class EditUser extends Component {
     const passwordPolicy = CreateUserStore.getPasswordPolicy;
     const { intl, form } = this.props;
     if (value && this.checkUsernameAndPwd()) {
-      callback(intl.formatMessage({id: `${intlPrefix}.samepwd.msg`}));
+      callback(intl.formatMessage({id: `${intlPrefix}.name.samepwd.msg`}));
       return;
     }
     if (value && passwordPolicy && passwordPolicy.originalPassword !== value) {

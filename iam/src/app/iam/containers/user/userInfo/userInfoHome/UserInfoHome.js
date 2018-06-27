@@ -64,8 +64,12 @@ class UserInfo extends Component {
     const { AppState, intl } = this.props;
     const originUser = UserInfoStore.getUserInfo;
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
+    this.props.form.validateFieldsAndScroll((err, values, modify) => {
       if (!err) {
+        if (!modify) {
+          Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+          return;
+        }
         this.setState({
           submitting: true,
         });

@@ -41,8 +41,12 @@ class UpdatePasswordPolicy extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { intl } = this.props;
-    this.props.form.validateFieldsAndScroll((err, datas) => {
+    this.props.form.validateFieldsAndScroll((err, datas, modify) => {
       if (!err) {
+        if(!modify) {
+          Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
+          return;
+        }
         const value = Object.assign({}, passwordPolicyStore.getPasswordPolicy, datas);
         const newValue = {
           id: passwordPolicyStore.getPasswordPolicy.id,

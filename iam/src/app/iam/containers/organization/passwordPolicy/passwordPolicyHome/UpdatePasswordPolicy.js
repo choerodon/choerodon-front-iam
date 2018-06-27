@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Tabs } from 'choerodon-ui';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import PasswordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
@@ -186,4 +186,4 @@ class UpdatePasswordPolicy extends Component {
   }
 }
 
-export default Form.create({})(withRouter(UpdatePasswordPolicy));
+export default Form.create({})(withRouter(injectIntl(UpdatePasswordPolicy)));

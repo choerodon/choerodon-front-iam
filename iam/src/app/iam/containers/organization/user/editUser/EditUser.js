@@ -160,7 +160,7 @@ class EditUser extends Component {
   checkRepassword = (rule, value, callback) => {
     const { intl, form } = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(intl.formatMessage({id: `${intlPrefix}.unrepeat.msg`}));
+      callback(intl.formatMessage({id: `${intlPrefix}.password.unrepeat.msg`}));
     } else {
       callback();
     }

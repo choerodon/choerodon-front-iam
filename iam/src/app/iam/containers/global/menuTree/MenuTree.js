@@ -675,6 +675,7 @@ class MenuTree extends Component {
               ) : (
                 <Tooltip
                   title={<FormattedMessage id={`${intlPrefix}.delete.disable.tooltip`}/>}
+                  overlayStyle={{ "width": "200px" }}
                   placement="bottomRight"
                 >
                   <Button

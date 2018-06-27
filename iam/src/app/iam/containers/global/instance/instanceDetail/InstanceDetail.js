@@ -23,7 +23,6 @@ class InstanceDetail extends Component {
 
   getInitState() {
     return {
-      // tabKey: '1',
       instanceId: this.props.match.params.id,
       info: null,
       metadata: null,
@@ -61,11 +60,11 @@ class InstanceDetail extends Component {
   getInstanceInfo = () => {
     const { info, loading, metadata } = this.state;
     const columns = [{
-      title: '名字',
+      title: <FormattedMessage id={`${intlPrefix}.name`}/>,
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: '值',
+      title: <FormattedMessage id={`${intlPrefix}.value`}/>,
       dataIndex: 'value',
       key: 'value',
     }];
@@ -73,35 +72,35 @@ class InstanceDetail extends Component {
       <div className="instanceInfoContainer">
         <div className="instanceInfo">
           <Row>
-            <Col span={5}>实例ID：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.instanceid`} />：</Col>
             <Col span={19}>{info && info.instanceId}</Col>
           </Row>
           <Row>
-            <Col span={5}>主机名：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.hostname`} />：</Col>
             <Col span={19}>{info && info.hostName}</Col>
           </Row>
           <Row>
-            <Col span={5}>IP：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.ip`} />：</Col>
             <Col span={19}>{info && info.ipAddr}</Col>
           </Row>
           <Row>
-            <Col span={5}>所属微服务：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.service`} />：</Col>
             <Col span={19}>{info && info.app}</Col>
           </Row>
           <Row>
-            <Col span={5}>端口号：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.port`} />：</Col>
             <Col span={19}>{info && info.port}</Col>
           </Row>
           <Row>
-            <Col span={5}>实例版本：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.version`} />：</Col>
             <Col span={19}>{info && info.version}</Col>
           </Row>
           <Row>
-            <Col span={5}>注册时间：</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.registertime`} />：</Col>
             <Col span={19}>{info && info.registrationTime}</Col>
           </Row>
           <Row>
-            <Col span={5}>元数据</Col>
+            <Col span={5}><FormattedMessage id={`${intlPrefix}.metadata`} /></Col>
           </Row>
         </div>
         <Table
@@ -116,23 +115,26 @@ class InstanceDetail extends Component {
   }
 
   getConfigInfo = () => {
+    const { info } = this.state;
     return (
       <div className="configContainer">
         <div>
-          <p>配置信息</p>
+          <p><FormattedMessage id={`${intlPrefix}.configinfo`} /></p>
           <AceEditor
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
+            value={info && info.configInfoYml.yaml}
             style={{ height: '500px', width: '100%' }}
           />
         </div>
         <div>
-          <p>环境信息</p>
+          <p><FormattedMessage id={`${intlPrefix}.envinfo`} /></p>
           <AceEditor
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
+            value={info && info.envInfoYml.yaml}
             style={{ height: '500px', width: '100%' }}
           />
         </div>
@@ -145,11 +147,11 @@ class InstanceDetail extends Component {
     let values;
     values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
     code = `${intlPrefix}.detail`
-    // const { tabKey } = this.state;
     return (
       <Page>
         <Header
-          title="实例详情"
+          title={<FormattedMessage
+          id={`${intlPrefix}.detail`} />}
           backPath="/iam/instance"
         />
         <Content
@@ -157,8 +159,8 @@ class InstanceDetail extends Component {
           value={values}
         >
           <Tabs>
-            <TabPane tab="实例信息" key="1">{this.getInstanceInfo()}</TabPane>
-            <TabPane tab="配置环境信息" key="2">{this.getConfigInfo()}</TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.instanceinfo`}/>} key="instanceinfo">{this.getInstanceInfo()}</TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.configenvInfo`}/>} key="configenvInfo">{this.getConfigInfo()}</TabPane>
           </Tabs>
         </Content>
       </Page>
@@ -166,6 +168,6 @@ class InstanceDetail extends Component {
   }
 }
 
-export default withRouter(InstanceDetail);
+export default withRouter(injectIntl(InstanceDetail));
 
 

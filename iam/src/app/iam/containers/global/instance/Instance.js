@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button,  Form, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
@@ -12,6 +13,7 @@ import InstanceStore from '../../../stores/globalStores/instance'
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const intlPrefix = 'global.instance';
 
 @inject('AppState')
 @observer
@@ -164,24 +166,25 @@ class Instance extends Component {
 
   render() {
     const { sort: { columnKey, order }, filters, pagination } = this.state;
+    const { intl } = this.props;
     const columns = [{
-      title: 'ID',
+      title: <FormattedMessage id={`${intlPrefix}.id`}/>,
       dataIndex: 'instanceId',
       key: 'instanceId',
       filters: [],
       filteredValue: filters.instanceId || [],
     }, {
-      title: '版本',
+      title: <FormattedMessage id={`${intlPrefix}.version`}/>,
       dataIndex: 'version',
       key: 'version',
       filters: [],
       filteredValue: filters.version || [],
     }, {
-      title: '端口号',
+      title: <FormattedMessage id={`${intlPrefix}.port`}/>,
       dataIndex: 'pod',
       key: 'pod',
     }, {
-      title: '注册时间',
+      title: <FormattedMessage id={`${intlPrefix}.registertime`}/>,
       dataIndex: 'registrationTime',
       key: 'registrationTime',
     }, {
@@ -190,40 +193,46 @@ class Instance extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        <Tooltip
-          title="详情"
-          placement="bottom"
-        >
-          <Button
-            size="small"
-            icon="find_in_page"
-            shape="circle"
-            onClick={this.goDetail.bind(this, record)}
-          />
-        </Tooltip>
+        <Permission service={['manager-service.instance.query']}>
+          <Tooltip
+            title={<FormattedMessage id="detail"/>}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="find_in_page"
+              shape="circle"
+              onClick={this.goDetail.bind(this, record)}
+            />
+          </Tooltip>
+        </Permission>
       )
     }];
     return (
-      <Page>
+      <Page
+        service={[
+          'manager-service.instance.list',
+          'manager-service.instance.query',
+        ]}
+      >
         <Header
-          title="实例管理"
+          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
         >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"的实例管理`}
-          description="实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+          code={intlPrefix}
+          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
         >
           <Select
             style={{ width: '512px', marginBottom: '32px' }}
             value={InstanceStore.currentService.name}
-            label="请选择微服务"
+            label={<FormattedMessage id={`${intlPrefix}.service`}/>}
             filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
@@ -239,7 +248,7 @@ class Instance extends Component {
             filters={this.state.filters.params}
             onChange={this.handlePageChange}
             rowkey="id"
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
         </Content>
       </Page>
@@ -247,4 +256,4 @@ class Instance extends Component {
   }
 }
 
-export default Form.create({})(withRouter(Instance));
+export default Form.create({})(withRouter(injectIntl(Instance)));

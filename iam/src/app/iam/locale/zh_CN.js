@@ -1,5 +1,5 @@
 /*eslint-disable*/
-const docServer = 'http://v0-6.choerodon.io/zh/docs';
+const docServer = 'http://v0-7.choerodon.io/zh/docs';
 const pageDetail = {
   // menusetting
   // home
@@ -94,6 +94,10 @@ const pageDetail = {
   "global.configuration.modify.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // 实例管理
+  "global.instance.title": "平台\"{name}\"的实例管理",
+  "global.instance.description": "实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。",
+  "global.instance.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
   "global.instance.detail.title": "平台\"{name}\"的实例详情",
   "global.instance.detail.description": "实例属于一个微服务。您可以在此查看实例的详细信息。",
   "global.instance.detail.link": `${docServer}/user-guide/system-configuration/microservice-management/route/`,
@@ -450,8 +454,24 @@ const zh_CN = {
   "global.configuration.info": "配置信息",
 
   // 实例管理
+  "global.instance.header.title": "实例管理",
   "global.instance.service": "所属微服务",
-
+  "global.instance.id": "ID",
+  "global.instance.version": "版本",
+  "global.instance.port": "端口号",
+  "global.instance.registertime": "注册时间",
+  "global.instance.instanceinfo": "实例信息",
+  "global.instance.configenvInfo": "配置环境信息",
+  "global.instance.instanceid": "实例ID",
+  "global.instance.hostname": "主机名",
+  "global.instance.ip": "IP",
+  "global.instance.instance.version": "实例版本",
+  "global.instance.metadata":"元数据",
+  "global.instance.name": "名字",
+  "global.instance.value": "值",
+  "global.instance.configinfo": "配置信息",
+  "global.instance.envinfo": "环境信息",
+  "global.instance.detail":"实例详情",
   // 组织层
 
   // 项目管理

@@ -454,6 +454,20 @@ class MemberRole extends Component {
       </Content>);
   }
 
+  isModify = () => {
+    const { roleIds, currentMemberData } = this.state;
+    const roles = currentMemberData.roles;
+    if (roles.length !== roleIds.length) {
+      return true;
+    }
+    for (let i = 0; i < roles.length; i ++) {
+      if (!roleIds.includes(roles[i].id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // ok 按钮保存
   handleOk = (e) => {
     const { selectType, roleIds } = this.state;
@@ -494,6 +508,12 @@ class MemberRole extends Component {
             }
           });
         } else if (selectType === 'edit') {
+          if (!this.isModify()) {
+            this.setState({ submitting: false });
+            Choerodon.prompt(this.formatMessage('modify.success'));
+            this.closeSidebar();
+            return;
+          }
           const { currentMemberData } = this.state;
           const memberIds = [currentMemberData.id];
           this.roles.fetchRoleMember(memberIds, body, true)

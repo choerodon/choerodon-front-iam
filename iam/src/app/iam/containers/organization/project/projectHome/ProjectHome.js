@@ -152,8 +152,13 @@ class ProjectHome extends Component {
       });
     } else {
       const { validateFields } = this.props.form;
-      validateFields((err, { name }) => {
+      validateFields((err, { name }, modify) => {
         if (!err) {
+          if (!modify) {
+            Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+            this.handleTabClose();
+            return;
+          }
           data = {
             name,
           };

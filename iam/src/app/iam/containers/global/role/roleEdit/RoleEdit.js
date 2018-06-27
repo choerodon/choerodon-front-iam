@@ -96,10 +96,30 @@ class EditRole extends Component {
     RoleStore.setInitSelectedPermission(selected);
   };
 
+  isModify = () => {
+    const { currentPermission, roleData } = this.state;
+    const permissions = roleData.permissions.map(item => item.id);
+    const currents= currentPermission.map(item => item.id);
+    if (currents.length !== permissions.length) {
+      return true;
+    }
+    for (let i = 0; i < permissions.length; i ++) {
+      if (!currents.includes(permissions[i].id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   handleEdit = () => {
     const { intl } = this.props;
-    this.props.form.validateFieldsAndScroll((err) => {
+    this.props.form.validateFieldsAndScroll((err, {}, modify) => {
       if (!err) {
+        if (!modify && !this.isModify()) {
+          Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+          this.linkToChange('/iam/role');
+          return;
+        }
         const { currentPermission } = this.state;
         const rolePermissionss = [];
         currentPermission.forEach(id =>

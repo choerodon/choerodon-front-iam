@@ -243,7 +243,7 @@ class Client extends Component {
     e.preventDefault();
     const { form, AppState, intl } = this.props;
     const { status, selectData } = this.state;
-    form.validateFieldsAndScroll((err, data) => {
+    form.validateFieldsAndScroll((err, data, modify) => {
       if (!err) {
         const menuType = AppState.currentMenuType;
         const organizationId = menuType.id;
@@ -267,6 +267,11 @@ class Client extends Component {
               Choerodon.handleResponseError(error);
             });
         } else if (status === 'edit') {
+          if (!modify) {
+            Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+            this.closeSidebar();
+            return;
+          }
           const client = ClientStore.getClient;
           this.setState({
             submitting: true,

@@ -275,7 +275,7 @@ class Route extends Component {
     e.preventDefault();
     const { id, objectVersionNumber } = this.state.sidebarData;
     this.props.form.validateFields((err, { name, path, serviceId, preffix,
-      retryable, customSensitiveHeaders, sensitiveHeaders, helperService }) => {
+      retryable, customSensitiveHeaders, sensitiveHeaders, helperService }, modify) => {
       if (!err) {
         const { show } = this.state;
         if (show === 'create') {
@@ -302,6 +302,14 @@ class Route extends Component {
         } else if (show === 'detail') {
           this.handleCancel();
         } else {
+          if (!modify) {
+            Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+            this.loadRouteList();
+            this.setState({
+              visible: false,
+            });
+            return;
+          }
           const isFiltered = customSensitiveHeaders === 'filtered';
           const info = isFiltered ? sensitiveHeaders.join(',') : undefined;
           this.setState({
@@ -638,58 +646,58 @@ class Route extends Component {
               )}
             </FormItem>
           )}
-        </Form>
-        {
-          filterSensitive === 'filtered' && !createValidate ? (
+          {
+            filterSensitive === 'filtered' && !createValidate ? (
+              <FormItem
+                {...formItemLayout}
+              >
+                {getFieldDecorator('sensitiveHeaders', {
+                  rules: [{
+                    required: this.state.filterSensitive === 'filtered' && show === 'edit',
+                    message: intl.formatMessage({id: `${intlPrefix}.sensitiveheaders.require.msg`}),
+                  }],
+                  initialValue: this.state.filterSensitive === 'filtered' ? sensitiveHeaders : [],
+                })(
+                  <Select
+                    disabled={show === 'detail'}
+                    label={<FormattedMessage id={`${intlPrefix}.sensitiveheaders`}/>}
+                    mode="tags"
+                    filterOption={false}
+                    onInputKeyDown={this.handleInputKeyDown}
+                    ref={this.saveSelectRef}
+                    style={{ width: inputWidth }}
+                    notFoundContent={false}
+                    showNotFindSelectedItem={false}
+                    showNotFindInputItem={false}
+                    allowClear
+                  />,
+                )}
+              </FormItem>
+            ) : ''
+          }
+          {(show === 'edit' || helper) && (
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('sensitiveHeaders', {
+              {getFieldDecorator('helperService', {
                 rules: [{
-                  required: this.state.filterSensitive === 'filtered' && show === 'edit',
-                  message: intl.formatMessage({id: `${intlPrefix}.sensitiveheaders.require.msg`}),
+                  whitespace: show === 'edit',
+                  message: intl.formatMessage({id: `${intlPrefix}.helperservice.require.msg`}),
                 }],
-                initialValue: this.state.filterSensitive === 'filtered' ? sensitiveHeaders : [],
+                initialValue: sidebarData.helperService || undefined,
               })(
-                <Select
-                  disabled={show === 'detail'}
-                  label={<FormattedMessage id={`${intlPrefix}.sensitiveheaders`}/>}
-                  mode="tags"
-                  filterOption={false}
-                  onInputKeyDown={this.handleInputKeyDown}
-                  ref={this.saveSelectRef}
+                <Input
+                  disabled={detailValidate}
+                  autocomplete="off"
+                  label={<FormattedMessage id={`${intlPrefix}.helperservice`}/>}
                   style={{ width: inputWidth }}
-                  notFoundContent={false}
-                  showNotFindSelectedItem={false}
-                  showNotFindInputItem={false}
-                  allowClear
+                  suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.helperservice.tip`}))}
                 />,
               )}
             </FormItem>
-          ) : ''
-        }
-        {(show === 'edit' || helper) && (
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('helperService', {
-              rules: [{
-                whitespace: show === 'edit',
-                message: intl.formatMessage({id: `${intlPrefix}.helperservice.require.msg`}),
-              }],
-              initialValue: sidebarData.helperService || undefined,
-            })(
-              <Input
-                disabled={detailValidate}
-                autocomplete="off"
-                label={<FormattedMessage id={`${intlPrefix}.helperservice`}/>}
-                style={{ width: inputWidth }}
-                suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.helperservice.tip`}))}
-              />,
-            )}
-          </FormItem>
-        )
-        }
+          )
+          }
+        </Form>
       </Content>
     );
   }

@@ -31,8 +31,12 @@ class ProjectSettingHome extends Component {
   handleSave(e) {
     e.preventDefault();
     const { form, location, history } = this.props;
-    form.validateFields((err, value) => {
+    form.validateFields((err, value, modify) => {
       if (!err) {
+        if (!modify) {
+          Choerodon.prompt(this.props.intl.formatMessage({id: 'save.success'}));
+          return;
+        }
         const { id, organizationId, objectVersionNumber } = ProjectSettingStore.getProjectInfo;
         const body = {
           id,

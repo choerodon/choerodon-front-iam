@@ -118,11 +118,18 @@ class OrganizationHome extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, { code, name }) => {
+    this.props.form.validateFields((err, { code, name }, modify) => {
       if (!err) {
         const { intl } = this.props;
         const { show, editData: { id, code: originCode, objectVersionNumber } } = this.state;
         const isCreate = show === 'create';
+        if (!modify && !isCreate) {
+          this.setState({
+            visible: false,
+          });
+          Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+          return;
+        }
         let url;
         let body;
         let message;

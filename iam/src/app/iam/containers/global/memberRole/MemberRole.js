@@ -948,7 +948,7 @@ class MemberRole extends Component {
       createService = ['iam-service.role-member.createOrUpdateOnOrganizationLevel'];
       deleteService = ['iam-service.role-member.deleteOnOrganizationLevel'];
     } else if (type === 'project') {
-      createService = ['iam-service.role-member.createOnProjectLevel'];
+      createService = ['iam-service.role-member.createOrUpdateOnProjectLevel'];
       deleteService = ['iam-service.role-member.deleteOnProjectLevel'];
     }
     return {
@@ -968,15 +968,13 @@ class MemberRole extends Component {
           'iam-service.role-member.deleteOnSiteLevel',
           'iam-service.role-member.createOrUpdateOnOrganizationLevel',
           'iam-service.role-member.deleteOnOrganizationLevel',
-          'iam-service.role-member.createOnProjectLevel',
+          'iam-service.role-member.createOrUpdateOnProjectLevel',
           'iam-service.role-member.deleteOnProjectLevel',
           'iam-service.role-member.createOrUpdateOnOrganizationLevel1',
           'iam-service.role-member.deleteOnOrganizationLevel1',
           'iam-service.role-member.pagingQueryUsersByRoleIdOnOrganizationLevel',
           'iam-service.role-member.listRolesWithUserCountOnOrganizationLevel',
           'iam-service.role-member.pagingQueryUsersWithOrganizationLevelRoles',
-          'iam-service.role-member.createOnProjectLevel1',
-          'iam-service.role-member.deleteOnProjectLevel1',
           'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel',
           'iam-service.role-member.listRolesWithUserCountOnProjectLevel',
           'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles',

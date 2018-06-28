@@ -549,7 +549,7 @@ const zh_CN = {
   "organization.ldap.test.result": "测试结果",
   "organization.ldap.test.login": "LDAP登录： ",
   "organization.ldap.test.connect": "基础连接： ",
-  "organization.ldap.test.user": "用户属性连接： ",
+  "organization.ldap.test.user": "用户属性校验： ",
   "organization.ldap.sync.norecord": "当前没有同步用户记录。",
   "organization.ldap.sync.lasttime": "上次同步时间",
   "organization.ldap.sync.time": "（耗时{time}），同步{count}个用户",

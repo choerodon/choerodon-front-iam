@@ -292,8 +292,7 @@ class TestConnect extends Component {
     } else if (showWhich === 'sync') {
       LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
         if (data.failed) {
-          if (data.message === intl.formatMessage({id: `${intlPrefix}.address.msg`}))
-          Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.address.require.msg`}));
+          Choerodon.prompt(data.message);
         } else {
           LDAPStore.setIsSyncLoading(true);
         }

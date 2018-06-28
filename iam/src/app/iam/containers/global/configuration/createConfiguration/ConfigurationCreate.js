@@ -43,6 +43,7 @@ class CreateConfig extends Component {
     } else {
       initData = {
         current: 1,
+        firstStepNext: false,
         templateDisable: true,
         currentServiceConfig: null,
         initVersion: undefined,
@@ -400,7 +401,6 @@ class CreateConfig extends Component {
             <Button
               type="primary"
               funcType="raised"
-              disabled={versionStatus}
               onClick={this.handleSubmit}
             >
               <FormattedMessage id={`${intlPrefix}.step.next`} />

@@ -121,6 +121,7 @@ class InstanceDetail extends Component {
         <div>
           <p><FormattedMessage id={`${intlPrefix}.configinfo`} /></p>
           <AceEditor
+            readOnly={true}
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
@@ -131,6 +132,7 @@ class InstanceDetail extends Component {
         <div>
           <p><FormattedMessage id={`${intlPrefix}.envinfo`} /></p>
           <AceEditor
+            readOnly={true}
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"

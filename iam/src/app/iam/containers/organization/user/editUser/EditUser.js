@@ -53,6 +53,7 @@ class EditUser extends Component {
         realName: '',
         email: '',
         language: 'zh_CN',
+        timeZone: 'CTT',
         objectVersionNumber: '',
       },
     };

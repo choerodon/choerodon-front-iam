@@ -115,26 +115,14 @@ class InstanceDetail extends Component {
   }
 
   getConfigInfo = () => {
-    let configInfo;
-    let envinfo;
-    if (this.state.info) {
-      if (this.state.info.configInfoYml) {
-        configInfo = this.state.info.configInfoYml.yaml;
-      } else {
-        configInfo = '';
-      }
-    } else {
-      configInfo = '';
+    let configInfo = '';
+    let envinfo = '';
+    if (this.state.info && this.state.info.configInfoYml) {
+      configInfo = this.state.info.configInfoYml.yaml;
     }
 
-    if (this.state.info) {
-      if (this.state.info.envInfoYml) {
-        envinfo = this.state.info.envInfoYml.yaml;
-      } else {
-        envinfo = '';
-      }
-    } else {
-      envinfo = '';
+    if (this.state.info && this.state.info.envInfoYml) {
+      envinfo = this.state.info.envInfoYml.yaml;
     }
 
     return (
@@ -148,7 +136,7 @@ class InstanceDetail extends Component {
             theme="dawn"
             defaultValue=''
             value={configInfo}
-            style={{ height: '500px', width: '100%' }}
+            style={{ height: '650px', width: '100%' }}
           />
         </div>
         <div>
@@ -159,7 +147,7 @@ class InstanceDetail extends Component {
             mode="yaml"
             theme="dawn"
             value={envinfo}
-            style={{ height: '500px', width: '100%' }}
+            style={{ height: '650px', width: '100%' }}
           />
         </div>
       </div>

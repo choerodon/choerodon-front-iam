@@ -546,7 +546,7 @@ class MenuTree extends Component {
         if (menus.failed) {
           Choerodon.prompt(menus.message);
         } else {
-          MenuStore.setMenuData(_.clone(menus), type);
+          MenuStore.setMenuData(_.cloneDeep(menus), type);
           Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
           menuGroup[type] = normalizeMenus(menus);
           this.setState({
@@ -735,6 +735,7 @@ class MenuTree extends Component {
             </TabPane>
           </Tabs>
           <Table
+            className="menu-table"
             filterBar={false}
             pagination={false}
             columns={columns}

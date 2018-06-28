@@ -115,7 +115,28 @@ class InstanceDetail extends Component {
   }
 
   getConfigInfo = () => {
-    const { info } = this.state;
+    let configInfo;
+    let envinfo;
+    if (this.state.info) {
+      if (this.state.info.configInfoYml) {
+        configInfo = this.state.info.configInfoYml.yaml;
+      } else {
+        configInfo = '';
+      }
+    } else {
+      configInfo = '';
+    }
+
+    if (this.state.info) {
+      if (this.state.info.envInfoYml) {
+        envinfo = this.state.info.envInfoYml.yaml;
+      } else {
+        envinfo = '';
+      }
+    } else {
+      envinfo = '';
+    }
+
     return (
       <div className="configContainer">
         <div>
@@ -125,7 +146,8 @@ class InstanceDetail extends Component {
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
-            value={info && info.configInfoYml.yaml}
+            defaultValue=''
+            value={configInfo}
             style={{ height: '500px', width: '100%' }}
           />
         </div>
@@ -136,7 +158,7 @@ class InstanceDetail extends Component {
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
-            value={info && info.envInfoYml.yaml}
+            value={envinfo}
             style={{ height: '500px', width: '100%' }}
           />
         </div>

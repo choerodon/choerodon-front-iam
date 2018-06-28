@@ -29,3 +29,11 @@ $drop-gradient: rgba(140, 158, 255, 0.16);
     box-shadow: 0 0 0 $drop-gradient inset, 0 -16px 20px $drop-gradient inset;
   }
 }
+
+.menu-table {
+  .ant-table-row-spaced:after {
+    content: '';
+  }
+}
+
+

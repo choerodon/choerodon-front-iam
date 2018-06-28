@@ -136,7 +136,7 @@ class InstanceDetail extends Component {
             theme="dawn"
             defaultValue=''
             value={configInfo}
-            style={{ height: '500px', width: '100%' }}
+            style={{ height: '650px', width: '100%' }}
           />
         </div>
         <div>
@@ -147,7 +147,7 @@ class InstanceDetail extends Component {
             mode="yaml"
             theme="dawn"
             value={envinfo}
-            style={{ height: '500px', width: '100%' }}
+            style={{ height: '650px', width: '100%' }}
           />
         </div>
       </div>

@@ -10,7 +10,7 @@ The project is an overall front-end project that combines Choerodon Boot and Cho
 The basic module has 3 levels, which have the following functions:
 
  * Project layout:
-    * project settings
+    * Project Settings
     * Role assignment function at the project level
  * Organization layout:
     * Client Management
@@ -25,6 +25,11 @@ The basic module has 3 levels, which have the following functions:
     * Role Management
     * Role Assignments
     * Menu Management
+    * Root User Setting
+    * Route Management
+    * Config Management
+    * Instance Management
+    * Role Assignments function at global level
 
 ## Development build
 
@@ -39,23 +44,19 @@ The development is modeled on the i'm project structure (it is recommended that 
     │           │   └── images
     │           ├── components
     │           │   ├── loadingBar
-    │           │   ├── memberRole
-    │           │   └── menuType
+    │           │   └── memberRole
     │           ├── config
     │           │   ├── Menu.yml
     │           │   └── language
     │           ├── containers
-    │           │   ├── Home.js
-    │           │   ├── IAMIndex.js
-    │           │   ├── Masters.js
     │           │   ├── global
-    │           │   ├── master.css
     │           │   ├── organization
     │           │   ├── project
-    │           │   └── user
+    │           │   ├── user
+    │           │   └── IAMIndex.js
     │           ├── locale
-    │           │   ├── en.js
-    │           │   └── zh.js
+    │           │   ├── en_US.js
+    │           │   └── zh_CN.js
     │           ├── stores
     │           │   ├── globalStores
     │           │   ├── organization
@@ -63,10 +64,12 @@ The development is modeled on the i'm project structure (it is recommended that 
     │           │   └── user
     │           └── test
     │               └── util
-    ├── package-lock.json
-    ├── package.json
-    ├── tsconfig.json
-    └── yarn.lock
+    ├── .eslintrc.json
+    ├── .gitignore
+    ├── .stylelintrc.json    
+    ├── package.json 
+    └── tsconfig.json
+     
 
 
 * The `css` stores module of Assets store general stylesheet, the images storage module store image resources

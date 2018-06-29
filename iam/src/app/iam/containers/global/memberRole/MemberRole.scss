@@ -40,8 +40,13 @@
   cursor: default;
 }
 
-.member-role-table tr td {
-  vertical-align: text-top;
+.member-role-table {
+  tr td {
+    vertical-align: text-top;
+  }
+  .memberrole-roles .role-table {
+      padding-bottom: 6px;
+  }
 }
 
 .member-role-btns {
@@ -49,6 +54,12 @@
   .text {
     display: inline-block;
     margin-right: 15px;
+  }
+  button:nth-child(2) {
+    border-radius: 2px 0 0 2px;
+  }
+  button:nth-child(3) {
+    border-radius: 0 2px 2px 0;
   }
   button.active {
     background: rgba(140, 158, 255, 0.2);

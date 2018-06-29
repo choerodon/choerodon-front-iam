@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Button, Checkbox, Col, Form, Input, Radio, Row, Select } from 'choerodon-ui';
+import { Button, Col, Form, Input, Row } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -8,6 +9,7 @@ import UserInfoStore from '../../../../stores/user/userInfo/UserInfoStore';
 import './password.scss';
 
 const FormItem = Form.Item;
+const intlPrefix = 'user.changepwd';
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -38,9 +40,9 @@ class ChangePassword extends Component {
   };
 
   compareToFirstPassword = (rule, value, callback) => {
-    const form = this.props.form;
+    const { intl, form } = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(Choerodon.getMessage('两次密码输入不一致', 'Two passwords that you enter is inconsistent'));
+      callback(intl.formatMessage({id: `${intlPrefix}.twopwd.pattern.msg`}));
     } else {
       callback();
     }
@@ -60,7 +62,7 @@ class ChangePassword extends Component {
   };
 
   handleSubmit = (e) => {
-    const { getFieldValue, setFields } = this.props.form;
+    const { getFieldValue } = this.props.form;
     const user = UserInfoStore.getUserInfo;
     const body = {
       'originalPassword': getFieldValue('oldpassword'),
@@ -93,69 +95,88 @@ class ChangePassword extends Component {
   };
 
   render() {
-    const { AppState } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { intl, form } = this.props;
+    const { getFieldDecorator } = form;
     const { submitting } = this.state;
     const user = UserInfoStore.getUserInfo;
     return (
-      <Page>
-        <Header title={'修改密码'}>
+      <Page
+        service={[
+          'iam-service.user.selfUpdatePassword',
+        ]}
+      >
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Button onClick={this.reload} icon="refresh">
-            {Choerodon.getMessage('刷新', 'flush')}
+           <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`对用户“${user.realName}”密码进行修改`}
-          description="非LDAP用户可以修改自己的登录密码。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/person/secret_change/"
+          code={intlPrefix}
+          values={{name: user.realName}}
         >
           <div className="ldapContainer">
             <Form onSubmit={this.handleSubmit} layout="vertical">
               <FormItem
                 {...formItemLayout}
-                label="原密码"
               >
                 {getFieldDecorator('oldpassword', {
                   rules: [{
-                    required: true, message: Choerodon.getMessage('请输入原密码', 'Please input your old password!'),
+                    required: true,
+                    message: intl.formatMessage({id: `${intlPrefix}.oldpassword.require.msg`}),
                   }, {
                     validator: this.validateToNextPassword,
                   }],
                   validateTrigger: 'onBlur',
                 })(
-                  <Input autocomplete="off" label="原密码" type="password" style={{ width: inputWidth }} />,
+                  <Input
+                    autocomplete="off"
+                    label={<FormattedMessage id={`${intlPrefix}.oldpassword`}/>}
+                    type="password"
+                    style={{ width: inputWidth }}
+                  />,
                 )}
               </FormItem>
               <FormItem
                 {...formItemLayout}
-                label="新密码"
               >
                 {getFieldDecorator('password', {
                   rules: [{
-                    required: true, message: Choerodon.getMessage('请输入新密码', 'Please input your new password!'),
+                    required: true,
+                    message: intl.formatMessage({id: `${intlPrefix}.newpassword.require.msg`}),
                   }, {
                     validator: this.validateToNextPassword,
                   }],
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input autocomplete="off" label="新密码" type="password" style={{ width: inputWidth }} />,
+                  <Input
+                    autocomplete="off"
+                    label={<FormattedMessage id={`${intlPrefix}.newpassword`}/>}
+                    type="password"
+                    style={{ width: inputWidth }}
+                  />,
                 )}
               </FormItem>
               <FormItem
                 {...formItemLayout}
-                label="确认新密码"
               >
                 {getFieldDecorator('confirm', {
                   rules: [{
-                    required: true, message: Choerodon.getMessage('请确认密码', 'Please confirm your password!'),
+                    required: true,
+                    message: intl.formatMessage({id: `${intlPrefix}.confirmpassword.require.msg`}),
                   }, {
                     validator: this.compareToFirstPassword,
                   }],
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input autocomplete="off" label="确认密码" type="password" style={{ width: inputWidth }} onBlur={this.handleConfirmBlur} />,
+                  <Input
+                    autocomplete="off"
+                    label={<FormattedMessage id={`${intlPrefix}.confirmpassword`}/>}
+                    type="password"
+                    style={{ width: inputWidth }}
+                    onBlur={this.handleConfirmBlur}
+                  />,
                 )}
               </FormItem>
               <FormItem>
@@ -164,19 +185,17 @@ class ChangePassword extends Component {
                     <hr className='hrLine' />
                     <Col span={5} style={{ marginRight: 16 }}>
                       <Button
-                        text={Choerodon.languageChange('save')}
                         funcType="raised"
                         type="primary"
                         htmlType="submit"
                         loading={submitting}
-                      >保存</Button>
+                      ><FormattedMessage id="save"/></Button>
                       <Button
-                        text={Choerodon.languageChange('save')}
                         funcType="raised"
                         onClick={this.reload}
                         style={{ marginLeft: 16 }}
                         disabled={submitting}
-                      >取消</Button>
+                      ><FormattedMessage id="cancel"/></Button>
                     </Col>
                   </Row>
                 </Permission>
@@ -189,4 +208,4 @@ class ChangePassword extends Component {
   }
 }
 
-export default Form.create({})(withRouter(ChangePassword));
+export default Form.create({})(withRouter(injectIntl(ChangePassword)));

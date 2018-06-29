@@ -1,36 +1,30 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
-import { toJS } from 'mobx';
 import { Observable } from 'rxjs';
 import _ from 'lodash';
-import { Button, Checkbox, Col, Form, Icon, Input, Modal, Row, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Col, Form, Input, Modal, Row, Select, Table, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, axios } from 'choerodon-front-boot';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
-// import '../../../../assets/css/main.scss';
 import './RoleCreate.scss';
 
+const { Option } = Select;
+const { confirm, Sidebar } = Modal;
 const FormItem = Form.Item;
-const confirm = Modal.confirm;
-const Option = Select.Option;
-const { Sidebar } = Modal;
+const intlPrefix = 'global.role';
 
 @inject('AppState')
 @observer
 class CreateRole extends Component {
   constructor(props) {
     super(props);
+    const level = RoleStore.getChosenLevel !== '';
     this.state = {
       visible: false,
       selectedLevel: 'site',
-      filterPermisson: '',
-      filterService: '所有服务',
-      filterType: '所有类型',
-      roleName: '',
+      code: '',
       description: '',
-      whetherEdit: true,
-      whetherStart: false,
-      showErrorName: false,
       page: 1,
       pageSize: 10,
       alreadyPage: 1,
@@ -41,6 +35,7 @@ class CreateRole extends Component {
       selectedSideBar: [],
       currentPermission: [],
       firstLoad: true,
+      initLevel: level,
     };
   }
 
@@ -77,7 +72,8 @@ class CreateRole extends Component {
     const params = { code: validValue };
     axios.post('/iam/v1/roles/check', JSON.stringify(params)).then((mes) => {
       if (mes.failed) {
-        callback(Choerodon.getMessage('角色编码已存在，请输入其他角色编码', 'code existed, please try another'));
+        const { intl } = this.props;
+        callback(intl.formatMessage({id: `${intlPrefix}.code.exist.msg`}));
       } else {
         callback();
       }
@@ -87,7 +83,6 @@ class CreateRole extends Component {
   showModal = () => {
     this.setState({
       visible: true,
-      firstLoad: false,
     });
     const { currentPermission } = this.state;
     const selected = RoleStore.getSelectedRolesPermission
@@ -126,6 +121,7 @@ class CreateRole extends Component {
   handleCancel = () => {
     this.setState({
       visible: false,
+      firstLoad: false,
     });
   };
 
@@ -136,6 +132,7 @@ class CreateRole extends Component {
     });
     this.props.form.validateFieldsAndScroll((err) => {
       if (!err) {
+        const { intl } = this.props;
         const { currentPermission } = this.state;
         const rolePermissionss = [];
         currentPermission.forEach(id =>
@@ -157,16 +154,16 @@ class CreateRole extends Component {
             .then((data) => {
               this.setState({ submitting: false });
               if (data) {
-                Choerodon.prompt(Choerodon.getMessage('创建成功', 'Create Success'));
+                Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
                 this.linkToChange('/iam/role');
               }
             })
             .catch((errors) => {
               this.setState({ submitting: false });
               if (errors.response.data.message === 'error.role.roleNameExist') {
-                Choerodon.prompt('该角色名已创建');
+                Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
               } else {
-                Choerodon.prompt(`${Choerodon.getMessage('创建失败', 'Create Failed')}:${errors}`);
+                Choerodon.prompt(intl.formatMessage({id: 'create.error'}));
               }
             });
         }
@@ -179,32 +176,32 @@ class CreateRole extends Component {
   };
 
   handleModal = (value) => {
-    const form = this.props.form;
+    const { form, intl } = this.props;
     const that = this;
-    const { getFieldValue, setFieldsValue } = this.props.form;
-    if (getFieldValue('code')) {
-      form.validateFields(['code'], { force: true });
-    }
+    const { getFieldValue, setFieldsValue } = form;
     const { currentPermission } = this.state;
     const level = getFieldValue('level');
-    if (level && currentPermission.length) {
+    const code = getFieldValue('code');
+    if (level && (currentPermission.length || code)) {
       confirm({
-        title: '修改角色层级',
-        content: '确定要修改角色的层级吗？更换角色层级将清空您已选的权限。',
+        title: intl.formatMessage({id: `${intlPrefix}.modify.level.title`}),
+        content: intl.formatMessage({id: `${intlPrefix}.modify.level.content`}),
         onOk() {
           RoleStore.setChosenLevel(value);
           RoleStore.setSelectedRolesPermission([]);
+          setFieldsValue({code: ''});
           that.setState({
             currentPermission: [],
           });
         },
         onCancel() {
-          setFieldsValue({ level });
+          setFieldsValue({level});
         },
       });
     } else {
       RoleStore.setChosenLevel(value);
       RoleStore.setSelectedRolesPermission([]);
+      setFieldsValue({code: ''});
       this.setState({
         currentPermission: [],
       });
@@ -227,18 +224,9 @@ class CreateRole extends Component {
       <Option key={item.id} value={`${item.id}`}>{item.name}</Option>);
   };
 
-  renderLevel() {
-    if (RoleStore.getChosenLevel === 'site') {
-      return '全局层';
-    } else if (RoleStore.getChosenLevel === 'organization') {
-      return '组织层';
-    } else {
-      return '项目层';
-    }
-  }
-
   render() {
-    const { currentPermission, firstLoad, submitting } = this.state;
+    const { currentPermission, firstLoad, submitting, initLevel } = this.state;
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -255,17 +243,16 @@ class CreateRole extends Component {
     const pagination = RoleStore.getPermissionPage[RoleStore.getChosenLevel];
     const selectedPermission = RoleStore.getSelectedRolesPermission || [];
     const changePermission = RoleStore.getInitSelectedPermission || [];
-    const codePrefix = `role/${RoleStore.getChosenLevel || 'level'}/custom/`;
+    const level = RoleStore.getChosenLevel;
+    const codePrefix = `role/${level || 'level'}/custom/`;
     return (
       <Page className="choerodon-roleCreate">
         <Header
-          title={Choerodon.getMessage('创建角色', 'create')}
+          title={<FormattedMessage id={`${intlPrefix}.create`}/>}
           backPath="/iam/role"
         />
         <Content
-          title={`在平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”中创建角色`}
-          description="自定义角色可让您对权限进行分组，并将其分配给您平台、组织或项目的成员。您可以手动选择权限，也可以从其他角色导入权限。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+          code={`${intlPrefix}.create`}
         >
           <div>
             <Form layout="vertical">
@@ -275,12 +262,12 @@ class CreateRole extends Component {
                 {getFieldDecorator('level', {
                   rules: [{
                     required: true,
-                    message: '请选择角色层级',
+                    message: intl.formatMessage({id: `${intlPrefix}.level.require.msg`}),
                   }],
-                  initialValue: RoleStore.getChosenLevel !== '' ? RoleStore.getChosenLevel : undefined,
+                  initialValue: level !== '' ? level : undefined,
                 })(
                   <Select
-                    label={Choerodon.getMessage('角色层级', 'role label')}
+                    label={<FormattedMessage id={`${intlPrefix}.level`}/>}
                     ref={this.saveSelectRef}
                     size="default"
                     style={{
@@ -288,10 +275,11 @@ class CreateRole extends Component {
                     }}
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     onChange={this.handleModal}
+                    disabled={initLevel}
                   >
-                    <Option value="site">全局</Option>
-                    <Option value="organization">组织</Option>
-                    <Option value="project">项目</Option>
+                    <Option value="site">{intl.formatMessage({id: 'global'})}</Option>
+                    <Option value="organization">{intl.formatMessage({id: 'organization'})}</Option>
+                    <Option value="project">{intl.formatMessage({id: 'project'})}</Option>
                   </Select>,
                 )}
               </FormItem>
@@ -302,10 +290,10 @@ class CreateRole extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: Choerodon.getMessage('请输入角色编码', 'please input role code'),
+                    message: intl.formatMessage({id: `${intlPrefix}.code.require.msg`}),
                   }, {
                     pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
-                    message: Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'),
+                    message: intl.formatMessage({id: `${intlPrefix}.code.pattern.msg`}),
                   }, {
                     validator: this.checkCode,
                   }],
@@ -314,12 +302,13 @@ class CreateRole extends Component {
                 })(
                   <Input
                     autocomplete="off"
-                    label={Choerodon.getMessage('角色编码', 'code')}
+                    label={<FormattedMessage id={`${intlPrefix}.code`}/>}
                     prefix={codePrefix}
                     size="default"
                     style={{
                       width: '512px',
                     }}
+                    disabled={level === ''}
                   />,
                 )}
               </FormItem>
@@ -330,13 +319,13 @@ class CreateRole extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: Choerodon.getMessage('请输入角色名称', 'Please input role name'),
+                    message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
                   }],
                   initialValue: this.state.name,
                 })(
                   <Input
                     autocomplete="off"
-                    label={Choerodon.getMessage('角色名称', 'name')}
+                    label={<FormattedMessage id={`${intlPrefix}.name`}/>}
                     type="textarea"
                     rows={1}
                     style={{
@@ -350,8 +339,8 @@ class CreateRole extends Component {
               >
                 {getFieldDecorator('label')(
                   <Select
-                    mode="tags"
-                    label={Choerodon.getMessage('角色标签', 'role label')}
+                    mode="multiple"
+                    label={<FormattedMessage id={`${intlPrefix}.label`}/>}
                     size="default"
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     style={{
@@ -365,7 +354,10 @@ class CreateRole extends Component {
               <FormItem
                 {...formItemLayout}
               >
-                <Tooltip placement="top" title={RoleStore.getChosenLevel ? '添加权限' : '请先选择角色层级'}>
+                <Tooltip
+                  placement="top"
+                  title={<FormattedMessage id={RoleStore.getChosenLevel ? `${intlPrefix}.add.permission` : `${intlPrefix}.level.nothing.msg`}/>}
+                >
                   <Button
                     funcType="raised"
                     onClick={this.showModal.bind(this)}
@@ -373,17 +365,19 @@ class CreateRole extends Component {
                     className="addPermission"
                     icon="add"
                   >
-                    添加权限
+                    <FormattedMessage id={`${intlPrefix}.add.permission`}/>
                   </Button>
                 </Tooltip>
               </FormItem>
               <FormItem>
                 {currentPermission.length > 0 ? (
                   <p className="alreadyDes">
-                    {currentPermission.length}个已分配权限
+                    <FormattedMessage id={`${intlPrefix}.permission.count.msg`} values={{count: currentPermission.length}}/>
                   </p>
                 ) : (
-                  <p className="alreadyDes">没有已分配权限</p>
+                  <p className="alreadyDes">
+                    <FormattedMessage id={`${intlPrefix}.permission.nothing.msg`}/>
+                  </p>
                 )}
               </FormItem>
               <FormItem
@@ -394,16 +388,16 @@ class CreateRole extends Component {
                     width: '512px',
                   }}
                   columns={[{
-                    title: '权限',
+                    title: <FormattedMessage id={`${intlPrefix}.permission.code`}/>,
                     dataIndex: 'code',
                     key: 'code',
                   }, {
-                    title: '描述',
+                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`}/>,
                     dataIndex: 'description',
                     key: 'description',
                   }]}
                   dataSource={selectedPermission || []}
-                  filterBarPlaceholder="过滤表"
+                  filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
                   rowSelection={{
                     selectedRowKeys: currentPermission,
                     onChange: (selectedRowKeys, selectedRows) => {
@@ -416,7 +410,7 @@ class CreateRole extends Component {
                 />
                 {!firstLoad && !currentPermission.length ? (
                   <div style={{ color: '#d50000' }} className="ant-form-explain">
-                    必须至少分配一个权限
+                    <FormattedMessage id={`${intlPrefix}.permission.require.msg`}/>
                   </div>
                 ) : null}
               </FormItem>
@@ -429,7 +423,7 @@ class CreateRole extends Component {
                       onClick={this.handleCreate}
                       loading={submitting}
                     >
-                      {Choerodon.getMessage('创建', 'create')}
+                      <FormattedMessage id="create"/>
                     </Button>
                   </Col>
                   <Col span={5}>
@@ -438,36 +432,34 @@ class CreateRole extends Component {
                       onClick={this.handleReset}
                       disabled={submitting}
                     >
-                      {Choerodon.getMessage('取消', 'cancel')}
+                      <FormattedMessage id="cancel"/>
                     </Button>
                   </Col>
                 </Row>
               </FormItem>
             </Form>
             <Sidebar
-              title={Choerodon.getMessage('添加权限', 'addPermission')}
+              title={<FormattedMessage id={`${intlPrefix}.add.permission`}/>}
               visible={this.state.visible}
               onOk={this.handleOk.bind(this)}
               onCancel={this.handleCancel.bind(this)}
-              okText="添加"
-              cancelText="取消"
+              okText={intl.formatMessage({id: 'ok'})}
+              cancelText={intl.formatMessage({id: 'cancel'})}
             >
               <Content
                 className="sidebar-content"
-                title="向当前创建角色添加权限"
-                description="您可以在此为当前角色添加一个或多个权限。"
-                link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+                code={`${intlPrefix}.create.addpermission`}
               >
                 <Table
                   style={{
                     width: '512px',
                   }}
                   columns={[{
-                    title: '权限',
+                    title: <FormattedMessage id={`${intlPrefix}.permission.code`}/>,
                     dataIndex: 'code',
                     key: 'code',
                   }, {
-                    title: '描述',
+                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`}/>,
                     dataIndex: 'description',
                     key: 'description',
                   }]}
@@ -475,6 +467,7 @@ class CreateRole extends Component {
                   dataSource={data}
                   pagination={pagination}
                   onChange={this.handlePageChange}
+                  filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
                   rowSelection={{
                     selectedRowKeys: (changePermission
                       && changePermission.map(item => item.id)) || [],
@@ -496,5 +489,5 @@ class CreateRole extends Component {
   }
 }
 
-export default Form.create({})(withRouter(CreateRole));
+export default Form.create({})(withRouter(injectIntl(CreateRole)));
 

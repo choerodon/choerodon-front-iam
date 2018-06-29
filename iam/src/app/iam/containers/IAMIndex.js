@@ -12,8 +12,10 @@ const LDAPIndex = asyncRouter(() => import('./organization/ldap'));
 // global
 const OrganizationIndex = asyncRouter(() => import('./global/organization'));
 const RoleIndex = asyncRouter(() => import('./global/role'));
-const MemberRole = asyncRouter(() => import('./global/MemberRole'));
+const MemberRole = asyncRouter(() => import('./global/memberRole'));
 const menuTree = asyncRouter(() => import('./global/menuTree'));
+const InstanceIndex = asyncRouter(() => import('./global/instance'));
+const ConfigurationIndex = asyncRouter(() => import('./global/configuration'));
 const RouteIndex = asyncRouter(() => import('./global/route'));
 const RootUser = asyncRouter(() => import('./global/rootUser'));
 
@@ -39,7 +41,9 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/password-policy`} component={PasswordPolicyIndex} />
           <Route path={`${match.url}/ldap`} component={LDAPIndex} />
           <Route path={`${match.url}/role`} component={RoleIndex} />
+          <Route path={`${match.url}/instance`} component={InstanceIndex} />
           <Route path={`${match.url}/route`} component={RouteIndex} />
+          <Route path={`${match.url}/configuration`} component={ConfigurationIndex} />
           <Route path={`${match.url}/proManage`} component={ProjectSettingIndex} />
           <Route path={`${match.url}/userinfo`} component={UserInfoIndex} />
           <Route path={`${match.url}/memberRole`} component={MemberRole} />

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Checkbox, Form, Input, InputNumber, Row, Col, Button, Icon, Radio } from 'choerodon-ui';
+import { Form, Input, Radio } from 'choerodon-ui';
 import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
-
+import { injectIntl, FormattedMessage } from 'react-intl';
 import './PasswordForm.scss';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
+const inputPrefix = 'organization.pwdpolicy';
 
 @inject('AppState')
 @observer
@@ -39,7 +40,7 @@ class PasswordForm extends Component {
   // };
 
   render() {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const { getFieldDecorator } = this.props.form;
     const passwordPolicy = passwordPolicyStore.getPasswordPolicy;
@@ -66,9 +67,9 @@ class PasswordForm extends Component {
           {getFieldDecorator('enablePassword', {
             initialValue: pwdStatus,
           })(
-            <RadioGroup label="是否启用" className="radioGroup">
-              <Radio value={'enablePwd'}>是</Radio>
-              <Radio value={'disablePwd'}>否</Radio>
+            <RadioGroup label={<FormattedMessage id={`${inputPrefix}.enabled.password`}/>} className="radioGroup">
+              <Radio value={'enablePwd'}><FormattedMessage id="yes"/></Radio>
+              <Radio value={'disablePwd'}><FormattedMessage id="no"/></Radio>
             </RadioGroup>,
           )}
         </FormItem>
@@ -78,9 +79,9 @@ class PasswordForm extends Component {
           {getFieldDecorator('notUsername', {
             initialValue: sameStatus,
           })(
-            <RadioGroup label="是否允许与登录名相同" className="radioGroup">
-              <Radio value={'same'}>是</Radio>
-              <Radio value={'different'}>否</Radio>
+            <RadioGroup label={<FormattedMessage id={`${inputPrefix}.notusername`}/>} className="radioGroup">
+              <Radio value={'same'}><FormattedMessage id="yes"/></Radio>
+              <Radio value={'different'}><FormattedMessage id="no"/></Radio>
             </RadioGroup>,
           )}
         </FormItem>
@@ -92,7 +93,7 @@ class PasswordForm extends Component {
             })(
               <Input
                 autocomplete="off"
-                label="新用户默认密码"
+                label={<FormattedMessage id={`${inputPrefix}.originalpassword`}/>}
                 style={{ width: 512 }}
               />,
             )}
@@ -102,7 +103,7 @@ class PasswordForm extends Component {
             rules: [
               {
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+                message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
               },
             ],
             initialValue: passwordPolicy ? passwordPolicy.minLength : '',
@@ -110,7 +111,7 @@ class PasswordForm extends Component {
             <Input
               autocomplete="off"
               type="number"
-              label="最小密码长度"
+              label={<FormattedMessage id={`${inputPrefix}.minlength`}/>}
               style={{ width: inputWidth }}
             />,
           )}
@@ -119,73 +120,106 @@ class PasswordForm extends Component {
           {getFieldDecorator('maxLength', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
-              message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+              message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
           })(
-            <Input autocomplete="off" type="number" label="最大密码长度" style={{ width: inputWidth }} />,
+            <Input
+              autocomplete="off"
+              type="number"
+              label={<FormattedMessage id={`${inputPrefix}.maxlength`}/>}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
         <FormItem>
           {getFieldDecorator('digitsCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
-              message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+              message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
           })(
-            <Input autocomplete="off" type="number" label="最少数字数" style={{ width: inputWidth }} />,
+            <Input
+              autocomplete="off"
+              type="number"
+              label={<FormattedMessage id={`${inputPrefix}.digitscount`}/>}
+              style={{ width: inputWidth }} />,
           )}
         </FormItem>
         <FormItem>
           {getFieldDecorator('lowercaseCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
-              message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+              message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
           })(
-            <Input autocomplete="off" type="number" label="最少小写字母数" style={{ width: inputWidth }} />,
+            <Input
+              autocomplete="off"
+              type="number"
+              label={<FormattedMessage id={`${inputPrefix}.lowercasecount`}/>}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
         <FormItem>
           {getFieldDecorator('uppercaseCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
-              message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+              message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
           })(
-            <Input autocomplete="off" type="number" label="最少大写字母数" style={{ width: inputWidth }} />,
+            <Input
+              autocomplete="off"
+              type="number"
+              label={<FormattedMessage id={`${inputPrefix}.uppercasecount`}/>}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
         <FormItem>
           {getFieldDecorator('specialCharCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
-              message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+              message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
           })(
-            <Input autocomplete="off" type="number" label="最少特殊字符数" style={{ width: inputWidth }} />,
+            <Input
+              autocomplete="off"
+              type="number"
+              label={<FormattedMessage id={`${inputPrefix}.specialcharcount`}/>}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
         <FormItem>
           {getFieldDecorator('notRecentCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
-              message: Choerodon.getMessage('请输入大于或等于0的整数', 'Please input integer greater than or equal to 0'),
+              message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
           })(
-            <Input autocomplete="off" type="number" label="最大近期密码数" style={{ width: inputWidth }} />,
+            <Input
+              autocomplete="off"
+              type="number"
+              label={<FormattedMessage id={`${inputPrefix}.notrecentcount`}/>}
+              style={{ width: inputWidth }}
+            />,
           )}
         </FormItem>
         <FormItem style={{ width: 512 }}>
           {getFieldDecorator('regularExpression', {
             initialValue: passwordPolicy ? passwordPolicy.regularExpression : '',
           })(
-            <TextArea autocomplete="off" rows={2} label="密码正则" />,
+            <TextArea
+              autocomplete="off"
+              rows={2}
+              label={<FormattedMessage id={`${inputPrefix}.regularexpression`}/>}
+            />,
           )}
         </FormItem>
       </div>
@@ -193,4 +227,4 @@ class PasswordForm extends Component {
   }
 }
 
-export default PasswordForm;
+export default injectIntl(PasswordForm);

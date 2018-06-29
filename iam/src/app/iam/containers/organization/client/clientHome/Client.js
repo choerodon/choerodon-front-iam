@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -7,11 +8,11 @@ import LoadingBar from '../../../../components/loadingBar';
 import ClientStore from '../../../../stores/organization/client/ClientStore';
 import './Client.scss';
 
-
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
+const intlPrefix = 'organization.client';
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -73,15 +74,17 @@ class Client extends Component {
     switch (status) {
       case 'create':
         return {
-          title: `在组织“${organizationName}”中创建客户端`,
-          link: 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
-          description: '请在下面输入客户端ID、密钥，选择授权类型。您可以选择性输入访问授权超时、授权超时、重定向地址、附加信息。',
+          code: `${intlPrefix}.create`,
+          values: {
+            name: organizationName,
+          },
         };
       case 'edit':
         return {
-          title: `对客户端“${client && client.name}”进行修改`,
-          link: 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/',
-          description: '您可以在此修改客户端密钥、授权类型、访问授权超时、授权超时、重定向地址、附加信息。',
+          code: `${intlPrefix}.modify`,
+          values: {
+            name: client && client.name,
+          },
         };
       default:
         return {};
@@ -145,18 +148,19 @@ class Client extends Component {
    * 删除客户端
    */
   handleDelete = (record) => {
+    const { intl } = this.props;
     Modal.confirm({
-      title: '删除客户端',
-      content: `确认删除客户端${record.name}吗?`,
+      title: intl.formatMessage({id: `${intlPrefix}.delete.title`}),
+      content: intl.formatMessage({id: `${intlPrefix}.delete.content`}, {name: record.name}),
       onOk: () => ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {
         if (status) {
-          Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
+          Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
           this.reload();
         } else {
-          Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
+          Choerodon.prompt(intl.formatMessage({id: 'delete.error'}));
         }
       }).catch(() => {
-        Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
+        Choerodon.prompt(intl.formatMessage({id: 'delete.error'}));
       }),
     });
   };
@@ -176,14 +180,16 @@ class Client extends Component {
     }
   };
 
-  closeSidebar = () => {
+  closeSidebar = ( nochange = '' ) => {
     const { resetFields } = this.props.form;
     resetFields();
     this.setState({
       visible: false,
       submitting: false,
     }, () => {
-      this.reload();
+      if (nochange !== 'nochange') {
+        this.reload();
+      }
     });
   };
 
@@ -203,14 +209,14 @@ class Client extends Component {
    * @param callback
    */
   checkName = (rule, value, callback) => {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     ClientStore.checkName(organizationId, {
       name: value,
     }).then((mes) => {
       if (mes.failed) {
-        callback(Choerodon.getMessage('客户端名称已存在，请输入其他客户端名称', 'name existed, please try another'));
+        callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
       } else {
         callback();
       }
@@ -237,9 +243,9 @@ class Client extends Component {
    */
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, AppState } = this.props;
+    const { form, AppState, intl } = this.props;
     const { status, selectData } = this.state;
-    form.validateFieldsAndScroll((err, data) => {
+    form.validateFieldsAndScroll((err, data, modify) => {
       if (!err) {
         const menuType = AppState.currentMenuType;
         const organizationId = menuType.id;
@@ -256,13 +262,18 @@ class Client extends Component {
             .then((value) => {
               if (value) {
                 this.closeSidebar();
-                Choerodon.prompt(Choerodon.getMessage('添加成功', 'Success'));
+                Choerodon.prompt(intl.formatMessage({id: 'add.success'}));
               }
             })
             .catch((error) => {
               Choerodon.handleResponseError(error);
             });
         } else if (status === 'edit') {
+          if (!modify) {
+            Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+            this.closeSidebar('nochange');
+            return;
+          }
           const client = ClientStore.getClient;
           this.setState({
             submitting: true,
@@ -281,7 +292,7 @@ class Client extends Component {
             .then((value) => {
               if (value) {
                 this.closeSidebar();
-                Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
+                Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
               }
             })
             .catch((error) => {
@@ -294,6 +305,7 @@ class Client extends Component {
   };
 
   renderSidebarContent() {
+    const { intl } = this.props;
     const client = ClientStore.getClient || {};
     const { getFieldDecorator } = this.props.form;
     const { status } = this.state;
@@ -307,7 +319,7 @@ class Client extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('客户端名称必填', 'Client name is required'),
+              message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
             }, {
               validator: status === 'create' && this.checkName,
             }],
@@ -316,24 +328,26 @@ class Client extends Component {
           })(
             <Input
               autocomplete="off"
-              label={Choerodon.languageChange('client.name')}
+              label={intl.formatMessage({id: `${intlPrefix}.name`})}
               disabled={status === 'edit'}
             />,
           )}
         </FormItem>
         <FormItem
           {...formItemLayout}
-          label={Choerodon.languageChange('client.secret')}
         >
           {getFieldDecorator('secret', {
             initialValue: client.secret || undefined,
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('密钥必填', 'Secret is required'),
+              message: intl.formatMessage({id: `${intlPrefix}.secret.require.msg`}),
             }],
           })(
-            <Input autocomplete="off" label={Choerodon.languageChange('client.secret')} />,
+            <Input
+              autocomplete="off"
+              label={intl.formatMessage({id: `${intlPrefix}.secret`})}
+            />,
           )}
         </FormItem>
         <FormItem
@@ -345,14 +359,14 @@ class Client extends Component {
               {
                 type: 'array',
                 required: true,
-                message: Choerodon.getMessage('授权类型必填', 'AuthorizedGrantTypes is required'),
+                message: intl.formatMessage({id: `${intlPrefix}.granttypes.require.msg`}),
               },
             ],
           })(
             <Select
               mode="multiple"
               getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-              label={Choerodon.languageChange('client.authorizedGrantTypes')}
+              label={intl.formatMessage({id: `${intlPrefix}.granttypes`})}
               size="default"
             >
               <Option value="password">password</Option>
@@ -372,7 +386,7 @@ class Client extends Component {
           })(
             <Input
               autocomplete="off"
-              label={Choerodon.languageChange('client.accessTokenValidity')}
+              label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
               style={{ width: 300 }}
               type="number"
               size="default"
@@ -389,7 +403,7 @@ class Client extends Component {
           })(
             <Input
               autocomplete="off"
-              label={Choerodon.languageChange('client.refreshTokenValidity')}
+              label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
               style={{ width: 300 }}
               type="number"
               size="default"
@@ -403,7 +417,7 @@ class Client extends Component {
           {getFieldDecorator('webServerRedirectUri', {
             initialValue: client.webServerRedirectUri || undefined,
           })(
-            <Input autocomplete="off" label={Choerodon.languageChange('client.webServerRedirectUri')} />,
+            <Input autocomplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
           )}
         </FormItem>
         <FormItem
@@ -416,7 +430,7 @@ class Client extends Component {
                   if (!value || this.isJson(value)) {
                     callback();
                   } else {
-                    callback('请输入正确的json字符串');
+                    callback(intl.formatMessage({id: `${intlPrefix}.additional.pattern.msg`}));
                   }
                 },
               },
@@ -424,7 +438,11 @@ class Client extends Component {
             validateTrigger: 'onBlur',
             initialValue: client.additionalInformation || undefined,
           })(
-            <TextArea autocomplete="off" label={Choerodon.languageChange('client.additionalInformation')} rows={3} />,
+            <TextArea
+              autocomplete="off"
+              label={intl.formatMessage({id: `${intlPrefix}.additional`})}
+              rows={3}
+            />,
           )}
         </FormItem>
       </Form>
@@ -439,21 +457,21 @@ class Client extends Component {
   }
 
   render() {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     const { submitting, status, pagination, visible } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
     const clientData = ClientStore.getClients;
     const columns = [
       {
-        title: Choerodon.languageChange('client.name'),
+        title: intl.formatMessage({id: 'name'}),
         dataIndex: 'name',
         key: 'name',
         filters: [],
         sorter: (a, b) => a.name.localeCompare(b.serviceNamee, 'zh-Hans-CN', { sensitivity: 'accent' }),
       },
       {
-        title: '授权类型',
+        title: intl.formatMessage({id: `${intlPrefix}.granttypes`}),
         dataIndex: 'authorizedGrantTypes',
         key: 'authorizedGrantTypes',
         // filters: [
@@ -493,19 +511,21 @@ class Client extends Component {
       {
         title: '',
         width: 100,
+        align: 'right',
         render: (text, record) => (
           <div>
             <Permission
               service={['iam-service.client.update']}
             >
               <Tooltip
-                title="修改"
+                title={<FormattedMessage id="modify"/>}
                 placement="bottom"
               >
                 <Button
                   onClick={() => {
                     this.openSidebar('edit', record);
                   }}
+                  size="small"
                   shape="circle"
                   icon="mode_edit"
                 />
@@ -515,18 +535,32 @@ class Client extends Component {
               service={['iam-service.client.delete']}
             >
               <Tooltip
-                title="删除"
+                title={<FormattedMessage id="delete"/>}
                 placement="bottom"
               >
-                <Button shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete_forever" />
+                <Button
+                  shape="circle"
+                  size="small"
+                  onClick={this.handleDelete.bind(this, record)}
+                  icon="delete_forever" />
               </Tooltip>
             </Permission>
           </div>),
       },
     ];
     return (
-      <Page>
-        <Header title={Choerodon.languageChange('client.title')}>
+      <Page
+        service={[
+          'iam-service.client.create',
+          'iam-service.client.update',
+          'iam-service.client.delete',
+          'iam-service.client.list',
+          'iam-service.client.check',
+          'iam-service.client.queryByName',
+          'iam-service.client.query',
+        ]}
+      >
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Permission
             service={['iam-service.client.create']}
           >
@@ -534,21 +568,20 @@ class Client extends Component {
               onClick={() => this.openSidebar('create')}
               icon="playlist_add"
             >
-              {Choerodon.getMessage('创建客户端', 'Create Client')}
+              <FormattedMessage id={`${intlPrefix}.create`}/>
             </Button>
           </Permission>
           <Button
             onClick={this.reload}
             icon="refresh"
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`组织“${organizationName}”的客户端`}
-          description="用户在使用oauth2.0的客户端授权模式认证时需要指定所属的客户端，根据客户端对应的密钥，作用域，认证有效时长和重定向地址等进行认证。客户端还可用于区分微服务环境下的不同模块。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/client/"
-        >
+          code={intlPrefix}
+          values={{name: organizationName}}
+       >
           <Table
             size="middle"
             pagination={pagination}
@@ -557,15 +590,15 @@ class Client extends Component {
             rowKey="id"
             onChange={this.handlePageChange}
             loading={ClientStore.isLoading}
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar
-            title={status === 'create' ? '创建客户端' : '修改客户端'}
+            title={<FormattedMessage id={status === 'create' ? `${intlPrefix}.create` : `${intlPrefix}.modify`}/>}
             onOk={this.handleSubmit}
             onCancel={this.closeSidebar}
             visible={visible}
-            okText={status === 'create' ? '创建' : '保存'}
-            cancelText="取消"
+            okText={<FormattedMessage id={status === 'create' ? 'create' : 'save'}/>}
+            cancelText={<FormattedMessage id="cancel"/>}
             confirmLoading={submitting}
           >
             {this.renderSidebarContent()}
@@ -576,4 +609,4 @@ class Client extends Component {
   }
 }
 
-export default Form.create({})(withRouter(Client));
+export default Form.create({})(withRouter(injectIntl(Client)));

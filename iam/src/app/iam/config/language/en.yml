@@ -8,6 +8,8 @@
 
 "microservice": "Microservice"
 "microservice.route-management": "Route Management"
+"microservice.config-management": "Config Management"
+"microservice.instance-management": "Instance Management"
 
 "rentsetting": "Organization settings"
 # organization

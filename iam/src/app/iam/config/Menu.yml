@@ -63,10 +63,28 @@
   icon: micro
   sort: 1
   site:
+    - "instance-management":
+        icon: instance_outline
+        Routes: /iam/instance
+        sort: 1
+        permission:
+          - 'manager-service.instance.list'
+          - 'manager-service.instance.query'
+    - "config-management":
+        icon: settings_input_composite
+        Routes: /iam/configuration
+        sort: 2
+        permission:
+          - 'manager-service.config.query'
+          - 'manager-service.config.create'
+          - 'manager-service.config.delete'
+          - 'manager-service.config.queryYaml'
+          - 'manager-service.config.updateConfig'
+          - 'manager-service.config.updateConfigDefault'
     - "route-management":
         icon: routeroutline
         Routes: /iam/route
-        sort: 1
+        sort: 3
         permission:
           - 'manager-service.route.list'
           - 'manager-service.route.create'

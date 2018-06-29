@@ -4,6 +4,7 @@ import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 // import '../../../../assets/css/main.scss';
 import './ProjectHome.scss';
@@ -13,7 +14,7 @@ const FormItem = Form.Item;
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
 const { Sidebar } = Modal;
-
+const intlPrefix = 'organization.project';
 
 @inject('AppState')
 @observer
@@ -134,7 +135,7 @@ class ProjectHome extends Component {
             .then((value) => {
               this.setState({ submitting: false });
               if (value) {
-                Choerodon.prompt(Choerodon.getMessage('创建成功', 'Success'));
+                Choerodon.prompt(this.props.intl.formatMessage({id: 'create.success'}));
                 this.handleTabClose();
                 this.loadProjects();
                 value.type = 'project';
@@ -151,8 +152,13 @@ class ProjectHome extends Component {
       });
     } else {
       const { validateFields } = this.props.form;
-      validateFields((err, { name }) => {
+      validateFields((err, { name }, modify) => {
         if (!err) {
+          if (!modify) {
+            Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+            this.handleTabClose();
+            return;
+          }
           data = {
             name,
           };
@@ -166,7 +172,7 @@ class ProjectHome extends Component {
             this.state.projectDatas.id).then((value) => {
             this.setState({ submitting: false, buttonClicked: false });
             if (value) {
-              Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
+              Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
               this.handleTabClose();
               this.loadProjects();
               value.type = 'project';
@@ -182,13 +188,12 @@ class ProjectHome extends Component {
 
   /* 停用启用 */
   handleEnable = (record) => {
-    const { ProjectStore, AppState } = this.props;
+    const { ProjectStore, AppState,intl } = this.props;
     const userId = AppState.getUserId;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
     ProjectStore.enableProject(orgId, record.id, record.enabled).then((value) => {
-      const msg = record.enabled ? '停用成功' : '启用成功';
-      Choerodon.prompt(Choerodon.getMessage(msg, 'Success'));
+      Choerodon.prompt(intl.formatMessage({id: record.enabled ? 'disable.success' : 'enable.success'}));
       this.loadProjects();
       HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
         org[0].map(value => {
@@ -201,7 +206,7 @@ class ProjectHome extends Component {
         HeaderStore.setProData(org[1]);
       });
     }).catch((error) => {
-      Choerodon.prompt(`操作失败 ${error}`);
+      Choerodon.prompt(intl.formatMessage({id: 'operation.error'}));
     });
   };
 
@@ -217,14 +222,14 @@ class ProjectHome extends Component {
    * @param callback 回调函数
    */
   checkCodeOnly = _.debounce((value, callback) => {
-    const { AppState, ProjectStore } = this.props;
+    const { AppState, ProjectStore, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const params = { code: value };
     ProjectStore.checkProjectCode(organizationId, params)
       .then((mes) => {
         if (mes.failed) {
-          callback(Choerodon.getMessage('项目编码已存在，请输入其他项目编码', 'code existed, please try another'));
+          callback(intl.formatMessage({id: `${intlPrefix}.code.exist.msg`}));
         } else {
           callback();
         }
@@ -239,8 +244,9 @@ class ProjectHome extends Component {
    * @param callback 回调函数
    */
   checkcode(rule, value, callback) {
+    const { intl } = this.props;
     if (!value) {
-      callback(Choerodon.getMessage('请输入项目编码', 'please input project code'));
+      callback(intl.formatMessage({id: `${intlPrefix}.code.require.msg`}));
       return;
     }
     if (value.length <= 14) {
@@ -249,18 +255,18 @@ class ProjectHome extends Component {
       if (pa.test(value)) {
         this.checkCodeOnly(value, callback);
       } else {
-        callback(Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'));
+        callback(intl.formatMessage({id: `${intlPrefix}.code.pattern.msg`}));
       }
     } else {
-      callback(Choerodon.getMessage('项目编码不能超过14个字符', 'code should less than 14 characters'));
+      callback(intl.formatMessage({id: `${intlPrefix}.code.length.msg`}));
     }
   }
 
   renderSideTitle() {
     if (this.state.operation === 'create') {
-      return '创建项目';
+      return <FormattedMessage id={`${intlPrefix}.create`} />;
     } else {
-      return '修改项目';
+      return <FormattedMessage id={`${intlPrefix}.modify`} />;
     }
   }
 
@@ -271,20 +277,23 @@ class ProjectHome extends Component {
     switch (operation) {
       case 'create':
         return {
-          title: `在组织“${orgname}”中创建项目`,
-          link: 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/',
-          description: '请在下面输入项目编码、项目名称创建项目。项目编码在一个组织中是唯一的，项目创建后，不能修改项目编码。',
+          code: `${intlPrefix}.create`,
+          values: {
+            name: orgname,
+          },
         };
       case 'edit':
         return {
-          title: `对项目“${this.state.projectDatas.code}”进行修改`,
-          link: 'http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/',
-          description: '您可以在此修改项目名称。',
+          code: `${intlPrefix}.modify`,
+          values: {
+            name: this.state.projectDatas.code,
+          },
         };
     }
   }
 
   renderSidebarContent() {
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { operation, projectDatas } = this.state;
     const inputWidth = 512;
@@ -317,7 +326,7 @@ class ProjectHome extends Component {
             })(
               <Input
                 autocomplete="off"
-                label="项目编码"
+                label={<FormattedMessage id={`${intlPrefix}.code`}/>}
                 style={{ width: inputWidth }}
               />,
             )}
@@ -329,13 +338,13 @@ class ProjectHome extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: Choerodon.getMessage('请输入项目名称', 'This field is required.'),
+                message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
               }],
               initialValue: operation === 'create' ? undefined : projectDatas.name,
             })(
               <Input
                 autocomplete="off"
-                label="项目名称"
+                label={<FormattedMessage id={`${intlPrefix}.name`}/>}
                 style={{ width: inputWidth }}
               />,
             )}
@@ -346,7 +355,7 @@ class ProjectHome extends Component {
   }
 
   render() {
-    const { ProjectStore, AppState } = this.props;
+    const { ProjectStore, AppState, intl } = this.props;
     const projectData = ProjectStore.getProjectData;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
@@ -355,7 +364,7 @@ class ProjectHome extends Component {
 
     const type = menuType.type;
     const columns = [{
-      title: Choerodon.getMessage('项目名称', 'project code'),
+      title: <FormattedMessage id="name"/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -363,39 +372,40 @@ class ProjectHome extends Component {
       sorter: (a, b) => (a.name > b.name ? 1 : 0),
       render: (text, record) => <span>{text}</span>,
     }, {
-      title: Choerodon.getMessage('项目编码', 'project code'),
+      title: <FormattedMessage id="code"/>,
       dataIndex: 'code',
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
       sorter: (a, b) => (a.code > b.code ? 1 : 0),
     }, {
-      title: Choerodon.getMessage('启用状态', 'status'),
+      title: <FormattedMessage id="status"/>,
       dataIndex: 'enabled',
       filters: [{
-        text: '启用',
+        text: intl.formatMessage({id: 'enable'}),
         value: 'true',
       }, {
-        text: '停用',
+        text: intl.formatMessage({id: 'disable'}),
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
       key: 'enabled',
-      render: text => <span className="titleNameStyle">{text ? '启用' : '停用'}</span>,
+      render: text => <span className="titleNameStyle">{intl.formatMessage({id: text ? 'enable' : 'disable'})}</span>,
     }, {
       title: '',
-      className: 'operateIcons',
       key: 'action',
       width: '100px',
+      align: 'right',
       render: (text, record) => (
         <div>
           <Permission service={['iam-service.organization-project.update']} type={type} organizationId={orgId}>
             <Tooltip
-              title="修改"
+              title={<FormattedMessage id="modify"/>}
               placement="bottom"
             >
               <Button
                 shape="circle"
+                size="small"
                 onClick={this.handleopenTab.bind(this, record, 'edit')}
                 icon="mode_edit"
               />
@@ -405,11 +415,12 @@ class ProjectHome extends Component {
             service={['iam-service.organization-project.disableProject', 'iam-service.organization-project.enableProject']}
             type={type} organizationId={orgId}>
             <Tooltip
-              title={record.enabled ? '停用' : '启用'}
+              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'}/>}
               placement="bottom"
             >
               <Button
                 shape="circle"
+                size="small"
                 onClick={this.handleEnable.bind(this, record)}
                 icon={record.enabled ? 'remove_circle_outline' : 'finished'}
               />
@@ -421,14 +432,23 @@ class ProjectHome extends Component {
 
 
     return (
-      <Page>
-        <Header title={Choerodon.getMessage('项目管理', 'project title')}>
+      <Page
+        service={[
+          'iam-service.organization-project.list',
+          'iam-service.organization-project.create',
+          'iam-service.organization-project.check',
+          'iam-service.organization-project.update',
+          'iam-service.organization-project.disableProject',
+          'iam-service.organization-project.enableProject',
+        ]}
+      >
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
             <Button
               onClick={this.handleopenTab.bind(this, null, 'create')}
               icon="playlist_add"
             >
-              {Choerodon.getMessage('创建项目', 'createProject')}
+              <FormattedMessage id={`${intlPrefix}.create`}/>
             </Button>
           </Permission>
           <Button
@@ -453,13 +473,11 @@ class ProjectHome extends Component {
               });
             }}
           >
-            {Choerodon.getMessage('刷新', 'flush')}
+            <FormattedMessage id="refresh"/>
           </Button>
         </Header>
         <Content
-          title={`组织“${orgname}”的项目管理`}
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/project/"
-          description="项目是最小粒度的管理层次。您可以在组织下创建项目，则项目属于这个组织。"
+          code={intlPrefix}
         >
           <Table
             pagination={this.state.pagination}
@@ -469,15 +487,15 @@ class ProjectHome extends Component {
             filters={this.state.filters.params}
             onChange={this.handlePageChange.bind(this)}
             loading={ProjectStore.isLoading}
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar
             title={this.renderSideTitle()}
             visible={this.state.sidebar}
             onCancel={this.handleTabClose.bind(this)}
             onOk={this.handleSubmit.bind(this)}
-            okText={operation === 'create' ? '创建' : '保存'}
-            cancelText="取消"
+            okText={<FormattedMessage id={operation === 'create' ? 'create' : 'save'}/>}
+            cancelText={<FormattedMessage id="cancel"/>}
             confirmLoading={this.state.submitting}
           >
             {operation && this.renderSidebarContent()}
@@ -488,4 +506,4 @@ class ProjectHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(ProjectHome));
+export default Form.create({})(withRouter(injectIntl(ProjectHome)));

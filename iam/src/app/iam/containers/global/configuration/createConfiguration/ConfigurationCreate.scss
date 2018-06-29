@@ -1,0 +1,56 @@
+.createConfigContainer {
+  margin-bottom: 32px;
+  padding: 32px;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.createConfigContent {
+  padding: 32px 36px 0;
+
+  p {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+    line-height: 20px;
+    text-align: justify;
+    max-width: 512px;
+    margin-bottom: 24px;
+  }
+
+  .serviceSection {
+    padding-top: 26px;
+
+    button {
+      margin-right: 12px;
+    }
+  }
+
+  .yamlInfoTitle {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .confirmContainer {
+    > div
+      > div {
+      margin-bottom: 12px;
+      font-size: 13px;
+
+      > div:last-child {
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+    }
+
+    .finalyamTitle {
+      font-size: 13px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.step-disabled {
+  pointer-events: none;
+}

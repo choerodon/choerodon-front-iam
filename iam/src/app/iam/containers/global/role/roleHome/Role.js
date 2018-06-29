@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
-import { Button, Dropdown, Form, Icon, Menu, message, Modal, Select, Table } from 'choerodon-ui';
-import { Action, Content, Header, Page, Permission, Remove } from 'choerodon-front-boot';
-import CreateRole from '../roleCreate';
-import EditRole from '../roleEdit';
-import './Role.scss';
-// import '../../../../assets/css/main.scss';
+import { Button, Form, Icon, Table } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Action, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import RoleStore from '../../../../stores/globalStores/role/RoleStore';
+import './Role.scss';
 
-const { Sidebar } = Modal;
-
+const intlPrefix = 'global.role';
 @inject('AppState')
 @observer
 class Role extends Component {
@@ -22,9 +19,7 @@ class Role extends Component {
 
   getInitState() {
     return {
-      open: false,
       id: '',
-      visible: false,
       selectedRoleIds: {},
       params: [],
       filters: {},
@@ -95,40 +90,16 @@ class Role extends Component {
     });
   };
 
-  handleOpen = (ids) => {
-    this.setState({ open: true, id: ids });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  handleDelete = () => {
-    const { id } = this.state;
-    this.setState({
-      open: false,
-    });
-    RoleStore.deleteRoleById(id).then((data) => {
-      const status = data.status;
-      if (status === 204) {
-        Choerodon.prompt(Choerodon.getMessage('删除成功', 'Success'));
-        this.loadRole();
-      } else {
-        Choerodon.prompt(Choerodon.getMessage('删除失败', 'Failed'));
-      }
-    }).catch((error) => {
-      Choerodon.handleResponseError(error);
-    });
-  };
   handleEnable = (record) => {
+    const { intl } = this.props;
     if (record.enabled) {
       RoleStore.disableRole(record.id).then(() => {
-        Choerodon.prompt('已停用');
+        Choerodon.prompt(intl.formatMessage({id: 'disable.success'}));
         this.loadRole();
       });
     } else {
       RoleStore.enableRole(record.id).then(() => {
-        Choerodon.prompt('已启用');
+        Choerodon.prompt(intl.formatMessage({id: 'enable.success'}));
         this.loadRole();
       });
     }
@@ -152,22 +123,6 @@ class Role extends Component {
     this.loadRole(pagination, sort, filters, params);
   };
 
-  handleSideBarClose = () => {
-    this.setState({
-      visible: false,
-      selectedData: '',
-    });
-  };
-
-  handleSideBarOk = (e) => {
-    const { selectType } = this.state;
-    if (selectType === 'create') {
-      this.createRole.handleCreate(e);
-    } else if (selectType === 'edit') {
-      this.editRole.handleEdit(e);
-    }
-  };
-
   createByThis(record) {
     RoleStore.getRoleById(record.id).then((data) => {
       RoleStore.setChosenLevel(data.level);
@@ -178,9 +133,10 @@ class Role extends Component {
   }
 
   createByMultiple = () => {
+    const { intl } = this.props;
     const levels = Object.values(this.state.selectedRoleIds);
     if (levels.some((level, index) => levels[index + 1] && levels[index + 1] !== level)) {
-      Choerodon.prompt('选择的角色具有不同层级的权限!');
+      Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.create.byselect.level`}));
     } else {
       this.createBased();
     }
@@ -203,96 +159,40 @@ class Role extends Component {
       return (
         <div>
           <Icon type="settings" />
-          {Choerodon.getMessage('预定义', 'Yes')}
+          <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
         </div>
       );
     } else {
       return (
         <div>
           <Icon type="av_timer" />
-          {Choerodon.getMessage('自定义', 'No')}
+          <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
         </div>
       );
     }
   }
 
-  renderSideBar() {
-    const { selectType, selectedData } = this.state;
-    if (selectType === 'create') {
-      return (
-        <CreateRole
-          onRef={(ref) => {
-            this.createRole = ref;
-          }}
-          onSubmit={() => {
-            this.setState({
-              visible: false,
-            });
-            this.loadRole();
-          }}
-        />
-      );
-    } else if (selectType === 'edit') {
-      return (
-        <EditRole
-          id={selectedData}
-          onRef={(ref) => {
-            this.editRole = ref;
-          }}
-          onSubmit={() => {
-            this.setState({
-              visible: false,
-            });
-            this.loadRole();
-          }}
-        />
-      );
-    } else {
-      return '';
-    }
-  }
-
-  renderShowOkBtn() {
-    if (this.state.detailVisible) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  renderSideTitle() {
-    switch (this.state.selectType) {
-      case 'create':
-        return '创建角色';
-      case 'edit':
-        return '角色编辑';
-      default:
-        return '';
-    }
-  }
-
   renderLevel(text) {
     if (text === 'organization') {
-      return '组织层';
+      return  <FormattedMessage id="organization" />;
     } else if (text === 'project') {
-      return '项目层';
+      return <FormattedMessage id="project" />;
     } else {
-      return '全局层';
+      return <FormattedMessage id="global" />;
     }
   }
 
   render() {
-    const { sort: { columnKey, order }, pagination, filters, open, visible } = this.state;
+    const { intl } = this.props;
+    const { sort: { columnKey, order }, pagination, filters } = this.state;
     const selectedRowKeys = this.getSelectedRowKeys();
-    const { AppState } = this.props;
-    const { type, id: organizationId } = AppState.currentMenuType;
     const columns = [{
       dataIndex: 'id',
       key: 'id',
       hidden: true,
       sortOrder: columnKey === 'id' && order,
     }, {
-      title: Choerodon.getMessage('角色名称', 'role name'),
+      title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -300,7 +200,7 @@ class Role extends Component {
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
-      title: Choerodon.getMessage('角色编码', 'role code'),
+      title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
       filters: [],
@@ -308,18 +208,18 @@ class Role extends Component {
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
     }, {
-      title: Choerodon.getMessage('角色层级', 'role level'),
+      title: <FormattedMessage id="level" />,
       dataIndex: 'level',
       key: 'level',
       filters: [
         {
-          text: '全局',
+          text: intl.formatMessage({id: "global"}),
           value: 'site',
         }, {
-          text: '组织',
+          text: intl.formatMessage({id: "organization"}),
           value: 'organization',
         }, {
-          text: '项目',
+          text: intl.formatMessage({id: "project"}),
           value: 'project',
         }],
       render: text => this.renderLevel(text),
@@ -327,14 +227,14 @@ class Role extends Component {
       sortOrder: columnKey === 'level' && order,
       filteredValue: filters.level || [],
     }, {
-      title: Choerodon.getMessage('角色来源', 'is built-in'),
+      title: <FormattedMessage id="source" />,
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{
-        text: '预定义',
+        text: intl.formatMessage({id: `${intlPrefix}.builtin.predefined`}),
         value: 'true',
       }, {
-        text: '自定义',
+        text: intl.formatMessage({id: `${intlPrefix}.builtin.custom`}),
         value: 'false',
       }],
       render: (text, record) => this.renderBuiltIn(record),
@@ -342,38 +242,36 @@ class Role extends Component {
       sortOrder: columnKey === 'builtIn' && order,
       filteredValue: filters.builtIn || [],
     }, {
-      title: Choerodon.getMessage('启用状态', 'enabled'),
+      title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{
-        text: '启用',
+        text: intl.formatMessage({id: "enable"}),
         value: 'true',
       }, {
-        text: '停用',
+        text: intl.formatMessage({id: "disable"}),
         value: 'false',
       }],
-      render: text => (
-        text ? '启用' : '停用'
-      ),
+      render: text => intl.formatMessage({id: text ? 'enable' : 'disable'}),
       sorter: true,
       sortOrder: columnKey === 'enabled' && order,
       filteredValue: filters.enabled || [],
     }, {
       title: '',
-      className: 'operateIcons',
       key: 'action',
+      align: 'right',
       render: (text, record) => {
         const actionDatas = [{
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',
           icon: '',
-          text: '基于该角色创建',
+          text: intl.formatMessage({id: `${intlPrefix}.create.byone`}),
           action: this.createByThis.bind(this, record),
         }, {
           service: ['iam-service.role.update'],
           icon: '',
           type: 'site',
-          text: '修改',
+          text: intl.formatMessage({id: 'modify'}),
           action: this.showModal.bind(this, record.id),
         }];
         if (record.enabled) {
@@ -381,7 +279,7 @@ class Role extends Component {
             service: ['iam-service.role.disableRole'],
             icon: '',
             type: 'site',
-            text: '停用',
+            text: intl.formatMessage({id: 'disable'}),
             action: this.handleEnable.bind(this, record),
           });
         } else {
@@ -389,7 +287,7 @@ class Role extends Component {
             service: ['iam-service.role.enableRole'],
             icon: '',
             type: 'site',
-            text: '启用',
+            text: intl.formatMessage({id: 'enable'}),
             action: this.handleEnable.bind(this, record),
           });
         }
@@ -401,14 +299,27 @@ class Role extends Component {
       onChange: this.changeSelects,
     };
     return (
-      <Page className="choerodon-role">
-        <Remove
-          open={open}
-          handleCancel={this.handleClose}
-          handleConfirm={this.handleDelete}
-        />
+      <Page
+        service={[
+          'iam-service.role.createBaseOnRoles',
+          'iam-service.role.update',
+          'iam-service.role.disableRole',
+          'iam-service.role.enableRole',
+          'iam-service.role.create',
+          'iam-service.role.check',
+          'iam-service.role.listRolesWithUserCountOnOrganizationLevel',
+          'iam-service.role.listRolesWithUserCountOnProjectLevel',
+          'iam-service.role.list',
+          'iam-service.role.listRolesWithUserCountOnSiteLevel',
+          'iam-service.role.queryWithPermissionsAndLabels',
+          'iam-service.role.pagingQueryUsersByRoleIdOnOrganizationLevel',
+          'iam-service.role.pagingQueryUsersByRoleIdOnProjectLevel',
+          'iam-service.role.pagingQueryUsersByRoleIdOnSiteLevel',
+        ]}
+        className="choerodon-role"
+      >
         <Header
-          title={Choerodon.getMessage('角色管理', 'title')}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
         >
           <Permission
             service={['iam-service.role.create']}
@@ -417,7 +328,7 @@ class Role extends Component {
               icon="playlist_add"
               onClick={this.goCreate}
             >
-              {Choerodon.getMessage('创建角色', 'createRole')}
+              <FormattedMessage id={`${intlPrefix}.create`}/>
             </Button>
           </Permission>
           <Permission
@@ -428,20 +339,18 @@ class Role extends Component {
               onClick={this.createByMultiple}
               disabled={!selectedRowKeys.length}
             >
-              {Choerodon.getMessage('基于所选角色创建', 'create role based on chosen roles')}
+              <FormattedMessage id={`${intlPrefix}.create.byselect`}/>
             </Button>
           </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            {Choerodon.getMessage('刷新', 'Refresh')}
+            <FormattedMessage id='refresh'/>
           </Button>
         </Header>
         <Content
-          title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的角色管理`}
-          description="角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/platform/role/"
+          code={intlPrefix}
         >
           <Table
             columns={columns}
@@ -451,22 +360,13 @@ class Role extends Component {
             rowKey={record => record.id}
             onChange={this.handlePageChange}
             loading={RoleStore.getIsLoading}
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
-          <Sidebar
-            title={this.renderSideTitle()}
-            onClose={this.handleSideBarClose}
-            visible={visible}
-            onOk={this.handleSideBarOk}
-            showOkBth={this.renderShowOkBtn()}
-          >
-            {this.renderSideBar()}
-          </Sidebar>
         </Content>
       </Page>
     );
   }
 }
 
-export default Form.create({})(withRouter(Role));
+export default Form.create({})(withRouter(injectIntl(Role)));
 

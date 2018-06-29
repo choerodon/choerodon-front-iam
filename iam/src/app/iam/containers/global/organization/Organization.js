@@ -3,15 +3,12 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import querystring from 'query-string';
-import { Button, Col, Form, Icon, Input, Modal, Row, Select, Spin, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import './OrganizationHome.scss';
-//import '../../../../assets/css/main.scss';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 const { HeaderStore } = stores;
 const { Sidebar } = Modal;
-const ORGANIZATION_TYPE = 'organization';
-const PROJECT_TYPE = 'project';
 const FormItem = Form.Item;
 
 @inject('AppState')
@@ -121,10 +118,18 @@ class OrganizationHome extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, { code, name }) => {
+    this.props.form.validateFields((err, { code, name }, modify) => {
       if (!err) {
+        const { intl } = this.props;
         const { show, editData: { id, code: originCode, objectVersionNumber } } = this.state;
         const isCreate = show === 'create';
+        if (!modify && !isCreate) {
+          this.setState({
+            visible: false,
+          });
+          Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+          return;
+        }
         let url;
         let body;
         let message;
@@ -135,7 +140,7 @@ class OrganizationHome extends Component {
             name,
             code,
           };
-          message = '创建成功';
+          message = intl.formatMessage({id: 'create.success'});
           method = 'post';
         } else {
           url = `/iam/v1/organizations/${id}`;
@@ -144,7 +149,7 @@ class OrganizationHome extends Component {
             objectVersionNumber,
             code: originCode,
           };
-          message = '修改成功';
+          message = intl.formatMessage({id: 'modify.success'});
           method = 'put';
         }
         this.setState({ submitting: true });
@@ -154,12 +159,16 @@ class OrganizationHome extends Component {
               submitting: false,
               visible: false,
             });
-            Choerodon.prompt(message);
-            this.loadOrganizations();
-            if (isCreate) {
-              HeaderStore.addOrg(data);
+            if (data.failed) {
+              Choerodon.prompt(data.message);
             } else {
-              HeaderStore.updateOrg(data);
+              Choerodon.prompt(message);
+              this.loadOrganizations();
+              if (isCreate) {
+                HeaderStore.addOrg(data);
+              } else {
+                HeaderStore.updateOrg(data);
+              }
             }
           })
           .catch(error => {
@@ -176,9 +185,10 @@ class OrganizationHome extends Component {
     });
   };
 
-  handleDisable({ enabled, id }) {
+  handleDisable = ({ enabled, id }) => {
+    const { intl } = this.props;
     axios.put(`/iam/v1/organizations/${id}/${enabled ? 'disable' : 'enable'}`).then((data) => {
-      Choerodon.prompt(Choerodon.getMessage(enabled ? '停用成功' : '启用成功', 'Success'));
+      Choerodon.prompt(intl.formatMessage({id: enabled ? 'disable.success' : 'enable.success'}));
       this.loadOrganizations();
     }).catch(Choerodon.handleResponseError);
   }
@@ -190,10 +200,11 @@ class OrganizationHome extends Component {
    * @param callback 回调函数
    */
   checkCode = (rule, value, callback) => {
+    const { intl } = this.props;
     axios.post(`/iam/v1/organizations/check`, JSON.stringify({ code: value }))
       .then((mes) => {
         if (mes.failed) {
-          callback(Choerodon.getMessage('组织编码已存在，请输入其他组织编码', 'code existed, please try another'));
+          callback(intl.formatMessage({id: 'global.organization.onlymsg'}));
         } else {
           callback();
         }
@@ -201,6 +212,7 @@ class OrganizationHome extends Component {
   };
 
   renderSidebarContent() {
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { show, editData } = this.state;
     const formItemLayout = {
@@ -214,20 +226,11 @@ class OrganizationHome extends Component {
       },
     };
     const inputWidth = 512;
-    let title;
-    let description;
-    if (show === 'create') {
-      title = `在平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”中创建组织`;
-      description = '请在下面输入组织编码、组织名称创建组织。组织编码在全平台是唯一的，组织创建后，不能修改组织编码。';
-    } else {
-      title = `对组织“${editData.code}”进行修改`;
-      description = '您可以在此修改组织名称。';
-    }
-
     return (
-      <Content style={{ padding: 0 }}
-        title={title}
-        description={description}
+      <Content
+        className="sidebar-content"
+        code={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}
+        values={{name: show === 'create' ? `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}`}}
       >
         <Form>
           {
@@ -239,20 +242,20 @@ class OrganizationHome extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: Choerodon.getMessage('请输入组织编码', 'please input organization code'),
+                    message: intl.formatMessage({id: 'global.organization.coderequiredmsg'}),
                   }, {
-                    maxLength: 15,
-                    message: Choerodon.getMessage('组织编码不能超过15个字符', 'code should less than 15 characters'),
+                    max: 15,
+                    message: intl.formatMessage({id: 'global.organization.codemaxmsg'}),
                   }, {
                     pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
-                    message: Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'),
+                    message: intl.formatMessage({id: 'global.organization.codepatternmsg'}),
                   }, {
                     validator: this.checkCode,
                   }],
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label="组织编码" autocomplete="off" style={{ width: inputWidth }} />,
+                  <Input label={<FormattedMessage id="global.organization.code"/>} autocomplete="off" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -261,11 +264,11 @@ class OrganizationHome extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('name', {
-              rules: [{ required: true, message: '请输入组织名称', whitespace: true }],
+              rules: [{ required: true, message: intl.formatMessage({id: 'global.organization.namerequiredmsg'}), whitespace: true }],
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input label="组织名称" autocomplete="off" style={{ width: inputWidth }} />,
+              <Input label={<FormattedMessage id="global.organization.name"/>} autocomplete="off" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>
@@ -278,23 +281,22 @@ class OrganizationHome extends Component {
   };
 
   render() {
-    const { AppState } = this.props;
+    const { intl } = this.props;
     const {
       sort: { columnKey, order }, filters, pagination,
       params, content, loading, visible, show, submitting,
     } = this.state;
-    const { type } = AppState.currentMenuType;
     const columns = [{
-      title: '组织名称',
+      title: <FormattedMessage id="name"/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       sorter: true,
-      render: (text, record) => <span>{text}</span>,
+      render: text => <span>{text}</span>,
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
-      title: '组织编码',
+      title: <FormattedMessage id="code"/>,
       dataIndex: 'code',
       key: 'code',
       filters: [],
@@ -302,32 +304,32 @@ class OrganizationHome extends Component {
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
     }, {
-      title: '启用状态',
+      title: <FormattedMessage id="status"/>,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{
-        text: '启用',
+        text: intl.formatMessage({id: 'enable'}),
         value: 'true',
       }, {
-        text: '停用',
+        text: intl.formatMessage({id: 'disable'}),
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
-      render: (text) => {
-        return text ? '启用' : '停用';
-      },
+      render: enable => intl.formatMessage({id: enable ? 'enable' : 'disable'}),
     }, {
       title: '',
       width: '100px',
       key: 'action',
+      align: 'right',
       render: (text, record) => (
         <div className="operation">
           <Permission service={['iam-service.organization.update']}>
             <Tooltip
-              title="修改"
+              title={<FormattedMessage id="modify"/>}
               placement="bottom"
             >
               <Button
+                size="small"
                 icon="mode_edit"
                 shape="circle"
                 onClick={this.handleEdit.bind(this, record)}
@@ -336,10 +338,11 @@ class OrganizationHome extends Component {
           </Permission>
           <Permission service={['iam-service.organization.disableOrganization', 'iam-service.organization.enableOrganization']}>
             <Tooltip
-              title={record.enabled ? '停用' : '启用'}
+              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'}/>}
               placement="bottom"
             >
               <Button
+                size="small"
                 icon={record.enabled ? 'remove_circle_outline' : 'finished'}
                 shape="circle"
                 onClick={() => this.handleDisable(record)}
@@ -350,61 +353,60 @@ class OrganizationHome extends Component {
       ),
     }];
     return (
-      <Permission
+      <Page
         service={[
+          'iam-service.organization.list',
+          'iam-service.organization.check',
+          'iam-service.organization.query',
           'organization-service.organization.create',
           'iam-service.organization.update',
           'iam-service.organization.disableOrganization',
           'iam-service.organization.enableOrganization',
         ]}
-        type={type}
       >
-        <Page>
-          <Header title={Choerodon.languageChange('organization.title')}>
-            <Permission service={['organization-service.organization.create']}>
-              <Button
-                onClick={this.createOrg}
-                icon="playlist_add"
-              >
-                {Choerodon.getMessage('创建组织', 'createOrganization')}
-              </Button>
-            </Permission>
+        <Header title={<FormattedMessage id="global.organization.header.title" />} >
+          <Permission service={['organization-service.organization.create']}>
             <Button
-              onClick={this.handleRefresh}
-              icon="refresh"
+              onClick={this.createOrg}
+              icon="playlist_add"
             >
-              {Choerodon.languageChange('refresh')}
+              <FormattedMessage id="global.organization.create" />
             </Button>
-          </Header>
-          <Content
-            title={`平台“${process.env.HEADER_TITLE_NAME || 'Choerodon'}”的组织管理`}
-            description="组织是项目的上一级。通过组织您可以管理项目、用户。您可以创建组织，创建后平台默认您是这个组织的组织管理员。"
+          </Permission>
+          <Button
+            onClick={this.handleRefresh}
+            icon="refresh"
           >
-            <Table
-              columns={columns}
-              dataSource={content}
-              pagination={pagination}
-              onChange={this.handlePageChange}
-              filters={params}
-              loading={loading}
-              filterBarPlaceholder="过滤表"
-            />
-            <Sidebar
-              title={show === 'create' ? '创建组织' : '修改组织'}
-              visible={visible}
-              onOk={this.handleSubmit}
-              onCancel={this.handleCancelFun}
-              okText={show === 'create' ? '创建' : '保存'}
-              cancelText="取消"
-              confirmLoading={submitting}
-            >
-              {this.renderSidebarContent()}
-            </Sidebar>
-          </Content>
-        </Page>
-      </Permission>
+            <FormattedMessage id="refresh" />
+          </Button>
+        </Header>
+        <Content
+          code="global.organization"
+        >
+          <Table
+            columns={columns}
+            dataSource={content}
+            pagination={pagination}
+            onChange={this.handlePageChange}
+            filters={params}
+            loading={loading}
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+          />
+          <Sidebar
+            title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}/>}
+            visible={visible}
+            onOk={this.handleSubmit}
+            onCancel={this.handleCancelFun}
+            okText={<FormattedMessage id={show === 'create' ? 'create' : 'save'}/>}
+            cancelText={<FormattedMessage id="cancel" />}
+            confirmLoading={submitting}
+          >
+            {this.renderSidebarContent()}
+          </Sidebar>
+        </Content>
+      </Page>
     );
   }
 }
 
-export default Form.create()(withRouter(OrganizationHome));
+export default Form.create()(withRouter(injectIntl(OrganizationHome)));

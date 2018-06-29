@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Checkbox, Form, Input, Select } from 'choerodon-ui';
+import { Form, Input, Select } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content } from 'choerodon-front-boot';
@@ -7,6 +8,7 @@ import CreateUserStore from '../../../../stores/organization/user/createUser/Cre
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+const intlPrefix = 'organization.user';
 
 const inputWidth = 512; // input框的长度
 const formItemLayout = {
@@ -51,6 +53,7 @@ class EditUser extends Component {
         realName: '',
         email: '',
         language: 'zh_CN',
+        timeZone: 'CTT',
         objectVersionNumber: '',
       },
     };
@@ -96,20 +99,20 @@ class EditUser extends Component {
   }
 
   checkUsername = (rule, username, callback) => {
-    const { edit, AppState } = this.props;
+    const { edit, AppState, intl } = this.props;
     if (!edit || username !== this.state.userInfo.loginName) {
       if (/\s/.test(username)) {
-        callback(Choerodon.getMessage('输入存在空格，请检查', 'input Spaces, please check'));
+        callback(intl.formatMessage({id: `${intlPrefix}.name.space.msg`}));
         return;
       }
       if (username && this.checkUsernameAndPwd()) {
-        callback(Choerodon.getMessage('登录名不能与密码相同', 'Login name cannot be the same as password'));
+        callback(intl.formatMessage({id: `${intlPrefix}.name.samepwd.msg`}));
         return;
       }
       const id = AppState.currentMenuType.id;
       CreateUserStore.checkUsername(id, username).then(({ failed }) => {
         if (failed) {
-          callback(Choerodon.getMessage('已存在该登录名，请输入其他登录名', 'User name already exists'));
+          callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
         } else {
           callback();
         }
@@ -127,9 +130,9 @@ class EditUser extends Component {
   // 分别验证密码的最小长度，特殊字符和大写字母的情况和密码策略进行比对
   checkPassword = (rule, value, callback) => {
     const passwordPolicy = CreateUserStore.getPasswordPolicy;
-    const form = this.props.form;
+    const { intl, form } = this.props;
     if (value && this.checkUsernameAndPwd()) {
-      callback(Choerodon.getMessage('登录名不能与密码相同', 'Login name cannot be the same as password'));
+      callback(intl.formatMessage({id: `${intlPrefix}.name.samepwd.msg`}));
       return;
     }
     if (value && passwordPolicy && passwordPolicy.originalPassword !== value) {
@@ -156,21 +159,21 @@ class EditUser extends Component {
   };
 
   checkRepassword = (rule, value, callback) => {
-    const form = this.props.form;
+    const { intl, form } = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(Choerodon.getMessage('两次密码输入不一致', 'passwords do not match'));
+      callback(intl.formatMessage({id: `${intlPrefix}.password.unrepeat.msg`}));
     } else {
       callback();
     }
   };
 
   checkEmailAddress = (rule, value, callback) => {
-    const { edit, AppState } = this.props;
+    const { edit, AppState, intl } = this.props;
     if (!edit || value !== this.state.userInfo.email) {
       const id = AppState.currentMenuType.id;
       CreateUserStore.checkEmailAddress(id, value).then(({ failed }) => {
         if (failed) {
-          callback(Choerodon.getMessage('该邮箱已被使用，请输入其他邮箱', 'Email is already exists'));
+          callback(intl.formatMessage({id: `${intlPrefix}.email.used.msg`}));
         } else {
           callback();
         }
@@ -180,47 +183,20 @@ class EditUser extends Component {
     }
   };
 
-  // 验证用户的额外信息是json格式的数据
-  handleChangeAddInfo = (rule, value, callback) => {
-    const data = value;
-    let obj = '';
-    if (data) {
-      try {
-        obj = JSON.parse(data);
-        this.setState({ addInfoRequired: undefined });
-      } catch (err) {
-        callback(Choerodon.getMessage('请输入 json 格式的数据', 'input json data'));
-      }
-      if (typeof obj === 'object' && !(obj instanceof Array)) {
-        let hasProp = false;
-        const len = Object.keys(obj);
-        if (len) {
-          hasProp = true;
-        }
-        if (hasProp) {
-          callback();
-        } else {
-          callback(Choerodon.getMessage('请输入 json 格式的数据', 'input json data'));
-        }
-      } else if (typeof obj === 'number' && typeof obj === 'string' && obj instanceof Array) {
-        callback(Choerodon.getMessage('请输入 json 格式的数据', 'input json data'));
-      } else {
-        callback(Choerodon.getMessage('请输入 json 格式的数据', 'input json data'));
-      }
-    } else {
-      callback();
-    }
-  };
-
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, data) => {
+    this.props.form.validateFieldsAndScroll((err, data, modify) => {
       if (!err) {
-        const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop } = this.props;
+        const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop, OnUnchangedSuccess = noop, intl } = this.props;
         const menuType = AppState.currentMenuType;
         const organizationId = menuType.id;
         onSubmit();
         if (edit) {
+          if (!modify) {
+            Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+            OnUnchangedSuccess();
+            return;
+          }
           const { id, objectVersionNumber } = this.state.userInfo;
           CreateUserStore.updateUser(organizationId, id, {
             ...data,
@@ -230,7 +206,7 @@ class EditUser extends Component {
               Choerodon.prompt(message);
               onError();
             } else {
-              Choerodon.prompt(Choerodon.getMessage('修改成功', 'Success'));
+              Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
               onSuccess();
             }
           }).catch((error) => {
@@ -242,7 +218,7 @@ class EditUser extends Component {
               Choerodon.prompt(message);
               onError();
             } else {
-              Choerodon.prompt(Choerodon.getMessage('创建成功', 'Success'));
+              Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
               onSuccess();
             }
           }).catch((error) => {
@@ -255,7 +231,7 @@ class EditUser extends Component {
   };
 
   render() {
-    const { AppState, edit } = this.props;
+    const { AppState, edit, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
     const { getFieldDecorator } = this.props.form;
@@ -265,11 +241,8 @@ class EditUser extends Component {
     return (
       <Content
         className="sidebar-content"
-        title={edit ? `对用户“${userInfo.loginName}”进行修改` : `在组织“${organizationName}”中创建用户`}
-        description={
-          edit ? '您可以在此修改用户名、邮箱、语言、时区。' : '用户是全平台唯一的。您创建的用户只属于这个组织，但在平台的其他组织中能被分配角色。'
-        }
-        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/tenant/user/"
+        code={edit ? `${intlPrefix}.modify` : `${intlPrefix}.create`}
+        values={{name: edit ? userInfo.loginName : organizationName}}
       >
         <Form onSubmit={this.handleSubmit.bind(this)} layout="vertical">
           <FormItem
@@ -280,7 +253,7 @@ class EditUser extends Component {
                 {
                   required: true,
                   whitespace: true,
-                  message: Choerodon.getMessage('请输入登录名', 'The field is required'),
+                  message: intl.formatMessage({id: `${intlPrefix}.loginname.require.msg`}),
                 },
                 {
                   validator: this.checkUsername,
@@ -295,7 +268,7 @@ class EditUser extends Component {
             })(
               <Input
                 autocomplete="off"
-                label={Choerodon.getMessage('登录名', 'user loginName')}
+                label={intl.formatMessage({id: `${intlPrefix}.loginname`})}
                 disabled={edit}
                 style={{ width: inputWidth }}
               />,
@@ -310,7 +283,7 @@ class EditUser extends Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: Choerodon.getMessage('请输入用户名', 'The field is required'),
+                    message: intl.formatMessage({id: `${intlPrefix}.realname.require.msg`}),
                   },
                 ],
                 initialValue: userInfo.realName,
@@ -318,7 +291,7 @@ class EditUser extends Component {
               })(
                 <Input
                   autocomplete="off"
-                  label={Choerodon.getMessage('用户名', 'user name')}
+                  label={intl.formatMessage({id: `${intlPrefix}.realname`})}
                   type="text"
                   rows={1}
                   style={{ width: inputWidth }}
@@ -334,11 +307,11 @@ class EditUser extends Component {
                 {
                   required: true,
                   whitespace: true,
-                  message: Choerodon.getMessage('请输入邮箱', 'The field is required'),
+                  message: intl.formatMessage({id: `${intlPrefix}.email.require.msg`}),
                 },
                 {
                   type: 'email',
-                  message: Choerodon.getMessage('请输入正确的邮箱', 'Please enter the correct email format'),
+                  message: intl.formatMessage({id: `${intlPrefix}.email.pattern.msg`}),
                 },
                 {
                   validator: this.checkEmailAddress,
@@ -350,7 +323,7 @@ class EditUser extends Component {
             })(
               <Input
                 autocomplete="off"
-                label={Choerodon.getMessage('邮箱', 'user email')}
+                label={intl.formatMessage({id: `${intlPrefix}.email`})}
                 style={{ width: inputWidth }}
               />,
             )}
@@ -364,7 +337,7 @@ class EditUser extends Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: Choerodon.getMessage('请输入密码', 'The field is required'),
+                    message: intl.formatMessage({id: `${intlPrefix}.password.require.msg`}),
                   },
                   {
                     validator: this.checkPassword,
@@ -378,7 +351,7 @@ class EditUser extends Component {
               })(
                 <Input
                   autocomplete="off"
-                  label={Choerodon.getMessage('密码', 'user password')}
+                  label={intl.formatMessage({id: `${intlPrefix}.password`})}
                   type="password"
                   style={{ width: inputWidth }}
                 />,
@@ -394,7 +367,7 @@ class EditUser extends Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: Choerodon.getMessage('请确认密码', 'The field is required'),
+                    message: intl.formatMessage({id: `${intlPrefix}.repassword.require.msg`}),
                   }, {
                     validator: this.checkRepassword,
                   }],
@@ -403,7 +376,7 @@ class EditUser extends Component {
               })(
                 <Input
                   autocomplete="off"
-                  label={Choerodon.getMessage('确认密码', 'password confirm')}
+                  label={intl.formatMessage({id: `${intlPrefix}.repassword`})}
                   type="password"
                   style={{ width: inputWidth }}
                   onBlur={this.handleRePasswordBlur}
@@ -419,7 +392,7 @@ class EditUser extends Component {
             })(
               <Select
                 getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                label={Choerodon.getMessage('语言', 'user language')}
+                label={intl.formatMessage({id: `${intlPrefix}.language`})}
                 style={{ width: inputWidth }}
               >
                 <Option value="zh_CN">简体中文</Option>
@@ -429,14 +402,13 @@ class EditUser extends Component {
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label={Choerodon.getMessage('时区', 'Timezone')}
           >
             {getFieldDecorator('timeZone', {
-              initialValue: 'CTT',
+              initialValue: this.state.userInfo.timeZone,
             })(
               <Select
                 getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                label={Choerodon.getMessage('时区', 'Timezone')}
+                label={intl.formatMessage({id: `${intlPrefix}.timezone`})}
                 style={{ width: inputWidth }}
               >
                 <Option value="CTT">中国</Option>
@@ -450,4 +422,4 @@ class EditUser extends Component {
   }
 }
 
-export default Form.create({})(withRouter(EditUser));
+export default Form.create({})(withRouter(injectIntl(EditUser)));

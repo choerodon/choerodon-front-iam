@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { Button, Col, Form, Icon, Input, Modal, Popover, Radio, Row, Select, Spin, Table, Tooltip } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import { inject, observer } from 'mobx-react';
 import './Route.scss';
@@ -14,6 +15,7 @@ const { Sidebar } = Modal;
 const Option = Select.Option;
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
+const intlPrefix = 'global.route';
 @inject('AppState')
 @observer
 class Route extends Component {
@@ -63,9 +65,9 @@ class Route extends Component {
 
   /* 获取所有微服务 */
   getService() {
-    axios.get('manager/v1/services/page').then(({ content }) => {
+    axios.get('manager/v1/services').then((res) => {
       this.setState({
-        serviceArr: content,
+        serviceArr: res,
       });
     });
   }
@@ -187,6 +189,7 @@ class Route extends Component {
   /* 刷新 */
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
+      this.getService();
       this.loadRouteList();
     });
   };
@@ -200,15 +203,16 @@ class Route extends Component {
 
   /* 删除自定义路由 */
   handleDelete = (record) => {
+    const { intl } = this.props;
     Modal.confirm({
-      title: '删除路由',
-      content: `确定要删除路由"${record.name}"吗？`,
+      title: intl.formatMessage({id: `${intlPrefix}.delete.title`}),
+      content: intl.formatMessage({id: `${intlPrefix}.delete.content`},{name: record.name}),
       onOk: () => {
         return axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt('删除成功');
+            Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
             this.loadRouteList();
           }
         });
@@ -272,13 +276,13 @@ class Route extends Component {
     e.preventDefault();
     const { id, objectVersionNumber } = this.state.sidebarData;
     this.props.form.validateFields((err, { name, path, serviceId, preffix,
-      retryable, customSensitiveHeaders, sensitiveHeaders, helperService }) => {
+      retryable, customSensitiveHeaders, sensitiveHeaders, helperService }, modify) => {
       if (!err) {
         const { show } = this.state;
         if (show === 'create') {
           const body = {
             name,
-            path,
+            path: path.trim(),
             serviceId,
           };
           this.setState({
@@ -288,7 +292,7 @@ class Route extends Component {
             if (failed) {
               Choerodon.prompt(message);
             } else {
-              Choerodon.prompt('创建成功');
+              Choerodon.prompt(this.props.intl.formatMessage({id: 'create.success'}));
               this.loadRouteList();
               this.setState({
                 submitting: false,
@@ -299,6 +303,14 @@ class Route extends Component {
         } else if (show === 'detail') {
           this.handleCancel();
         } else {
+          if (!modify) {
+            Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+            this.loadRouteList();
+            this.setState({
+              visible: false,
+            });
+            return;
+          }
           const isFiltered = customSensitiveHeaders === 'filtered';
           const info = isFiltered ? sensitiveHeaders.join(',') : undefined;
           this.setState({
@@ -306,7 +318,7 @@ class Route extends Component {
           });
           const body = {
             name,
-            path,
+            path: path.trim(),
             objectVersionNumber,
             helperService,
             serviceId,
@@ -320,7 +332,7 @@ class Route extends Component {
             if (failed) {
               Choerodon.prompt(message);
             } else {
-              Choerodon.prompt('修改成功');
+              Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
               this.loadRouteList();
               this.setState({
                 submitting: false,
@@ -340,14 +352,26 @@ class Route extends Component {
    * @param callback 回调
    */
   checkName = (rule, value, callback) => {
+    const { intl } = this.props;
     axios.post('/manager/v1/routes/check', JSON.stringify({ name: value }))
       .then(({ failed }) => {
         if (failed) {
-          callback(Choerodon.getMessage('路由名称已存在，请输入其他路由名称', 'name existed, please try another'));
+          callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
         } else {
           callback();
         }
       });
+  }
+
+  checkNamePattern = (rule, value, callback) => {
+    const { intl } = this.props;
+    const patternEmpty = /^\S+$/;
+    const patterNum = /^\d+$/;
+    if (!patternEmpty.test(value) || patterNum.test(value)) {
+      callback(intl.formatMessage({id: `${intlPrefix}.name.number.msg`}));
+    } else {
+      callback();
+    }
   }
 
   /**
@@ -357,10 +381,11 @@ class Route extends Component {
    * @param callback 回调
    */
   checkPath = (rule, value, callback) => {
+    const { intl } = this.props;
     axios.post('/manager/v1/routes/check', JSON.stringify({ path: value }))
       .then(({ failed }) => {
         if (failed) {
-          callback(Choerodon.getMessage('路由路径已存在，请输入其他路由路径', 'path existed, please try another'));
+          callback(intl.formatMessage({id: `${intlPrefix}.path.exist.msg`}));
         } else {
           callback();
         }
@@ -377,14 +402,14 @@ class Route extends Component {
       return (
         <div className="iconStyle">
           <Icon type="settings" />
-          <span>{Choerodon.getMessage('预定义', 'Predefined')}</span>
+          <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
         </div>
       );
     } else {
       return (
         <div className="iconStyle">
           <Icon type="av_timer" />
-          <span>{Choerodon.getMessage('自定义', 'Custom')}</span>
+          <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
         </div>
       );
     }
@@ -399,11 +424,12 @@ class Route extends Component {
       return (
         <div>
           <Tooltip
-            title="详情"
+            title={<FormattedMessage id="detail"/>}
             placement="bottom"
           >
             <Button
               icon="find_in_page"
+              size="small"
               shape="circle"
               onClick={this.editOrDetail.bind(this, record, 'detail')}
             />
@@ -415,24 +441,26 @@ class Route extends Component {
         <div>
           <Permission service={['manager-service.route.update']}>
             <Tooltip
-              title="修改"
+              title={ <FormattedMessage id="modify"/>}
               placement="bottom"
             >
               <Button
                 icon="mode_edit"
                 shape="circle"
+                size="small"
                 onClick={this.editOrDetail.bind(this, record, 'edit')}
               />
             </Tooltip>
           </Permission>
           <Permission service={['manager-service.route.delete']}>
             <Tooltip
-              title="删除"
+              title={ <FormattedMessage id="delete"/>}
               placement="bottom"
             >
               <Button
                 icon="delete_forever"
                 shape="circle"
+                size="small"
                 onClick={this.handleDelete.bind(this, record)}
               />
             </Tooltip>
@@ -446,11 +474,11 @@ class Route extends Component {
   renderSidebarTitle() {
     const { show } = this.state;
     if (show === 'create') {
-      return '创建路由';
+      return  <FormattedMessage id={`${intlPrefix}.create`}/>;
     } else if (show === 'edit') {
-      return '修改路由';
+      return <FormattedMessage id={`${intlPrefix}.modify`}/>;
     } else {
-      return '路由详情';
+      return <FormattedMessage id={`${intlPrefix}.detail`}/>;
     }
   }
 
@@ -458,16 +486,17 @@ class Route extends Component {
   renderSidebarOkText() {
     const { show } = this.state;
     if (show === 'create') {
-      return '创建';
+      return <FormattedMessage id="create"/>;
     } else if (show === 'edit') {
-      return '保存';
+      return <FormattedMessage id="save"/>;
     } else {
-      return '返回';
+      return <FormattedMessage id="return"/>;
     }
   }
 
   /* 渲染侧边栏内容 */
   renderSidebarContent() {
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { show, sidebarData, filterSensitive, helper } = this.state;
     const formItemLayout = {
@@ -487,26 +516,30 @@ class Route extends Component {
     const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
     const customSensitiveHeaders = sidebarData && sidebarData.customSensitiveHeaders ? 'filtered' : 'noFiltered';
     const sensitiveHeaders = sidebarData && sidebarData.sensitiveHeaders ? sidebarData.sensitiveHeaders.split(',') : [];
-    let title;
-    let description;
+    let code, values;
     if (show === 'create') {
-      title = `在平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"中创建路由`;
-      description = '请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。';
+      code = `${intlPrefix}.create`;
+      values = {
+        name: process.env.HEADER_TITLE_NAME || 'Choerodon',
+      };
     } else if (show === 'edit') {
-      title = `对路由"${sidebarData.name}"进行修改`;
-      description = '您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。';
+      code = `${intlPrefix}.modify`;
+      values = {
+        name: sidebarData.name,
+      };
     } else if (show === 'detail') {
-      title = `查看路由"${sidebarData.name}"的详情`;
-      description = '预定义路由为平台初始化设置，您不能修改预定义路由。';
+      code = `${intlPrefix}.detail`;
+      values = {
+        name: sidebarData.name,
+      };
     }
     return (
       <Content
-        title={title}
-        description={description}
-        link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
-        className="sidebar-content formContainer"
+        code={code}
+        values={values}
+        className="sidebar-content route-form-container"
       >
-        <Form>
+        <Form layout="vertical">
           <FormItem
             {...formItemLayout}
           >
@@ -514,18 +547,20 @@ class Route extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: '请输入路由名称',
+                message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
               }, {
                 validator: createValidate && this.checkName,
+              }, {
+                validator: createValidate && this.checkNamePattern,
               }],
               initialValue: createValidate ? undefined : sidebarData.name,
               validateTrigger: 'onBlur',
               validateFirst: true,
             })(
               <Input
-                label="路由名称"
+                label={<FormattedMessage id={`${intlPrefix}.name`}/>}
                 autocomplete="off"
-                suffix={this.getSuffix('路由表中的唯一标识')}
+                suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.name.tip`}))}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
               />,
@@ -538,7 +573,7 @@ class Route extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: '请输入路径',
+                message: intl.formatMessage({id: `${intlPrefix}.path.require.msg`}),
               }, {
                 validator: createValidate && this.checkPath,
               }],
@@ -547,10 +582,10 @@ class Route extends Component {
               validateFirst: true,
             })(
               <Input
-                label="路径"
+                label={<FormattedMessage id={`${intlPrefix}.path`}/>}
                 autocomplete="off"
                 style={{ width: inputWidth }}
-                suffix={this.getSuffix('路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径')}
+                suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.path.tip`}))}
                 disabled={!createValidate}
               />,
             )}
@@ -561,14 +596,14 @@ class Route extends Component {
             {getFieldDecorator('serviceId', {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('必须选择一个微服务', 'Please choose one microservice at least'),
+                message: intl.formatMessage({id: `${intlPrefix}.service.require.msg`}),
               }],
               initialValue: createValidate ? undefined : sidebarData.serviceId,
             })(
               <Select
                 disabled={detailValidate}
                 style={{ width: 300 }}
-                label="对应微服务"
+                label={<FormattedMessage id={`${intlPrefix}.service`}/>}
                 getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
                 filterOption={
                   (input, option) =>
@@ -587,9 +622,10 @@ class Route extends Component {
               {getFieldDecorator('preffix', {
                 initialValue: stripPrefix,
               })(
-                <RadioGroup label={this.labelSuffix('是否去除前缀', '默认情况下，请求转发时会将路由规则中的前缀去除')} className="radioGroup" disabled={detailValidate}>
-                  <Radio value={'stripPrefix'}>是</Radio>
-                  <Radio value={'withPrefix'}>否</Radio>
+                <RadioGroup label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.stripprefix`}),
+                  intl.formatMessage({id: `${intlPrefix}.stripprefix.tip`}))} className="radioGroup" disabled={detailValidate}>
+                  <Radio value={'stripPrefix'}>{intl.formatMessage({id: 'yes'})}</Radio>
+                  <Radio value={'withPrefix'}>{intl.formatMessage({id: 'no'})}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -601,9 +637,10 @@ class Route extends Component {
               {getFieldDecorator('retryable', {
                 initialValue: retryable,
               })(
-                <RadioGroup label={this.labelSuffix('是否重试', '默认为否，如果为是，请求失败时会自动重试3次')} className="radioGroup" disabled={detailValidate}>
-                  <Radio value={'retry'}>是</Radio>
-                  <Radio value={'noRetry'}>否</Radio>
+                <RadioGroup label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.retryable`}),
+                  intl.formatMessage({id: `${intlPrefix}.retryable.tip`}))} className="radioGroup" disabled={detailValidate}>
+                  <Radio value={'retry'}>{intl.formatMessage({id: 'yes'})}</Radio>
+                  <Radio value={'noRetry'}>{intl.formatMessage({id: 'no'})}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -615,71 +652,72 @@ class Route extends Component {
               {getFieldDecorator('customSensitiveHeaders', {
                 initialValue: customSensitiveHeaders,
               })(
-                <RadioGroup label={this.labelSuffix('是否过滤敏感头信息', '请求转发时，会将Headers中的敏感信息随HTTP转发，如果想过滤一些敏感信息，请选择是')} className="radioGroup" disabled={detailValidate} onChange={this.changeSensetive.bind(this)}>
-                  <Radio value={'filtered'}>是</Radio>
-                  <Radio value={'noFiltered'}>否</Radio>
+                <RadioGroup label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.customsensitiveheaders`}),
+                  intl.formatMessage({id: `${intlPrefix}.customsensitiveheaders.tip`}))} className="radioGroup" disabled={detailValidate} onChange={this.changeSensetive.bind(this)}>
+                  <Radio value={'filtered'}>{intl.formatMessage({id: 'yes'})}</Radio>
+                  <Radio value={'noFiltered'}>{intl.formatMessage({id: 'no'})}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
           )}
-        </Form>
-        {
-          filterSensitive === 'filtered' && !createValidate ? (
+          {
+            filterSensitive === 'filtered' && !createValidate ? (
+              <FormItem
+                {...formItemLayout}
+              >
+                {getFieldDecorator('sensitiveHeaders', {
+                  rules: [{
+                    required: this.state.filterSensitive === 'filtered' && show === 'edit',
+                    message: intl.formatMessage({id: `${intlPrefix}.sensitiveheaders.require.msg`}),
+                  }],
+                  initialValue: this.state.filterSensitive === 'filtered' ? sensitiveHeaders : [],
+                })(
+                  <Select
+                    disabled={show === 'detail'}
+                    label={<FormattedMessage id={`${intlPrefix}.sensitiveheaders`}/>}
+                    mode="tags"
+                    filterOption={false}
+                    onInputKeyDown={this.handleInputKeyDown}
+                    ref={this.saveSelectRef}
+                    style={{ width: inputWidth }}
+                    notFoundContent={false}
+                    showNotFindSelectedItem={false}
+                    showNotFindInputItem={false}
+                    allowClear
+                  />,
+                )}
+              </FormItem>
+            ) : ''
+          }
+          {(show === 'edit' || helper) && (
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('sensitiveHeaders', {
+              {getFieldDecorator('helperService', {
                 rules: [{
-                  required: this.state.filterSensitive === 'filtered' && show === 'edit',
-                  message: '请输入敏感头信息',
+                  whitespace: show === 'edit',
+                  message: intl.formatMessage({id: `${intlPrefix}.helperservice.require.msg`}),
                 }],
-                initialValue: this.state.filterSensitive === 'filtered' ? sensitiveHeaders : [],
+                initialValue: sidebarData.helperService || undefined,
               })(
-                <Select
-                  disabled={show === 'detail'}
-                  label="敏感头信息"
-                  mode="tags"
-                  filterOption={false}
-                  onInputKeyDown={this.handleInputKeyDown}
-                  ref={this.saveSelectRef}
+                <Input
+                  disabled={detailValidate}
+                  autocomplete="off"
+                  label={<FormattedMessage id={`${intlPrefix}.helperservice`}/>}
                   style={{ width: inputWidth }}
-                  notFoundContent={false}
-                  showNotFindSelectedItem={false}
-                  showNotFindInputItem={false}
-                  allowClear
+                  suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.helperservice.tip`}))}
                 />,
               )}
             </FormItem>
-          ) : ''
-        }
-        {(show === 'edit' || helper) && (
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('helperService', {
-              rules: [{
-                whitespace: show === 'edit',
-                message: '请输入Helper服务名',
-              }],
-              initialValue: sidebarData.helperService || undefined,
-            })(
-              <Input
-                disabled={detailValidate}
-                autocomplete="off"
-                label="Helper服务名"
-                style={{ width: inputWidth }}
-                suffix={this.getSuffix('该路由规则对应的自定义网关处理器服务，默认为gateway-helper')}
-              />,
-            )}
-          </FormItem>
-        )
-        }
+          )
+          }
+        </Form>
       </Content>
     );
   }
 
   render() {
-    const { AppState } = this.props;
+    const { AppState, intl } = this.props;
     const { sort: { columnKey, order }, filters } = this.state;
     const { content, loading, pagination, visible, show, submitting } = this.state;
     const { type } = AppState.currentMenuType;
@@ -694,32 +732,32 @@ class Route extends Component {
     }, []);
 
     const columns = [{
-      title: '路由名称',
+      title: <FormattedMessage id="name"/>,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
     }, {
-      title: '路径',
+      title: <FormattedMessage id={`${intlPrefix}.path`}/>,
       dataIndex: 'path',
       key: 'path',
       filters: [],
       filteredValue: filters.path || [],
     }, {
-      title: '对应微服务',
+      title: <FormattedMessage id={`${intlPrefix}.service`}/>,
       dataIndex: 'serviceId',
       key: 'serviceId',
       filters: filtersService,
       filteredValue: filters.serviceId || [],
     }, {
-      title: '路由来源',
+      title: <FormattedMessage id="source"/>,
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{
-        text: '预定义',
+        text: intl.formatMessage({id: `${intlPrefix}.builtin.predefined`}),
         value: 'true',
       }, {
-        text: '自定义',
+        text: intl.formatMessage({id: `${intlPrefix}.builtin.custom`}),
         value: 'false',
       }],
       filteredValue: filters.builtIn || [],
@@ -728,32 +766,40 @@ class Route extends Component {
       title: '',
       width: '100px',
       key: 'action',
+      align: 'right',
       render: (text, record) => this.renderAction(record),
     }];
     return (
-      <Page className="container">
+      <Page
+        className="container"
+        service={[
+          'manager-service.route.list',
+          'manager-service.route.check',
+          'manager-service.route.update',
+          'manager-service.route.delete',
+          'manager-service.route.create',
+        ]}
+      >
         <Header
-          title="路由管理"
+          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
         >
           <Permission service={['manager-service.route.create']}>
             <Button
               icon="playlist_add"
               onClick={this.createRoute}
             >
-              {Choerodon.getMessage('创建路由', 'create')}
+              <FormattedMessage id={`${intlPrefix}.create`}/>
             </Button>
           </Permission>
           <Button
             icon="refresh"
             onClick={this.handleRefresh}
           >
-            {Choerodon.languageChange('refresh')}
+            <FormattedMessage id='refresh'/>
           </Button>
         </Header>
         <Content
-          title={`平台"${process.env.HEADER_TITLE_NAME || 'Choerodon'}"的路由管理`}
-          description="路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。"
-          link="http://v0-6.choerodon.io/zh/docs/user-guide/system-configuration/microservice-management/route/"
+          code={intlPrefix}
         >
           <Table
             columns={columns}
@@ -762,7 +808,7 @@ class Route extends Component {
             pagination={pagination}
             onChange={this.handlePageChange}
             filters={this.state.filters.params}
-            filterBarPlaceholder="过滤表"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar
             title={this.renderSidebarTitle()}
@@ -782,4 +828,4 @@ class Route extends Component {
   }
 }
 
-export default Form.create({})(withRouter(Route));
+export default Form.create({})(withRouter(injectIntl(Route)));

@@ -78,10 +78,6 @@ class UserInfo extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values, modify) => {
       if (!err) {
-        // if (!modify) {
-        //   Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
-        //   return;
-        // }
         this.setState({
           submitting: true,
         });

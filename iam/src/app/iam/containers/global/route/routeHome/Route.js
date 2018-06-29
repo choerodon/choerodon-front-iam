@@ -282,7 +282,7 @@ class Route extends Component {
         if (show === 'create') {
           const body = {
             name,
-            path,
+            path: path.trim(),
             serviceId,
           };
           this.setState({
@@ -318,7 +318,7 @@ class Route extends Component {
           });
           const body = {
             name,
-            path,
+            path: path.trim(),
             objectVersionNumber,
             helperService,
             serviceId,
@@ -361,6 +361,17 @@ class Route extends Component {
           callback();
         }
       });
+  }
+
+  checkNamePattern = (rule, value, callback) => {
+    const { intl } = this.props;
+    const patternEmpty = /^\S+$/;
+    const patterNum = /^\d+$/;
+    if (!patternEmpty.test(value) || patterNum.test(value)) {
+      callback(intl.formatMessage({id: `${intlPrefix}.name.number.msg`}));
+    } else {
+      callback();
+    }
   }
 
   /**
@@ -539,6 +550,8 @@ class Route extends Component {
                 message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
               }, {
                 validator: createValidate && this.checkName,
+              }, {
+                validator: createValidate && this.checkNamePattern,
               }],
               initialValue: createValidate ? undefined : sidebarData.name,
               validateTrigger: 'onBlur',

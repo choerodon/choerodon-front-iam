@@ -180,14 +180,16 @@ class Client extends Component {
     }
   };
 
-  closeSidebar = () => {
+  closeSidebar = ( nochange = '' ) => {
     const { resetFields } = this.props.form;
     resetFields();
     this.setState({
       visible: false,
       submitting: false,
     }, () => {
-      this.reload();
+      if (nochange !== 'nochange') {
+        this.reload();
+      }
     });
   };
 
@@ -269,7 +271,7 @@ class Client extends Component {
         } else if (status === 'edit') {
           if (!modify) {
             Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
-            this.closeSidebar();
+            this.closeSidebar('nochange');
             return;
           }
           const client = ClientStore.getClient;

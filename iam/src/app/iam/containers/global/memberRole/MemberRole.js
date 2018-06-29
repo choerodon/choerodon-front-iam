@@ -524,7 +524,6 @@ class MemberRole extends Component {
               } else {
                 Choerodon.prompt(this.formatMessage('modify.success'));
                 this.closeSidebar();
-                this.roles.fetch();
               }
             })
             .catch(error => {

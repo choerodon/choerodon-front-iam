@@ -618,7 +618,7 @@ const zh_CN = {
   // 项目层
   // 项目信息
   "project.info.disable.title": "停用项目",
-  "project.info.disable.content": "确定要停用项目\"${name}\"吗？停用后，您和项目下其他成员将无法进入此项目。",
+  "project.info.disable.content": "确定要停用项目\"{name}\"吗？停用后，您和项目下其他成员将无法进入此项目。",
   "project.info.header.title": "项目信息",
   "project.info.name": "项目名称",
   "project.info.code": "项目编码",

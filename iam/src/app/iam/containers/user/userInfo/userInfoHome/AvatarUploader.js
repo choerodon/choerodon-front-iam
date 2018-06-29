@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { inject } from 'mobx-react';
 import { Button, Form, Icon, Input, Modal, Select, Upload } from 'choerodon-ui';
 import { axios } from 'choerodon-front-boot';
 import querystring from 'query-string';
@@ -25,6 +26,7 @@ function rotateFlag(rotate) {
   return (rotate / 90) % 2 !== 0;
 }
 
+@inject('AppState')
 @injectIntl
 export default class AvatarUploader extends Component {
 
@@ -38,7 +40,7 @@ export default class AvatarUploader extends Component {
   };
 
   handleOk = () => {
-    const { id, intl } = this.props;
+    const { id, intl, AppState } = this.props;
     const { x, y, size, rotate, file, imageStyle: { width, height }, img: { naturalWidth, naturalHeight } } = this.state;
     const flag = rotateFlag(rotate);
     const scale = naturalWidth / width;

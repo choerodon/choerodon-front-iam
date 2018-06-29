@@ -189,6 +189,7 @@ class Route extends Component {
   /* 刷新 */
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
+      this.getService();
       this.loadRouteList();
     });
   };

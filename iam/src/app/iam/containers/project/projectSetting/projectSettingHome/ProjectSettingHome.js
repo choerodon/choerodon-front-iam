@@ -11,6 +11,8 @@ import ProjectSettingStore from '../../../../stores/project/projectSetting/Proje
 const {HeaderStore} = stores;
 const FormItem = Form.Item;
 const intlPrefix = 'project.info';
+const ORGANIZATION_TYPE = 'organization';
+const PROJECT_TYPE = 'project';
 
 @inject('AppState')
 @observer
@@ -63,6 +65,7 @@ class ProjectSettingHome extends Component {
 
   handleEnabled = (name) => {
     const { AppState, intl } = this.props;
+    const userId = AppState.getUserId;
     this.setState({ stopping: true });
     Modal.confirm({
       title: intl.formatMessage({id: `${intlPrefix}.disable.title`}),
@@ -76,6 +79,16 @@ class ProjectSettingHome extends Component {
           ProjectSettingStore.setProjectInfo(data);
           HeaderStore.updateProject(data);
           this.props.history.push('/');
+          HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
+            org[0].map(value => {
+              value.type = ORGANIZATION_TYPE;
+            });
+            org[1].map(value => {
+              value.type = PROJECT_TYPE;
+            });
+            HeaderStore.setProData(org[0]);
+            HeaderStore.setProData(org[1]);
+          });
         })
         .catch((error) => {
           this.setState({

@@ -20,21 +20,24 @@ const intlPrefix = 'global.instance';
 
 class InstanceDetail extends Component {
   state = this.getInitState();
-
+  instanceId = null;
   getInitState() {
     return {
-      instanceId: this.props.match.params.id,
       info: null,
       metadata: null,
       loading: true,
     }
   }
 
+  constructor(props) {
+    super(props);
+    this.instanceId = props.match.params.id;
+  }
   componentWillMount() {
     this.setState({
       loading: true,
     });
-    InstanceStore.loadInstanceInfo(this.state.instanceId).then((data) => {
+    InstanceStore.loadInstanceInfo(this.instanceId).then((data) => {
       if (data.failed) {
         this.setState({
           loading: false,
@@ -155,10 +158,6 @@ class InstanceDetail extends Component {
   }
 
   render() {
-    let code;
-    let values;
-    values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
-    code = `${intlPrefix}.detail`
     return (
       <Page>
         <Header
@@ -167,8 +166,8 @@ class InstanceDetail extends Component {
           backPath="/iam/instance"
         />
         <Content
-          code={code}
-          value={values}
+          code={`${intlPrefix}.detail`}
+          values={{ name: this.instanceId }}
         >
           <Tabs>
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.instanceinfo`}/>} key="instanceinfo">{this.getInstanceInfo()}</TabPane>

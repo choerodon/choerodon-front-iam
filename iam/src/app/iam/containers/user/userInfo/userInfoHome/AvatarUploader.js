@@ -63,14 +63,21 @@ export default class AvatarUploader extends Component {
         };
         UserInfoStore.setUserInfo(user);
         Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-        this.props.onVisibleChange(false);
+        this.close();
         AppState.setUserInfo(user);
       }
     });
   };
 
-  handleCancel = () => {
+  close() {
+    this.setState({
+      img: null,
+    });
     this.props.onVisibleChange(false);
+  }
+
+  handleCancel = () => {
+    this.close();
   };
 
   handleMoveStart = ({ clientX, clientY }) => {
@@ -362,17 +369,24 @@ export default class AvatarUploader extends Component {
 
   render() {
     const { visible } = this.props;
+    const { img } = this.state;
+    const modalFooter = [
+      <Button key="cancel" onClick={this.handleCancel}>
+        <FormattedMessage id="cancel" />
+      </Button>,
+      <Button key="save" type="primary" disabled={!img} onClick={this.handleOk}>
+        <FormattedMessage id="save" />
+      </Button>,
+    ];
     return (
       <Modal
         title={<FormattedMessage id={`${intlPrefix}.title`} />}
         className="user-info-avatar-modal"
         visible={visible}
-        onOk={this.handleOk}
-        okText={<FormattedMessage id="save" />}
-        onCancel={this.handleCancel}
         width={980}
         closable={false}
         maskClosable={false}
+        footer={modalFooter}
       >
         {this.renderContainer()}
       </Modal>

@@ -93,6 +93,7 @@ class ProjectSettingHome extends Component {
 
   render() {
     const { submitting } = this.state;
+    const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { enabled, name, code } = ProjectSettingStore.getProjectInfo;
     return (
@@ -125,6 +126,11 @@ class ProjectSettingHome extends Component {
             <Form onSubmit={this.handleSave.bind(this)}>
               <FormItem>
                 {getFieldDecorator('name', {
+                  rules: [{
+                    required: true,
+                    whitespace: true,
+                    message: intl.formatMessage({id: 'project.info.namerequiredmsg'}),
+                  }],
                   initialValue: name,
                 })(
                   <Input autocomplete="off" label={<FormattedMessage id={`${intlPrefix}.name`}/>} disabled={!enabled} style={{ width: 512 }} />,

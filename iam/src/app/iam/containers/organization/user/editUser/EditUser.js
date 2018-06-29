@@ -187,14 +187,14 @@ class EditUser extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, data, modify) => {
       if (!err) {
-        const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop, intl } = this.props;
+        const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop, OnUnchangedSuccess = noop, intl } = this.props;
         const menuType = AppState.currentMenuType;
         const organizationId = menuType.id;
         onSubmit();
         if (edit) {
           if (!modify) {
             Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
-            onSuccess();
+            OnUnchangedSuccess();
             return;
           }
           const { id, objectVersionNumber } = this.state.userInfo;

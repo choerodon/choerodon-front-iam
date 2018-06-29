@@ -495,11 +495,11 @@ const zh_CN = {
   "organization.client.delete.content": "确认删除客户端\"{name}\"吗?",
   "organization.client.name": "客户端名称",
   "organization.client.name.exist.msg": "客户端名称已存在，请输入其他客户端名称",
-  "organization.client.name.require.msg": "客户端名称必填",
+  "organization.client.name.require.msg": "请输入客户端名称",
   "organization.client.secret": "密钥",
-  "organization.client.secret.require.msg": "密钥必填",
+  "organization.client.secret.require.msg": "请输入密钥",
   "organization.client.granttypes": "授权类型",
-  "organization.client.granttypes.require.msg": "授权类型必填",
+  "organization.client.granttypes.require.msg": "请选择授权类型",
   "organization.client.accesstokenvalidity": "访问授权超时",
   "organization.client.tokenvalidity": "授权超时",
   "organization.client.redirect": "重定向地址",
@@ -622,6 +622,7 @@ const zh_CN = {
   "project.info.header.title": "项目信息",
   "project.info.name": "项目名称",
   "project.info.code": "项目编码",
+  "project.info.namerequiredmsg": "请输入项目名称",
 
   // 个人中心
   // 个人信息

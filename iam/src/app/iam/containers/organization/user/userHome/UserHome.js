@@ -166,6 +166,12 @@ class User extends Component {
         onRef={(node) => {
           this.editUser = node;
         }}
+        OnUnchangedSuccess={() => {
+          this.setState({
+            visible: false,
+            submitting: false,
+          });
+        }}
         onSubmit={() => {
           this.setState({
             submitting: true,

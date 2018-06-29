@@ -356,6 +356,7 @@ const zh_CN = {
   "global.route.delete.title": "删除路由",
   "global.route.delete.content": "确定要删除路由\"{name}\"吗？",
   "global.route.name.exist.msg": "路由名称已存在，请输入其他路由名称",
+  "global.route.name.number.msg": "路由名称不能包含空格且不能全为数字",
   "global.route.path.exist.msg": "路由路径已存在，请输入其他路由路径",
   "global.route.builtin.predefined": "预定义",
   "global.route.builtin.custom": "自定义",

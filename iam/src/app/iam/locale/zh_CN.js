@@ -98,7 +98,7 @@ const pageDetail = {
   'global.instance.description': '实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。',
   'global.instance.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
-  'global.instance.detail.title': '平台"{name}"的实例详情',
+  'global.instance.detail.title': '实例"{name}"的实例详情',
   'global.instance.detail.description': '实例属于一个微服务。您可以在此查看实例的详细信息。',
   'global.instance.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 

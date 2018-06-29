@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { inject } from 'mobx-react';
 import { Button, Form, Icon, Input, Modal, Select, Upload } from 'choerodon-ui';
 import { axios } from 'choerodon-front-boot';
 import querystring from 'query-string';
@@ -25,6 +26,7 @@ function rotateFlag(rotate) {
   return (rotate / 90) % 2 !== 0;
 }
 
+@inject('AppState')
 @injectIntl
 export default class AvatarUploader extends Component {
 
@@ -38,7 +40,7 @@ export default class AvatarUploader extends Component {
   };
 
   handleOk = () => {
-    const { id, intl } = this.props;
+    const { id, intl, AppState } = this.props;
     const { x, y, size, rotate, file, imageStyle: { width, height }, img: { naturalWidth, naturalHeight } } = this.state;
     const flag = rotateFlag(rotate);
     const scale = naturalWidth / width;
@@ -63,14 +65,21 @@ export default class AvatarUploader extends Component {
         };
         UserInfoStore.setUserInfo(user);
         Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-        this.props.onVisibleChange(false);
+        this.close();
         AppState.setUserInfo(user);
       }
     });
   };
 
-  handleCancel = () => {
+  close() {
+    this.setState({
+      img: null,
+    });
     this.props.onVisibleChange(false);
+  }
+
+  handleCancel = () => {
+    this.close();
   };
 
   handleMoveStart = ({ clientX, clientY }) => {
@@ -362,17 +371,24 @@ export default class AvatarUploader extends Component {
 
   render() {
     const { visible } = this.props;
+    const { img } = this.state;
+    const modalFooter = [
+      <Button key="cancel" onClick={this.handleCancel}>
+        <FormattedMessage id="cancel" />
+      </Button>,
+      <Button key="save" type="primary" disabled={!img} onClick={this.handleOk}>
+        <FormattedMessage id="save" />
+      </Button>,
+    ];
     return (
       <Modal
         title={<FormattedMessage id={`${intlPrefix}.title`} />}
         className="user-info-avatar-modal"
         visible={visible}
-        onOk={this.handleOk}
-        okText={<FormattedMessage id="save" />}
-        onCancel={this.handleCancel}
         width={980}
         closable={false}
         maskClosable={false}
+        footer={modalFooter}
       >
         {this.renderContainer()}
       </Modal>

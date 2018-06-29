@@ -622,7 +622,6 @@ const zh_CN = {
   'organization.user.repassword.require.msg': '请确认密码',
   'organization.user.timezone': '时区',
 
-
   // 项目层
   // 项目信息
   'project.info.disable.title': '停用项目',

@@ -61,19 +61,19 @@
 # 微服务管理
 "microservice":
   icon: micro
-  sort: 1
+  sort: 2
   site:
     - "instance-management":
         icon: instance_outline
         Routes: /iam/instance
-        sort: 1
+        sort: 2
         permission:
           - 'manager-service.instance.list'
           - 'manager-service.instance.query'
     - "config-management":
         icon: settings_input_composite
         Routes: /iam/configuration
-        sort: 2
+        sort: 3
         permission:
           - 'manager-service.config.query'
           - 'manager-service.config.create'
@@ -84,7 +84,7 @@
     - "route-management":
         icon: routeroutline
         Routes: /iam/route
-        sort: 3
+        sort: 4
         permission:
           - 'manager-service.route.list'
           - 'manager-service.route.create'
@@ -94,7 +94,7 @@
 # 租户设置
 "rentsetting":
   icon: IAM
-  sort: 1
+  sort: 2
   organization:
     - "project":
         icon: manage_project
@@ -165,24 +165,25 @@
   icon: IAM
   sort: 1
   project:
-    - "proManage":
-        icon: settings_applications
-        Routes: /iam/proManage
-        sort: 1
-        permission:
-          - 'iam-service.project.disableProject'
-          - 'iam-service.project.query'
-          - 'iam-service.project.update'
     - "member-role-project":
         icon: person_add
         Routes: /iam/memberRole
-        sort: 2
+        sort: 5
         permission:
           - 'iam-service.role-member.createOrUpdateOnSiteLevel'
           - 'iam-service.role-member.deleteOnProjectLevel'
           - 'iam-service.role-member.listRolesWithUserCountOnProjectLevel'
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel'
           - 'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles'
+    - "proManage":
+        icon: settings_applications
+        Routes: /iam/proManage
+        sort: 2
+        permission:
+          - 'iam-service.project.disableProject'
+          - 'iam-service.project.query'
+          - 'iam-service.project.update'
+
 # 个人中心
 "usercenter":
   icon: accessibility

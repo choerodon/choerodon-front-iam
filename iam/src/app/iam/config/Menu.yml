@@ -203,3 +203,15 @@
         sort: 2
         permission:
           - 'iam-service.user.selfUpdatePassword'
+    - "organization-info":
+        icon: domain
+        Routes: /iam/organizationinfo
+        sort: 3
+        permission:
+          - 'iam-service.user.listOrganizationAndRoleById'
+    - "project-info":
+        icon: project
+        Routes: /iam/projectinfo
+        sort: 4
+        permission:
+          - 'iam-service.user.listProjectAndRoleById'

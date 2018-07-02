@@ -23,6 +23,8 @@ const ProjectSettingIndex = asyncRouter(() => import('./project/projectSetting')
 
 const UserInfoIndex = asyncRouter(() => import('./user/userInfo'));
 const PasswordIndex = asyncRouter(() => import('./user/changePassword'));
+const OrganizationInfoIndex = asyncRouter(() => import('./user/organizationInfo'));
+const projectInfoIndex = asyncRouter(() => import('./user/projectInfo'));
 
 
 @inject('AppState')
@@ -46,6 +48,8 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/configuration`} component={ConfigurationIndex} />
           <Route path={`${match.url}/proManage`} component={ProjectSettingIndex} />
           <Route path={`${match.url}/userinfo`} component={UserInfoIndex} />
+          <Route path={`${match.url}/organizationinfo`} component={OrganizationInfoIndex} />
+          <Route path={`${match.url}/projectinfo`} component={projectInfoIndex} />
           <Route path={`${match.url}/memberRole`} component={MemberRole} />
           <Route path={`${match.url}/menuTree`} component={menuTree} />
           <Route path={`${match.url}/usermodifyPwd`} component={PasswordIndex} />

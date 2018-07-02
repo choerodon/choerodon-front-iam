@@ -163,12 +163,12 @@
 # 项目设置
 "prosetting":
   icon: IAM
-  sort: 1
+  sort: 5
   project:
     - "member-role-project":
         icon: person_add
         Routes: /iam/memberRole
-        sort: 5
+        sort: 1
         permission:
           - 'iam-service.role-member.createOrUpdateOnSiteLevel'
           - 'iam-service.role-member.deleteOnProjectLevel'

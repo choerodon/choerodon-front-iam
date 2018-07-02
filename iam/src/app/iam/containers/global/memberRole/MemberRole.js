@@ -569,7 +569,7 @@ class MemberRole extends Component {
         current: 1,
         pageSize,
       }, {
-        loginName,
+        loginName: [loginName],
       }).then(({ content }) => {
         this.editRole(content.find((memberData) => memberData.loginName === loginName));
       });

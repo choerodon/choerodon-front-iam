@@ -158,14 +158,14 @@ class Role extends Component {
     if (record.builtIn) {
       return (
         <div>
-          <Icon type="settings" />
+          <Icon type="settings" style={{verticalAlign: 'text-bottom'}} />
           <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
         </div>
       );
     } else {
       return (
         <div>
-          <Icon type="av_timer" />
+          <Icon type="av_timer" style={{verticalAlign: 'text-bottom'}} />
           <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
         </div>
       );

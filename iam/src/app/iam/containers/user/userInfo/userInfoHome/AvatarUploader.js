@@ -59,14 +59,12 @@ export default class AvatarUploader extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        const user = {
-          ...UserInfoStore.getUserInfo,
-          imageUrl: res,
-        };
-        UserInfoStore.setUserInfo(user);
-        Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-        this.close();
-        AppState.setUserInfo(user);
+        AppState.loadUserInfo().then(data => {
+          UserInfoStore.setUserInfo(data);
+          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+          this.close();
+          AppState.setUserInfo(data);
+        });
       }
     });
   };

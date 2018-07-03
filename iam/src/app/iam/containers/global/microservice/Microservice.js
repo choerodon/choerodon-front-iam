@@ -1,5 +1,5 @@
 /**
- * Created by hulingfangzi on 2018/7/2.
+ * Created by hulingfangzi on 2018/7/3.
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
@@ -8,14 +8,12 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
-const intlPrefix = 'user.orginfo';
 
-const { Sidebar } = Modal;
 
 @inject('AppState')
 @observer
 
-class OrganizationInfo extends Component {
+class Microservice extends Component {
   state = this.getInitState();
 
   getInitState() {
@@ -34,12 +32,12 @@ class OrganizationInfo extends Component {
     }
   }
 
-
   render() {
-    const { AppState } = this.props;
     return (
       <Page>
-        <Header title="组织信息">
+        <Header
+          title="微服务"
+        >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
@@ -47,16 +45,10 @@ class OrganizationInfo extends Component {
             <FormattedMessage id="refresh"/>
           </Button>
         </Header>
-        <Content
-          code={intlPrefix}
-          values={{name: AppState.getUserInfo.loginName}}
-        >
-          <Table />
-        </Content>
+        <Content />
       </Page>
     )
   }
 }
 
-export default withRouter(OrganizationInfo);
-
+export default withRouter(Microservice);

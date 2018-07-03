@@ -518,6 +518,7 @@ class LDAP extends Component {
                 const { resetFields } = this.props.form;
                 resetFields();
               }}
+              style={{ color: '#3F51B5' }}
               disabled={saving}
             >
               <FormattedMessage id="cancel"/>

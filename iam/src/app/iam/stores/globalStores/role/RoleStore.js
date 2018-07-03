@@ -284,7 +284,7 @@ class RoleStore {
     axios.get('iam/v1/labels?type=role').then((data) => {
       this.setLabel(data);
     }).catch((error) => {
-      window.console.log(error);
+      Choerodon.prompt(error);
     });
   };
 

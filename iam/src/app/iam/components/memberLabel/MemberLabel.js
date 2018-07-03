@@ -38,14 +38,19 @@ class MemberLabel extends Component {
 
   validateMember = (rule, value, callback) => {
     const { intl } = this.props;
-    if (value && value.length) {
+    const length = value && value.length;
+    if (length) {
       const { validedMembers } = this.state;
       let errorMsg;
-      Promise.all(value.map((item) => {
-        if (item in validedMembers) {
+      Promise.all(value.map((item, index) => {
+        if (item in validedMembers && index !== length - 1) {
           return Promise.resolve(validedMembers[item]);
         } else {
           return new Promise((resolve) => {
+            if (!item.trim()) {
+              errorMsg = intl.formatMessage({id: 'memberlabel.member.whitespace.msg'});
+              resolve(false);
+            }
             this.searchMemberId(item)
               .then(({ failed, enabled }) => {
                 let success = true;
@@ -67,10 +72,7 @@ class MemberLabel extends Component {
             return valid;
           });
         }
-      })).then(all => callback(
-        all.every(item => item) ? undefined :
-          errorMsg,
-      ));
+      })).then(all => callback(all.every(item => item) ? undefined : errorMsg));
     } else {
       callback(intl.formatMessage({id: 'memberlabel.member.require.msg'}));
     }
@@ -100,7 +102,7 @@ class MemberLabel extends Component {
     }
   };
 
-  handeChoiceRender = (liNode, value) => {
+  handleChoiceRender = (liNode, value) => {
     const { validedMembers } = this.state;
     return React.cloneElement(liNode, {
       className: classnames(liNode.props.className, {
@@ -108,7 +110,12 @@ class MemberLabel extends Component {
       }),
     });
   };
-
+  handleChoiceRemove = (value) => {
+    const { validedMembers } = this.state;
+    if (value in validedMembers) {
+      delete validedMembers[value];
+    }
+  };
   render() {
     const { style, className, form, value, label } = this.props;
     const { getFieldDecorator } = form;
@@ -132,11 +139,12 @@ class MemberLabel extends Component {
             style={{ width: 512 }}
             filterOption={false}
             label={label}
+            onChoiceRemove={this.handleChoiceRemove}
             onInputKeyDown={this.handleInputKeyDown}
             notFoundContent={false}
             showNotFindSelectedItem={false}
             showNotFindInputItem={false}
-            choiceRender={this.handeChoiceRender}
+            choiceRender={this.handleChoiceRender}
             allowClear
           />,
         )}

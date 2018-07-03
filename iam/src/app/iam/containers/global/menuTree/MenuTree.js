@@ -767,7 +767,7 @@ class MenuTree extends Component {
               <Button
                 funcType="raised"
                 onClick={this.handleRefresh}
-                style={{ marginLeft: 16 }}
+                style={{ marginLeft: 16, color: '#3F51B5' }}
                 disabled={submitting}
               ><FormattedMessage id="cancel"/></Button>
             </div>

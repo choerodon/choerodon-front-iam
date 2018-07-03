@@ -36,6 +36,7 @@ class CreateRole extends Component {
       currentPermission: [],
       firstLoad: true,
       initLevel: level,
+      permissionParams: [],
     };
   }
 
@@ -81,13 +82,25 @@ class CreateRole extends Component {
   };
 
   showModal = () => {
-    this.setState({
-      visible: true,
-    });
     const { currentPermission } = this.state;
-    const selected = RoleStore.getSelectedRolesPermission
-      .filter(item => currentPermission.indexOf(item.id) !== -1);
-    RoleStore.setInitSelectedPermission(selected);
+    RoleStore.setPermissionPage(RoleStore.getChosenLevel, {
+      current: 1,
+      pageSize: 10,
+      total: '',
+    },);
+    this.setState({
+      permissionParams: [],
+    }, () => {
+      this.setCanPermissionCanSee(RoleStore.getChosenLevel);
+      const selected = RoleStore.getSelectedRolesPermission
+        .filter(item => currentPermission.indexOf(item.id) !== -1);
+      RoleStore.setInitSelectedPermission(selected);
+      this.setState({
+        visible: true,
+      });
+    });
+
+
   };
 
   linkToChange = (url) => {
@@ -213,6 +226,9 @@ class CreateRole extends Component {
     const newFilters = {
       params: (params && params.join(',')) || '',
     };
+    this.setState({
+      permissionParams: params,
+    })
     RoleStore.getWholePermission(level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(level, data);
     });
@@ -342,6 +358,7 @@ class CreateRole extends Component {
                     mode="multiple"
                     label={<FormattedMessage id={`${intlPrefix}.label`}/>}
                     size="default"
+                    disabled={!RoleStore.getLabel.length}
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     style={{
                       width: '512px',
@@ -431,6 +448,7 @@ class CreateRole extends Component {
                       funcType="raised"
                       onClick={this.handleReset}
                       disabled={submitting}
+                      style={{ color: '#3F51B5' }}
                     >
                       <FormattedMessage id="cancel"/>
                     </Button>
@@ -467,6 +485,7 @@ class CreateRole extends Component {
                   dataSource={data}
                   pagination={pagination}
                   onChange={this.handlePageChange}
+                  filters={this.state.permissionParams}
                   filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
                   rowSelection={{
                     selectedRowKeys: (changePermission

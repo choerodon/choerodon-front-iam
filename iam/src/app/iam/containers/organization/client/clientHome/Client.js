@@ -327,7 +327,7 @@ class Client extends Component {
             validateFirst: true,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.name`})}
               disabled={status === 'edit'}
             />,
@@ -345,7 +345,7 @@ class Client extends Component {
             }],
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.secret`})}
             />,
           )}
@@ -385,7 +385,7 @@ class Client extends Component {
               parseInt(client.accessTokenValidity, 10) : undefined,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
               style={{ width: 300 }}
               type="number"
@@ -402,7 +402,7 @@ class Client extends Component {
               parseInt(client.refreshTokenValidity, 10) : undefined,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
               style={{ width: 300 }}
               type="number"
@@ -417,7 +417,7 @@ class Client extends Component {
           {getFieldDecorator('webServerRedirectUri', {
             initialValue: client.webServerRedirectUri || undefined,
           })(
-            <Input autocomplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
+            <Input autoComplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
           )}
         </FormItem>
         <FormItem
@@ -439,7 +439,7 @@ class Client extends Component {
             initialValue: client.additionalInformation || undefined,
           })(
             <TextArea
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.additional`})}
               rows={3}
             />,

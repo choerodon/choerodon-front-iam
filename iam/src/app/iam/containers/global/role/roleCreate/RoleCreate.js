@@ -317,7 +317,7 @@ class CreateRole extends Component {
                   initialValue: this.state.roleName,
                 })(
                   <Input
-                    autocomplete="off"
+                    autoComplete="off"
                     label={<FormattedMessage id={`${intlPrefix}.code`}/>}
                     prefix={codePrefix}
                     size="default"
@@ -340,7 +340,7 @@ class CreateRole extends Component {
                   initialValue: this.state.name,
                 })(
                   <Input
-                    autocomplete="off"
+                    autoComplete="off"
                     label={<FormattedMessage id={`${intlPrefix}.name`}/>}
                     type="textarea"
                     rows={1}

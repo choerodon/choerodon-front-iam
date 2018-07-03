@@ -267,7 +267,7 @@ class EditUser extends Component {
               validateFirst: true,
             })(
               <Input
-                autocomplete="off"
+                autoComplete="off"
                 label={intl.formatMessage({id: `${intlPrefix}.loginname`})}
                 disabled={edit}
                 style={{ width: inputWidth }}
@@ -290,7 +290,7 @@ class EditUser extends Component {
                 validateTrigger: 'onBlur',
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   label={intl.formatMessage({id: `${intlPrefix}.realname`})}
                   type="text"
                   rows={1}
@@ -322,7 +322,7 @@ class EditUser extends Component {
               validateFirst: true,
             })(
               <Input
-                autocomplete="off"
+                autoComplete="off"
                 label={intl.formatMessage({id: `${intlPrefix}.email`})}
                 style={{ width: inputWidth }}
               />,
@@ -350,7 +350,7 @@ class EditUser extends Component {
                 validateFirst: true,
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   label={intl.formatMessage({id: `${intlPrefix}.password`})}
                   type="password"
                   style={{ width: inputWidth }}
@@ -375,7 +375,7 @@ class EditUser extends Component {
                 validateFirst: true,
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   label={intl.formatMessage({id: `${intlPrefix}.repassword`})}
                   type="password"
                   style={{ width: inputWidth }}

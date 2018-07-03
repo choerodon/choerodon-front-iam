@@ -129,7 +129,7 @@ class ChangePassword extends Component {
                   validateTrigger: 'onBlur',
                 })(
                   <Input
-                    autocomplete="off"
+                    autoComplete="off"
                     label={<FormattedMessage id={`${intlPrefix}.oldpassword`}/>}
                     type="password"
                     style={{ width: inputWidth }}
@@ -150,7 +150,7 @@ class ChangePassword extends Component {
                   validateFirst: true,
                 })(
                   <Input
-                    autocomplete="off"
+                    autoComplete="off"
                     label={<FormattedMessage id={`${intlPrefix}.newpassword`}/>}
                     type="password"
                     style={{ width: inputWidth }}
@@ -171,7 +171,7 @@ class ChangePassword extends Component {
                   validateFirst: true,
                 })(
                   <Input
-                    autocomplete="off"
+                    autoComplete="off"
                     label={<FormattedMessage id={`${intlPrefix}.confirmpassword`}/>}
                     type="password"
                     style={{ width: inputWidth }}

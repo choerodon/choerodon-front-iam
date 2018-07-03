@@ -92,7 +92,7 @@ class PasswordForm extends Component {
               initialValue: passwordPolicy ? passwordPolicy.originalPassword : '',
             })(
               <Input
-                autocomplete="off"
+                autoComplete="off"
                 label={<FormattedMessage id={`${inputPrefix}.originalpassword`}/>}
                 style={{ width: 512 }}
               />,
@@ -109,7 +109,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.minLength : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.minlength`}/>}
               style={{ width: inputWidth }}
@@ -125,7 +125,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.maxlength`}/>}
               style={{ width: inputWidth }}
@@ -141,7 +141,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.digitscount`}/>}
               style={{ width: inputWidth }} />,
@@ -156,7 +156,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.lowercasecount`}/>}
               style={{ width: inputWidth }}
@@ -172,7 +172,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.uppercasecount`}/>}
               style={{ width: inputWidth }}
@@ -188,7 +188,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.specialcharcount`}/>}
               style={{ width: inputWidth }}
@@ -204,7 +204,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               type="number"
               label={<FormattedMessage id={`${inputPrefix}.notrecentcount`}/>}
               style={{ width: inputWidth }}
@@ -216,7 +216,7 @@ class PasswordForm extends Component {
             initialValue: passwordPolicy ? passwordPolicy.regularExpression : '',
           })(
             <TextArea
-              autocomplete="off"
+              autoComplete="off"
               rows={2}
               label={<FormattedMessage id={`${inputPrefix}.regularexpression`}/>}
             />,

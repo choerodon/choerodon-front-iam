@@ -325,7 +325,7 @@ class ProjectHome extends Component {
               }],
             })(
               <Input
-                autocomplete="off"
+                autoComplete="off"
                 label={<FormattedMessage id={`${intlPrefix}.code`}/>}
                 style={{ width: inputWidth }}
               />,
@@ -343,7 +343,7 @@ class ProjectHome extends Component {
               initialValue: operation === 'create' ? undefined : projectDatas.name,
             })(
               <Input
-                autocomplete="off"
+                autoComplete="off"
                 label={<FormattedMessage id={`${intlPrefix}.name`}/>}
                 style={{ width: inputWidth }}
               />,

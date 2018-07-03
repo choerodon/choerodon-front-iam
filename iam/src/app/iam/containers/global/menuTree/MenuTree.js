@@ -263,7 +263,7 @@ class MenuTree extends Component {
           >
             <Input
               value={name}
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.menu.name`}/>}
               disabled={true}
               style={{ width: inputWidth }}
@@ -274,7 +274,7 @@ class MenuTree extends Component {
           >
             <Input
               value={code}
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.menu.code`}/>}
               disabled={true}
               style={{ width: inputWidth }}
@@ -286,7 +286,7 @@ class MenuTree extends Component {
             <Input
               value={level}
               label={<FormattedMessage id={`${intlPrefix}.menu.level`}/>}
-              autocomplete="off"
+              autoComplete="off"
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -298,7 +298,7 @@ class MenuTree extends Component {
               value={__parent_name__}
               label={<FormattedMessage id={`${intlPrefix}.belong.root`}/>}
               disabled={true}
-              autocomplete="off"
+              autoComplete="off"
               style={{ width: inputWidth }}
             />
           </FormItem>
@@ -362,7 +362,7 @@ class MenuTree extends Component {
             initialValue: selectMenuDetail.name,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.directory.name`}/>}
               style={{ width: inputWidth }}
             />,

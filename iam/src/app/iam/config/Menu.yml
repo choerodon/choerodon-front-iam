@@ -59,11 +59,11 @@
           - 'iam-service.user.deleteDefaultUser'
 
 # 微服务管理
-"microservicemanage":
+"microservice":
   icon: micro
   sort: 2
   site:
-    - "microservice":
+    - "micro":
         icon: microservice
         Routes: /iam/microservice
         sort: 1

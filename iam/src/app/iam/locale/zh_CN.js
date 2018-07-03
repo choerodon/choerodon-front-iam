@@ -77,6 +77,11 @@ const pageDetail = {
   'global.role.modify.addpermission.description': '您可以在此为角色添加一个或多个权限。',
   'global.role.modify.addpermission.link': `${docServer}/user-guide/system-configuration/platform/role/`,
 
+  // 微服务
+  'global.microservice.title': '平台"{name}"的微服务',
+  'global.microservice.description': '组织管理用于管理组织信息和组织的启用状态。当组织被启用时，可以进入到该组织进行组织层的操作，如管理组织下用户、项目、客户端等。',
+  'global.microservice.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
   'global.configuration.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
@@ -430,6 +435,10 @@ const zh_CN = {
   'global.role.code.require.msg': '请输入角色编码',
   'global.role.code.pattern.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'global.role.level.nothing.msg': '请先选择角色层级',
+
+  // 微服务管理
+  'global.microservice.header.title': '微服务',
+
 
   // 配置管理
   'global.configuration.service': '所属微服务',

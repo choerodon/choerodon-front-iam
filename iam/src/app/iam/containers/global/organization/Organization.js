@@ -255,7 +255,7 @@ class OrganizationHome extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label={<FormattedMessage id="global.organization.code"/>} autocomplete="off" style={{ width: inputWidth }} />,
+                  <Input label={<FormattedMessage id="global.organization.code"/>} autoComplete="off" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -268,7 +268,7 @@ class OrganizationHome extends Component {
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input label={<FormattedMessage id="global.organization.name"/>} autocomplete="off" style={{ width: inputWidth }} />,
+              <Input label={<FormattedMessage id="global.organization.name"/>} autoComplete="off" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>

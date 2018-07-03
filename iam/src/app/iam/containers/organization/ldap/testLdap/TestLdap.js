@@ -203,7 +203,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   label={intl.formatMessage({id: `${intlPrefix}.name`})}
                   style={{ width: inputWidth }}
                 />,
@@ -220,7 +220,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   type="password"
                   label={intl.formatMessage({id: `${intlPrefix}.password`})}
                   style={{ width: inputWidth }}

@@ -559,7 +559,7 @@ class Route extends Component {
             })(
               <Input
                 label={<FormattedMessage id={`${intlPrefix}.name`}/>}
-                autocomplete="off"
+                autoComplete="off"
                 suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.name.tip`}))}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
@@ -583,7 +583,7 @@ class Route extends Component {
             })(
               <Input
                 label={<FormattedMessage id={`${intlPrefix}.path`}/>}
-                autocomplete="off"
+                autoComplete="off"
                 style={{ width: inputWidth }}
                 suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.path.tip`}))}
                 disabled={!createValidate}
@@ -702,7 +702,7 @@ class Route extends Component {
               })(
                 <Input
                   disabled={detailValidate}
-                  autocomplete="off"
+                  autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.helperservice`}/>}
                   style={{ width: inputWidth }}
                   suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.helperservice.tip`}))}

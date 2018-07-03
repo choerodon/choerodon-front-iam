@@ -31,6 +31,7 @@ function rotateFlag(rotate) {
 export default class AvatarUploader extends Component {
 
   state = {
+    submitting: false,
     img: null,
     file: null,
     size: defaultRectSize,
@@ -55,18 +56,25 @@ export default class AvatarUploader extends Component {
     });
     const data = new FormData();
     data.append('file', file);
-    axios.post(`/iam/v1/users/${id}/save_photo?${qs}`, data).then((res) => {
-      if (res.failed) {
-        Choerodon.prompt(res.message);
-      } else {
-        AppState.loadUserInfo().then(data => {
-          UserInfoStore.setUserInfo(data);
-          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-          this.close();
-          AppState.setUserInfo(data);
-        });
-      }
-    });
+    this.setState({ submitting: true });
+    axios.post(`/iam/v1/users/${id}/save_photo?${qs}`, data)
+      .then((res) => {
+        if (res.failed) {
+          Choerodon.prompt(res.message);
+        } else {
+          AppState.loadUserInfo().then(data => {
+            UserInfoStore.setUserInfo(data);
+            Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+            this.close();
+            AppState.setUserInfo(data);
+          });
+        }
+        this.setState({ submitting: false });
+      })
+      .catch((error) => {
+        Choerodon.handleResponseError(error);
+        this.setState({ submitting: false });
+      });
   };
 
   close() {
@@ -369,12 +377,12 @@ export default class AvatarUploader extends Component {
 
   render() {
     const { visible } = this.props;
-    const { img } = this.state;
+    const { img, submitting } = this.state;
     const modalFooter = [
-      <Button key="cancel" onClick={this.handleCancel}>
+      <Button disabled={submitting} key="cancel" onClick={this.handleCancel}>
         <FormattedMessage id="cancel" />
       </Button>,
-      <Button key="save" type="primary" disabled={!img} onClick={this.handleOk}>
+      <Button key="save" type="primary" disabled={!img} loading={submitting} onClick={this.handleOk}>
         <FormattedMessage id="save" />
       </Button>,
     ];

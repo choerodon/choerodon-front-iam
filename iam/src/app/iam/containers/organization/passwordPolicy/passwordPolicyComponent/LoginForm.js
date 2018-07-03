@@ -99,7 +99,7 @@ class LoginForm extends Component {
                 initialValue: passwordPolicy ? passwordPolicy.maxCheckCaptcha : undefined,
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   type="number"
                   label={<FormattedMessage id={`${inputPrefix}.maxerror.count`}/>}
                   style={{ width: 300 }}
@@ -136,7 +136,7 @@ class LoginForm extends Component {
                 initialValue: passwordPolicy ? passwordPolicy.maxErrorTime : undefined,
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   type="number"
                   label={<FormattedMessage id={`${inputPrefix}.maxerror.count`}/>}
                   style={{ width: 300 }}

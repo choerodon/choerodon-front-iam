@@ -174,7 +174,7 @@ class UserInfo extends Component {
           })(
             <Input
               disabled
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.loginname`} />}
               style={{ width: inputWidth }}
             />,
@@ -196,7 +196,7 @@ class UserInfo extends Component {
             initialValue: realName,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.name`} />}
               style={{ width: inputWidth }}
             />,
@@ -226,7 +226,7 @@ class UserInfo extends Component {
             validateFirst: true,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.email`} />}
               style={{ width: inputWidth }}
             />,
@@ -240,7 +240,7 @@ class UserInfo extends Component {
             initialValue: phone,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.phone`} />}
               style={{ width: inputWidth }}
             />,

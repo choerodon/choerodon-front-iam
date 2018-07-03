@@ -262,7 +262,7 @@ class EditRole extends Component {
                   <Input
                     size="default"
                     label={<FormattedMessage id={`${intlPrefix}.level`}/>}
-                    autocomplete="off"
+                    autoComplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -283,7 +283,7 @@ class EditRole extends Component {
                   <Input
                     size="default"
                     label={<FormattedMessage id={`${intlPrefix}.code`}/>}
-                    autocomplete="off"
+                    autoComplete="off"
                     style={{
                       width: '512px',
                     }}
@@ -305,7 +305,7 @@ class EditRole extends Component {
                   <Input
                     rows={1}
                     label={<FormattedMessage id={`${intlPrefix}.name`}/>}
-                    autocomplete="off"
+                    autoComplete="off"
                     style={{
                       width: '512px',
                     }}

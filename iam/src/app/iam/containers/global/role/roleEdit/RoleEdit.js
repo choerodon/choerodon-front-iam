@@ -26,11 +26,11 @@ class EditRole extends Component {
       id: this.props.match.params.id,
       currentPermission: [],
       selectPermission: [],
+      permissionParams: [],
     };
   }
 
   componentWillMount() {
-
     RoleStore.getRoleById(this.state.id).then((data) => {
       this.setState({
         roleData: data,
@@ -38,6 +38,7 @@ class EditRole extends Component {
       });
       RoleStore.setSelectedRolesPermission(data.permissions);
       this.setCanPermissionCanSee(data.level);
+      RoleStore.setChosenLevel(data.level);
     }).catch((error) => {
       const message = this.props.intl.formatMessage({id: `${intlPrefix}.getinfo.error.msg`});
       Choerodon.prompt(`${message}: ${error}`);
@@ -87,13 +88,24 @@ class EditRole extends Component {
   };
 
   showModal = () => {
-    this.setState({
-      visible: true,
+    const { currentPermission, roleData } = this.state;
+    RoleStore.setPermissionPage(RoleStore.getChosenLevel, {
+      current: 1,
+      pageSize: 10,
+      total: '',
     });
-    const { currentPermission } = this.state;
-    const selected = RoleStore.getSelectedRolesPermission
-      .filter(item => currentPermission.indexOf(item.id) !== -1);
-    RoleStore.setInitSelectedPermission(selected);
+    this.setState({
+      permissionParams: [],
+    }, () => {
+      this.setCanPermissionCanSee(roleData.level);
+      const selected = RoleStore.getSelectedRolesPermission
+        .filter(item => currentPermission.indexOf(item.id) !== -1);
+      RoleStore.setInitSelectedPermission(selected);
+      this.setState({
+        visible: true,
+      });
+    });
+
   };
 
   isModify = () => {
@@ -160,6 +172,9 @@ class EditRole extends Component {
     const newFilters = {
       params: (params && params.join(',')) || '',
     };
+    this.setState({
+      permissionParams: params,
+    });
     RoleStore.getWholePermission(roleData.level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(roleData.level, data);
     });
@@ -309,6 +324,7 @@ class EditRole extends Component {
                     <Select
                       mode="multiple"
                       size="default"
+                      disabled={!RoleStore.getLabel.length}
                       label={<FormattedMessage id={`${intlPrefix}.label`}/>}
                       getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                       style={{
@@ -396,6 +412,7 @@ class EditRole extends Component {
                       funcType="raised"
                       onClick={this.handleReset}
                       disabled={submitting}
+                      style={{ color: '#3F51B5' }}
                     >
                       <FormattedMessage id="cancel"/>
                     </Button>
@@ -435,6 +452,7 @@ class EditRole extends Component {
               dataSource={data}
               pagination={pagination}
               onChange={this.handlePageChange}
+              filters={this.state.permissionParams}
               filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
               rowSelection={{
                 selectedRowKeys: (changePermission

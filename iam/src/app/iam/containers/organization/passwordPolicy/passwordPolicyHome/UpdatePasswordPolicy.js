@@ -178,6 +178,7 @@ class UpdatePasswordPolicy extends Component {
                     resetFields();
                   }}
                   disabled={submitting}
+                  style={{ color: '#3F51B5' }}
                 >
                   <FormattedMessage id="cancel"/>
                 </Button>

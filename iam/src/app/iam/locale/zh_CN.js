@@ -696,6 +696,7 @@ const zh_CN = {
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
+  'memberlabel.member.whitespace.msg': "用户名称不能为空格",
 
   // page
   ...pageDetail,

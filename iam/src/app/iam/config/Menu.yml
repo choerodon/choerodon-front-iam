@@ -100,7 +100,7 @@
 # api管理
 "api":
   icon: API
-  sort: 1
+  sort: 3
   site:
     - "api-test":
         icon: APItest
@@ -109,7 +109,7 @@
         permission:
           - 'manager-service.service.pageManager'
 
-# 租户设置
+# 组织设置
 "rentsetting":
   icon: IAM
   sort: 2

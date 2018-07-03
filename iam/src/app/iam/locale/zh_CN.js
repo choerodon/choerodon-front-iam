@@ -215,6 +215,11 @@ const pageDetail = {
   'user.changepwd.description': '非LDAP用户可以修改自己的登录密码。',
   'user.changepwd.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
+  //组织信息
+  'user.orginfo.title': '用户"{name}"的组织信息',
+  'user.orginfo.description': '用户必须且只能属于一个组织，但可以在其他组织被分配角色。本页面展示您所属的组织以及您被分配的组织角色，所属组织在列表第一行。',
+  'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`
+
 };
 const zh_CN = {
 

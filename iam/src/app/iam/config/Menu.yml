@@ -59,10 +59,16 @@
           - 'iam-service.user.deleteDefaultUser'
 
 # 微服务管理
-"microservice":
+"microservicemanage":
   icon: micro
   sort: 2
   site:
+    - "microservice":
+        icon: microservice
+        Routes: /iam/microservice
+        sort: 1
+        permission:
+          - 'manager-service.service.pageManager'
     - "instance-management":
         icon: instance_outline
         Routes: /iam/instance
@@ -90,6 +96,18 @@
           - 'manager-service.route.create'
           - 'manager-service.route.update'
           - 'manager-service.route.delete'
+
+# api管理
+"api":
+  icon: API
+  sort: 1
+  site:
+    - "api-test":
+        icon: APItest
+        Routes: /iam/apitest
+        sort: 1
+        permission:
+          - 'manager-service.service.pageManager'
 
 # 租户设置
 "rentsetting":

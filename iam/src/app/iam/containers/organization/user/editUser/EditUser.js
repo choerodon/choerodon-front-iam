@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Input, Select } from 'choerodon-ui';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content } from 'choerodon-front-boot';
@@ -21,6 +21,7 @@ const formItemLayout = {
     sm: { span: 10 },
   },
 };
+const defaultPassword = 'abcd1234';
 
 function noop() {
 }
@@ -102,17 +103,17 @@ class EditUser extends Component {
     const { edit, AppState, intl } = this.props;
     if (!edit || username !== this.state.userInfo.loginName) {
       if (/\s/.test(username)) {
-        callback(intl.formatMessage({id: `${intlPrefix}.name.space.msg`}));
+        callback(intl.formatMessage({ id: `${intlPrefix}.name.space.msg` }));
         return;
       }
       if (username && this.checkUsernameAndPwd()) {
-        callback(intl.formatMessage({id: `${intlPrefix}.name.samepwd.msg`}));
+        callback(intl.formatMessage({ id: `${intlPrefix}.name.samepwd.msg` }));
         return;
       }
       const id = AppState.currentMenuType.id;
       CreateUserStore.checkUsername(id, username).then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
+          callback(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
         } else {
           callback();
         }
@@ -132,7 +133,7 @@ class EditUser extends Component {
     const passwordPolicy = CreateUserStore.getPasswordPolicy;
     const { intl, form } = this.props;
     if (value && this.checkUsernameAndPwd()) {
-      callback(intl.formatMessage({id: `${intlPrefix}.name.samepwd.msg`}));
+      callback(intl.formatMessage({ id: `${intlPrefix}.name.samepwd.msg` }));
       return;
     }
     if (value && passwordPolicy && passwordPolicy.originalPassword !== value) {
@@ -161,7 +162,7 @@ class EditUser extends Component {
   checkRepassword = (rule, value, callback) => {
     const { intl, form } = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(intl.formatMessage({id: `${intlPrefix}.password.unrepeat.msg`}));
+      callback(intl.formatMessage({ id: `${intlPrefix}.password.unrepeat.msg` }));
     } else {
       callback();
     }
@@ -173,7 +174,7 @@ class EditUser extends Component {
       const id = AppState.currentMenuType.id;
       CreateUserStore.checkEmailAddress(id, value).then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.email.used.msg`}));
+          callback(intl.formatMessage({ id: `${intlPrefix}.email.used.msg` }));
         } else {
           callback();
         }
@@ -193,7 +194,7 @@ class EditUser extends Component {
         onSubmit();
         if (edit) {
           if (!modify) {
-            Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+            Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
             OnUnchangedSuccess();
             return;
           }
@@ -206,7 +207,7 @@ class EditUser extends Component {
               Choerodon.prompt(message);
               onError();
             } else {
-              Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+              Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
               onSuccess();
             }
           }).catch((error) => {
@@ -218,7 +219,7 @@ class EditUser extends Component {
               Choerodon.prompt(message);
               onError();
             } else {
-              Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
+              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
               onSuccess();
             }
           }).catch((error) => {
@@ -242,7 +243,7 @@ class EditUser extends Component {
       <Content
         className="sidebar-content"
         code={edit ? `${intlPrefix}.modify` : `${intlPrefix}.create`}
-        values={{name: edit ? userInfo.loginName : organizationName}}
+        values={{ name: edit ? userInfo.loginName : organizationName }}
       >
         <Form onSubmit={this.handleSubmit.bind(this)} layout="vertical">
           <FormItem
@@ -253,7 +254,7 @@ class EditUser extends Component {
                 {
                   required: true,
                   whitespace: true,
-                  message: intl.formatMessage({id: `${intlPrefix}.loginname.require.msg`}),
+                  message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
                 },
                 {
                   validator: this.checkUsername,
@@ -268,7 +269,7 @@ class EditUser extends Component {
             })(
               <Input
                 autoComplete="off"
-                label={intl.formatMessage({id: `${intlPrefix}.loginname`})}
+                label={intl.formatMessage({ id: `${intlPrefix}.loginname` })}
                 disabled={edit}
                 style={{ width: inputWidth }}
               />,
@@ -283,7 +284,7 @@ class EditUser extends Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.realname.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.realname.require.msg` }),
                   },
                 ],
                 initialValue: userInfo.realName,
@@ -291,7 +292,7 @@ class EditUser extends Component {
               })(
                 <Input
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.realname`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.realname` })}
                   type="text"
                   rows={1}
                   style={{ width: inputWidth }}
@@ -307,11 +308,11 @@ class EditUser extends Component {
                 {
                   required: true,
                   whitespace: true,
-                  message: intl.formatMessage({id: `${intlPrefix}.email.require.msg`}),
+                  message: intl.formatMessage({ id: `${intlPrefix}.email.require.msg` }),
                 },
                 {
                   type: 'email',
-                  message: intl.formatMessage({id: `${intlPrefix}.email.pattern.msg`}),
+                  message: intl.formatMessage({ id: `${intlPrefix}.email.pattern.msg` }),
                 },
                 {
                   validator: this.checkEmailAddress,
@@ -323,7 +324,7 @@ class EditUser extends Component {
             })(
               <Input
                 autoComplete="off"
-                label={intl.formatMessage({id: `${intlPrefix}.email`})}
+                label={intl.formatMessage({ id: `${intlPrefix}.email` })}
                 style={{ width: inputWidth }}
               />,
             )}
@@ -337,7 +338,7 @@ class EditUser extends Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.password.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.password.require.msg` }),
                   },
                   {
                     validator: this.checkPassword,
@@ -346,12 +347,12 @@ class EditUser extends Component {
                     validator: this.validateToNextPassword,
                   },
                 ],
-                initialValue: enablePassword ? originalPassword : undefined,
+                initialValue: (enablePassword && originalPassword) || defaultPassword,
                 validateFirst: true,
               })(
                 <Input
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.password`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.password` })}
                   type="password"
                   style={{ width: inputWidth }}
                 />,
@@ -367,16 +368,16 @@ class EditUser extends Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.repassword.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.repassword.require.msg` }),
                   }, {
                     validator: this.checkRepassword,
                   }],
-                initialValue: enablePassword ? originalPassword : undefined,
+                initialValue: (enablePassword && originalPassword) || defaultPassword,
                 validateFirst: true,
               })(
                 <Input
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.repassword`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.repassword` })}
                   type="password"
                   style={{ width: inputWidth }}
                   onBlur={this.handleRePasswordBlur}
@@ -384,38 +385,46 @@ class EditUser extends Component {
               )}
             </FormItem>
           )}
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('language', {
-              initialValue: this.state.userInfo.language,
-            })(
-              <Select
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                label={intl.formatMessage({id: `${intlPrefix}.language`})}
-                style={{ width: inputWidth }}
+          {
+            edit && (
+              <FormItem
+                {...formItemLayout}
               >
-                <Option value="zh_CN">简体中文</Option>
-                <Option value="en_US">English</Option>
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('timeZone', {
-              initialValue: this.state.userInfo.timeZone,
-            })(
-              <Select
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                label={intl.formatMessage({id: `${intlPrefix}.timezone`})}
-                style={{ width: inputWidth }}
+                {getFieldDecorator('language', {
+                  initialValue: this.state.userInfo.language,
+                })(
+                  <Select
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    label={intl.formatMessage({ id: `${intlPrefix}.language` })}
+                    style={{ width: inputWidth }}
+                  >
+                    <Option value="zh_CN">简体中文</Option>
+                    {/*<Option value="en_US">English</Option>*/}
+                  </Select>,
+                )}
+              </FormItem>
+            )
+          }
+          {
+            edit && (
+              <FormItem
+                {...formItemLayout}
               >
-                <Option value="CTT">中国</Option>
-                <Option value="EST">America</Option>
-              </Select>,
-            )}
-          </FormItem>
+                {getFieldDecorator('timeZone', {
+                  initialValue: this.state.userInfo.timeZone,
+                })(
+                  <Select
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    label={intl.formatMessage({ id: `${intlPrefix}.timezone` })}
+                    style={{ width: inputWidth }}
+                  >
+                    <Option value="CTT">中国</Option>
+                    {/*<Option value="EST">America</Option>*/}
+                  </Select>,
+                )}
+              </FormItem>
+            )
+          }
         </Form>
       </Content>
     );

@@ -31,15 +31,69 @@ class OrganizationInfo extends Component {
       },
       filters: {},
       params: '',
+      content: [
+        {
+          "id": 3,
+          "code": "choerodon.code.iam",
+          "name": "运营组织",
+          "level": "site",
+          "parentId": 0,
+          "icon": "IAM",
+          "route": null,
+          "objectVersionNumber": 222,
+          "permissions": [],
+          "zhName": null,
+          "enName": null,
+          "subMenus": null,
+          "default": true
+        },
+        {
+          "id": 49,
+          "code": "choerodon.code.microservice",
+          "name": "销售组织",
+          "level": "site",
+          "parentId": 0,
+          "icon": "micro",
+          "route": null,
+          "objectVersionNumber": 181,
+          "permissions": [],
+          "zhName": null,
+          "enName": null,
+          "subMenus": null,
+          "default": true
+        },
+        {
+          "id": 160,
+          "code": "choerodon.code.api",
+          "name": "API管理",
+          "level": "site",
+          "parentId": 0,
+          "icon": "API",
+          "route": null,
+          "objectVersionNumber": 1,
+          "permissions": [],
+          "zhName": null,
+          "enName": null,
+          "subMenus": null,
+          "default": true
+        },
+      ]
     }
   }
 
 
   render() {
+    const { content } = this.state;
     const { AppState } = this.props;
+    const columns = [{
+      title: '组织/角色',
+      dataIndex: 'name',
+      key: 'name',
+    }]
     return (
       <Page>
-        <Header title="组织信息">
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+        >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
@@ -51,12 +105,16 @@ class OrganizationInfo extends Component {
           code={intlPrefix}
           values={{name: AppState.getUserInfo.loginName}}
         >
-          <Table />
+          <Table
+            dataSource={content}
+            pagination={false}
+            columns={columns}
+          />
         </Content>
       </Page>
     )
   }
 }
 
-export default withRouter(OrganizationInfo);
+export default withRouter(injectIntl(OrganizationInfo));
 

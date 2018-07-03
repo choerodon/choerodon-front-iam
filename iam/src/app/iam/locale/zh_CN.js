@@ -667,6 +667,7 @@ const zh_CN = {
   'user.userinfo.timezone.est': 'America',
   'user.userinfo.timezone.ctt': '中国',
   'user.userinfo.timezone.require.msg': '请选择时区',
+
   // 修改密码
   'user.changepwd.twopwd.pattern.msg': '两次密码输入不一致',
   'user.changepwd.header.title': '修改密码',
@@ -676,6 +677,9 @@ const zh_CN = {
   'user.changepwd.newpassword.require.msg': '请输入新密码',
   'user.changepwd.confirmpassword.require.msg': '请确认密码',
   'user.changepwd.confirmpassword': '确认密码',
+
+  // 组织信息
+  'user.orginfo.header.title': '组织信息',
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

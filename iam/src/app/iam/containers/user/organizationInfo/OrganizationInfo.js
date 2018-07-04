@@ -88,7 +88,7 @@ class OrganizationInfo extends Component {
     return axios.get(`/iam/v1/users/${id}/organization_roles?${querystring.stringify(queryObj)}`);
   }
 
-  handlePageChange = (pagination, filters, params) => {
+  handlePageChange = (pagination, filters, {}, params) => {
     this.loadInitData(pagination, filters, params);
   };
 
@@ -99,9 +99,14 @@ class OrganizationInfo extends Component {
       visible: true,
       roleId: record.id,
       roleName: record.name,
-      percontent: null,
+      perpagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
       perfilters: {},
       perparams: [],
+      percontent: null,
     }, () => {
       this.loadPermissionData();
     })
@@ -154,6 +159,10 @@ class OrganizationInfo extends Component {
     return axios.get(`/iam/v1/roles/${id}/permissions?${querystring.stringify(queryObj)}`);
   }
 
+  handlePerPageChange = (pagination, filters, {}, params) => {
+    this.loadPermissionData(pagination, filters, params);
+  };
+
   renderSidebarContent() {
     const { intl } = this.props;
     const { percontent, perpagination, perloading, perparams, roleName } = this.state;
@@ -177,9 +186,10 @@ class OrganizationInfo extends Component {
           style={{ width: '512px' }}
           columns={columns}
           pagination={perpagination}
-          filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+          filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           dataSource={percontent}
           filters={perparams}
+          onChange={this.handlePerPageChange}
         />
       </Content>
     )
@@ -192,6 +202,12 @@ class OrganizationInfo extends Component {
       return `${id}-${record.id}`;
     }
   }
+
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadInitData();
+    });
+  };
 
   render() {
     const { content, visible, pagination, loading, params } = this.state;

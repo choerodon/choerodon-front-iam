@@ -718,7 +718,7 @@ class Route extends Component {
 
   render() {
     const { AppState, intl } = this.props;
-    const { sort: { columnKey, order }, filters } = this.state;
+    const { sort: { columnKey, order }, filters, params } = this.state;
     const { content, loading, pagination, visible, show, submitting } = this.state;
     const { type } = AppState.currentMenuType;
     let filtersService = content && content.map(({ serviceId }) => ({
@@ -807,7 +807,7 @@ class Route extends Component {
             loading={loading}
             pagination={pagination}
             onChange={this.handlePageChange}
-            filters={this.state.filters.params}
+            filters={params}
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar

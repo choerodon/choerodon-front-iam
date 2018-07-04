@@ -13,17 +13,16 @@ const intlPrefix = 'organization.user';
 @inject('AppState')
 @observer
 class User extends Component {
-  constructor(props) {
-    super(props);
-    this.linkToChange = this.linkToChange.bind(this);
-    this.state = {
+  state = this.getInitState();
+  getInitState() {
+    return {
       submitting: false,
       open: false,
       edit: false,
       id: '',
       page: 0,
       isLoading: true,
-      params: {},
+      params: [],
       filters: {},
       pagination: {
         current: 1,
@@ -35,10 +34,14 @@ class User extends Component {
       selectedData: '',
     };
   }
-
   componentDidMount() {
     this.loadUser();
   }
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadUser();
+    });
+  };
 
   onEdit = (id) => {
     this.setState({
@@ -48,22 +51,20 @@ class User extends Component {
     });
   };
 
-  loadUser = (paginationIn, sortIn, filtersIn) => {
+  loadUser = (paginationIn, sortIn, filtersIn, paramsIn) => {
     const { AppState, UserStore } = this.props;
-    const { pagination: paginationState, sort: sortState, filters: filtersState } = this.state;
+    const { pagination: paginationState, sort: sortState, filters: filtersState, params: paramsState, } = this.state;
     const { id } = AppState.currentMenuType;
     const pagination = paginationIn || paginationState;
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
-    this.setState({
-      pagination,
-      filters,
-    });
+    const params = paramsIn || paramsState;
     UserStore.loadUsers(
       id,
       pagination,
       sort,
       filters,
+      params
     ).then((data) => {
       UserStore.setUsers(data.content);
       this.setState({
@@ -72,14 +73,12 @@ class User extends Component {
           pageSize: data.size,
           total: data.totalElements,
         },
+        filters,
+        params,
+        sort,
       });
     })
       .catch(error => Choerodon.handleResponseError(error));
-  };
-
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
   };
 
   openNewPage = () => {
@@ -137,7 +136,7 @@ class User extends Component {
     return null;
   };
 
-  handlePageChange(pagination, filters, { field, order }, barFilters) {
+  handlePageChange(pagination, filters, { field, order }, params) {
     const sorter = [];
     if (field) {
       sorter.push(field);
@@ -145,7 +144,7 @@ class User extends Component {
         sorter.push('desc');
       }
     }
-    this.loadUser(pagination, sorter.join(','), filters);
+    this.loadUser(pagination, sorter.join(','), filters, params);
   }
 
   renderSideTitle() {
@@ -195,7 +194,7 @@ class User extends Component {
 
   render() {
     const { UserStore, AppState, intl } = this.props;
-    const { filters, pagination, visible, edit, submitting } = this.state;
+    const { filters, pagination, visible, edit, submitting, params } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const orgname = menuType.name;
@@ -412,7 +411,7 @@ class User extends Component {
             </Button>
           </Permission>
           <Button
-            onClick={() => this.loadUser()}
+            onClick={this.handleRefresh}
             icon="refresh"
           >
             <FormattedMessage id="refresh"/>
@@ -430,6 +429,7 @@ class User extends Component {
             rowKey="id"
             onChange={this.handlePageChange.bind(this)}
             loading={UserStore.isLoading}
+            filters={params}
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar

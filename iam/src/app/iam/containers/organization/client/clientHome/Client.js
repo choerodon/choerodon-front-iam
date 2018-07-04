@@ -41,20 +41,24 @@ const formItemNumLayout = {
 @inject('AppState')
 @observer
 class Client extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = this.getInitState();
+  getInitState() {
+    return {
       submitting: false,
       page: 0,
       open: false,
-      params: null,
       id: null,
+      params: [],
+      filters: {},
       pagination: {
         current: 1,
         pageSize: 10,
         total: '',
       },
-      sort: 'id,desc',
+      sort: {
+        columnKey: 'id',
+        order: 'descend',
+      },
       visible: false,
       status: '',
       selectData: {},
@@ -62,10 +66,13 @@ class Client extends Component {
   }
 
   componentDidMount() {
-    const { pagination, sort } = this.state;
-    this.loadClient(pagination, sort);
+    this.loadClient();
   }
-
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadClient();
+    });
+  }
   getSidebarContentInfo = () => {
     const menuType = this.props.AppState.currentMenuType;
     const organizationName = menuType.name;
@@ -91,23 +98,19 @@ class Client extends Component {
     }
   }
   /**
-   * 刷新
-   */
-  reload = () => {
-    const { pagination, sort } = this.state;
-    this.loadClient(pagination, sort);
-  };
-
-  /**
    * 加载客户端数据
    * @param pages 分页参数
    * @param state 当前search参数
    */
-  loadClient = (pagination, sort, filters) => {
+  loadClient = (paginationIn, sortIn, filtersIn, paramsIn) => {
     const { AppState } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
-    ClientStore.loadClients(organizationId, pagination, sort, filters)
+    const { pagination: paginationState, sort: sortState, filters: filtersState, params: paramsState, } = this.state;
+    const { id: organizationId } = AppState.currentMenuType;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
+    ClientStore.loadClients(organizationId, pagination, sort, filters, params)
       .then((data) => {
         ClientStore.changeLoading(false);
         ClientStore.setClients(data.content);
@@ -117,17 +120,11 @@ class Client extends Component {
             pageSize: data.size,
             total: data.totalElements,
           },
+          filters,
+          sort,
+          params,
         });
       });
-  };
-
-  /**
-   * 跳转函数
-   * @param url
-   */
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
   };
 
   /**
@@ -136,12 +133,7 @@ class Client extends Component {
    * @returns {*}
    */
   handlePageChange = (pagination, filters, sorter, params) => {
-    const newSorter = sorter.columnKey ? sorter.columnKey : '';
-    const newFilters = {
-      name: (filters.name && filters.name[0]) || '',
-      params: (params && params[0]) || '',
-    };
-    this.loadClient(pagination, newSorter, newFilters);
+    this.loadClient(pagination, filters, sorter, params);
   };
 
   /**
@@ -155,7 +147,7 @@ class Client extends Component {
       onOk: () => ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {
         if (status) {
           Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
-          this.reload();
+          this.loadClient();
         } else {
           Choerodon.prompt(intl.formatMessage({id: 'delete.error'}));
         }
@@ -188,18 +180,9 @@ class Client extends Component {
       submitting: false,
     }, () => {
       if (nochange !== 'nochange') {
-        this.reload();
+        this.loadClient();
       }
     });
-  };
-
-  /**
-   * 跳转函数
-   * @param url
-   */
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
   };
 
   /**
@@ -458,7 +441,7 @@ class Client extends Component {
 
   render() {
     const { AppState, intl } = this.props;
-    const { submitting, status, pagination, visible } = this.state;
+    const { submitting, status, pagination, visible, filters, params } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
     const clientData = ClientStore.getClients;
@@ -468,34 +451,13 @@ class Client extends Component {
         dataIndex: 'name',
         key: 'name',
         filters: [],
+        filteredValue: filters.name || [],
         sorter: (a, b) => a.name.localeCompare(b.serviceNamee, 'zh-Hans-CN', { sensitivity: 'accent' }),
       },
       {
         title: intl.formatMessage({id: `${intlPrefix}.granttypes`}),
         dataIndex: 'authorizedGrantTypes',
         key: 'authorizedGrantTypes',
-        // filters: [
-        //   {
-        //     value: 'password',
-        //     text: 'password',
-        //   },
-        //   {
-        //     value: 'implicit',
-        //     text: 'implicit',
-        //   },
-        //   {
-        //     value: 'client_credentials',
-        //     text: 'client_credentials',
-        //   },
-        //   {
-        //     value: 'authorization_code',
-        //     text: 'authorization_code',
-        //   },
-        //   {
-        //     value: 'refresh_token',
-        //     text: 'refresh_token',
-        //   },
-        // ],
         render: (text) => {
           if (!text) {
             return '';
@@ -572,7 +534,7 @@ class Client extends Component {
             </Button>
           </Permission>
           <Button
-            onClick={this.reload}
+            onClick={this.handleRefresh}
             icon="refresh"
           >
             <FormattedMessage id="refresh"/>
@@ -586,6 +548,7 @@ class Client extends Component {
             size="middle"
             pagination={pagination}
             columns={columns}
+            filters={params}
             dataSource={clientData}
             rowKey="id"
             onChange={this.handlePageChange}

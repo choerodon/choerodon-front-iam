@@ -31,7 +31,7 @@ class Microservice extends Component {
         order: 'descend',
       },
       filters: {},
-      params: '',
+      params: [],
     }
   }
 
@@ -137,6 +137,7 @@ class Microservice extends Component {
             columns={columns}
             dataSource={content}
             pagination={pagination}
+            filters={params}
             onChange={this.handlePageChange}
             rowkey={record => record.serviceName}
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}

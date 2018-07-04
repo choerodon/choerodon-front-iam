@@ -220,10 +220,19 @@ const pageDetail = {
   'user.changepwd.description': '非LDAP用户可以修改自己的登录密码。',
   'user.changepwd.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
-  //组织信息
+  // 组织信息
   'user.orginfo.title': '用户"{name}"的组织信息',
   'user.orginfo.description': '用户必须且只能属于一个组织，但可以在其他组织被分配角色。本页面展示您所属的组织以及您被分配的组织角色，所属组织在列表第一行。',
-  'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`
+  'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+
+  'user.orginfo.detail.title': '查看角色"{name}"的权限',
+  'user.orginfo.detail.description': '您可以在此查看角色权限及其功能。',
+  'user.orginfo.detail.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+
+  // 项目信息
+  'user.proinfo.title': '用户"{name}"的项目信息',
+  'user.proinfo.description': '用户可以在不同项目的被分配角色，本页面展示您所在的项目以及项目里您的角色。',
+  'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
 };
 const zh_CN = {
@@ -294,6 +303,7 @@ const zh_CN = {
   'status': '状态',
   'level': '层级',
   'source': '来源',
+  'type': '类型',
 
   //type
   'global': '全局',
@@ -438,6 +448,8 @@ const zh_CN = {
 
   // 微服务管理
   'global.microservice.header.title': '微服务',
+  'global.microservice.name': '名称',
+  'global.microservice.instancenum': '实例数',
 
 
   // 配置管理
@@ -680,6 +692,13 @@ const zh_CN = {
 
   // 组织信息
   'user.orginfo.header.title': '组织信息',
+  'user.orginfo.name': '组织/角色',
+  'user.orginfo.detail.header.title': '角色权限',
+
+  // 项目信息
+  'user.proinfo.header.title': '项目信息',
+  'user.proinfo.name': '项目/角色',
+  'user.proinfo.belongorg': '所属组织',
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

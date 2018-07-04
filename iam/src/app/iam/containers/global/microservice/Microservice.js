@@ -3,10 +3,10 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Table } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { axios, Content, Header, Page } from 'choerodon-front-boot';
 import querystring from 'query-string';
 const intlPrefix = 'global.microservice'
 
@@ -102,13 +102,13 @@ class Microservice extends Component {
     const { loading, content, sort: { columnKey, order }, filters, pagination, params } = this.state;
     const { intl } = this.props;
     const columns = [{
-      title: '名称',
+      title: <FormattedMessage id={`${intlPrefix}.name`}/>,
       dataIndex: 'serviceName',
       key: 'serviceName',
       filters: [],
       filteredValue: filters.serviceName || [],
     }, {
-      title: '实例数',
+      title: <FormattedMessage id={`${intlPrefix}.instancenum`}/>,
       dataIndex: 'instanceNum',
       key: 'instanceNum',
     }];

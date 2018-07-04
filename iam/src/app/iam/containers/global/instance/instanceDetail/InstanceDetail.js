@@ -62,6 +62,7 @@ class InstanceDetail extends Component {
 
   getInstanceInfo = () => {
     const { info, loading, metadata } = this.state;
+    const { intl } = this.props;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.name`}/>,
       dataIndex: 'name',
@@ -112,6 +113,7 @@ class InstanceDetail extends Component {
           dataSource={metadata}
           rowkey="name"
           pagination={false}
+          filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
         />
       </div>
     )

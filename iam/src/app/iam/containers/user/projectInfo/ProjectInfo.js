@@ -3,12 +3,12 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button,  Form, Modal, Table, Icon, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
-
+const intlPrefix = 'user.proinfo';
 const { Sidebar } = Modal;
 
 @inject('AppState')
@@ -34,9 +34,11 @@ class ProjectInfo extends Component {
   }
 
   render() {
+    const { AppState } = this.props;
     return (
       <Page>
-        <Header title="项目信息">
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+        >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
@@ -44,7 +46,12 @@ class ProjectInfo extends Component {
             <FormattedMessage id="refresh"/>
           </Button>
         </Header>
-        <Content />
+        <Content
+          code={intlPrefix}
+          values={{name: AppState.getUserInfo.loginName}}
+        >
+          <Table />
+        </Content>
       </Page>
     )
   }

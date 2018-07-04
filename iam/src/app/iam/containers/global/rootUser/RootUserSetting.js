@@ -14,9 +14,9 @@ const intlPrefix = 'global.rootuser';
 @inject('AppState')
 @observer
 class RootUserSetting extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
+  state = this.getInitState();
+  getInitState() {
+    return {
       visible: false,
       pagination: {
         current: 1,
@@ -31,7 +31,7 @@ class RootUserSetting extends Component {
       params: [],
       onlyRootUser: false,
       submitting: false,
-    }
+    };
   }
   componentWillMount() {
     this.reload();
@@ -271,19 +271,7 @@ class RootUserSetting extends Component {
           <Button
             icon="refresh"
             onClick={() => {
-              this.setState({
-                filters: {},
-                loading: true,
-                pagination: {
-                  current: 1,
-                  pageSize: 10,
-                  total: '',
-                },
-                sort: {
-                  columnKey: 'id',
-                  order: 'descend',
-                },
-              }, () => {
+              this.setState(this.getInitState(), () => {
                 this.reload();
               });
             }}

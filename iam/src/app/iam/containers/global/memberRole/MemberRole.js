@@ -297,7 +297,7 @@ class MemberRole extends Component {
         {getFieldDecorator(key, {
           rules: [
             {
-              required: true,
+              required: roleIds.length === 1 && selectType === 'create',
               message: this.formatMessage('memberrole.role.require.msg'),
             },
           ],
@@ -395,6 +395,15 @@ class MemberRole extends Component {
         data,
       };
     }
+    if (showMember) {
+      this.setState({
+        selectRoleMemberKeys: [],
+      });
+    } else {
+      this.setState({
+        selectMemberRoles: {},
+      });
+    }
     return this.roles.deleteRoleMember(body).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
@@ -475,7 +484,7 @@ class MemberRole extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
-        const body = roleIds.map((roleId, index) => {
+        const body = roleIds.filter(roleId => roleId).map((roleId, index) => {
           return {
             memberType: 'user',
             roleId,
@@ -579,6 +588,7 @@ class MemberRole extends Component {
   };
 
   showMemberTable(show) {
+    this.reload();
     this.setState({
       showMember: show,
     });
@@ -784,7 +794,7 @@ class MemberRole extends Component {
   }
 
   renderRoleTable() {
-    const { roleMemberDatas, roleMemberFilterRole, selectRoleMemberKeys, expandedKeys, roleMemberFilters, loading } = this.state;
+    const { roleMemberDatas, roleMemberFilterRole, selectRoleMemberKeys, expandedKeys, roleMemberParams, roleMemberFilters, loading } = this.state;
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     const filtersData = roleMemberDatas.map(({ id, name }) => ({
       value: name,
@@ -898,6 +908,7 @@ class MemberRole extends Component {
         className="role-member-table"
         pagination={false}
         columns={columns}
+        filters={roleMemberParams}
         indentSize={0}
         dataSource={dataSource}
         rowKey={({ roleId = '', id }) => [roleId, id].join('-')}

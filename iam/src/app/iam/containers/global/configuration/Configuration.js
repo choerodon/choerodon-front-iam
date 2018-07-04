@@ -31,7 +31,7 @@ class Configuration extends Component {
         order: 'descend',
       },
       filters: {},
-      params: '',
+      params: [],
     }
   }
 
@@ -236,7 +236,7 @@ class Configuration extends Component {
 
   render() {
     const { intl } = this.props;
-    const { sort: { columnKey, order }, filters, pagination } = this.state;
+    const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.id`}/>,
       dataIndex: 'name',
@@ -342,7 +342,7 @@ class Configuration extends Component {
             columns={columns}
             dataSource={ConfigurationStore.getConfigData.slice()}
             pagination={pagination}
-            filters={this.state.filters.params}
+            filters={params}
             onChange={this.handlePageChange}
             rowkey="id"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}

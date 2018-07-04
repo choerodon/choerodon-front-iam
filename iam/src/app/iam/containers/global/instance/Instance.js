@@ -33,7 +33,7 @@ class Instance extends Component {
         order: 'descend',
       },
       filters: {},
-      params: '',
+      params: [],
       defaultService: 'total'
     }
   }
@@ -165,7 +165,7 @@ class Instance extends Component {
   }
 
   render() {
-    const { sort: { columnKey, order }, filters, pagination } = this.state;
+    const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const { intl } = this.props;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.id`}/>,
@@ -245,7 +245,7 @@ class Instance extends Component {
             columns={columns}
             dataSource={InstanceStore.getInstanceData.slice()}
             pagination={pagination}
-            filters={this.state.filters.params}
+            filters={params}
             onChange={this.handlePageChange}
             rowkey="id"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}

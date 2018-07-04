@@ -66,7 +66,7 @@ class ClientStore {
     return this.isLoading;
   }
 
-  loadClients(organizationId, { current, pageSize }, { columnKey, order }, { name }, params) {
+  loadClients(organizationId, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name }, params) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -82,7 +82,6 @@ class ClientStore {
       }
       queryObj.sort = sorter.join(',');
     }
-
     return axios.get(`/iam/v1/organizations/${organizationId}/clients?${querystring.stringify(queryObj)}`);
   }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Form, Input, Radio } from 'choerodon-ui';
+import { Form, Input, Radio, InputNumber } from 'choerodon-ui';
 import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './PasswordForm.scss';
@@ -103,14 +103,14 @@ class PasswordForm extends Component {
             rules: [
               {
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
+                type: "number",
                 message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
               },
             ],
             initialValue: passwordPolicy ? passwordPolicy.minLength : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.minlength`}/>}
               style={{ width: inputWidth }}
             />,
@@ -120,13 +120,13 @@ class PasswordForm extends Component {
           {getFieldDecorator('maxLength', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
+              type: "number",
               message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.maxlength`}/>}
               style={{ width: inputWidth }}
             />,
@@ -136,13 +136,13 @@ class PasswordForm extends Component {
           {getFieldDecorator('digitsCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
+              type: "number",
               message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.digitscount`}/>}
               style={{ width: inputWidth }} />,
           )}
@@ -151,13 +151,13 @@ class PasswordForm extends Component {
           {getFieldDecorator('lowercaseCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
+              type: "number",
               message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.lowercasecount`}/>}
               style={{ width: inputWidth }}
             />,
@@ -167,13 +167,13 @@ class PasswordForm extends Component {
           {getFieldDecorator('uppercaseCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
+              type: "number",
               message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.uppercasecount`}/>}
               style={{ width: inputWidth }}
             />,
@@ -183,13 +183,13 @@ class PasswordForm extends Component {
           {getFieldDecorator('specialCharCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
+              type: "number",
               message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.specialcharcount`}/>}
               style={{ width: inputWidth }}
             />,
@@ -199,13 +199,13 @@ class PasswordForm extends Component {
           {getFieldDecorator('notRecentCount', {
             rules: [{
               pattern: /^([1-9]\d*|[0]{1,1})$/,
+              type: "number",
               message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
             }],
             initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
-              type="number"
               label={<FormattedMessage id={`${inputPrefix}.notrecentcount`}/>}
               style={{ width: inputWidth }}
             />,

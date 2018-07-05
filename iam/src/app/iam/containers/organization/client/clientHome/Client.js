@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Form, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Select, Table, Tooltip, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { inject, observer } from 'mobx-react';
@@ -367,11 +367,10 @@ class Client extends Component {
             initialValue: client.accessTokenValidity ?
               parseInt(client.accessTokenValidity, 10) : undefined,
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
               style={{ width: 300 }}
-              type="number"
               size="default"
               min={60}
             />,

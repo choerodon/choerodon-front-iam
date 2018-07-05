@@ -19,6 +19,7 @@ class OrganizationInfo extends Component {
 
   getInitState() {
     return {
+      totalCount: false,
       loading: true,
       visible: false,
       content: null,
@@ -93,12 +94,12 @@ class OrganizationInfo extends Component {
   };
 
 
-  /* 打开侧边栏 */
+  /* 打开sidebar */
   openSidebar = (record) => {
     this.setState({
-      visible: true,
       roleId: record.id,
       roleName: record.name,
+      totalCount: false,
       perpagination: {
         current: 1,
         pageSize: 10,
@@ -130,6 +131,11 @@ class OrganizationInfo extends Component {
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
     this.permissionFetch(pagination, filters, params).then(data => {
+      if (this.state.totalCount === false) {
+        this.setState({
+          totalCount: data.totalElements,
+        })
+      }
       this.setState({
         perpagination: {
           current: data.number + 1,
@@ -139,7 +145,8 @@ class OrganizationInfo extends Component {
         percontent: data.content,
         perloading: false,
         perfilters: filters,
-        perparams: params
+        perparams: params,
+        visible: true,
       });
     });
   }
@@ -165,7 +172,7 @@ class OrganizationInfo extends Component {
 
   renderSidebarContent() {
     const { intl } = this.props;
-    const { percontent, perpagination, perloading, perparams, roleName } = this.state;
+    const { percontent, perpagination, perloading, perparams, roleName, totalCount } = this.state;
     const columns = [{
       title: '权限',
       dataIndex: 'code',
@@ -181,6 +188,7 @@ class OrganizationInfo extends Component {
         code={`${intlPrefix}.detail`}
         values={{ name: roleName }}
       >
+        <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
           loading={perloading}
           style={{ width: '512px' }}
@@ -249,6 +257,7 @@ class OrganizationInfo extends Component {
       render: (text, record) => {
         if (!record.hasOwnProperty('projects')) {
           return (
+          <Permission service={['iam-service.role.listPermissionById']}>
             <Tooltip
               title={<FormattedMessage id="detail" />}
               placement="bottom"
@@ -260,6 +269,7 @@ class OrganizationInfo extends Component {
                 onClick={this.openSidebar.bind(this, record)}
               />
             </Tooltip>
+          </Permission>
           )
         }
       }

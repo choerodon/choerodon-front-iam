@@ -4,11 +4,12 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button,  Form, Select, Table } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
+const intlPrefix = 'global.apitest';
 
 @inject('AppState')
 @observer
@@ -36,7 +37,7 @@ class Apitest extends Component {
     return (
       <Page>
         <Header
-          title="API测试"
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
             onClick={this.handleRefresh}
@@ -45,10 +46,15 @@ class Apitest extends Component {
             <FormattedMessage id="refresh"/>
           </Button>
         </Header>
-        <Content />
+        <Content
+          code={intlPrefix}
+          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
+        >
+          <Table />
+        </Content>
       </Page>
     )
   }
 }
 
-export default withRouter(Apitest);
+export default withRouter(injectIntl(Apitest));

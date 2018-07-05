@@ -28,23 +28,6 @@ const pageDetail = {
   'global.rootuser.add.description': '您可以在此添加一个或多个用户，被添加的用户为Root用户。',
   'global.rootuser.add.link': `${docServer}/user-guide/system-configuration/platform/rootuser/`,
 
-  // route
-  'global.route.title': '平台"{name}"的路由管理',
-  'global.route.description': '路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。',
-  'global.route.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-
-  'global.route.create.title': '在平台"{name}"中创建路由',
-  'global.route.create.description': '请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。',
-  'global.route.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-
-  'global.route.modify.title': '对路由"{name}"进行修改',
-  'global.route.modify.description': '您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。',
-  'global.route.modify.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-
-  'global.route.detail.title': '查看路由"{name}"的详情',
-  'global.route.detail.description': '预定义路由为平台初始化设置，您不能修改预定义路由。',
-  'global.route.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-
   // 角色分配
   'global.memberrole.title': '平台"{name}"的角色分配',
   'global.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
@@ -103,9 +86,32 @@ const pageDetail = {
   'global.instance.description': '实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。',
   'global.instance.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
+  // 路由管理
+  'global.route.title': '平台"{name}"的路由管理',
+  'global.route.description': '路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。',
+  'global.route.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  'global.route.create.title': '在平台"{name}"中创建路由',
+  'global.route.create.description': '请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。',
+  'global.route.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  'global.route.modify.title': '对路由"{name}"进行修改',
+  'global.route.modify.description': '您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。',
+  'global.route.modify.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  'global.route.detail.title': '查看路由"{name}"的详情',
+  'global.route.detail.description': '预定义路由为平台初始化设置，您不能修改预定义路由。',
+  'global.route.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  // 实例管理
   'global.instance.detail.title': '实例"{name}"的实例详情',
   'global.instance.detail.description': '实例属于一个微服务。您可以在此查看实例的详细信息。',
   'global.instance.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
+  // API测试
+  'global.apitest.title': '平台"{name}"的API测试',
+  'global.apitest.description': 'API属于一个微服务。请先选择一个微服务，查看该微服务下的API信息。',
+  'global.apitest.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
@@ -233,6 +239,10 @@ const pageDetail = {
   'user.proinfo.title': '用户"{name}"的项目信息',
   'user.proinfo.description': '用户可以在不同项目的被分配角色，本页面展示您所在的项目以及项目里您的角色。',
   'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+
+  'user.proinfo.detail.title': '查看角色"{name}"的权限',
+  'user.proinfo.detail.description': '您可以在此查看角色权限及其功能。',
+  'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
 };
 const zh_CN = {
@@ -379,39 +389,6 @@ const zh_CN = {
   'global.rootuser.add': '添加Root用户',
   'global.rootuser.user': '用户',
 
-  // 路由管理
-  'global.route.delete.title': '删除路由',
-  'global.route.delete.content': '确定要删除路由"{name}"吗？',
-  'global.route.name.exist.msg': '路由名称已存在，请输入其他路由名称',
-  'global.route.name.number.msg': '路由名称不能包含空格且不能全为数字',
-  'global.route.path.exist.msg': '路由路径已存在，请输入其他路由路径',
-  'global.route.builtin.predefined': '预定义',
-  'global.route.builtin.custom': '自定义',
-  'global.route.create': '创建路由',
-  'global.route.modify': '修改路由',
-  'global.route.detail': '路由详情',
-  'global.route.name.require.msg': '请输入路由名称',
-  'global.route.name': '路由名称',
-  'global.route.name.tip': '路由表中的唯一标识',
-  'global.route.path': '路径',
-  'global.route.path.require.msg': '请输入路径',
-  'global.route.path.tip': '路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径',
-  'global.route.service': '对应微服务',
-  'global.route.service.require.msg': '必须选择一个微服务',
-  'global.route.stripprefix': '是否去除前缀',
-  'global.route.stripprefix.tip': '默认情况下，请求转发时会将路由规则中的前缀去除',
-  'global.route.retryable': '是否重试',
-  'global.route.retryable.tip': '\'默认为否，如果为是，请求失败时会自动重试3次',
-  'global.route.customsensitiveheaders': '是否过滤敏感头信息',
-  'global.route.customsensitiveheaders.tip': '请求转发时，会将Headers中的敏感信息随HTTP转发，如果想过滤一些敏感信息，请选择是',
-  'global.route.sensitiveheaders.require.msg': '请输入敏感头信息',
-  'global.route.sensitiveheaders': '敏感头信息',
-  'global.route.helperservice.require.msg': '请输入Helper服务名',
-  'global.route.helperservice': 'Helper服务名',
-  'global.route.helperservice.tip': '该路由规则对应的自定义网关处理器服务，默认为gateway-helper',
-  'global.route.builtin': '路由来源',
-  'global.route.header.title': '路由管理',
-
   // 角色管理
   'global.role.create.byselect.level': '请选择相同层级的角色!',
   'global.role.builtin.predefined': '预定义',
@@ -451,6 +428,38 @@ const zh_CN = {
   'global.microservice.name': '名称',
   'global.microservice.instancenum': '实例数',
 
+  // 路由管理
+  'global.route.delete.title': '删除路由',
+  'global.route.delete.content': '确定要删除路由"{name}"吗？',
+  'global.route.name.exist.msg': '路由名称已存在，请输入其他路由名称',
+  'global.route.name.number.msg': '路由名称不能包含空格且不能全为数字',
+  'global.route.path.exist.msg': '路由路径已存在，请输入其他路由路径',
+  'global.route.builtin.predefined': '预定义',
+  'global.route.builtin.custom': '自定义',
+  'global.route.create': '创建路由',
+  'global.route.modify': '修改路由',
+  'global.route.detail': '路由详情',
+  'global.route.name.require.msg': '请输入路由名称',
+  'global.route.name': '路由名称',
+  'global.route.name.tip': '路由表中的唯一标识',
+  'global.route.path': '路径',
+  'global.route.path.require.msg': '请输入路径',
+  'global.route.path.tip': '路由的跳转路由规则，路由必须配置一个可以被指定为Ant风格表达式的路径',
+  'global.route.service': '对应微服务',
+  'global.route.service.require.msg': '必须选择一个微服务',
+  'global.route.stripprefix': '是否去除前缀',
+  'global.route.stripprefix.tip': '默认情况下，请求转发时会将路由规则中的前缀去除',
+  'global.route.retryable': '是否重试',
+  'global.route.retryable.tip': '\'默认为否，如果为是，请求失败时会自动重试3次',
+  'global.route.customsensitiveheaders': '是否过滤敏感头信息',
+  'global.route.customsensitiveheaders.tip': '请求转发时，会将Headers中的敏感信息随HTTP转发，如果想过滤一些敏感信息，请选择是',
+  'global.route.sensitiveheaders.require.msg': '请输入敏感头信息',
+  'global.route.sensitiveheaders': '敏感头信息',
+  'global.route.helperservice.require.msg': '请输入Helper服务名',
+  'global.route.helperservice': 'Helper服务名',
+  'global.route.helperservice.tip': '该路由规则对应的自定义网关处理器服务，默认为gateway-helper',
+  'global.route.builtin': '路由来源',
+  'global.route.header.title': '路由管理',
 
   // 配置管理
   'global.configuration.service': '所属微服务',
@@ -506,8 +515,15 @@ const zh_CN = {
   'global.instance.configinfo': '配置信息',
   'global.instance.envinfo': '环境信息',
   'global.instance.detail': '实例详情',
-  // 组织层
 
+  // API测试
+  'global.apitest.header.title': 'API测试',
+  'global.apitest.service': '所属微服务',
+  'global.apitest.name': '名称/方法',
+  'global.apitest.path': '路径',
+  'global.apitest.description': '描述',
+
+  // 组织层
   // 项目管理
   'organization.project.code.exist.msg': '项目编码已存在，请输入其他项目编码',
   'organization.project.code.require.msg': '请输入项目编码',
@@ -699,6 +715,7 @@ const zh_CN = {
   'user.proinfo.header.title': '项目信息',
   'user.proinfo.name': '项目/角色',
   'user.proinfo.belongorg': '所属组织',
+  'user.proinfo.detail.header.title': '角色权限',
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

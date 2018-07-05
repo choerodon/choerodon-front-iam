@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Form, Input, Select, Radio } from 'choerodon-ui';
+import { Form, Input, Select, Radio, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import './PasswordForm.scss';
@@ -94,13 +94,13 @@ class LoginForm extends Component {
               {getFieldDecorator('maxCheckCaptcha', {
                 rules: [{
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
+                  type: "number",
                   message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
                 }],
                 initialValue: passwordPolicy ? passwordPolicy.maxCheckCaptcha : undefined,
               })(
-                <Input
+                <InputNumber
                   autoComplete="off"
-                  type="number"
                   label={<FormattedMessage id={`${inputPrefix}.maxerror.count`}/>}
                   style={{ width: 300 }}
                 />,
@@ -131,13 +131,13 @@ class LoginForm extends Component {
               {getFieldDecorator('maxErrorTime', {
                 rules: [{
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
+                  type: "number",
                   message: intl.formatMessage({id: `${inputPrefix}.number.pattern.msg`}),
                 }],
                 initialValue: passwordPolicy ? passwordPolicy.maxErrorTime : undefined,
               })(
-                <Input
+                <InputNumber
                   autoComplete="off"
-                  type="number"
                   label={<FormattedMessage id={`${inputPrefix}.maxerror.count`}/>}
                   style={{ width: 300 }}
                 />,

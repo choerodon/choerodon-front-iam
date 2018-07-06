@@ -289,11 +289,12 @@ class User extends Component {
         ),
         filters: [
           {
-            text: intl.formatMessage({id: `${intlPrefix}.lock`}),
-            value: 'true',
-          }, {
             text: intl.formatMessage({id: `${intlPrefix}.normal`}),
             value: 'false',
+          },
+          {
+            text: intl.formatMessage({id: `${intlPrefix}.lock`}),
+            value: 'true',
           },
         ],
         filteredValue: filters.locked || [],

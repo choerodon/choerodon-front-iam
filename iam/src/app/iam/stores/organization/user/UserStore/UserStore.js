@@ -139,7 +139,7 @@ class UserStore {
   // 加载用户列表
   loadUsers = (organizationId, page, sortParam, {
     loginName, realName, ldap, language, enabled, locked,
-  }) => {
+  }, param) => {
     this.setIsLoading(true);
     return axios.post(
       `/iam/v1/organizations/${organizationId}/users/search?page=${page.current - 1}&size=${page.pageSize}&sort=${sortParam}`,
@@ -150,6 +150,7 @@ class UserStore {
         language: language && language[0],
         enabled: enabled && enabled[0],
         locked: locked && locked[0],
+        param,
       }),
     ).then((data) => {
       this.setIsLoading(false);

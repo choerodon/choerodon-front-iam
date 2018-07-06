@@ -395,20 +395,16 @@ class MemberRole extends Component {
         data,
       };
     }
-    if (showMember) {
-      this.setState({
-        selectRoleMemberKeys: [],
-      });
-    } else {
-      this.setState({
-        selectMemberRoles: {},
-      });
-    }
+
     return this.roles.deleteRoleMember(body).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
       } else {
         Choerodon.prompt(this.formatMessage('remove.success'));
+        this.setState({
+          selectRoleMemberKeys: [],
+          selectMemberRoles: {},
+        });
         this.roles.fetch();
       }
     });
@@ -624,12 +620,9 @@ class MemberRole extends Component {
     };
     newState.loading = true;
     const { expandedKeys } = this.state;
-    this.roles.loadRoleMemberDatas(roleMemberFilters)
+    this.roles.loadRoleMemberDatas({name, ...roleMemberFilters})
       .then((roleData) => {
-        this.setState({
-          loading: false,
-          expandedKeys,
-          roleMemberDatas: roleData.filter(role => {
+        const roleMemberDatas = roleData.filter(role => {
             role.users = role.users || [];
             if (role.userCount > 0) {
               if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
@@ -641,15 +634,19 @@ class MemberRole extends Component {
               return true;
             }
             return false;
-          }),
+          });
+        this.setState({
+          loading: false,
+          expandedKeys,
+          roleMemberDatas: roleMemberDatas,
         });
       });
     this.setState(newState);
   };
 
   renderMemberTable() {
-    const { selectMemberRoles, memberRolePageInfo, roleData, memberDatas, memberRoleFilters, loading } = this.state;
-    const filtersRole = roleData.map(({ name }) => ({
+    const { selectMemberRoles, roleMemberDatas, memberRolePageInfo, memberDatas, memberRoleFilters, loading } = this.state;
+    const filtersRole = roleMemberDatas.map(({ name }) => ({
       value: name,
       text: name,
     }));
@@ -766,7 +763,7 @@ class MemberRole extends Component {
       },
     ];
     const rowSelection = {
-      selectedRowkeys: Object.keys(selectMemberRoles),
+      selectedRowKeys: Object.keys(selectMemberRoles).map((key) => Number(key)),
       onChange: (selectedRowkeys, selectedRecords) => {
         this.setState({
           selectMemberRoles: selectedRowkeys.reduce((data, key, index) => {
@@ -796,7 +793,7 @@ class MemberRole extends Component {
   renderRoleTable() {
     const { roleMemberDatas, roleMemberFilterRole, selectRoleMemberKeys, expandedKeys, roleMemberParams, roleMemberFilters, loading } = this.state;
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
-    const filtersData = roleMemberDatas.map(({ id, name }) => ({
+    const filtersData = roleMemberDatas.map(({ name }) => ({
       value: name,
       text: name,
     }));
@@ -888,7 +885,7 @@ class MemberRole extends Component {
     ];
     const rowSelection = {
       type: 'checkbox',
-      selectedRowkeys: selectRoleMemberKeys,
+      selectedRowKeys: selectRoleMemberKeys,
       getCheckboxProps: ({ loginName }) => ({
         disabled: !loginName,
       }),

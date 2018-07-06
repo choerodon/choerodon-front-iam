@@ -339,6 +339,7 @@ const zh_CN = {
   'global.organization.codemaxmsg': '组织编码不能超过15个字符',
   'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'global.organization.namerequiredmsg': '请输入组织名称',
+  "global.organization.project.count": "项目数量",
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',

@@ -48,7 +48,7 @@ class MemberLabel extends Component {
         } else {
           return new Promise((resolve) => {
             if (!item.trim()) {
-              errorMsg = intl.formatMessage({id: 'memberlabel.member.whitespace.msg'});
+              errorMsg = intl.formatMessage({id: 'memberlabel.member.notexist.msg'});
               resolve(false);
             }
             this.searchMemberId(item)

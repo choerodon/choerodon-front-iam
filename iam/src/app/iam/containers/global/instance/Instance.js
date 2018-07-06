@@ -29,8 +29,8 @@ class Instance extends Component {
         total: 0,
       },
       sort: {
-        columnKey: 'id',
-        order: 'descend',
+        columnKey: 'service',
+        order: 'asc',
       },
       filters: {},
       params: [],
@@ -97,7 +97,7 @@ class Instance extends Component {
       });
   }
 
-  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { instanceId, version }, params) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'service', order = 'asc' }, { instanceId, version }, params) {
     InstanceStore.setLoading(true);
     const queryObj = {
       page: current - 1,
@@ -110,8 +110,8 @@ class Instance extends Component {
     if (columnKey) {
       const sorter = [];
       sorter.push(columnKey);
-      if (order === 'descend') {
-        sorter.push('desc');
+      if (order === 'asc') {
+        sorter.push('asc');
       }
       queryObj.sort = sorter.join(',');
     }
@@ -247,7 +247,7 @@ class Instance extends Component {
             pagination={pagination}
             filters={params}
             onChange={this.handlePageChange}
-            rowkey="id"
+            rowKey="instanceId"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
         </Content>

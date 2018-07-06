@@ -139,7 +139,7 @@ class Microservice extends Component {
             pagination={pagination}
             filters={params}
             onChange={this.handlePageChange}
-            rowkey={record => record.serviceName}
+            rowKey="serviceName"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
         </Content>

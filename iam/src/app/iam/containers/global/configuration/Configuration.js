@@ -344,7 +344,7 @@ class Configuration extends Component {
             pagination={pagination}
             filters={params}
             onChange={this.handlePageChange}
-            rowkey="id"
+            rowKey="id"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
         </Content>

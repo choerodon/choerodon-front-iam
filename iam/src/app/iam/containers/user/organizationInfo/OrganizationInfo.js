@@ -41,6 +41,7 @@ class OrganizationInfo extends Component {
       perloading: true,
       roleId: null,
       roleName: '',
+      orgName: '',
     }
   }
 
@@ -99,6 +100,7 @@ class OrganizationInfo extends Component {
     this.setState({
       roleId: record.id,
       roleName: record.name,
+      orgName: record.organizationName,
       totalCount: false,
       perpagination: {
         current: 1,
@@ -172,7 +174,14 @@ class OrganizationInfo extends Component {
 
   renderSidebarContent() {
     const { intl } = this.props;
-    const { percontent, perpagination, perloading, perparams, roleName, totalCount } = this.state;
+    const { percontent, perpagination, perloading, perparams, orgName, roleName, totalCount } = this.state;
+    const title = intl.formatMessage({id: `${intlPrefix}.detail.title`}, {
+      roleName,
+    });
+    const description = intl.formatMessage({id: `${intlPrefix}.detail.description`}, {
+      orgName,
+      roleName,
+    });
     const columns = [{
       title: '权限',
       dataIndex: 'code',
@@ -185,8 +194,9 @@ class OrganizationInfo extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.detail`}
-        values={{ name: roleName }}
+        title={title}
+        description={description}
+        link={intl.formatMessage({id: `${intlPrefix}.detail.link`})}
       >
         <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
@@ -288,7 +298,7 @@ class OrganizationInfo extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getUserInfo.loginName }}
+          values={{ name: AppState.getUserInfo.realName }}
         >
           <Table
             loading={loading}

@@ -41,6 +41,7 @@ class ProjectInfo extends Component {
       perloading: true,
       roleId: null,
       roleName: '',
+      proName: '',
     }
   }
 
@@ -102,10 +103,12 @@ class ProjectInfo extends Component {
 
   /* 打开sidebar */
   openSidebar = (record) => {
+    window.console.log(record);
     this.setState({
       roleId: record.id,
       roleName: record.name,
       totalCount: false,
+      proName: record.projectName,
       perpagination: {
         current: 1,
         pageSize: 10,
@@ -184,7 +187,14 @@ class ProjectInfo extends Component {
 
   renderSidebarContent() {
     const { intl } = this.props;
-    const { percontent, perpagination, perloading, perparams, roleName, totalCount } = this.state;
+    const { percontent, perpagination, perloading, perparams, proName, roleName, totalCount } = this.state;
+    const title = intl.formatMessage({id: `${intlPrefix}.detail.title`}, {
+      roleName,
+    });
+    const description = intl.formatMessage({id: `${intlPrefix}.detail.description`}, {
+      proName,
+      roleName,
+    });
     const columns = [{
       title: '权限',
       dataIndex: 'code',
@@ -197,8 +207,9 @@ class ProjectInfo extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.detail`}
-        values={{ name: roleName }}
+        title={title}
+        description={description}
+        link={intl.formatMessage({id: `${intlPrefix}.detail.link`})}
       >
         <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
@@ -290,7 +301,7 @@ class ProjectInfo extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: AppState.getUserInfo.loginName}}
+          values={{name: AppState.getUserInfo.realName}}
         >
           <Table
             loading={loading}

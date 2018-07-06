@@ -365,6 +365,7 @@ const zh_CN = {
   'global.menusetting.delete.success': '删除成功，请点击保存',
   'global.menusetting.delete.owntitle': '删除自设目录',
   'global.menusetting.delete.owncontent': '确认删除自设目录"{name}"吗?',
+  'global.menusetting.delete.owncontent.hassub': '确认删除自设目录"{name}"吗?删除该目录同时将删除该目录下的其他目录。',
   'global.menusetting.create.success': '创建目录成功，请点击保存',
   'global.menusetting.modify.success': '修改目录成功，请点击保存',
   'global.menusetting.detail': '查看详情',

@@ -383,11 +383,10 @@ class Client extends Component {
             initialValue: client.refreshTokenValidity ?
               parseInt(client.refreshTokenValidity, 10) : undefined,
           })(
-            <Input
+            <InputNumber
               autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
               style={{ width: 300 }}
-              type="number"
               size="default"
               min={60}
             />,

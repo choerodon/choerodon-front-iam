@@ -231,8 +231,8 @@ const pageDetail = {
   'user.orginfo.description': '用户必须且只能属于一个组织，但可以在其他组织被分配角色。本页面展示您所属的组织以及您被分配的组织角色，所属组织在列表第一行。',
   'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
-  'user.orginfo.detail.title': '查看角色"{name}"的权限',
-  'user.orginfo.detail.description': '您可以在此查看角色权限及其功能。',
+  'user.orginfo.detail.title': '查看角色"{roleName}"的权限',
+  'user.orginfo.detail.description': '您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。',
   'user.orginfo.detail.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
   // 项目信息
@@ -240,8 +240,8 @@ const pageDetail = {
   'user.proinfo.description': '用户可以在不同项目的被分配角色，本页面展示您所在的项目以及项目里您的角色。',
   'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
-  'user.proinfo.detail.title': '查看角色"{name}"的权限',
-  'user.proinfo.detail.description': '您可以在此查看角色权限及其功能。',
+  'user.proinfo.detail.title': '查看角色"{roleName}"的权限',
+  'user.proinfo.detail.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',
   'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
 };

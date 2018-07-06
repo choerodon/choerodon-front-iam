@@ -808,6 +808,7 @@ class Route extends Component {
             pagination={pagination}
             onChange={this.handlePageChange}
             filters={params}
+            rowKey="id"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar

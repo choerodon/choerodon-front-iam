@@ -163,10 +163,11 @@ class OrganizationHome extends Component {
               Choerodon.prompt(data.message);
             } else {
               Choerodon.prompt(message);
-              this.loadOrganizations();
               if (isCreate) {
+                this.handleRefresh();
                 HeaderStore.addOrg(data);
               } else {
+                this.loadOrganizations();
                 HeaderStore.updateOrg(data);
               }
             }
@@ -395,7 +396,8 @@ class OrganizationHome extends Component {
             onChange={this.handlePageChange}
             filters={params}
             loading={loading}
-            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+            rowKey="id"
+            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar
             title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'} />}

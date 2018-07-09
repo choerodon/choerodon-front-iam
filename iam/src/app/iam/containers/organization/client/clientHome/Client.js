@@ -360,72 +360,75 @@ class Client extends Component {
             </Select>,
           )}
         </FormItem>
-        <FormItem
-          {...formItemNumLayout}
-        >
-          {getFieldDecorator('accessTokenValidity', {
-            initialValue: client.accessTokenValidity ?
-              parseInt(client.accessTokenValidity, 10) : undefined,
-          })(
-            <InputNumber
-              autoComplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
-              style={{ width: 300 }}
-              size="default"
-              min={60}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemNumLayout}
-        >
-          {getFieldDecorator('refreshTokenValidity', {
-            initialValue: client.refreshTokenValidity ?
-              parseInt(client.refreshTokenValidity, 10) : undefined,
-          })(
-            <InputNumber
-              autoComplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
-              style={{ width: 300 }}
-              size="default"
-              min={60}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('webServerRedirectUri', {
-            initialValue: client.webServerRedirectUri || undefined,
-          })(
-            <Input autoComplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('additionalInformation', {
-            rules: [
-              {
-                validator: (rule, value, callback) => {
-                  if (!value || this.isJson(value)) {
-                    callback();
-                  } else {
-                    callback(intl.formatMessage({id: `${intlPrefix}.additional.pattern.msg`}));
-                  }
-                },
-              },
-            ],
-            validateTrigger: 'onBlur',
-            initialValue: client.additionalInformation || undefined,
-          })(
-            <TextArea
-              autoComplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.additional`})}
-              rows={3}
-            />,
-          )}
-        </FormItem>
+        { status === 'edit' &&
+          <div>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('accessTokenValidity', {
+                initialValue: client.accessTokenValidity ?
+                  parseInt(client.accessTokenValidity, 10) : undefined,
+              })(
+                <InputNumber
+                  autoComplete="off"
+                  label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
+                  style={{ width: 300 }}
+                  size="default"
+                  min={60}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('refreshTokenValidity', {
+                initialValue: client.refreshTokenValidity ?
+                  parseInt(client.refreshTokenValidity, 10) : undefined,
+              })(
+                <InputNumber
+                  autoComplete="off"
+                  label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
+                  style={{ width: 300 }}
+                  size="default"
+                  min={60}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('webServerRedirectUri', {
+                initialValue: client.webServerRedirectUri || undefined,
+              })(
+                <Input autoComplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('additionalInformation', {
+                rules: [
+                  {
+                    validator: (rule, value, callback) => {
+                      if (!value || this.isJson(value)) {
+                        callback();
+                      } else {
+                        callback(intl.formatMessage({id: `${intlPrefix}.additional.pattern.msg`}));
+                      }
+                    },
+                  },
+                ],
+                validateTrigger: 'onBlur',
+                initialValue: client.additionalInformation || undefined,
+              })(
+                <TextArea
+                  autoComplete="off"
+                  label={intl.formatMessage({id: `${intlPrefix}.additional`})}
+                  rows={3}
+                />,
+              )}
+            </FormItem>
+          </div>}
       </Form>
     </div>) : <LoadingBar />;
     return (

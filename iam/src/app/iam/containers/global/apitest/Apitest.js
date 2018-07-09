@@ -45,12 +45,17 @@ class Apitest extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        ApitestStore.setService(res || []);
         if (res.length) {
-          let defaultService;
-          defaultService = res[0];
-          ApitestStore.setCurrentService(defaultService);
+          const services = res.map(({ location }) => {
+            return {
+              "text": location.split('?')[0].split('/')[2],
+              "value": (location.split('?')[0].split('/')[2]) + '/' + (location.split('=')[1]),
+            }
+          });
+          ApitestStore.setService(services);
+          ApitestStore.setCurrentService(services[0]);
         } else {
+          ApitestStore.setService([]);
           ApitestStore.setLoading(false);
         }
       }
@@ -62,11 +67,12 @@ class Apitest extends Component {
   getOptionList() {
     const service = ApitestStore.service;
     return service && service.length > 0 ? (
-      ApitestStore.service.map(({ name }) => (
-        <Option key={name}>{name}</Option>
+      ApitestStore.service.map(({ text, value }) => (
+        <Option key={value}>{text}</Option>
       ))
     ) : <Option value="empty">无服务</Option>;
   }
+
 
 
   render() {
@@ -88,7 +94,7 @@ class Apitest extends Component {
         >
           <Select
             style={{ width: '512px', marginBottom: '32px' }}
-            value={ApitestStore.currentService.name}
+            value={ApitestStore.currentService.value}
             label={<FormattedMessage id={`${intlPrefix}.service`}/>}
             filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}

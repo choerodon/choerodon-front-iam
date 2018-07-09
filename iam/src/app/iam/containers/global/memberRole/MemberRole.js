@@ -237,7 +237,7 @@ class MemberRole extends Component {
           options.push(
             <Option value={id} key={id}>
               <Tooltip title={code} placement="topLeft">
-                {name}
+                <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
               </Tooltip>
             </Option>,
           );

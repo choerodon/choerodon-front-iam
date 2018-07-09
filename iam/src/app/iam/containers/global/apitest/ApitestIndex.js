@@ -5,7 +5,7 @@ import React from 'react';
 import { Route, Switch, } from 'react-router-dom';
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const Apitest = asyncRouter(() => import('./Apitest'));
+const Apitest = asyncRouter(() => (import('./Apitest')), () => import('../../../stores/globalStores/apitest') );
 
 const ApitestIndex = ({ match }) => (
   <Switch>

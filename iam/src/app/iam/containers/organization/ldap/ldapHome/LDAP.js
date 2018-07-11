@@ -504,6 +504,7 @@ class LDAP extends Component {
         </div>
         <Permission service={['iam-service.ldap.update']}>
           <div className="btnGroup">
+            <hr className="divider" />
             <Button
               funcType="raised"
               type="primary"

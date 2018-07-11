@@ -157,7 +157,7 @@ class UpdatePasswordPolicy extends Component {
           loading: false,
         });
       });
-  };
+  }
 
   render() {
     const { AppState, form, intl } = this.props;
@@ -165,7 +165,7 @@ class UpdatePasswordPolicy extends Component {
     const inputWidth = '512px';
     const { loading, submitting, showPwd, showLogin } = this.state;
     const passwordPolicy = PasswordPolicyStore.getPasswordPolicy;
-    const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd';  // 是否启用
+    const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd'; // 是否启用
     const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same'; // 是否允许与登录名相同
     const ableStatus = passwordPolicy && passwordPolicy.enableSecurity ? 'enabled' : 'disabled';
     const mainContent = loading ? <LoadingBar /> : (<div>
@@ -222,7 +222,7 @@ class UpdatePasswordPolicy extends Component {
               rules: [
                 {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
-                  type: "number",
+                  type: 'number',
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                 },
               ],
@@ -239,7 +239,7 @@ class UpdatePasswordPolicy extends Component {
             {getFieldDecorator('maxLength', {
               rules: [{
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                type: "number",
+                type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
               initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
@@ -255,7 +255,7 @@ class UpdatePasswordPolicy extends Component {
             {getFieldDecorator('digitsCount', {
               rules: [{
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                type: "number",
+                type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
               initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
@@ -263,7 +263,8 @@ class UpdatePasswordPolicy extends Component {
               <InputNumber
                 autoComplete="off"
                 label={<FormattedMessage id={`${inputPrefix}.digitscount`} />}
-                style={{ width: inputWidth }} />,
+                style={{ width: inputWidth }}
+              />,
             )}
           </FormItem>
           <FormItem>
@@ -302,7 +303,7 @@ class UpdatePasswordPolicy extends Component {
             {getFieldDecorator('specialCharCount', {
               rules: [{
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                type: "number",
+                type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
               initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
@@ -343,8 +344,12 @@ class UpdatePasswordPolicy extends Component {
           </FormItem>
         </div>
         <div className="foldTitle">
-          <Button shape="circle" funcType="raised" icon={showLogin ? 'expand_more' : 'expand_less'}
-                  onClick={this.isShowLoginPolicy} />
+          <Button
+            shape="circle"
+            funcType="raised"
+            icon={showLogin ? 'expand_more' : 'expand_less'}
+            onClick={this.isShowLoginPolicy}
+          />
           <FormattedMessage id={`${inputPrefix}.login`} />
         </div>
         <div style={{ display: showLogin ? 'block' : 'none' }}>
@@ -378,12 +383,11 @@ class UpdatePasswordPolicy extends Component {
           </FormItem>
           {
             this.state.codeStatus === 'enableCode' ? (
-              <FormItem
-              >
+              <FormItem>
                 {getFieldDecorator('maxCheckCaptcha', {
                   rules: [{
                     pattern: /^([1-9]\d*|[0]{1,1})$/,
-                    type: "number",
+                    type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
                   initialValue: passwordPolicy ? passwordPolicy.maxCheckCaptcha : undefined,
@@ -415,12 +419,11 @@ class UpdatePasswordPolicy extends Component {
           </FormItem>
           {this.state.lockStatus === 'enableLock' ? (
             <div>
-              <FormItem
-              >
+              <FormItem>
                 {getFieldDecorator('maxErrorTime', {
                   rules: [{
                     pattern: /^([1-9]\d*|[0]{1,1})$/,
-                    type: "number",
+                    type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
                   initialValue: passwordPolicy ? passwordPolicy.maxErrorTime : undefined,
@@ -454,6 +457,7 @@ class UpdatePasswordPolicy extends Component {
           ) : ''}
         </div>
         <div className="btnGroup">
+          <hr className="divider" />
           <Permission service={['iam-service.password-policy.update']}>
             <Button
               funcType="raised"

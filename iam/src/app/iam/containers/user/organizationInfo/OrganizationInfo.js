@@ -8,9 +8,9 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
+
 const intlPrefix = 'user.orginfo';
 const { Sidebar } = Modal;
-
 @inject('AppState')
 @observer
 
@@ -42,7 +42,7 @@ class OrganizationInfo extends Component {
       roleId: null,
       roleName: '',
       orgName: '',
-    }
+    };
   }
 
   componentWillMount() {
@@ -59,7 +59,7 @@ class OrganizationInfo extends Component {
     const pagination = paginationIn || paginationState;
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
-    this.fetch(pagination, filters, params).then(data => {
+    this.fetch(pagination, filters, params).then((data) => {
       this.setState({
         pagination: {
           current: data.number + 1,
@@ -112,10 +112,10 @@ class OrganizationInfo extends Component {
       percontent: null,
     }, () => {
       this.loadPermissionData();
-    })
+    });
   }
 
-  //关闭sidebar
+  //  关闭sidebar
   closeSidebar = () => {
     this.setState({
       visible: false,
@@ -183,11 +183,11 @@ class OrganizationInfo extends Component {
       roleName,
     });
     const columns = [{
-      title: '权限',
+      title: <FormattedMessage id={`${intlPrefix}.detail.table.permission`} />,
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: '描述',
+      title: <FormattedMessage id={`${intlPrefix}.detail.table.description`} />,
       dataIndex: 'description',
       key: 'description'
     }]

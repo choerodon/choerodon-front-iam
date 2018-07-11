@@ -402,14 +402,14 @@ class Route extends Component {
       return (
         <div className="iconStyle">
           <Icon type="settings" />
-          <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
+          <FormattedMessage id={`${intlPrefix}.builtin.predefined`} />
         </div>
       );
     } else {
       return (
         <div className="iconStyle">
           <Icon type="av_timer" />
-          <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
+          <FormattedMessage id={`${intlPrefix}.builtin.custom`} />
         </div>
       );
     }
@@ -424,7 +424,7 @@ class Route extends Component {
       return (
         <div>
           <Tooltip
-            title={<FormattedMessage id="detail"/>}
+            title={<FormattedMessage id="detail" />}
             placement="bottom"
           >
             <Button

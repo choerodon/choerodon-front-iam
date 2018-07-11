@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Input, Radio, InputNumber } from 'choerodon-ui';
+import { Button, Form, Input, Radio, InputNumber, Select } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import PasswordPolicyStore from '../../../../stores/organization/passwordPolicy';
-import passwordPolicyStore from '../../../../stores/organization/passwordPolicy';
 import LoadingBar from '../../../../components/loadingBar';
 import './UpdatePasswordPolicy.scss';
 
 const inputPrefix = 'organization.pwdpolicy';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
+const Option = Select.Option;
 const { TextArea } = Input;
 const formItemNumLayout = {
   labelCol: {
@@ -31,7 +31,7 @@ class UpdatePasswordPolicy extends Component {
     super(props);
     this.state = {
       loading: false,
-      showPwd: true,  // 是否显示密码安全策略
+      showPwd: true, // 是否显示密码安全策略
       showLogin: true, // 是否显示登录安全策略
       lockStatus: false, // 登录安全策略是否开启锁定
       codeStatus: false, // 登录安全策略是否开启验证码
@@ -48,14 +48,14 @@ class UpdatePasswordPolicy extends Component {
   isShowPwdPolicy = () => {
     this.setState({
       showPwd: !this.state.showPwd,
-    })
+    });
   }
 
   /* 是否显示登录安全策略 */
   isShowLoginPolicy = () => {
     this.setState({
       showLogin: !this.state.showLogin,
-    })
+    });
   }
 
   changeCodeStatus(e) {
@@ -75,15 +75,14 @@ class UpdatePasswordPolicy extends Component {
     e.preventDefault();
     const { intl } = this.props;
     this.props.form.validateFieldsAndScroll((err, datas, modify) => {
-      debugger;
       if (!err) {
-        if(!modify) {
-          Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
-          return;
-        }
-        const value = Object.assign({}, passwordPolicyStore.getPasswordPolicy, datas);
+        // if(!modify) {
+        //   Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
+        //   return;
+        // }
+        const value = Object.assign({}, PasswordPolicyStore.getPasswordPolicy, datas);
         const newValue = {
-          id: passwordPolicyStore.getPasswordPolicy.id,
+          id: PasswordPolicyStore.getPasswordPolicy.id,
           enableCaptcha: value.enableCaptcha === true || value.enableCaptcha === 'enableCode',
           enableLock: value.enableLock === true || value.enableLock === 'enableLock',
           enablePassword: value.enablePassword === 'enablePwd',
@@ -97,7 +96,7 @@ class UpdatePasswordPolicy extends Component {
           name: value.name,
           notRecentCount: parseInt(value.notRecentCount, 10),
           notUsername: value.notUsername === 'different',
-          objectVersionNumber: passwordPolicyStore.getPasswordPolicy.objectVersionNumber,
+          objectVersionNumber: PasswordPolicyStore.getPasswordPolicy.objectVersionNumber,
           organizationId: parseInt(value.organizationId, 10),
           originalPassword: value.originalPassword,
           regularExpression: value.regularExpression,
@@ -105,13 +104,14 @@ class UpdatePasswordPolicy extends Component {
           uppercaseCount: parseInt(value.uppercaseCount, 10),
           digitsCount: parseInt(value.digitsCount, 10),
         };
+        debugger;
         this.setState({ submitting: true });
-        passwordPolicyStore.updatePasswordPolicy(
+        PasswordPolicyStore.updatePasswordPolicy(
           this.props.AppState.currentMenuType.id, newValue.id, newValue)
           .then((data) => {
             this.setState({ submitting: false });
-            Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
-            passwordPolicyStore.setPasswordPolicy(data);
+            Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+            PasswordPolicyStore.setPasswordPolicy(data);
           })
           .catch((error) => {
             this.setState({ submitting: false });
@@ -131,7 +131,7 @@ class UpdatePasswordPolicy extends Component {
   /**
    * 加载当前组织密码策略
    */
-  loadData () {
+  loadData() {
     const { organizationId } = this.state;
     this.setState({
       loading: true,
@@ -142,7 +142,7 @@ class UpdatePasswordPolicy extends Component {
           Choerodon.prompt(data.message);
         } else {
           PasswordPolicyStore.setPasswordPolicy(data);
-          const codeStatus = data.enableCaptcha ? 'enableCode' : 'disableCode';  // 是否开启验证码
+          const codeStatus = data.enableCaptcha ? 'enableCode' : 'disableCode'; // 是否开启验证码
           const lockStatus = data.enableLock ? 'enableLock' : 'disableLock'; // 是否开启锁定
           this.setState({
             loading: false,
@@ -162,20 +162,24 @@ class UpdatePasswordPolicy extends Component {
   render() {
     const { AppState, form, intl } = this.props;
     const { getFieldDecorator } = form;
-    const inputWidth = "512px";
+    const inputWidth = '512px';
     const { loading, submitting, showPwd, showLogin } = this.state;
-    const passwordPolicy = passwordPolicyStore.getPasswordPolicy;
+    const passwordPolicy = PasswordPolicyStore.getPasswordPolicy;
     const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd';  // 是否启用
     const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same'; // 是否允许与登录名相同
     const ableStatus = passwordPolicy && passwordPolicy.enableSecurity ? 'enabled' : 'disabled';
     const mainContent = loading ? <LoadingBar /> : (<div>
       <div className="foldTitle">
-        <Button shape="circle" funcType="raised" icon={showPwd ? 'expand_more' : 'expand_less'}
-                onClick={this.isShowPwdPolicy} />
+        <Button
+          shape="circle"
+          funcType="raised"
+          icon={showPwd ? 'expand_more' : 'expand_less'}
+          onClick={this.isShowPwdPolicy}
+        />
         <FormattedMessage id={`${inputPrefix}.password`} />
       </div>
       <Form onSubmit={this.handleSubmit} layout="vertical" className="PwdPolicyForm">
-        <div style={{ display: this.state.showPwd ? 'block' : 'none' }}>
+        <div style={{ display: showPwd ? 'block' : 'none' }}>
           <FormItem
             {...formItemNumLayout}
           >
@@ -266,7 +270,7 @@ class UpdatePasswordPolicy extends Component {
             {getFieldDecorator('lowercaseCount', {
               rules: [{
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                type: "number",
+                type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
               initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
@@ -282,7 +286,7 @@ class UpdatePasswordPolicy extends Component {
             {getFieldDecorator('uppercaseCount', {
               rules: [{
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                type: "number",
+                type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
               initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
@@ -314,7 +318,7 @@ class UpdatePasswordPolicy extends Component {
             {getFieldDecorator('notRecentCount', {
               rules: [{
                 pattern: /^([1-9]\d*|[0]{1,1})$/,
-                type: "number",
+                type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
               initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
@@ -429,23 +433,23 @@ class UpdatePasswordPolicy extends Component {
                 )}
               </FormItem>
               {/* <FormItem
-               label="锁定时长"
-               >
-               {getFieldDecorator('lockedExpireTime', {
-               initialValue: passwordPolicy ? passwordPolicy.lockedExpireTime : '',
-               })(
-               <div>
-               <Input type="number" label="锁定时长" style={{ width: 300 }} />
-               <Select style={{ width: 194, marginLeft: 18 }}>
-               <Option value="second">秒</Option>
-               <Option value="minute">分</Option>
-               <Option value="hour">时</Option>
-               <Option value="month">月</Option>
-               <Option value="year">年</Option>
-               </Select>
-               </div>,
-               )}
-               </FormItem> */}
+                label="锁定时长"
+              >
+                {getFieldDecorator('lockedExpireTime', {
+                  initialValue: passwordPolicy ? passwordPolicy.lockedExpireTime : '',
+                })(
+                  <div>
+                    <Input type="number" label="锁定时长" style={{ width: 300 }} />
+                    <Select style={{ width: 194, marginLeft: 18 }}>
+                      <Option value="second">秒</Option>
+                      <Option value="minute">分</Option>
+                      <Option value="hour">时</Option>
+                      <Option value="month">月</Option>
+                      <Option value="year">年</Option>
+                    </Select>
+                  </div>,
+                )}
+              </FormItem> */}
             </div>
           ) : ''}
         </div>

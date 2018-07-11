@@ -4,12 +4,14 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Select, Table } from 'choerodon-ui';
+import { Button, Form, Select, Table, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
+import classnames from 'classnames';
 import ApitestStore from '../../../stores/globalStores/apitest'
+import './Apitest.scss';
 const intlPrefix = 'global.apitest';
 const Option = Select.Option;
 
@@ -48,12 +50,13 @@ class Apitest extends Component {
         if (res.length) {
           const services = res.map(({ location }) => {
             return {
-              "text": location.split('?')[0].split('/')[2],
+              "name": location.split('?')[0].split('/')[2],
               "value": (location.split('?')[0].split('/')[2]) + '/' + (location.split('=')[1]),
             }
           });
           ApitestStore.setService(services);
           ApitestStore.setCurrentService(services[0]);
+          this.loadApi();
         } else {
           ApitestStore.setService([]);
           ApitestStore.setLoading(false);
@@ -62,20 +65,145 @@ class Apitest extends Component {
     })
   }
 
+  loadApi = (paginationIn, filtersIn, paramsIn) => {
+    ApitestStore.setLoading(true);
+    const {
+      pagination: paginationState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const params = paramsIn || paramsState;
+    const filters = filtersIn || filtersState;
+    const serviceName = ApitestStore.getCurrentService.value.split('/')[0];
+    const version = ApitestStore.getCurrentService.value.split('/')[1];
+    this.fetch(serviceName, version, pagination, params)
+      .then((data) => {
+        ApitestStore.setApiData(data.content);
+        ApitestStore.setLoading(false);
+        this.setState({
+          pagination: {
+            current: data.number + 1,
+            pageSize: data.size,
+            total: data.totalElements,
+          },
+          params,
+        });
+      })
+      .catch((error) => {
+        Choerodon.handleResponseError(error);
+      });
+  }
+
+  fetch(serviceName, version, { current, pageSize }, params) {
+    ApitestStore.setLoading(true);
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+      version,
+      params,
+    };
+    return axios.get(`/manager/v1/swaggers/controllers/${serviceName}?${querystring.stringify(queryObj)}`);
+  }
+
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadInitData();
+    });
+  };
+
 
   /* 微服务下拉框 */
   getOptionList() {
     const service = ApitestStore.service;
     return service && service.length > 0 ? (
-      ApitestStore.service.map(({ text, value }) => (
-        <Option key={value}>{text}</Option>
+      ApitestStore.service.map(({ name, value }) => (
+        <Option key={value}>{name}</Option>
       ))
     ) : <Option value="empty">无服务</Option>;
   }
 
+  /**
+   * 微服务下拉框改变事件
+   * @param serviceName 服务名称
+   */
+  handleChange(serviceName) {
+    const currentService = ApitestStore.service.find(service => service.value === serviceName);
+    ApitestStore.setCurrentService(currentService);
+    this.setState(this.getInitState(), () => {
+      this.loadApi();
+    });
+  }
+
+  handlePageChange = (pagination, filters, {}, params) => {
+    this.loadApi(pagination, filters, params);
+  };
+
+  getRowKey = (record, description) => {
+    if ('paths' in record) {
+      return record.operationId;
+    } else {
+      return `${description}`;
+    }
+  }
 
 
   render() {
+    const { intl } = this.props;
+    const { pagination, params } = this.state;
+    let description;
+    const columns = [{
+      title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, data) => {
+        const {name, method} = data;
+        if (name) {
+          return name;
+        } else {
+          return (
+            <span className={classnames('methodTag', method)}>{method}</span>
+          )
+        }
+      }
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
+      dataIndex: 'url',
+      key: 'url',
+      render: (text, record) => (<Tooltip
+        title={text}
+        placement="bottomLeft"
+        overlayStyle={{ wordBreak: 'break-all' }}
+      ><div className="urlContainer">{text}</div></Tooltip>)
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
+      dataIndex: 'remark',
+      key: 'remark',
+      render: (text, data) => {
+        const {description, remark} = data;
+        if (remark) {
+          return remark;
+        } else {
+          return description;
+        }
+      }
+    }, {
+      title: '',
+      width: 100,
+      key: 'action',
+      align: 'right',
+      render: (text, record) => {
+        if (record.hasOwnProperty('method')) {
+          return (
+            <Button
+              shape="circle"
+              icon="find_in_page"
+              size="small"
+            />
+          )
+        }
+      }
+    }];
     return (
       <Page>
         <Header
@@ -85,24 +213,37 @@ class Apitest extends Component {
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
-          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
+          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Select
             style={{ width: '512px', marginBottom: '32px' }}
             value={ApitestStore.currentService.value}
-            label={<FormattedMessage id={`${intlPrefix}.service`}/>}
+            onChange={this.handleChange.bind(this)}
+            label={<FormattedMessage id={`${intlPrefix}.service`} />}
             filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
             {this.getOptionList()}
           </Select>
-          <Table />
+          <Table
+            loading={ApitestStore.loading}
+            columns={columns}
+            dataSource={ApitestStore.getApiData.slice()}
+            pagination={pagination}
+            childrenColumnName="paths"
+            filters={params}
+            onChange={this.handlePageChange}
+            rowKey={(record) => {
+              description = this.getRowKey(record, description);
+              return description;
+            }}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+          />
         </Content>
       </Page>
     )

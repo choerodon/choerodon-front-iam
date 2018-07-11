@@ -1,0 +1,29 @@
+.methodTag {
+  padding: 4px;
+  color: #fff;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.urlContainer {
+  max-width: 250px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.get {
+  background: #4D90FE;
+}
+
+.post {
+  background: #00BFA5;
+}
+
+.put {
+  background: #FFB100;
+}
+
+.delete {
+  background: #F44336;
+}

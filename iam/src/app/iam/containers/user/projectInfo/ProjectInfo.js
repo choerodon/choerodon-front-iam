@@ -196,11 +196,11 @@ class ProjectInfo extends Component {
       roleName,
     });
     const columns = [{
-      title: '权限',
+      title: <FormattedMessage id={`${intlPrefix}.detail.table.permission`} />,
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: '描述',
+      title: <FormattedMessage id={`${intlPrefix}.detail.table.description`} />,
       dataIndex: 'description',
       key: 'description'
     }]

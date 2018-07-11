@@ -62,7 +62,7 @@ const pageDetail = {
 
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
-  'global.microservice.description': '组织管理用于管理组织信息和组织的启用状态。当组织被启用时，可以进入到该组织进行组织层的操作，如管理组织下用户、项目、客户端等。',
+  'global.microservice.description': '大型应用程序由一个或多个微服务组成。微服务可被独立部署，且为松耦合。每个微服务是专注于单一责任与功能的小型功能区块。',
   'global.microservice.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // 配置管理
@@ -521,9 +521,9 @@ const zh_CN = {
   // API测试
   'global.apitest.header.title': 'API测试',
   'global.apitest.service': '所属微服务',
-  'global.apitest.name': '名称/方法',
-  'global.apitest.path': '路径',
-  'global.apitest.description': '描述',
+  'global.apitest.table.name': '名称/方法',
+  'global.apitest.table.path': '路径',
+  'global.apitest.table.description': '描述',
 
   // 组织层
   // 项目管理
@@ -712,12 +712,18 @@ const zh_CN = {
   'user.orginfo.header.title': '组织信息',
   'user.orginfo.name': '组织/角色',
   'user.orginfo.detail.header.title': '角色权限',
+  'user.orginfo.detail.table.permission': '权限',
+  'user.orginfo.detail.table.description': '描述',
 
   // 项目信息
   'user.proinfo.header.title': '项目信息',
   'user.proinfo.name': '项目/角色',
   'user.proinfo.belongorg': '所属组织',
   'user.proinfo.detail.header.title': '角色权限',
+  'user.proinfo.detail.table.permission': '权限',
+  'user.proinfo.detail.table.description': '描述',
+
+
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

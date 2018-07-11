@@ -158,6 +158,7 @@ class ProjectSettingHome extends Component {
               </FormItem>
               <Permission service={['iam-service.project.update']}>
                 <div className="btnGroup">
+                  <hr className="divider" />
                   <Button
                     funcType="raised"
                     htmlType="submit"

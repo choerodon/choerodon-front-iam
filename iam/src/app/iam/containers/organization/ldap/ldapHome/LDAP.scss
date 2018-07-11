@@ -16,7 +16,14 @@
   }
 
   .btnGroup {
-    margin: 65px 0 14px 50px;
+    margin: 35px 0 14px 50px;
+
+    .divider {
+      box-sizing: border-box;
+      width: 512px;
+      margin: 0 0 12px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+    }
 
     > button:last-child {
       margin-left: 12px;

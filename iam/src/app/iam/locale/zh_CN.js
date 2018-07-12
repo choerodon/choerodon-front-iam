@@ -632,6 +632,7 @@ const zh_CN = {
   'organization.pwdpolicy.specialcharcount': '最少特殊字符数',
   'organization.pwdpolicy.notrecentcount': '最大近期密码数',
   'organization.pwdpolicy.regularexpression': '密码正则',
+  'organization.pwdpolicy.locktime': '锁定时长',
 
   // 用户管理
   'organization.user.unlock': '解锁',

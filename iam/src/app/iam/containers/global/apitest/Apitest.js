@@ -57,6 +57,7 @@ class Apitest extends Component {
     ApitestStore.loadService().then((res) => {
       if (res.failed) {
         Choerodon.prompt(res.message);
+        ApitestStore.setLoading(false);
       } else if (res.length) {
         const services = res.map(({ location }) => {
           return {
@@ -100,7 +101,11 @@ class Apitest extends Component {
         });
       })
       .catch((error) => {
-        Choerodon.handleResponseError(error);
+        Choerodon.prompt(error.message);
+        this.setState(this.getInitState(), () => {
+          ApitestStore.setApiData([]);
+          ApitestStore.setLoading(false);
+        });
       });
   }
 
@@ -148,15 +153,15 @@ class Apitest extends Component {
   render() {
     const { intl } = this.props;
     const { pagination, params } = this.state;
-    let nameKey;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
+      width: '25%',
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
-          return name;
+          return <span>{name}</span>;
         } else {
           return (
             <span className={classnames('methodTag', method)}>{method}</span>
@@ -167,6 +172,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
       key: 'url',
+      width: '34%',
       render: (text, record) => (<Tooltip
         title={text}
         placement="bottomLeft"
@@ -190,7 +196,7 @@ class Apitest extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => {
-        if (record.hasOwnProperty('method')) {
+        if ('method' in record) {
           return (
             <Button
               shape="circle"
@@ -230,6 +236,7 @@ class Apitest extends Component {
           </Select>
           <Table
             loading={ApitestStore.loading}
+            indentSize={0}
             columns={columns}
             dataSource={ApitestStore.getApiData.slice()}
             pagination={pagination}

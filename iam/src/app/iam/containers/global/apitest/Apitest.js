@@ -10,10 +10,11 @@ import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
 import classnames from 'classnames';
-import ApitestStore from '../../../stores/globalStores/apitest'
+import ApitestStore from '../../../stores/globalStores/apitest';
 import './Apitest.scss';
 
 const intlPrefix = 'global.apitest';
+const urlPrefix = 'http://api.staging.saas.hand-china.com/manager/swagger-ui.html#!';
 const Option = Select.Option;
 @inject('AppState')
 @observer
@@ -137,6 +138,13 @@ class Apitest extends Component {
     this.loadApi(pagination, filters, params);
   };
 
+  // 跳转至swagger
+  goSwagger(record) {
+    const { refController, operationId } = record;
+    const openUrl = `${urlPrefix}${ApitestStore.currentService.value.split('/')[0]}/${refController}/${operationId}`;
+    window.open(openUrl);
+  }
+
   render() {
     const { intl } = this.props;
     const { pagination, params } = this.state;
@@ -188,6 +196,7 @@ class Apitest extends Component {
               shape="circle"
               icon="find_in_page"
               size="small"
+              onClick={this.goSwagger.bind(this, record)}
             />
           );
         }

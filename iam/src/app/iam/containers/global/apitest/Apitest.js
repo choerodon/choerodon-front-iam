@@ -12,14 +12,18 @@ import querystring from 'query-string';
 import classnames from 'classnames';
 import ApitestStore from '../../../stores/globalStores/apitest'
 import './Apitest.scss';
+
 const intlPrefix = 'global.apitest';
 const Option = Select.Option;
-
 @inject('AppState')
 @observer
 
 class Apitest extends Component {
   state = this.getInitState();
+
+  componentDidMount() {
+    this.loadInitData();
+  }
 
   getInitState() {
     return {
@@ -34,11 +38,17 @@ class Apitest extends Component {
       },
       filters: {},
       params: [],
-    }
+    };
   }
 
-  componentDidMount() {
-    this.loadInitData();
+  /* 微服务下拉框 */
+  getOptionList() {
+    const service = ApitestStore.service;
+    return service && service.length > 0 ? (
+      ApitestStore.service.map(({ name, value }) => (
+        <Option key={value}>{name}</Option>
+      ))
+    ) : <Option value="empty">无服务</Option>;
   }
 
   loadInitData = () => {
@@ -46,23 +56,21 @@ class Apitest extends Component {
     ApitestStore.loadService().then((res) => {
       if (res.failed) {
         Choerodon.prompt(res.message);
+      } else if (res.length) {
+        const services = res.map(({ location }) => {
+          return {
+            name: location.split('?')[0].split('/')[2],
+            value: `${location.split('?')[0].split('/')[2]}/${location.split('=')[1]}`,
+          };
+        });
+        ApitestStore.setService(services);
+        ApitestStore.setCurrentService(services[0]);
+        this.loadApi();
       } else {
-        if (res.length) {
-          const services = res.map(({ location }) => {
-            return {
-              "name": location.split('?')[0].split('/')[2],
-              "value": (location.split('?')[0].split('/')[2]) + '/' + (location.split('=')[1]),
-            }
-          });
-          ApitestStore.setService(services);
-          ApitestStore.setCurrentService(services[0]);
-          this.loadApi();
-        } else {
-          ApitestStore.setService([]);
-          ApitestStore.setLoading(false);
-        }
+        ApitestStore.setService([]);
+        ApitestStore.setLoading(false);
       }
-    })
+    });
   }
 
   loadApi = (paginationIn, filtersIn, paramsIn) => {
@@ -113,16 +121,6 @@ class Apitest extends Component {
   };
 
 
-  /* 微服务下拉框 */
-  getOptionList() {
-    const service = ApitestStore.service;
-    return service && service.length > 0 ? (
-      ApitestStore.service.map(({ name, value }) => (
-        <Option key={value}>{name}</Option>
-      ))
-    ) : <Option value="empty">无服务</Option>;
-  }
-
   /**
    * 微服务下拉框改变事件
    * @param serviceName 服务名称
@@ -135,37 +133,28 @@ class Apitest extends Component {
     });
   }
 
-  handlePageChange = (pagination, filters, {}, params) => {
+  handlePageChange = (pagination, filters, sorter = {}, params) => {
     this.loadApi(pagination, filters, params);
   };
-
-  getRowKey = (record, description) => {
-    if ('paths' in record) {
-      return record.operationId;
-    } else {
-      return `${description}`;
-    }
-  }
-
 
   render() {
     const { intl } = this.props;
     const { pagination, params } = this.state;
-    let description;
+    let nameKey;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
       render: (text, data) => {
-        const {name, method} = data;
+        const { name, method } = data;
         if (name) {
           return name;
         } else {
           return (
             <span className={classnames('methodTag', method)}>{method}</span>
-          )
+          );
         }
-      }
+      },
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
@@ -174,19 +163,19 @@ class Apitest extends Component {
         title={text}
         placement="bottomLeft"
         overlayStyle={{ wordBreak: 'break-all' }}
-      ><div className="urlContainer">{text}</div></Tooltip>)
+      ><div className="urlContainer">{text}</div></Tooltip>),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
       key: 'remark',
       render: (text, data) => {
-        const {description, remark} = data;
+        const { description, remark } = data;
         if (remark) {
           return remark;
         } else {
           return description;
         }
-      }
+      },
     }, {
       title: '',
       width: 100,
@@ -200,9 +189,9 @@ class Apitest extends Component {
               icon="find_in_page"
               size="small"
             />
-          )
+          );
         }
-      }
+      },
     }];
     return (
       <Page>
@@ -225,7 +214,7 @@ class Apitest extends Component {
             onChange={this.handleChange.bind(this)}
             label={<FormattedMessage id={`${intlPrefix}.service`} />}
             filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
             {this.getOptionList()}
@@ -238,15 +227,12 @@ class Apitest extends Component {
             childrenColumnName="paths"
             filters={params}
             onChange={this.handlePageChange}
-            rowKey={(record) => {
-              description = this.getRowKey(record, description);
-              return description;
-            }}
+            rowKey={(record) => 'paths' in record ? record.name : record.operationId}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>
       </Page>
-    )
+    );
   }
 }
 

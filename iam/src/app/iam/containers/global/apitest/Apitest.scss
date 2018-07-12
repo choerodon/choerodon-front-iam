@@ -6,7 +6,7 @@
 }
 
 .urlContainer {
-  max-width: 250px;
+  max-width: 380px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -26,4 +26,8 @@
 
 .delete {
   background: #F44336;
+}
+
+.patch {
+  background: #7d7d7d;
 }

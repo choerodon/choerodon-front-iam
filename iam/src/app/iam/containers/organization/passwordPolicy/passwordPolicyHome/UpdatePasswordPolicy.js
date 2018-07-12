@@ -104,7 +104,6 @@ class UpdatePasswordPolicy extends Component {
           uppercaseCount: parseInt(value.uppercaseCount, 10),
           digitsCount: parseInt(value.digitsCount, 10),
         };
-        debugger;
         this.setState({ submitting: true });
         PasswordPolicyStore.updatePasswordPolicy(
           this.props.AppState.currentMenuType.id, newValue.id, newValue)
@@ -422,7 +421,7 @@ class UpdatePasswordPolicy extends Component {
               <FormItem>
                 {getFieldDecorator('maxErrorTime', {
                   rules: [{
-                    pattern: /^([1-9]\d*|[0]{1,1})$/,
+                    pattern: /^[1-9]\d*|0$/,
                     type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
@@ -435,24 +434,22 @@ class UpdatePasswordPolicy extends Component {
                   />,
                 )}
               </FormItem>
-              {/* <FormItem
-                label="锁定时长"
-              >
+              <FormItem>
                 {getFieldDecorator('lockedExpireTime', {
+                  rules: [{
+                    pattern: /^[1-9]\d*|0$/,
+                    type: 'number',
+                    message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
+                  }],
                   initialValue: passwordPolicy ? passwordPolicy.lockedExpireTime : '',
                 })(
-                  <div>
-                    <Input type="number" label="锁定时长" style={{ width: 300 }} />
-                    <Select style={{ width: 194, marginLeft: 18 }}>
-                      <Option value="second">秒</Option>
-                      <Option value="minute">分</Option>
-                      <Option value="hour">时</Option>
-                      <Option value="month">月</Option>
-                      <Option value="year">年</Option>
-                    </Select>
-                  </div>,
+                  <InputNumber
+                    autoComplete="off"
+                    label={<FormattedMessage id={`${inputPrefix}.locktime`} />}
+                    style={{ width: inputWidth }}
+                  />,
                 )}
-              </FormItem> */}
+              </FormItem>
             </div>
           ) : ''}
         </div>

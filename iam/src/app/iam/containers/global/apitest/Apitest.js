@@ -157,7 +157,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: '25%',
+      width: '322px',
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
@@ -172,7 +172,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
       key: 'url',
-      width: '34%',
+      width: '438px',
       render: (text, record) => (<Tooltip
         title={text}
         placement="bottomLeft"
@@ -182,6 +182,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
       key: 'remark',
+      width: '475px',
       render: (text, data) => {
         const { description, remark } = data;
         if (remark) {
@@ -192,7 +193,7 @@ class Apitest extends Component {
       },
     }, {
       title: '',
-      width: 100,
+      width: '100px',
       key: 'action',
       align: 'right',
       render: (text, record) => {
@@ -209,7 +210,9 @@ class Apitest extends Component {
       },
     }];
     return (
-      <Page>
+      <Page
+        service={['manager-service.service.pageManager']}
+      >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
@@ -221,6 +224,7 @@ class Apitest extends Component {
           </Button>
         </Header>
         <Content
+          code={intlPrefix}
           values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Select

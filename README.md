@@ -13,22 +13,26 @@ The basic module has 3 levels, which have the following functions:
     * Project Settings
     * Role assignment function at the project level
  * Organization layout:
-    * Client Management
-    * Password Policy Management
-    * Project management
+    * Project Management
     * User Management
-    * User group management
+    * Client Management
     * LDAP settings
+    * Password Policy Management
     * Role Assignments function at organization level
  * Global layout:
-    * Organization management
+    * User Info
+    * Change Password
+    * Project Info
+    * Organization Info
+    * Organization Management
     * Role Management
     * Role Assignments
-    * Menu Management
     * Root User Setting
-    * Route Management
-    * Config Management
+    * Menu Management
+    * Microservice
     * Instance Management
+    * Config Management
+    * Route Management
     * Role Assignments function at global level
 
 ## Development build

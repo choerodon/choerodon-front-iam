@@ -63,7 +63,7 @@ const pageDetail = {
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
   'global.microservice.description': '大型应用程序由一个或多个微服务组成。微服务可被独立部署，且为松耦合。每个微服务是专注于单一责任与功能的小型功能区块。',
-  'global.microservice.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.microservice.link': `${docServer}/user-guide/system-configuration/microservice-management/microservice/`,
 
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
@@ -111,7 +111,7 @@ const pageDetail = {
   // API测试
   'global.apitest.title': '平台"{name}"的API测试',
   'global.apitest.description': 'API属于一个微服务。请先选择一个微服务，查看该微服务下的API信息。',
-  'global.apitest.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.apitest.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
@@ -233,12 +233,12 @@ const pageDetail = {
 
   'user.orginfo.detail.title': '查看角色"{roleName}"的权限',
   'user.orginfo.detail.description': '您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。',
-  'user.orginfo.detail.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+  'user.orginfo.detail.link': `${docServer}/user-guide/system-configuration/person/org-info/`,
 
   // 项目信息
   'user.proinfo.title': '用户"{name}"的项目信息',
   'user.proinfo.description': '用户可以在不同项目的被分配角色，本页面展示您所在的项目以及项目里您的角色。',
-  'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+  'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
 
   'user.proinfo.detail.title': '查看角色"{roleName}"的权限',
   'user.proinfo.detail.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',

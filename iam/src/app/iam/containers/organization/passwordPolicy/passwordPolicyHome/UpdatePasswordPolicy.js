@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Input, Radio, InputNumber, Select } from 'choerodon-ui';
+import { Button, Form, Input, Radio, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import PasswordPolicyStore from '../../../../stores/organization/passwordPolicy';
@@ -11,7 +11,6 @@ import './UpdatePasswordPolicy.scss';
 const inputPrefix = 'organization.pwdpolicy';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
-const Option = Select.Option;
 const { TextArea } = Input;
 const formItemNumLayout = {
   labelCol: {
@@ -100,7 +99,7 @@ class UpdatePasswordPolicy extends Component {
           organizationId: parseInt(value.organizationId, 10),
           originalPassword: value.originalPassword,
           regularExpression: value.regularExpression,
-          specialCharCount: parseInt(value.spacing, 10),
+          specialCharCount: parseInt(value.specialCharCount, 10),
           uppercaseCount: parseInt(value.uppercaseCount, 10),
           digitsCount: parseInt(value.digitsCount, 10),
         };

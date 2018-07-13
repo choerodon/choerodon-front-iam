@@ -59,9 +59,9 @@ class Apitest extends Component {
         Choerodon.prompt(res.message);
         ApitestStore.setLoading(false);
       } else if (res.length) {
-        const services = res.map(({ location }) => {
+        const services = res.map(({ location, name }) => {
           return {
-            name: location.split('?')[0].split('/')[2],
+            name: name.split(':')[1],
             value: `${location.split('?')[0].split('/')[2]}/${location.split('=')[1]}`,
           };
         });

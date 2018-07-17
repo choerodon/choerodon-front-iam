@@ -310,7 +310,7 @@ class MemberRole extends Component {
             filterOption={(input, option) => {
               const childNode = option.props.children;
               if (childNode && React.isValidElement(childNode)) {
-                return childNode.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                return childNode.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
               }
               return false;
             }}

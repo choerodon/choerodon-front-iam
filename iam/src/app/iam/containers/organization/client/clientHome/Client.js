@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Form, Input, Modal, Select, Table, Tooltip, InputNumber } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Select, Table, Tooltip, InputNumber, Icon, Popover } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import classnames from 'classnames';
 import LoadingBar from '../../../../components/loadingBar';
 import ClientStore from '../../../../stores/organization/client/ClientStore';
 import './Client.scss';
@@ -220,6 +221,12 @@ class Client extends Component {
     }
     return false;
   };
+
+  saveSelectRef = (node, name) => {
+    if (node) {
+      this[name] = node.rcSelect;
+    }
+  };
   /**
    * 编辑客户端form表单提交
    * @param e
@@ -257,6 +264,12 @@ class Client extends Component {
             this.closeSidebar('nochange');
             return;
           }
+          if (dataType.scope) {
+            dataType.scope = dataType.scope.join(',')
+          }
+          if (dataType.autoApprove) {
+            dataType.autoApprove = dataType.autoApprove.join(',')
+          }
           const client = ClientStore.getClient;
           this.setState({
             submitting: true,
@@ -286,6 +299,47 @@ class Client extends Component {
       }
     });
   };
+  handleChoiceRender = (liNode, value) => {
+    const valid = /^[A-Za-z]+$/.test(value);
+    return React.cloneElement(liNode, {
+      className: classnames(liNode.props.className, {
+        'choice-has-error': !valid,
+      }),
+    });
+  };
+
+  handleInputKeyDown = (e, name) => {
+    const { value } = e.target;
+    if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
+      this.setValueInSelect(value, name);
+    }
+  };
+
+  setValueInSelect(value, name) {
+    const { form: { getFieldValue, setFieldsValue } } = this.props;
+    const values = getFieldValue(name) || [];
+    if (values.length < 6 && values.indexOf(value) === -1) {
+      values.push(value);
+      this[name].fireChange(values);
+    }
+    if (this[name]) {
+      this[name].setState({
+        inputValue: '',
+      });
+    }
+  }
+  validateSelect = (rule, value, callback, name) => {
+    const { intl } = this.props;
+    const length = value && value.length;
+    if (length) {
+      var reg = new RegExp(/^[A-Za-z]+$/);
+      if (!reg.test(value[length-1])) {
+        callback(intl.formatMessage({id: `${intlPrefix}.${name}.pattern.msg`}));
+        return;
+      }
+    }
+    callback();
+  }
 
   renderSidebarContent() {
     const { intl } = this.props;
@@ -393,6 +447,72 @@ class Client extends Component {
                   min={60}
                 />,
               )}
+            </FormItem>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('scope', {
+                rules: [{
+                  validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'scope'),
+                }],
+                validateTrigger: 'onChange',
+                initialValue: client.scope ? client.scope.split(',') : [],
+              })(
+                <Select
+                  label={intl.formatMessage({id: `${intlPrefix}.scope`})}
+                  mode="tags"
+                  filterOption={false}
+                  onInputKeyDown={e => this.handleInputKeyDown(e, 'scope')}
+                  ref={node => {this.saveSelectRef(node, 'scope');}}
+                  notFoundContent={false}
+                  showNotFindSelectedItem={false}
+                  showNotFindInputItem={false}
+                  choiceRender={this.handleChoiceRender}
+                  allowClear={false}
+                />,
+              )}
+              <Popover
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                overlayStyle={{ maxWidth: '180px' }}
+                placement="right"
+                trigger="hover"
+                content={intl.formatMessage({id: `${intlPrefix}.scope.help.msg`})}
+              >
+                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)'}}/>
+              </Popover>
+            </FormItem>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('autoApprove', {
+                rules: [{
+                  validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'autoApprove'),
+                }],
+                validateTrigger: 'onChange',
+                initialValue: client.autoApprove ? client.autoApprove.split(',') : [],
+              })(
+                <Select
+                  label={intl.formatMessage({id: `${intlPrefix}.autoApprove`})}
+                  mode="tags"
+                  filterOption={false}
+                  onInputKeyDown={e => this.handleInputKeyDown(e, 'autoApprove')}
+                  ref={node => this.saveSelectRef(node, 'autoApprove')}
+                  choiceRender={this.handleChoiceRender}
+                  notFoundContent={false}
+                  showNotFindSelectedItem={false}
+                  showNotFindInputItem={false}
+                  allowClear={false}
+                />,
+              )}
+              <Popover
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                overlayStyle={{ maxWidth: '180px' }}
+                placement="right"
+                trigger="hover"
+                content={intl.formatMessage({id: `${intlPrefix}.autoApprove.help.msg`})}
+              >
+                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)'}}/>
+              </Popover>
             </FormItem>
             <FormItem
               {...formItemLayout}

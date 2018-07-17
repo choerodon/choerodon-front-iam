@@ -557,6 +557,12 @@ const zh_CN = {
   'organization.client.redirect': '重定向地址',
   'organization.client.additional': '附加信息',
   'organization.client.additional.pattern.msg': '请输入正确的json字符串',
+  'organization.client.scope': '作用域',
+  'organization.client.scope.pattern.msg': '作用域只能包含英文字母',
+  'organization.client.scope.help.msg': '作用域为申请的授权范围。您最多可输入6个域。',
+  'organization.client.autoApprove': '自动授权域',
+  'organization.client.autoApprove.pattern.msg': '自动授权域只能包含英文字母',
+  'organization.client.autoApprove.help.msg': '自动授权域为oauth认证后，系统自动授权而非用户手动添加的作用域。您最多可输入6个域。',
 
   // LDAP
   'organization.ldap.notfound.msg': '暂无LDAP相关信息',

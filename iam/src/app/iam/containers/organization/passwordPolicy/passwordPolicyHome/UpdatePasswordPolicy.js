@@ -57,15 +57,23 @@ class UpdatePasswordPolicy extends Component {
     });
   }
 
+  /* 是否开启验证码切换事件 */
   changeCodeStatus(e) {
+    const { setFieldsValue } = this.props.form;
     this.setState({
       codeStatus: e.target.value,
+    }, () => {
+      setFieldsValue({ maxCheckCaptcha: undefined });
     });
   }
 
+  /* 是否开启锁定切换事件 */
   changeLockStatus(e) {
+    const { setFieldsValue } = this.props.form;
     this.setState({
       lockStatus: e.target.value,
+    }, () => {
+      setFieldsValue({ maxErrorTime: undefined, lockedExpireTime: undefined });
     });
   }
 
@@ -80,6 +88,7 @@ class UpdatePasswordPolicy extends Component {
         //   return;
         // }
         const value = Object.assign({}, PasswordPolicyStore.getPasswordPolicy, datas);
+        window.console.log(value);
         const newValue = {
           id: PasswordPolicyStore.getPasswordPolicy.id,
           enableCaptcha: value.enableCaptcha === true || value.enableCaptcha === 'enableCode',
@@ -91,7 +100,7 @@ class UpdatePasswordPolicy extends Component {
           maxCheckCaptcha: parseInt(value.maxCheckCaptcha, 10),
           maxErrorTime: parseInt(value.maxErrorTime, 10),
           maxLength: parseInt(value.maxLength, 10),
-          minLength: parseInt(value.minLength, 10),
+          minLength: value.minLength === undefined ? null : parseInt(value.minLength, 10),
           name: value.name,
           notRecentCount: parseInt(value.notRecentCount, 10),
           notUsername: value.notUsername === 'different',
@@ -103,6 +112,7 @@ class UpdatePasswordPolicy extends Component {
           uppercaseCount: parseInt(value.uppercaseCount, 10),
           digitsCount: parseInt(value.digitsCount, 10),
         };
+        window.console.log(newValue);
         this.setState({ submitting: true });
         PasswordPolicyStore.updatePasswordPolicy(
           this.props.AppState.currentMenuType.id, newValue.id, newValue)
@@ -140,8 +150,8 @@ class UpdatePasswordPolicy extends Component {
           Choerodon.prompt(data.message);
         } else {
           PasswordPolicyStore.setPasswordPolicy(data);
-          const codeStatus = data.enableCaptcha ? 'enableCode' : 'disableCode'; // 是否开启验证码
-          const lockStatus = data.enableLock ? 'enableLock' : 'disableLock'; // 是否开启锁定
+          const codeStatus = data.enableCaptcha ? 'enableCode' : 'disableCode'; // 登录安全策略是否开启验证码
+          const lockStatus = data.enableLock ? 'enableLock' : 'disableLock'; // 登录安全策略是否开启锁定
           this.setState({
             loading: false,
             codeStatus,
@@ -157,15 +167,16 @@ class UpdatePasswordPolicy extends Component {
       });
   }
 
+
   render() {
     const { AppState, form, intl } = this.props;
+    const { loading, submitting, showPwd, showLogin } = this.state;
     const { getFieldDecorator } = form;
     const inputWidth = '512px';
-    const { loading, submitting, showPwd, showLogin } = this.state;
     const passwordPolicy = PasswordPolicyStore.getPasswordPolicy;
-    const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd'; // 是否启用
-    const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same'; // 是否允许与登录名相同
-    const ableStatus = passwordPolicy && passwordPolicy.enableSecurity ? 'enabled' : 'disabled';
+    const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd'; // 密码安全策略是否启用
+    const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same'; // 密码安全策略是否允许与登录名相同
+    const ableStatus = passwordPolicy && passwordPolicy.enableSecurity ? 'enabled' : 'disabled'; // 登录安全策略是否启用
     const mainContent = loading ? <LoadingBar /> : (<div>
       <div className="foldTitle">
         <Button
@@ -230,6 +241,7 @@ class UpdatePasswordPolicy extends Component {
                 autoComplete="off"
                 label={<FormattedMessage id={`${inputPrefix}.minlength`} />}
                 style={{ width: inputWidth }}
+                onBlur={this.minlengthBlur}
               />,
             )}
           </FormItem>
@@ -329,7 +341,7 @@ class UpdatePasswordPolicy extends Component {
               />,
             )}
           </FormItem>
-          <FormItem style={{ width: '512px' }}>
+          <FormItem style={{ width: inputWidth }}>
             {getFieldDecorator('regularExpression', {
               initialValue: passwordPolicy ? passwordPolicy.regularExpression : '',
             })(

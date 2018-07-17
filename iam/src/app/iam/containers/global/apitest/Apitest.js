@@ -68,9 +68,6 @@ class Apitest extends Component {
         ApitestStore.setService(services);
         ApitestStore.setCurrentService(services[0]);
         this.loadApi();
-      } else {
-        ApitestStore.setService([]);
-        ApitestStore.setLoading(false);
       }
     });
   }
@@ -120,6 +117,10 @@ class Apitest extends Component {
     return axios.get(`/manager/v1/swaggers/controllers/${serviceName}?${querystring.stringify(queryObj)}`);
   }
 
+  handlePageChange = (pagination, filters, sorter = {}, params) => {
+    this.loadApi(pagination, filters, params);
+  };
+
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       this.loadInitData();
@@ -139,9 +140,6 @@ class Apitest extends Component {
     });
   }
 
-  handlePageChange = (pagination, filters, sorter = {}, params) => {
-    this.loadApi(pagination, filters, params);
-  };
 
   // 跳转至swagger
   goSwagger(record) {

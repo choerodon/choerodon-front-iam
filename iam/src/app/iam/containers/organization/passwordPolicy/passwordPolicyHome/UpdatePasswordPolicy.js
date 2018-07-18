@@ -88,38 +88,41 @@ class UpdatePasswordPolicy extends Component {
         //   return;
         // }
         const value = Object.assign({}, PasswordPolicyStore.getPasswordPolicy, datas);
-        window.console.log(value);
         const newValue = {
-          id: PasswordPolicyStore.getPasswordPolicy.id,
-          enableCaptcha: value.enableCaptcha === true || value.enableCaptcha === 'enableCode',
-          enableLock: value.enableLock === true || value.enableLock === 'enableLock',
           enablePassword: value.enablePassword === 'enablePwd',
-          enableSecurity: value.enableSecurity === true || value.enableSecurity === 'enabled',
-          lockedExpireTime: parseInt(value.lockedExpireTime, 10),
-          lowercaseCount: parseInt(value.lowercaseCount, 10),
-          maxCheckCaptcha: parseInt(value.maxCheckCaptcha, 10),
-          maxErrorTime: parseInt(value.maxErrorTime, 10),
-          maxLength: parseInt(value.maxLength, 10),
-          minLength: value.minLength === undefined ? null : parseInt(value.minLength, 10),
-          name: value.name,
-          notRecentCount: parseInt(value.notRecentCount, 10),
           notUsername: value.notUsername === 'different',
-          objectVersionNumber: PasswordPolicyStore.getPasswordPolicy.objectVersionNumber,
-          organizationId: parseInt(value.organizationId, 10),
           originalPassword: value.originalPassword,
+          minLength: value.minLength ? parseInt(value.minLength, 10) : 0,
+          maxLength: value.maxLength ? parseInt(value.maxLength, 10) : 0,
+          digitsCount: value.digitsCount ? parseInt(value.digitsCount, 10) : 0,
+          lowercaseCount: value.lowercaseCount ? parseInt(value.lowercaseCount, 10) : 0,
+          uppercaseCount: value.uppercaseCount ? parseInt(value.uppercaseCount, 10) : 0,
+          specialCharCount: value.specialCharCount ? parseInt(value.specialCharCount, 10) : 0,
+          notRecentCount: value.notRecentCount ? parseInt(value.notRecentCount, 10) : 0,
           regularExpression: value.regularExpression,
-          specialCharCount: parseInt(value.specialCharCount, 10),
-          uppercaseCount: parseInt(value.uppercaseCount, 10),
-          digitsCount: parseInt(value.digitsCount, 10),
+          enableSecurity: value.enableSecurity === true || value.enableSecurity === 'enabled',
+          enableCaptcha: value.enableCaptcha === true || value.enableCaptcha === 'enableCode',
+          maxCheckCaptcha: value.maxCheckCaptcha ? parseInt(value.maxCheckCaptcha, 10) : 0,
+          enableLock: value.enableLock === true || value.enableLock === 'enableLock',
+          maxErrorTime: value.maxErrorTime ? parseInt(value.maxErrorTime, 10) : 0,
+          lockedExpireTime: value.lockedExpireTime ? parseInt(value.lockedExpireTime, 10) : 0,
+          name: value.name,
+          id: PasswordPolicyStore.getPasswordPolicy.id,
+          objectVersionNumber: PasswordPolicyStore.getPasswordPolicy.objectVersionNumber,
+          organizationId: value.organizationId ? parseInt(value.organizationId, 10) : 0,
         };
-        window.console.log(newValue);
-        this.setState({ submitting: true });
+        this.setState({
+          submitting: true,
+          showPwd: true,
+          showLogin: true,
+        });
         PasswordPolicyStore.updatePasswordPolicy(
           this.props.AppState.currentMenuType.id, newValue.id, newValue)
           .then((data) => {
             this.setState({ submitting: false });
             Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
             PasswordPolicyStore.setPasswordPolicy(data);
+            this.loadData();
           })
           .catch((error) => {
             this.setState({ submitting: false });
@@ -173,7 +176,7 @@ class UpdatePasswordPolicy extends Component {
     const { loading, submitting, showPwd, showLogin } = this.state;
     const { getFieldDecorator } = form;
     const inputWidth = '512px';
-    const passwordPolicy = PasswordPolicyStore.getPasswordPolicy;
+    const passwordPolicy = PasswordPolicyStore.passwordPolicy;
     const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd'; // 密码安全策略是否启用
     const sameStatus = passwordPolicy && passwordPolicy.notUsername ? 'different' : 'same'; // 密码安全策略是否允许与登录名相同
     const ableStatus = passwordPolicy && passwordPolicy.enableSecurity ? 'enabled' : 'disabled'; // 登录安全策略是否启用
@@ -239,6 +242,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.minlength`} />}
                 style={{ width: inputWidth }}
                 onBlur={this.minlengthBlur}
@@ -256,6 +260,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.maxlength`} />}
                 style={{ width: inputWidth }}
               />,
@@ -272,6 +277,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.digitscount`} />}
                 style={{ width: inputWidth }}
               />,
@@ -288,6 +294,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.lowercasecount`} />}
                 style={{ width: inputWidth }}
               />,
@@ -304,6 +311,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.uppercasecount`} />}
                 style={{ width: inputWidth }}
               />,
@@ -320,6 +328,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.specialcharcount`} />}
                 style={{ width: inputWidth }}
               />,
@@ -336,6 +345,7 @@ class UpdatePasswordPolicy extends Component {
             })(
               <InputNumber
                 autoComplete="off"
+                min={0}
                 label={<FormattedMessage id={`${inputPrefix}.notrecentcount`} />}
                 style={{ width: inputWidth }}
               />,
@@ -404,6 +414,7 @@ class UpdatePasswordPolicy extends Component {
                 })(
                   <InputNumber
                     autoComplete="off"
+                    min={0}
                     label={<FormattedMessage id={`${inputPrefix}.maxerror.count`} />}
                     style={{ width: inputWidth }}
                   />,
@@ -440,6 +451,7 @@ class UpdatePasswordPolicy extends Component {
                 })(
                   <InputNumber
                     autoComplete="off"
+                    min={0}
                     label={<FormattedMessage id={`${inputPrefix}.maxerror.count`} />}
                     style={{ width: inputWidth }}
                   />,
@@ -456,6 +468,7 @@ class UpdatePasswordPolicy extends Component {
                 })(
                   <InputNumber
                     autoComplete="off"
+                    min={0}
                     label={<FormattedMessage id={`${inputPrefix}.locktime`} />}
                     style={{ width: inputWidth }}
                   />,

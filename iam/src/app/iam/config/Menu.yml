@@ -181,7 +181,7 @@
 # 项目设置
 "prosetting":
   icon: IAM
-  sort: 5
+  sort: 6
   project:
     - "member-role-project":
         icon: person_add

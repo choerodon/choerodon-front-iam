@@ -1,8 +1,12 @@
 .methodTag {
-  padding: 4px;
-  color: #fff;
+  display: inline-block;
+  padding: 1px 4px;
+  min-width: 43px;
+  text-align: center;
   font-size: 13px;
+  color: #fff;
   text-transform: uppercase;
+  border-radius: 2px;
 }
 
 .urlContainer {

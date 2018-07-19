@@ -155,7 +155,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: '322px',
+      width: 350,
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
@@ -170,7 +170,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
       key: 'url',
-      width: '438px',
+      width: 438,
       render: (text, record) => (<Tooltip
         title={text}
         placement="bottomLeft"
@@ -180,7 +180,7 @@ class Apitest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
       key: 'remark',
-      width: '475px',
+      width: 475,
       render: (text, data) => {
         const { description, remark } = data;
         if (remark) {
@@ -228,6 +228,7 @@ class Apitest extends Component {
           <Select
             style={{ width: '512px', marginBottom: '32px' }}
             value={ApitestStore.currentService.value}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             onChange={this.handleChange.bind(this)}
             label={<FormattedMessage id={`${intlPrefix}.service`} />}
             filterOption={(input, option) =>

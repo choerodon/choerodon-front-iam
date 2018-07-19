@@ -6,7 +6,7 @@ import { Button, Form, Icon, IconSelect, Input, Modal, Table, Tabs, Tooltip } fr
 import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import './MenuTree.scss';
 
 const { MenuStore } = stores;
@@ -49,12 +49,16 @@ const formItemLayout = {
   },
 };
 
+@Form.create({})
+@withRouter
+@injectIntl
 @inject('AppState')
 @observer
 class MenuTree extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      loading: false,
       submitting: false,
       menuGroup: {},
       type: 'site',
@@ -62,6 +66,7 @@ class MenuTree extends Component {
       sidebar: false,
       selectMenuDetail: {},
       dragData: null,
+      tempDirs: [],
     };
   }
 
@@ -73,12 +78,18 @@ class MenuTree extends Component {
   initMenu(type) {
     const { menuGroup, type: typeState } = this.state;
     type = type || typeState;
+    this.setState({ loading: true });
     axios.get(`/iam/v1/menus/tree?level=${type}`)
       .then(value => {
         menuGroup[type] = normalizeMenus(value);
         this.setState({
           menuGroup,
+          loading: false,
         });
+      })
+      .catch(error => {
+        Choerodon.handleResponseError(error);
+        this.setState({ loading: false });
       });
   }
 
@@ -126,32 +137,50 @@ class MenuTree extends Component {
   };
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
-    const { type } = this.state;
-    axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value, level: type, type: 'dir' }))
-      .then((mes) => {
-        if (mes.failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.directory.code.onlymsg`}));
-        } else {
-          callback();
-        }
-      });
+    const { type, tempDirs } = this.state;
+    const errorMsg = intl.formatMessage({ id: `${intlPrefix}.directory.code.onlymsg` });
+    if (tempDirs.find(({ code }) => code === value)) {
+      callback(errorMsg);
+    } else {
+      axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value, level: type, type: 'dir' }))
+        .then((mes) => {
+          if (mes.failed) {
+            callback(errorMsg);
+          } else {
+            callback();
+          }
+        })
+        .catch(error => {
+          Choerodon.handleResponseError(error);
+          callback(false);
+        });
+    }
   };
   //删除菜单
   deleteMenu = (record) => {
     const { intl } = this.props;
-    const { menuGroup, type } = this.state;
+    const { menuGroup, type, tempDirs } = this.state;
+    const index = tempDirs.findIndex(({ code }) => code === record.code);
+    if (index !== -1) {
+      tempDirs.splice(index, 1);
+    }
     deleteNode(menuGroup[type], record);
     this.setState({
       menuGroup,
+      tempDirs,
     });
-    Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.delete.success`}));
+    Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.delete.success` }));
   };
 
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
-      title: intl.formatMessage({id: `${intlPrefix}.delete.owntitle`}),
-      content:intl.formatMessage({id: `${intlPrefix}.delete.owncontent`}, {
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
+      content: intl.formatMessage({
+        id: record.subMenus && record.subMenus.length ?
+          `${intlPrefix}.delete.owncontent.hassub` :
+          `${intlPrefix}.delete.owncontent`,
+      }, {
         name: record.name,
       }),
       onOk: () => {
@@ -176,7 +205,7 @@ class MenuTree extends Component {
     const { intl } = this.props;
     this.props.form.validateFields((err, { code, name, icon }) => {
       if (!err) {
-        const { selectType, menuGroup, selectMenuDetail, type } = this.state;
+        const { selectType, menuGroup, selectMenuDetail, type, tempDirs } = this.state;
         switch (selectType) {
           case 'create':
             const menu = {
@@ -191,18 +220,21 @@ class MenuTree extends Component {
             };
             defineLevel(menu, 0);
             menuGroup[type].push(menu);
-            Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.create.success`}));
+            tempDirs.push(menu);
+            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.create.success` }));
             break;
           case 'edit':
             selectMenuDetail.name = name;
             selectMenuDetail.icon = icon;
-            Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.modify.success`}));
+            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.modify.success` }));
             break;
         }
         this.setState({
           sidebar: false,
           menuGroup,
-        });
+          tempDirs,
+        })
+        ;
       }
     });
   };
@@ -211,11 +243,11 @@ class MenuTree extends Component {
   getSidebarTitle = (selectType) => {
     switch (selectType) {
       case 'create':
-        return <FormattedMessage id={`${intlPrefix}.create.org`}/>;
+        return <FormattedMessage id={`${intlPrefix}.create.org`} />;
       case 'edit':
-        return <FormattedMessage id={`${intlPrefix}.modify.org`}/>;
+        return <FormattedMessage id={`${intlPrefix}.modify.org`} />;
       case 'detail':
-        return <FormattedMessage id={`${intlPrefix}.detail`}/>;
+        return <FormattedMessage id={`${intlPrefix}.detail`} />;
     }
   };
 
@@ -225,18 +257,18 @@ class MenuTree extends Component {
     let formDom, code, values;
     switch (selectType) {
       case 'create':
-        code=`${intlPrefix}.create`;
-        values={name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`};
+        code = `${intlPrefix}.create`;
+        values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
         formDom = this.getDirNameDom();
         break;
       case 'edit':
-        code=`${intlPrefix}.modify`;
-        values={name};
+        code = `${intlPrefix}.modify`;
+        values = { name };
         formDom = this.getDirNameDom();
         break;
       case 'detail':
-        code=`${intlPrefix}.detail`;
-        values={name};
+        code = `${intlPrefix}.detail`;
+        values = { name };
         formDom = this.getDetailDom();
         break;
     }
@@ -263,8 +295,8 @@ class MenuTree extends Component {
           >
             <Input
               value={name}
-              autocomplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.menu.name`}/>}
+              autoComplete="off"
+              label={<FormattedMessage id={`${intlPrefix}.menu.name`} />}
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -274,8 +306,8 @@ class MenuTree extends Component {
           >
             <Input
               value={code}
-              autocomplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.menu.code`}/>}
+              autoComplete="off"
+              label={<FormattedMessage id={`${intlPrefix}.menu.code`} />}
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -285,8 +317,8 @@ class MenuTree extends Component {
           >
             <Input
               value={level}
-              label={<FormattedMessage id={`${intlPrefix}.menu.level`}/>}
-              autocomplete="off"
+              label={<FormattedMessage id={`${intlPrefix}.menu.level`} />}
+              autoComplete="off"
               disabled={true}
               style={{ width: inputWidth }}
             />
@@ -296,19 +328,19 @@ class MenuTree extends Component {
           >
             <Input
               value={__parent_name__}
-              label={<FormattedMessage id={`${intlPrefix}.belong.root`}/>}
+              label={<FormattedMessage id={`${intlPrefix}.belong.root`} />}
               disabled={true}
-              autocomplete="off"
+              autoComplete="off"
               style={{ width: inputWidth }}
             />
           </FormItem>
         </Form>
         <div className="permission-list" style={{ width: inputWidth }}>
-          <p><FormattedMessage id={`${intlPrefix}.menu.permission`}/></p>
+          <p><FormattedMessage id={`${intlPrefix}.menu.permission`} /></p>
           {
             permissions && permissions.length > 0 ? permissions.map(
               ({ code }) => <div key={code}><span>{code}</span></div>,
-            ) : <FormattedMessage id={`${intlPrefix}.menu.withoutpermission`}/>
+            ) : <FormattedMessage id={`${intlPrefix}.menu.withoutpermission`} />
           }
         </div>
       </div>
@@ -321,15 +353,15 @@ class MenuTree extends Component {
     const { getFieldDecorator } = this.props.form;
     const { selectType, selectMenuDetail = {} } = this.state;
     const codeRules = selectType === 'create' && [{
-        required: true,
-        whitespace: true,
-        message: intl.formatMessage({id: `${intlPrefix}.directory.code.require`}),
-      }, {
-        pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
-        message: intl.formatMessage({id: `${intlPrefix}.directory.code.pattern`}),
-      }, {
-        validator: this.checkCode,
-      }];
+      required: true,
+      whitespace: true,
+      message: intl.formatMessage({ id: `${intlPrefix}.directory.code.require` }),
+    }, {
+      pattern: /^[a-z]([-.a-z0-9]*[a-z0-9])?$/,
+      message: intl.formatMessage({ id: `${intlPrefix}.directory.code.pattern` }),
+    }, {
+      validator: this.checkCode,
+    }];
     return (
       <Form layout="vertical">
         <FormItem
@@ -343,7 +375,7 @@ class MenuTree extends Component {
           })(
             <Input
               autoComplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.directory.code`}/>}
+              label={<FormattedMessage id={`${intlPrefix}.directory.code`} />}
               style={{ width: inputWidth }}
               disabled={selectType === 'edit'}
             />,
@@ -356,14 +388,14 @@ class MenuTree extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: intl.formatMessage({id: `${intlPrefix}.directory.name.require`}),
+              message: intl.formatMessage({ id: `${intlPrefix}.directory.name.require` }),
             }],
             validateTrigger: 'onBlur',
             initialValue: selectMenuDetail.name,
           })(
             <Input
-              autocomplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.directory.name`}/>}
+              autoComplete="off"
+              label={<FormattedMessage id={`${intlPrefix}.directory.name`} />}
               style={{ width: inputWidth }}
             />,
           )}
@@ -374,13 +406,13 @@ class MenuTree extends Component {
           {getFieldDecorator('icon', {
             rules: [{
               required: true,
-              message: intl.formatMessage({id: `${intlPrefix}.icon.require`}),
+              message: intl.formatMessage({ id: `${intlPrefix}.icon.require` }),
             }],
             validateTrigger: 'onChange',
             initialValue: selectMenuDetail.icon,
           })(
             <IconSelect
-              label={<FormattedMessage id={`${intlPrefix}.icon`}/>}
+              label={<FormattedMessage id={`${intlPrefix}.icon`} />}
               style={{ width: inputWidth }}
             />,
           )}
@@ -547,10 +579,11 @@ class MenuTree extends Component {
           Choerodon.prompt(menus.message);
         } else {
           MenuStore.setMenuData(_.cloneDeep(menus), type);
-          Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
+          Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
           menuGroup[type] = normalizeMenus(menus);
           this.setState({
             menuGroup,
+            tempDirs: [],
           });
         }
       })
@@ -563,19 +596,19 @@ class MenuTree extends Component {
   getOkText = (selectType) => {
     switch (selectType) {
       case 'create':
-        return <FormattedMessage id="add"/>;
+        return <FormattedMessage id="add" />;
       case 'detail':
-        return <FormattedMessage id="return"/>;
+        return <FormattedMessage id="return" />;
       default:
-        return <FormattedMessage id="save"/>;
+        return <FormattedMessage id="save" />;
     }
   };
 
   render() {
     const menuType = this.props.AppState.currentMenuType.type;
-    const { menuGroup, type: typeState, selectType, sidebar, submitting } = this.state;
+    const { menuGroup, type: typeState, selectType, sidebar, submitting, loading } = this.state;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.directory`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.directory`} />,
       dataIndex: 'name',
       key: 'name',
       render: (text, { type, default: dft }) => {
@@ -588,27 +621,27 @@ class MenuTree extends Component {
           icon = 'folder';
         }
         return (
-          <span><Icon type={icon} style={{ verticalAlign: 'text-bottom'}}/> {text}</span>
+          <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>
         );
       },
       onCell: this.handleCell,
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.icon`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.icon`} />,
       dataIndex: 'icon',
       key: 'icon',
       render: (text) => {
         return <Icon type={text} style={{ fontSize: 18 }} />;
       },
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.code`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.belong`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.belong`} />,
       dataIndex: '__parent_name__',
       key: '__parent_name__',
     }, {
-      title:  <FormattedMessage id={`${intlPrefix}.type`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.type`} />,
       dataIndex: 'default',
       key: 'default',
       render: (text, { type, default: dft }) => {
@@ -631,7 +664,7 @@ class MenuTree extends Component {
           return (
             <Permission service={['iam-service.menu.query']} type={menuType}>
               <Tooltip
-                title={<FormattedMessage id="detail"/>}
+                title={<FormattedMessage id="detail" />}
                 placement="bottom"
               >
                 <Button
@@ -662,7 +695,7 @@ class MenuTree extends Component {
             <Permission service={['iam-service.menu.delete']} type={menuType}>
               {canDel ? (
                 <Tooltip
-                  title={<FormattedMessage id="delete"/>}
+                  title={<FormattedMessage id="delete" />}
                   placement="bottom"
                 >
                   <Button
@@ -674,8 +707,8 @@ class MenuTree extends Component {
                 </Tooltip>
               ) : (
                 <Tooltip
-                  title={<FormattedMessage id={`${intlPrefix}.delete.disable.tooltip`}/>}
-                  overlayStyle={{ "width": "200px" }}
+                  title={<FormattedMessage id={`${intlPrefix}.delete.disable.tooltip`} />}
+                  overlayStyle={{ 'width': '200px' }}
                   placement="bottomRight"
                 >
                   <Button
@@ -705,7 +738,7 @@ class MenuTree extends Component {
           'iam-service.menu.listTreeMenusWithPermissions',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission service={['iam-service.menu.create']}>
             <Button
               onClick={this.addDir}
@@ -718,23 +751,20 @@ class MenuTree extends Component {
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
         >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`}/>} key="site">
-            </TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.org`}/>} key="organization">
-            </TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.pro`}/>} key="project">
-            </TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.personcenter`}/>} key="user">
-            </TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`} />} key="site" />
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.org`} />} key="organization" />
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.pro`} />} key="project" />
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.personcenter`} />} key="user" />
           </Tabs>
           <Table
+            loading={loading}
             className="menu-table"
             filterBar={false}
             pagination={false}
@@ -749,7 +779,7 @@ class MenuTree extends Component {
             title={this.getSidebarTitle(selectType)}
             onOk={selectType === 'detail' ? this.closeSidebar : this.handleOk}
             okText={this.getOkText(selectType)}
-            cancelText={<FormattedMessage id="cancel"/>}
+            cancelText={<FormattedMessage id="cancel" />}
             okCancel={selectType !== 'detail'}
             onCancel={this.closeSidebar}
             visible={sidebar}
@@ -763,13 +793,13 @@ class MenuTree extends Component {
                 type="primary"
                 onClick={this.saveMenu}
                 loading={submitting}
-              ><FormattedMessage id="save"/></Button>
+              ><FormattedMessage id="save" /></Button>
               <Button
                 funcType="raised"
                 onClick={this.handleRefresh}
-                style={{ marginLeft: 16 }}
+                style={{ marginLeft: 16, color: '#3F51B5' }}
                 disabled={submitting}
-              ><FormattedMessage id="cancel"/></Button>
+              ><FormattedMessage id="cancel" /></Button>
             </div>
           </Permission>
         </Content>
@@ -778,4 +808,4 @@ class MenuTree extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(MenuTree)));
+export default MenuTree;

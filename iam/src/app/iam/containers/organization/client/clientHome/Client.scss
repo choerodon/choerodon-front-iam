@@ -24,7 +24,7 @@ $baseFontColor: rgba(0, 0, 0, 0.55);
   display: inline-block;
   border-radius: 100px;
   padding: 0 12px;
-  margin: 0 5px;
+  margin: 2px 5px;
   line-height: 20px;
 }
 
@@ -42,4 +42,8 @@ $baseFontColor: rgba(0, 0, 0, 0.55);
 .detail-input .ant-select-selection {
   border: 0 !important;
   color: #000;
+}
+
+.choice-has-error {
+  background-color: #d50000 !important;
 }

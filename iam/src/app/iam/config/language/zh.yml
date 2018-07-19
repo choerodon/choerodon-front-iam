@@ -7,9 +7,13 @@
 "iam.root-user": "Root用户设置"
 
 "microservice": "微服务管理"
+"microservice.micro": "微服务"
 "microservice.route-management": "路由管理"
 "microservice.config-management": "配置管理"
 "microservice.instance-management": "实例管理"
+
+"api": "API管理"
+"api.api-test": "API测试"
 
 "rentsetting": 组织设置
 # organization
@@ -29,3 +33,5 @@
 # user
 "usercenter.user-info": "个人信息"
 "usercenter.password": "修改密码"
+"usercenter.organization-info": "组织信息"
+"usercenter.project-info": "项目信息"

@@ -29,11 +29,11 @@ class Instance extends Component {
         total: 0,
       },
       sort: {
-        columnKey: 'id',
-        order: 'descend',
+        columnKey: 'service',
+        order: 'asc',
       },
       filters: {},
-      params: '',
+      params: [],
       defaultService: 'total'
     }
   }
@@ -97,7 +97,7 @@ class Instance extends Component {
       });
   }
 
-  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { instanceId, version }, params) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'service', order = 'asc' }, { instanceId, version }, params) {
     InstanceStore.setLoading(true);
     const queryObj = {
       page: current - 1,
@@ -110,8 +110,8 @@ class Instance extends Component {
     if (columnKey) {
       const sorter = [];
       sorter.push(columnKey);
-      if (order === 'descend') {
-        sorter.push('desc');
+      if (order === 'asc') {
+        sorter.push('asc');
       }
       queryObj.sort = sorter.join(',');
     }
@@ -165,7 +165,7 @@ class Instance extends Component {
   }
 
   render() {
-    const { sort: { columnKey, order }, filters, pagination } = this.state;
+    const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const { intl } = this.props;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.id`}/>,
@@ -222,19 +222,20 @@ class Instance extends Component {
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
+          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Select
             style={{ width: '512px', marginBottom: '32px' }}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             value={InstanceStore.currentService.name}
-            label={<FormattedMessage id={`${intlPrefix}.service`}/>}
+            label={<FormattedMessage id={`${intlPrefix}.service`} />}
             filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={this.handleChange.bind(this)}
           >
@@ -245,9 +246,9 @@ class Instance extends Component {
             columns={columns}
             dataSource={InstanceStore.getInstanceData.slice()}
             pagination={pagination}
-            filters={this.state.filters.params}
+            filters={params}
             onChange={this.handlePageChange}
-            rowkey="id"
+            rowKey="instanceId"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
         </Content>

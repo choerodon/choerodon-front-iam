@@ -127,7 +127,7 @@ class OrganizationHome extends Component {
           this.setState({
             visible: false,
           });
-          Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
           return;
         }
         let url;
@@ -140,7 +140,7 @@ class OrganizationHome extends Component {
             name,
             code,
           };
-          message = intl.formatMessage({id: 'create.success'});
+          message = intl.formatMessage({ id: 'create.success' });
           method = 'post';
         } else {
           url = `/iam/v1/organizations/${id}`;
@@ -149,7 +149,7 @@ class OrganizationHome extends Component {
             objectVersionNumber,
             code: originCode,
           };
-          message = intl.formatMessage({id: 'modify.success'});
+          message = intl.formatMessage({ id: 'modify.success' });
           method = 'put';
         }
         this.setState({ submitting: true });
@@ -163,10 +163,11 @@ class OrganizationHome extends Component {
               Choerodon.prompt(data.message);
             } else {
               Choerodon.prompt(message);
-              this.loadOrganizations();
               if (isCreate) {
+                this.handleRefresh();
                 HeaderStore.addOrg(data);
               } else {
+                this.loadOrganizations();
                 HeaderStore.updateOrg(data);
               }
             }
@@ -188,10 +189,10 @@ class OrganizationHome extends Component {
   handleDisable = ({ enabled, id }) => {
     const { intl } = this.props;
     axios.put(`/iam/v1/organizations/${id}/${enabled ? 'disable' : 'enable'}`).then((data) => {
-      Choerodon.prompt(intl.formatMessage({id: enabled ? 'disable.success' : 'enable.success'}));
+      Choerodon.prompt(intl.formatMessage({ id: enabled ? 'disable.success' : 'enable.success' }));
       this.loadOrganizations();
     }).catch(Choerodon.handleResponseError);
-  }
+  };
 
   /**
    * 组织编码校验
@@ -204,7 +205,7 @@ class OrganizationHome extends Component {
     axios.post(`/iam/v1/organizations/check`, JSON.stringify({ code: value }))
       .then((mes) => {
         if (mes.failed) {
-          callback(intl.formatMessage({id: 'global.organization.onlymsg'}));
+          callback(intl.formatMessage({ id: 'global.organization.onlymsg' }));
         } else {
           callback();
         }
@@ -230,7 +231,7 @@ class OrganizationHome extends Component {
       <Content
         className="sidebar-content"
         code={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}
-        values={{name: show === 'create' ? `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}`}}
+        values={{ name: show === 'create' ? `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}` }}
       >
         <Form>
           {
@@ -242,20 +243,20 @@ class OrganizationHome extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({id: 'global.organization.coderequiredmsg'}),
+                    message: intl.formatMessage({ id: 'global.organization.coderequiredmsg' }),
                   }, {
                     max: 15,
-                    message: intl.formatMessage({id: 'global.organization.codemaxmsg'}),
+                    message: intl.formatMessage({ id: 'global.organization.codemaxmsg' }),
                   }, {
                     pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
-                    message: intl.formatMessage({id: 'global.organization.codepatternmsg'}),
+                    message: intl.formatMessage({ id: 'global.organization.codepatternmsg' }),
                   }, {
                     validator: this.checkCode,
                   }],
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input label={<FormattedMessage id="global.organization.code"/>} autocomplete="off" style={{ width: inputWidth }} />,
+                  <Input label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -264,11 +265,11 @@ class OrganizationHome extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('name', {
-              rules: [{ required: true, message: intl.formatMessage({id: 'global.organization.namerequiredmsg'}), whitespace: true }],
+              rules: [{ required: true, message: intl.formatMessage({ id: 'global.organization.namerequiredmsg' }), whitespace: true }],
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input label={<FormattedMessage id="global.organization.name"/>} autocomplete="off" style={{ width: inputWidth }} />,
+              <Input label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>
@@ -287,7 +288,7 @@ class OrganizationHome extends Component {
       params, content, loading, visible, show, submitting,
     } = this.state;
     const columns = [{
-      title: <FormattedMessage id="name"/>,
+      title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -296,7 +297,7 @@ class OrganizationHome extends Component {
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
-      title: <FormattedMessage id="code"/>,
+      title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
       filters: [],
@@ -304,18 +305,23 @@ class OrganizationHome extends Component {
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
     }, {
-      title: <FormattedMessage id="status"/>,
+      title: <FormattedMessage id="global.organization.project.count" />,
+      dataIndex: 'projectCount',
+      key: 'projectCount',
+      align: 'center',
+    }, {
+      title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{
-        text: intl.formatMessage({id: 'enable'}),
+        text: intl.formatMessage({ id: 'enable' }),
         value: 'true',
       }, {
-        text: intl.formatMessage({id: 'disable'}),
+        text: intl.formatMessage({ id: 'disable' }),
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
-      render: enable => intl.formatMessage({id: enable ? 'enable' : 'disable'}),
+      render: enable => intl.formatMessage({ id: enable ? 'enable' : 'disable' }),
     }, {
       title: '',
       width: '100px',
@@ -325,7 +331,7 @@ class OrganizationHome extends Component {
         <div className="operation">
           <Permission service={['iam-service.organization.update']}>
             <Tooltip
-              title={<FormattedMessage id="modify"/>}
+              title={<FormattedMessage id="modify" />}
               placement="bottom"
             >
               <Button
@@ -338,7 +344,7 @@ class OrganizationHome extends Component {
           </Permission>
           <Permission service={['iam-service.organization.disableOrganization', 'iam-service.organization.enableOrganization']}>
             <Tooltip
-              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'}/>}
+              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'} />}
               placement="bottom"
             >
               <Button
@@ -364,7 +370,7 @@ class OrganizationHome extends Component {
           'iam-service.organization.enableOrganization',
         ]}
       >
-        <Header title={<FormattedMessage id="global.organization.header.title" />} >
+        <Header title={<FormattedMessage id="global.organization.header.title" />}>
           <Permission service={['organization-service.organization.create']}>
             <Button
               onClick={this.createOrg}
@@ -390,14 +396,15 @@ class OrganizationHome extends Component {
             onChange={this.handlePageChange}
             filters={params}
             loading={loading}
+            rowKey="id"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar
-            title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}/>}
+            title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'} />}
             visible={visible}
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun}
-            okText={<FormattedMessage id={show === 'create' ? 'create' : 'save'}/>}
+            okText={<FormattedMessage id={show === 'create' ? 'create' : 'save'} />}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={submitting}
           >

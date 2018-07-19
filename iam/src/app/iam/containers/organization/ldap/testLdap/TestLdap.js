@@ -5,8 +5,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content } from 'choerodon-front-boot';
-import TestLoading from '../ldapHome/testLoading';
-import SyncLoading from '../ldapHome/syncLoading';
+import TestLoading from '../ldapHome/TestLoading';
 import './TestLdap.scss';
 import LDAPStore from '../../../../stores/organization/ldap/LDAPStore';
 
@@ -80,9 +79,10 @@ class TestConnect extends Component {
   }
 
   loading () {
+    const { intl } = this.props;
     window.clearInterval(timer);
     timer = window.setInterval(this.getSyncInfoOnce, 9000);
-    return <SyncLoading />;
+    return <TestLoading tip={intl.formatMessage({id: `${intlPrefix}.sync.loading`})} syncTip={intl.formatMessage({id: `${intlPrefix}.sync.loading.tip`})} />;
   }
 
   getTestResult() {
@@ -203,7 +203,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   label={intl.formatMessage({id: `${intlPrefix}.name`})}
                   style={{ width: inputWidth }}
                 />,
@@ -220,7 +220,7 @@ class TestConnect extends Component {
                 }],
               })(
                 <Input
-                  autocomplete="off"
+                  autoComplete="off"
                   type="password"
                   label={intl.formatMessage({id: `${intlPrefix}.password`})}
                   style={{ width: inputWidth }}
@@ -229,14 +229,14 @@ class TestConnect extends Component {
             </FormItem>
           </Form>
           <div style={{ width: '512px', display: LDAPStore.getIsShowResult ? 'block' : 'none' }}>
-            {LDAPStore.getIsConnectLoading ? <TestLoading /> : this.getTestResult()}
+            {LDAPStore.getIsConnectLoading ? <TestLoading tip={intl.formatMessage({id: `${intlPrefix}.test.loading`})} /> : this.getTestResult()}
           </div>
         </div>
       );
     } else if (showWhich === 'adminConnect') {
       return (
         <div style={{ width: '512px' }}>
-          {LDAPStore.getIsConnectLoading ? <TestLoading /> : this.getTestResult()}
+          {LDAPStore.getIsConnectLoading ? <TestLoading tip={intl.formatMessage({id: `${intlPrefix}.test.loading`})}  synctip={''} /> : this.getTestResult()}
         </div>
 
       );

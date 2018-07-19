@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Form, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Select, Table, Tooltip, InputNumber, Icon, Popover } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import classnames from 'classnames';
 import LoadingBar from '../../../../components/loadingBar';
 import ClientStore from '../../../../stores/organization/client/ClientStore';
 import './Client.scss';
@@ -41,20 +42,24 @@ const formItemNumLayout = {
 @inject('AppState')
 @observer
 class Client extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = this.getInitState();
+  getInitState() {
+    return {
       submitting: false,
       page: 0,
       open: false,
-      params: null,
       id: null,
+      params: [],
+      filters: {},
       pagination: {
         current: 1,
         pageSize: 10,
         total: '',
       },
-      sort: 'id,desc',
+      sort: {
+        columnKey: 'id',
+        order: 'descend',
+      },
       visible: false,
       status: '',
       selectData: {},
@@ -62,10 +67,13 @@ class Client extends Component {
   }
 
   componentDidMount() {
-    const { pagination, sort } = this.state;
-    this.loadClient(pagination, sort);
+    this.loadClient();
   }
-
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadClient();
+    });
+  }
   getSidebarContentInfo = () => {
     const menuType = this.props.AppState.currentMenuType;
     const organizationName = menuType.name;
@@ -91,23 +99,19 @@ class Client extends Component {
     }
   }
   /**
-   * 刷新
-   */
-  reload = () => {
-    const { pagination, sort } = this.state;
-    this.loadClient(pagination, sort);
-  };
-
-  /**
    * 加载客户端数据
    * @param pages 分页参数
    * @param state 当前search参数
    */
-  loadClient = (pagination, sort, filters) => {
+  loadClient = (paginationIn, sortIn, filtersIn, paramsIn) => {
     const { AppState } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
-    ClientStore.loadClients(organizationId, pagination, sort, filters)
+    const { pagination: paginationState, sort: sortState, filters: filtersState, params: paramsState, } = this.state;
+    const { id: organizationId } = AppState.currentMenuType;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
+    ClientStore.loadClients(organizationId, pagination, sort, filters, params)
       .then((data) => {
         ClientStore.changeLoading(false);
         ClientStore.setClients(data.content);
@@ -117,17 +121,11 @@ class Client extends Component {
             pageSize: data.size,
             total: data.totalElements,
           },
+          filters,
+          sort,
+          params,
         });
       });
-  };
-
-  /**
-   * 跳转函数
-   * @param url
-   */
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
   };
 
   /**
@@ -136,12 +134,7 @@ class Client extends Component {
    * @returns {*}
    */
   handlePageChange = (pagination, filters, sorter, params) => {
-    const newSorter = sorter.columnKey ? sorter.columnKey : '';
-    const newFilters = {
-      name: (filters.name && filters.name[0]) || '',
-      params: (params && params[0]) || '',
-    };
-    this.loadClient(pagination, newSorter, newFilters);
+    this.loadClient(pagination, filters, sorter, params);
   };
 
   /**
@@ -155,7 +148,7 @@ class Client extends Component {
       onOk: () => ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {
         if (status) {
           Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
-          this.reload();
+          this.loadClient();
         } else {
           Choerodon.prompt(intl.formatMessage({id: 'delete.error'}));
         }
@@ -188,18 +181,9 @@ class Client extends Component {
       submitting: false,
     }, () => {
       if (nochange !== 'nochange') {
-        this.reload();
+        this.loadClient();
       }
     });
-  };
-
-  /**
-   * 跳转函数
-   * @param url
-   */
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
   };
 
   /**
@@ -236,6 +220,12 @@ class Client extends Component {
       }
     }
     return false;
+  };
+
+  saveSelectRef = (node, name) => {
+    if (node) {
+      this[name] = node.rcSelect;
+    }
   };
   /**
    * 编辑客户端form表单提交
@@ -274,6 +264,12 @@ class Client extends Component {
             this.closeSidebar('nochange');
             return;
           }
+          if (dataType.scope) {
+            dataType.scope = dataType.scope.join(',')
+          }
+          if (dataType.autoApprove) {
+            dataType.autoApprove = dataType.autoApprove.join(',')
+          }
           const client = ClientStore.getClient;
           this.setState({
             submitting: true,
@@ -303,6 +299,47 @@ class Client extends Component {
       }
     });
   };
+  handleChoiceRender = (liNode, value) => {
+    const valid = /^[A-Za-z]+$/.test(value);
+    return React.cloneElement(liNode, {
+      className: classnames(liNode.props.className, {
+        'choice-has-error': !valid,
+      }),
+    });
+  };
+
+  handleInputKeyDown = (e, name) => {
+    const { value } = e.target;
+    if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
+      this.setValueInSelect(value, name);
+    }
+  };
+
+  setValueInSelect(value, name) {
+    const { form: { getFieldValue, setFieldsValue } } = this.props;
+    const values = getFieldValue(name) || [];
+    if (values.length < 6 && values.indexOf(value) === -1) {
+      values.push(value);
+      this[name].fireChange(values);
+    }
+    if (this[name]) {
+      this[name].setState({
+        inputValue: '',
+      });
+    }
+  }
+  validateSelect = (rule, value, callback, name) => {
+    const { intl } = this.props;
+    const length = value && value.length;
+    if (length) {
+      var reg = new RegExp(/^[A-Za-z]+$/);
+      if (!reg.test(value[length-1])) {
+        callback(intl.formatMessage({id: `${intlPrefix}.${name}.pattern.msg`}));
+        return;
+      }
+    }
+    callback();
+  }
 
   renderSidebarContent() {
     const { intl } = this.props;
@@ -327,7 +364,7 @@ class Client extends Component {
             validateFirst: true,
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.name`})}
               disabled={status === 'edit'}
             />,
@@ -345,7 +382,7 @@ class Client extends Component {
             }],
           })(
             <Input
-              autocomplete="off"
+              autoComplete="off"
               label={intl.formatMessage({id: `${intlPrefix}.secret`})}
             />,
           )}
@@ -377,74 +414,141 @@ class Client extends Component {
             </Select>,
           )}
         </FormItem>
-        <FormItem
-          {...formItemNumLayout}
-        >
-          {getFieldDecorator('accessTokenValidity', {
-            initialValue: client.accessTokenValidity ?
-              parseInt(client.accessTokenValidity, 10) : undefined,
-          })(
-            <Input
-              autocomplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
-              style={{ width: 300 }}
-              type="number"
-              size="default"
-              min={60}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemNumLayout}
-        >
-          {getFieldDecorator('refreshTokenValidity', {
-            initialValue: client.refreshTokenValidity ?
-              parseInt(client.refreshTokenValidity, 10) : undefined,
-          })(
-            <Input
-              autocomplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
-              style={{ width: 300 }}
-              type="number"
-              size="default"
-              min={60}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('webServerRedirectUri', {
-            initialValue: client.webServerRedirectUri || undefined,
-          })(
-            <Input autocomplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('additionalInformation', {
-            rules: [
-              {
-                validator: (rule, value, callback) => {
-                  if (!value || this.isJson(value)) {
-                    callback();
-                  } else {
-                    callback(intl.formatMessage({id: `${intlPrefix}.additional.pattern.msg`}));
-                  }
-                },
-              },
-            ],
-            validateTrigger: 'onBlur',
-            initialValue: client.additionalInformation || undefined,
-          })(
-            <TextArea
-              autocomplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.additional`})}
-              rows={3}
-            />,
-          )}
-        </FormItem>
+        { status === 'edit' &&
+          <div>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('accessTokenValidity', {
+                initialValue: client.accessTokenValidity ?
+                  parseInt(client.accessTokenValidity, 10) : undefined,
+              })(
+                <InputNumber
+                  autoComplete="off"
+                  label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
+                  style={{ width: 300 }}
+                  size="default"
+                  min={60}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('refreshTokenValidity', {
+                initialValue: client.refreshTokenValidity ?
+                  parseInt(client.refreshTokenValidity, 10) : undefined,
+              })(
+                <InputNumber
+                  autoComplete="off"
+                  label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
+                  style={{ width: 300 }}
+                  size="default"
+                  min={60}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('scope', {
+                rules: [{
+                  validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'scope'),
+                }],
+                validateTrigger: 'onChange',
+                initialValue: client.scope ? client.scope.split(',') : [],
+              })(
+                <Select
+                  label={intl.formatMessage({id: `${intlPrefix}.scope`})}
+                  mode="tags"
+                  filterOption={false}
+                  onInputKeyDown={e => this.handleInputKeyDown(e, 'scope')}
+                  ref={node => {this.saveSelectRef(node, 'scope');}}
+                  notFoundContent={false}
+                  showNotFindSelectedItem={false}
+                  showNotFindInputItem={false}
+                  choiceRender={this.handleChoiceRender}
+                  allowClear={false}
+                />,
+              )}
+              <Popover
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                overlayStyle={{ maxWidth: '180px' }}
+                placement="right"
+                trigger="hover"
+                content={intl.formatMessage({id: `${intlPrefix}.scope.help.msg`})}
+              >
+                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)'}}/>
+              </Popover>
+            </FormItem>
+            <FormItem
+              {...formItemNumLayout}
+            >
+              {getFieldDecorator('autoApprove', {
+                rules: [{
+                  validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'autoApprove'),
+                }],
+                validateTrigger: 'onChange',
+                initialValue: client.autoApprove ? client.autoApprove.split(',') : [],
+              })(
+                <Select
+                  label={intl.formatMessage({id: `${intlPrefix}.autoApprove`})}
+                  mode="tags"
+                  filterOption={false}
+                  onInputKeyDown={e => this.handleInputKeyDown(e, 'autoApprove')}
+                  ref={node => this.saveSelectRef(node, 'autoApprove')}
+                  choiceRender={this.handleChoiceRender}
+                  notFoundContent={false}
+                  showNotFindSelectedItem={false}
+                  showNotFindInputItem={false}
+                  allowClear={false}
+                />,
+              )}
+              <Popover
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                overlayStyle={{ maxWidth: '180px' }}
+                placement="right"
+                trigger="hover"
+                content={intl.formatMessage({id: `${intlPrefix}.autoApprove.help.msg`})}
+              >
+                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)'}}/>
+              </Popover>
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('webServerRedirectUri', {
+                initialValue: client.webServerRedirectUri || undefined,
+              })(
+                <Input autoComplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('additionalInformation', {
+                rules: [
+                  {
+                    validator: (rule, value, callback) => {
+                      if (!value || this.isJson(value)) {
+                        callback();
+                      } else {
+                        callback(intl.formatMessage({id: `${intlPrefix}.additional.pattern.msg`}));
+                      }
+                    },
+                  },
+                ],
+                validateTrigger: 'onBlur',
+                initialValue: client.additionalInformation || undefined,
+              })(
+                <TextArea
+                  autoComplete="off"
+                  label={intl.formatMessage({id: `${intlPrefix}.additional`})}
+                  rows={3}
+                />,
+              )}
+            </FormItem>
+          </div>}
       </Form>
     </div>) : <LoadingBar />;
     return (
@@ -458,7 +562,7 @@ class Client extends Component {
 
   render() {
     const { AppState, intl } = this.props;
-    const { submitting, status, pagination, visible } = this.state;
+    const { submitting, status, pagination, visible, filters, params } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationName = menuType.name;
     const clientData = ClientStore.getClients;
@@ -468,34 +572,13 @@ class Client extends Component {
         dataIndex: 'name',
         key: 'name',
         filters: [],
+        filteredValue: filters.name || [],
         sorter: (a, b) => a.name.localeCompare(b.serviceNamee, 'zh-Hans-CN', { sensitivity: 'accent' }),
       },
       {
         title: intl.formatMessage({id: `${intlPrefix}.granttypes`}),
         dataIndex: 'authorizedGrantTypes',
         key: 'authorizedGrantTypes',
-        // filters: [
-        //   {
-        //     value: 'password',
-        //     text: 'password',
-        //   },
-        //   {
-        //     value: 'implicit',
-        //     text: 'implicit',
-        //   },
-        //   {
-        //     value: 'client_credentials',
-        //     text: 'client_credentials',
-        //   },
-        //   {
-        //     value: 'authorization_code',
-        //     text: 'authorization_code',
-        //   },
-        //   {
-        //     value: 'refresh_token',
-        //     text: 'refresh_token',
-        //   },
-        // ],
         render: (text) => {
           if (!text) {
             return '';
@@ -572,7 +655,7 @@ class Client extends Component {
             </Button>
           </Permission>
           <Button
-            onClick={this.reload}
+            onClick={this.handleRefresh}
             icon="refresh"
           >
             <FormattedMessage id="refresh"/>
@@ -586,6 +669,7 @@ class Client extends Component {
             size="middle"
             pagination={pagination}
             columns={columns}
+            filters={params}
             dataSource={clientData}
             rowKey="id"
             onChange={this.handlePageChange}

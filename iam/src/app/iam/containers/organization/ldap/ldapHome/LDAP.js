@@ -379,7 +379,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.serverAddress ? ldapData.serverAddress : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.serveraddress`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.serveraddress`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -408,7 +408,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.port || (ldapData.useSSL ? '636' : '389'),
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.port`})} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.port`})} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -417,7 +417,7 @@ class LDAP extends Component {
             {getFieldDecorator('baseDn', {
               initialValue: ldapData.baseDn ? ldapData.baseDn : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.basedn`})} suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.basedn`})} suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -426,7 +426,7 @@ class LDAP extends Component {
             {getFieldDecorator('account', {
               initialValue: ldapData.account ? ldapData.account : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.loginname`})} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.loginname`})} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -435,7 +435,7 @@ class LDAP extends Component {
             {getFieldDecorator('password', {
               initialValue: ldapData.password ? ldapData.password : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.password`})} type="password" style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.password`})} type="password" style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
         </div>
@@ -454,7 +454,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.objectclass`})} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.objectclass`})} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -467,7 +467,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.loginNameField ? ldapData.loginNameField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.loginname`})} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.loginname`})} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -480,7 +480,7 @@ class LDAP extends Component {
               }],
               initialValue: ldapData.emailField ? ldapData.emailField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.email`})} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.email`})} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -489,7 +489,7 @@ class LDAP extends Component {
             {getFieldDecorator('realNameField', {
               initialValue: ldapData.realNameField ? ldapData.realNameField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.realname`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.realname`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -498,12 +498,13 @@ class LDAP extends Component {
             {getFieldDecorator('phoneField', {
               initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.phone`})} style={{ width: inputWidth }} autocomplete="off" />,
+              <Input label={intl.formatMessage({id: `${intlPrefix}.phone`})} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
         </div>
         <Permission service={['iam-service.ldap.update']}>
           <div className="btnGroup">
+            <hr className="divider" />
             <Button
               funcType="raised"
               type="primary"
@@ -518,6 +519,7 @@ class LDAP extends Component {
                 const { resetFields } = this.props.form;
                 resetFields();
               }}
+              style={{ color: '#3F51B5' }}
               disabled={saving}
             >
               <FormattedMessage id="cancel"/>

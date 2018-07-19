@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
+import querystring from 'query-string';
 
 @store('ClientStore')
 class ClientStore {
@@ -65,12 +66,23 @@ class ClientStore {
     return this.isLoading;
   }
 
-  loadClients(organizationId, page, sortParam = 'id,desc', filters = {
-    name: '',
-    params: '',
-  }) {
+  loadClients(organizationId, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name }, params) {
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+      name,
+      params,
+    };
     this.changeLoading(true);
-    return axios.get(`/iam/v1/organizations/${organizationId}/clients?page=${page.current - 1}&size=${page.pageSize}&sort=${sortParam}&name=${filters.name}&params=${filters.params}`);
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/iam/v1/organizations/${organizationId}/clients?${querystring.stringify(queryObj)}`);
   }
 
   getClientById = (organizationId, id) =>

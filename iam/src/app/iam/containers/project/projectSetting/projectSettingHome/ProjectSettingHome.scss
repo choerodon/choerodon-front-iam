@@ -1,7 +1,14 @@
 .proSettingStyle {
   .btnGroup {
-    margin-top: 65px;
+    margin-top: 35px;
     margin-bottom: 14px;
+
+    .divider {
+      box-sizing: border-box;
+      width: 512px;
+      margin: 0 0 12px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+    }
 
     button:last-child {
       margin-left: 12px;

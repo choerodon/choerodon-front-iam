@@ -146,18 +146,19 @@ class ProjectSettingHome extends Component {
                   }],
                   initialValue: name,
                 })(
-                  <Input autocomplete="off" label={<FormattedMessage id={`${intlPrefix}.name`}/>} disabled={!enabled} style={{ width: 512 }} />,
+                  <Input autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.name`}/>} disabled={!enabled} style={{ width: 512 }} />,
                 )}
               </FormItem>
               <FormItem>
                 {getFieldDecorator('code', {
                   initialValue: code,
                 })(
-                  <Input autocomplete="off" label={<FormattedMessage id={`${intlPrefix}.code`}/>} disabled style={{ width: 512 }} />,
+                  <Input autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.code`}/>} disabled style={{ width: 512 }} />,
                 )}
               </FormItem>
               <Permission service={['iam-service.project.update']}>
                 <div className="btnGroup">
+                  <hr className="divider" />
                   <Button
                     funcType="raised"
                     htmlType="submit"

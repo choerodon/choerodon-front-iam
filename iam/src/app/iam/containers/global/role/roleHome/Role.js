@@ -158,14 +158,14 @@ class Role extends Component {
     if (record.builtIn) {
       return (
         <div>
-          <Icon type="settings" />
+          <Icon type="settings" style={{verticalAlign: 'text-bottom'}} />
           <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
         </div>
       );
     } else {
       return (
         <div>
-          <Icon type="av_timer" />
+          <Icon type="av_timer" style={{verticalAlign: 'text-bottom'}} />
           <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
         </div>
       );
@@ -184,7 +184,7 @@ class Role extends Component {
 
   render() {
     const { intl } = this.props;
-    const { sort: { columnKey, order }, pagination, filters } = this.state;
+    const { sort: { columnKey, order }, pagination, filters, params } = this.state;
     const selectedRowKeys = this.getSelectedRowKeys();
     const columns = [{
       dataIndex: 'id',
@@ -358,6 +358,7 @@ class Role extends Component {
             pagination={pagination}
             rowSelection={rowSelection}
             rowKey={record => record.id}
+            filters={params}
             onChange={this.handlePageChange}
             loading={RoleStore.getIsLoading}
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}

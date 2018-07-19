@@ -63,6 +63,12 @@
   icon: micro
   sort: 2
   site:
+    - "micro":
+        icon: microservice
+        Routes: /iam/microservice
+        sort: 1
+        permission:
+          - 'manager-service.service.pageManager'
     - "instance-management":
         icon: instance_outline
         Routes: /iam/instance
@@ -91,7 +97,19 @@
           - 'manager-service.route.update'
           - 'manager-service.route.delete'
 
-# 租户设置
+# api管理
+"api":
+  icon: API
+  sort: 3
+  site:
+    - "api-test":
+        icon: APItest
+        Routes: /iam/apitest
+        sort: 1
+        permission:
+          - 'manager-service.service.pageManager'
+
+# 组织设置
 "rentsetting":
   icon: IAM
   sort: 2
@@ -163,7 +181,7 @@
 # 项目设置
 "prosetting":
   icon: IAM
-  sort: 5
+  sort: 6
   project:
     - "member-role-project":
         icon: person_add
@@ -204,3 +222,15 @@
         sort: 2
         permission:
           - 'iam-service.user.selfUpdatePassword'
+    - "organization-info":
+        icon: domain
+        Routes: /iam/organizationinfo
+        sort: 3
+        permission:
+          - 'iam-service.user.listOrganizationAndRoleById'
+    - "project-info":
+        icon: project
+        Routes: /iam/projectinfo
+        sort: 4
+        permission:
+          - 'iam-service.user.listProjectAndRoleById'

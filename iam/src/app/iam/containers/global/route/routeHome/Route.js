@@ -402,14 +402,14 @@ class Route extends Component {
       return (
         <div className="iconStyle">
           <Icon type="settings" />
-          <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
+          <FormattedMessage id={`${intlPrefix}.builtin.predefined`} />
         </div>
       );
     } else {
       return (
         <div className="iconStyle">
           <Icon type="av_timer" />
-          <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
+          <FormattedMessage id={`${intlPrefix}.builtin.custom`} />
         </div>
       );
     }
@@ -424,7 +424,7 @@ class Route extends Component {
       return (
         <div>
           <Tooltip
-            title={<FormattedMessage id="detail"/>}
+            title={<FormattedMessage id="detail" />}
             placement="bottom"
           >
             <Button
@@ -559,7 +559,7 @@ class Route extends Component {
             })(
               <Input
                 label={<FormattedMessage id={`${intlPrefix}.name`}/>}
-                autocomplete="off"
+                autoComplete="off"
                 suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.name.tip`}))}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
@@ -583,7 +583,7 @@ class Route extends Component {
             })(
               <Input
                 label={<FormattedMessage id={`${intlPrefix}.path`}/>}
-                autocomplete="off"
+                autoComplete="off"
                 style={{ width: inputWidth }}
                 suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.path.tip`}))}
                 disabled={!createValidate}
@@ -702,7 +702,7 @@ class Route extends Component {
               })(
                 <Input
                   disabled={detailValidate}
-                  autocomplete="off"
+                  autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.helperservice`}/>}
                   style={{ width: inputWidth }}
                   suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.helperservice.tip`}))}
@@ -718,7 +718,7 @@ class Route extends Component {
 
   render() {
     const { AppState, intl } = this.props;
-    const { sort: { columnKey, order }, filters } = this.state;
+    const { sort: { columnKey, order }, filters, params } = this.state;
     const { content, loading, pagination, visible, show, submitting } = this.state;
     const { type } = AppState.currentMenuType;
     let filtersService = content && content.map(({ serviceId }) => ({
@@ -807,7 +807,8 @@ class Route extends Component {
             loading={loading}
             pagination={pagination}
             onChange={this.handlePageChange}
-            filters={this.state.filters.params}
+            filters={params}
+            rowKey="id"
             filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
           />
           <Sidebar

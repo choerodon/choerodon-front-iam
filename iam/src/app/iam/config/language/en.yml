@@ -7,9 +7,13 @@
 "iam.root-user": "Root User Setting"
 
 "microservice": "Microservice"
+"microservice.micro": "Microservice"
 "microservice.route-management": "Route Management"
 "microservice.config-management": "Config Management"
 "microservice.instance-management": "Instance Management"
+
+"api": "API Manage"
+"api.api-test": "API Test"
 
 "rentsetting": "Organization settings"
 # organization
@@ -29,4 +33,6 @@
 # user
 "usercenter.user-info": "User Information Maintenance"
 "usercenter.password": "Password Modification"
+"usercenter.organization-info": "Organization Information"
+"usercenter.project-info": "Project Information"
 

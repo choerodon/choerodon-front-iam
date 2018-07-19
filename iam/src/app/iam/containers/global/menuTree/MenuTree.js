@@ -49,12 +49,16 @@ const formItemLayout = {
   },
 };
 
+@Form.create({})
+@withRouter
+@injectIntl
 @inject('AppState')
 @observer
 class MenuTree extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      loading: false,
       submitting: false,
       menuGroup: {},
       type: 'site',
@@ -62,6 +66,7 @@ class MenuTree extends Component {
       sidebar: false,
       selectMenuDetail: {},
       dragData: null,
+      tempDirs: [],
     };
   }
 
@@ -73,12 +78,18 @@ class MenuTree extends Component {
   initMenu(type) {
     const { menuGroup, type: typeState } = this.state;
     type = type || typeState;
+    this.setState({ loading: true });
     axios.get(`/iam/v1/menus/tree?level=${type}`)
       .then(value => {
         menuGroup[type] = normalizeMenus(value);
         this.setState({
           menuGroup,
+          loading: false,
         });
+      })
+      .catch(error => {
+        Choerodon.handleResponseError(error);
+        this.setState({ loading: false });
       });
   }
 
@@ -126,15 +137,24 @@ class MenuTree extends Component {
   };
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
-    const { type } = this.state;
-    axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value, level: type, type: 'dir' }))
-      .then((mes) => {
-        if (mes.failed) {
-          callback(intl.formatMessage({ id: `${intlPrefix}.directory.code.onlymsg` }));
-        } else {
-          callback();
-        }
-      });
+    const { type, tempDirs } = this.state;
+    const errorMsg = intl.formatMessage({ id: `${intlPrefix}.directory.code.onlymsg` });
+    if (tempDirs.find(({ code }) => code === value)) {
+      callback(errorMsg);
+    } else {
+      axios.post(`/iam/v1/menus/check`, JSON.stringify({ code: value, level: type, type: 'dir' }))
+        .then((mes) => {
+          if (mes.failed) {
+            callback(errorMsg);
+          } else {
+            callback();
+          }
+        })
+        .catch(error => {
+          Choerodon.handleResponseError(error);
+          callback(false);
+        });
+    }
   };
   //删除菜单
   deleteMenu = (record) => {
@@ -180,7 +200,7 @@ class MenuTree extends Component {
     const { intl } = this.props;
     this.props.form.validateFields((err, { code, name, icon }) => {
       if (!err) {
-        const { selectType, menuGroup, selectMenuDetail, type } = this.state;
+        const { selectType, menuGroup, selectMenuDetail, type, tempDirs } = this.state;
         switch (selectType) {
           case 'create':
             const menu = {
@@ -195,6 +215,7 @@ class MenuTree extends Component {
             };
             defineLevel(menu, 0);
             menuGroup[type].push(menu);
+            tempDirs.push(menu);
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.create.success` }));
             break;
           case 'edit':
@@ -206,7 +227,9 @@ class MenuTree extends Component {
         this.setState({
           sidebar: false,
           menuGroup,
-        });
+          tempDirs,
+        })
+        ;
       }
     });
   };
@@ -555,6 +578,7 @@ class MenuTree extends Component {
           menuGroup[type] = normalizeMenus(menus);
           this.setState({
             menuGroup,
+            tempDirs: [],
           });
         }
       })
@@ -577,7 +601,7 @@ class MenuTree extends Component {
 
   render() {
     const menuType = this.props.AppState.currentMenuType.type;
-    const { menuGroup, type: typeState, selectType, sidebar, submitting } = this.state;
+    const { menuGroup, type: typeState, selectType, sidebar, submitting, loading } = this.state;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.directory`} />,
       dataIndex: 'name',
@@ -729,16 +753,13 @@ class MenuTree extends Component {
           code={intlPrefix}
         >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`} />} key="site">
-            </TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.org`} />} key="organization">
-            </TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.pro`} />} key="project">
-            </TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.personcenter`} />} key="user">
-            </TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`} />} key="site" />
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.org`} />} key="organization" />
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.pro`} />} key="project" />
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.personcenter`} />} key="user" />
           </Tabs>
           <Table
+            loading={loading}
             className="menu-table"
             filterBar={false}
             pagination={false}
@@ -782,4 +803,4 @@ class MenuTree extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(MenuTree)));
+export default MenuTree;

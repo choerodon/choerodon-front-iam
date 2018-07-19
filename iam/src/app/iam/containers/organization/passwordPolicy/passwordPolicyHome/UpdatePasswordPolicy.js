@@ -59,21 +59,15 @@ class UpdatePasswordPolicy extends Component {
 
   /* 是否开启验证码切换事件 */
   changeCodeStatus(e) {
-    const { setFieldsValue } = this.props.form;
     this.setState({
       codeStatus: e.target.value,
-    }, () => {
-      setFieldsValue({ maxCheckCaptcha: undefined });
     });
   }
 
   /* 是否开启锁定切换事件 */
   changeLockStatus(e) {
-    const { setFieldsValue } = this.props.form;
     this.setState({
       lockStatus: e.target.value,
-    }, () => {
-      setFieldsValue({ maxErrorTime: undefined, lockedExpireTime: undefined });
     });
   }
 

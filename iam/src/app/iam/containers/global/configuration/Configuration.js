@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Select, Table } from 'choerodon-ui';
+import { Button, Form, Modal, Select, Table } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -19,6 +19,15 @@ const intlPrefix = 'global.configuration';
 class Configuration extends Component {
   state = this.getInitState();
 
+  componentDidMount() {
+    ConfigurationStore.setCurrentConfigId(null);
+    this.loadInitData();
+  }
+
+  componentWillUnmount() {
+    ConfigurationStore.setRelatedService({}); // 保存时的微服务信息
+  }
+
   getInitState() {
     return {
       pagination: {
@@ -32,16 +41,7 @@ class Configuration extends Component {
       },
       filters: {},
       params: [],
-    }
-  }
-
-  componentDidMount() {
-    ConfigurationStore.setCurrentConfigId(null);
-    this.loadInitData();
-  }
-
-  componentWillUnmount() {
-    ConfigurationStore.setRelatedService({});  // 保存时的微服务信息
+    };
   }
 
   loadInitData = () => {
@@ -143,9 +143,10 @@ class Configuration extends Component {
         <Select
           style={{ width: '512px', marginBottom: '32px' }}
           value={ConfigurationStore.currentService.name}
-          label={<FormattedMessage id={`${intlPrefix}.service`}/>}
+          getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+          label={<FormattedMessage id={`${intlPrefix}.service`} />}
           filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           onChange={this.handleChange.bind(this)}
         >
@@ -156,7 +157,7 @@ class Configuration extends Component {
           }
         </Select>
       </div>
-    )
+    );
   }
 
   /**
@@ -178,8 +179,8 @@ class Configuration extends Component {
   deleteConfig = (record) => {
     const { intl } = this.props;
     Modal.confirm({
-      title: intl.formatMessage({id: `${intlPrefix}.delete.title`}),
-      content: intl.formatMessage({id: `${intlPrefix}.delete.content`},{name: record.name}),
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
       onOk: () => {
         ConfigurationStore.deleteConfig(record.id).then(({ failed, message }) => {
           if (failed) {
@@ -188,7 +189,7 @@ class Configuration extends Component {
             Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
             this.loadConfig();
           }
-        })
+        });
       },
     });
   }
@@ -199,17 +200,17 @@ class Configuration extends Component {
    */
   setDefaultConfig = (configId) => {
     const { intl } = this.props;
-    ConfigurationStore.setDefaultConfig(configId). then(({ failed, message }) => {
+    ConfigurationStore.setDefaultConfig(configId).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
       } else {
-        Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
         this.loadConfig();
       }
-    })
+    });
   }
 
-  /*创建配置*/
+  /* 创建配置 */
   creatConfig = () => {
     ConfigurationStore.setStatus('create');
     this.props.history.push('/iam/configuration/create');
@@ -238,36 +239,36 @@ class Configuration extends Component {
     const { intl } = this.props;
     const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.id`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.id`} />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.version`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.version`} />,
       dataIndex: 'configVersion',
       key: 'configVersion',
       filters: [],
       filteredValue: filters.configVersion || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.publictime`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.publictime`} />,
       dataIndex: 'publicTime',
       key: 'publicTime',
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.isdefault`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.isdefault`} />,
       dataIndex: 'isDefault',
       key: 'isDefault',
       filters: [{
-        text: intl.formatMessage({id: 'yes'}),
+        text: intl.formatMessage({ id: 'yes' }),
         value: 'true',
       }, {
-        text: intl.formatMessage({id: 'no'}),
+        text: intl.formatMessage({ id: 'no' }),
         value: 'false',
       }],
       filteredValue: filters.isDefault || [],
       render: (text) => {
-        return intl.formatMessage({id: text ? 'yes' : 'no'});
-      }
+        intl.formatMessage({ id: text ? 'yes' : 'no' });
+      },
     }, {
       title: '',
       width: '100px',
@@ -278,31 +279,31 @@ class Configuration extends Component {
           service: ['manager-service.config.create'],
           type: 'site',
           icon: '',
-          text: intl.formatMessage({id: `${intlPrefix}.create.base`}),
+          text: intl.formatMessage({ id: `${intlPrefix}.create.base` }),
           action: this.createByThis.bind(this, record),
         }, {
           service: ['manager-service.config.updateConfigDefault'],
           type: 'site',
           icon: '',
-          text: intl.formatMessage({id: `${intlPrefix}.setdefault`}),
-          action: this.setDefaultConfig.bind(this, record.id)
+          text: intl.formatMessage({ id: `${intlPrefix}.setdefault` }),
+          action: this.setDefaultConfig.bind(this, record.id),
         }, {
           service: ['manager-service.config.updateConfig'],
           type: 'site',
           icon: '',
-          text: intl.formatMessage({id: 'modify'}),
-          action: this.handleEdit.bind(this, record)
+          text: intl.formatMessage({ id: 'modify' }),
+          action: this.handleEdit.bind(this, record),
         }];
         if (!record.isDefault) {
           actionsDatas.push({
             service: ['manager-service.config.delete'],
             type: 'site',
             icon: '',
-            text: intl.formatMessage({id: 'delete'}),
+            text: intl.formatMessage({ id: 'delete' }),
             action: this.deleteConfig.bind(this, record),
-          })
+          });
         }
-        return <Action data={actionsDatas} />
+        return <Action data={actionsDatas} />;
       },
     }];
     return (
@@ -315,26 +316,26 @@ class Configuration extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Permission service={['manager-service.config.create']}>
             <Button
               icon="playlist_add"
               onClick={this.creatConfig}
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
+          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           {this.filterBar}
           <Table
@@ -345,11 +346,11 @@ class Configuration extends Component {
             filters={params}
             onChange={this.handlePageChange}
             rowKey="id"
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>
       </Page>
-    )
+    );
   }
 }
 

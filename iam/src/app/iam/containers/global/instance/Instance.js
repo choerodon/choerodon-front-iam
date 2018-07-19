@@ -222,19 +222,20 @@ class Instance extends Component {
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
+          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Select
             style={{ width: '512px', marginBottom: '32px' }}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             value={InstanceStore.currentService.name}
-            label={<FormattedMessage id={`${intlPrefix}.service`}/>}
+            label={<FormattedMessage id={`${intlPrefix}.service`} />}
             filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={this.handleChange.bind(this)}
           >

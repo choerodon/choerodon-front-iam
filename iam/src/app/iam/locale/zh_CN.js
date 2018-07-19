@@ -84,7 +84,12 @@ const pageDetail = {
   // 实例管理
   'global.instance.title': '平台"{name}"的实例管理',
   'global.instance.description': '实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。',
-  'global.instance.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.instance.link': `${docServer}/user-guide/system-configuration/microservice-management/instance/`,
+
+  'global.instance.detail.title': '实例"{name}"的实例详情',
+  'global.instance.detail.description': '实例属于一个微服务。您可以在此查看实例的详细信息。',
+  'global.instance.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/instance/`,
+
 
   // 路由管理
   'global.route.title': '平台"{name}"的路由管理',
@@ -102,11 +107,6 @@ const pageDetail = {
   'global.route.detail.title': '查看路由"{name}"的详情',
   'global.route.detail.description': '预定义路由为平台初始化设置，您不能修改预定义路由。',
   'global.route.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-
-  // 实例管理
-  'global.instance.detail.title': '实例"{name}"的实例详情',
-  'global.instance.detail.description': '实例属于一个微服务。您可以在此查看实例的详细信息。',
-  'global.instance.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // API测试
   'global.apitest.title': '平台"{name}"的API测试',
@@ -229,7 +229,7 @@ const pageDetail = {
   // 组织信息
   'user.orginfo.title': '用户"{name}"的组织信息',
   'user.orginfo.description': '用户必须且只能属于一个组织，但可以在其他组织被分配角色。本页面展示您所属的组织以及您被分配的组织角色，所属组织在列表第一行。',
-  'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+  'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/org-info/`,
 
   'user.orginfo.detail.title': '查看角色"{roleName}"的权限',
   'user.orginfo.detail.description': '您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。',
@@ -242,7 +242,7 @@ const pageDetail = {
 
   'user.proinfo.detail.title': '查看角色"{roleName}"的权限',
   'user.proinfo.detail.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',
-  'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
+  'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
 
 };
 const zh_CN = {
@@ -452,7 +452,7 @@ const zh_CN = {
   'global.route.stripprefix': '是否去除前缀',
   'global.route.stripprefix.tip': '默认情况下，请求转发时会将路由规则中的前缀去除',
   'global.route.retryable': '是否重试',
-  'global.route.retryable.tip': '\'默认为否，如果为是，请求失败时会自动重试3次',
+  'global.route.retryable.tip': '默认为否，如果为是，请求失败时会自动重试3次',
   'global.route.customsensitiveheaders': '是否过滤敏感头信息',
   'global.route.customsensitiveheaders.tip': '请求转发时，会将Headers中的敏感信息随HTTP转发，如果想过滤一些敏感信息，请选择是',
   'global.route.sensitiveheaders.require.msg': '请输入敏感头信息',

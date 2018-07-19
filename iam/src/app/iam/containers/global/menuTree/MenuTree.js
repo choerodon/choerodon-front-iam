@@ -159,10 +159,15 @@ class MenuTree extends Component {
   //删除菜单
   deleteMenu = (record) => {
     const { intl } = this.props;
-    const { menuGroup, type } = this.state;
+    const { menuGroup, type, tempDirs } = this.state;
+    const index = tempDirs.findIndex(({ code }) => code === record.code);
+    if (index !== -1) {
+      tempDirs.splice(index, 1);
+    }
     deleteNode(menuGroup[type], record);
     this.setState({
       menuGroup,
+      tempDirs,
     });
     Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.delete.success` }));
   };

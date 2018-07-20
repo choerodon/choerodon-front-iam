@@ -34,13 +34,13 @@ class EditConfig extends Component {
       initVersion: undefined,
       yamlData: null,
       id: this.props.match.params.id,
-      service: this.props.match.params.name
-    }
+      service: this.props.match.params.name,
+    };
   }
 
 
   componentWillMount() {
-    ConfigurationStore.setRelatedService({});  // 保存时的微服务信息
+    ConfigurationStore.setRelatedService({}); // 保存时的微服务信息
     this.loadInitData();
     ConfigurationStore.getEditConfigData(this.state.id).then((data) => {
       if (data.failed) {
@@ -59,7 +59,7 @@ class EditConfig extends Component {
       } else {
         ConfigurationStore.setService(data || []);
       }
-    })
+    });
   }
 
   /**
@@ -93,7 +93,7 @@ class EditConfig extends Component {
         label={<FormattedMessage id={`${intlPrefix}.template`} />}
         filterOption={
           (input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
         filter
       >
@@ -103,7 +103,7 @@ class EditConfig extends Component {
           ))
         }
       </Select>
-    )
+    );
   }
 
   /* 第一步 下一步 */
@@ -112,8 +112,8 @@ class EditConfig extends Component {
       this.getConfigYaml();
     } else {
       this.setState({
-        current: 2
-      })
+        current: 2,
+      });
     }
   }
 
@@ -127,10 +127,10 @@ class EditConfig extends Component {
         this.setState({
           yamlData: data.yaml,
           totalLine: data.totalLine,
-          current: 2
+          current: 2,
         });
       }
-    })
+    });
   }
 
   /* 获取步骤条状态 */
@@ -152,7 +152,7 @@ class EditConfig extends Component {
    * @param index
    */
   changeStep = (index) => {
-    this.setState({ current: index })
+    this.setState({ current: index });
   }
 
   /**
@@ -173,23 +173,24 @@ class EditConfig extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
+        const currentService =
+          ConfigurationStore.service.find(service => service.name === this.state.service);
         ConfigurationStore.setRelatedService(currentService);
         ConfigurationStore.setStatus('');
-        Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
         this.props.history.push('/iam/configuration');
       }
-    })
+    });
   }
 
   /* 取消 */
   cancelAll = () => {
-    const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
+    const currentService =
+      ConfigurationStore.service.find(service => service.name === this.state.service);
     ConfigurationStore.setRelatedService(currentService);
     ConfigurationStore.setStatus('');
     this.props.history.push('/iam/configuration');
   }
-
 
 
   /* 渲染第一步 */
@@ -229,7 +230,7 @@ class EditConfig extends Component {
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
                 filterOption={
                   (input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 filter
               >
@@ -251,7 +252,7 @@ class EditConfig extends Component {
               }],
               initialValue: ConfigurationStore.getEditConfig && ConfigurationStore.getEditConfig.name,
             })(
-              this.getSelect()
+              this.getSelect(),
             )}
           </FormItem>
           <FormItem
@@ -358,13 +359,12 @@ class EditConfig extends Component {
             <FormattedMessage id={`${intlPrefix}.step.prev`}/>
           </Button>
           <Button funcType="raised" onClick={this.cancelAll}>
-            <FormattedMessage id="cancel"/>
+            <FormattedMessage id="cancel" />
           </Button>
         </section>
       </div>
-    )
+    );
   }
-
 
 
   render() {
@@ -375,7 +375,7 @@ class EditConfig extends Component {
     return (
       <Page
         service={[
-          'manager-service.config.queryYaml'
+          'manager-service.config.queryYaml',
         ]}
       >
         <Header
@@ -419,7 +419,7 @@ class EditConfig extends Component {
           </div>
         </Content>
       </Page>
-    )
+    );
   }
 }
 

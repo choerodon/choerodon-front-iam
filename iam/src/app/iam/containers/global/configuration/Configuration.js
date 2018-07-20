@@ -66,7 +66,7 @@ class Configuration extends Component {
           ConfigurationStore.setLoading(false);
         }
       }
-    })
+    });
   }
 
   loadConfig(paginationIn, sortIn, filtersIn, paramsIn) {
@@ -186,7 +186,7 @@ class Configuration extends Component {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
+            Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
             this.loadConfig();
           }
         });
@@ -267,7 +267,7 @@ class Configuration extends Component {
       }],
       filteredValue: filters.isDefault || [],
       render: (text) => {
-        intl.formatMessage({ id: text ? 'yes' : 'no' });
+        return intl.formatMessage({ id: text ? 'yes' : 'no' });
       },
     }, {
       title: '',

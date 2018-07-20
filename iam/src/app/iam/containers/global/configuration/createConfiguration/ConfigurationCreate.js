@@ -26,6 +26,14 @@ const intlPrefix = 'global.configuration';
 class CreateConfig extends Component {
   state = this.getInitState();
 
+  componentDidMount() {
+    this.loadInitData();
+    ConfigurationStore.setRelatedService({}); // 保存时的微服务信息
+    if (ConfigurationStore.getStatus === 'baseon') {
+      this.loadCurrentServiceConfig(ConfigurationStore.getCurrentService.name);
+    }
+  }
+
   getInitState() {
     let initData = {};
     if (ConfigurationStore.getStatus === 'baseon') {
@@ -39,7 +47,7 @@ class CreateConfig extends Component {
         service: ConfigurationStore.getCurrentService.name,
         template: ConfigurationStore.getCurrentConfigId,
         version: this.getDate(),
-      }
+      };
     } else {
       initData = {
         current: 1,
@@ -51,19 +59,12 @@ class CreateConfig extends Component {
         yamlData: null,
         service: '',
         template: '',
-        version: ''
-      }
+        version: '',
+      };
     }
     return initData;
   }
 
-  componentDidMount() {
-    this.loadInitData();
-    ConfigurationStore.setRelatedService({});  // 保存时的微服务信息
-    if (ConfigurationStore.getStatus === 'baseon') {
-      this.loadCurrentServiceConfig(ConfigurationStore.getCurrentService.name);
-    }
-  }
 
   loadInitData = () => {
     ConfigurationStore.loadService().then((data) => {
@@ -72,7 +73,7 @@ class CreateConfig extends Component {
       } else {
         ConfigurationStore.setService(data || []);
       }
-    })
+    });
   }
 
   /**
@@ -148,7 +149,7 @@ class CreateConfig extends Component {
           currentServiceConfig: data.content,
         });
       }
-    })
+    });
   }
 
 
@@ -163,7 +164,7 @@ class CreateConfig extends Component {
           label={<FormattedMessage id={`${intlPrefix}.template`} />}
           filterOption={
             (input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
           filter
           onChange={this.generateVersion.bind(this)}
@@ -174,7 +175,7 @@ class CreateConfig extends Component {
             ))
           }
         </Select>
-      )
+      );
     } else {
       const { getFieldValue } = this.props.form;
       const service = getFieldValue('service');
@@ -186,11 +187,11 @@ class CreateConfig extends Component {
             label={<FormattedMessage id={`${intlPrefix}.template`} />}
             filterOption={
               (input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             filter
           />
-        )
+        );
       } else {
         return (
           <Select
@@ -199,7 +200,7 @@ class CreateConfig extends Component {
             label={<FormattedMessage id={`${intlPrefix}.template`} />}
             filterOption={
               (input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             filter
             onChange={this.generateVersion.bind(this)}
@@ -210,7 +211,7 @@ class CreateConfig extends Component {
               ))
             }
           </Select>
-        )
+        );
       }
     }
   }
@@ -253,7 +254,7 @@ class CreateConfig extends Component {
       } else {
         callback();
       }
-    })
+    });
   }
 
   /* 获取步骤条状态 */
@@ -276,7 +277,7 @@ class CreateConfig extends Component {
    * @param index
    */
   changeStep = (index) => {
-    this.setState({ current: index })
+    this.setState({ current: index });
   }
 
   /* 获取配置yaml */
@@ -289,10 +290,10 @@ class CreateConfig extends Component {
         this.setState({
           yamlData: data.yaml,
           totalLine: data.totalLine,
-          current: 2
+          current: 2,
         });
       }
-    })
+    });
   }
 
   /**
@@ -310,8 +311,7 @@ class CreateConfig extends Component {
     const { templateDisable, service, template, version } = this.state;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = 512;
-    let versionStatus;
-    versionStatus = ConfigurationStore.getStatus === 'baseon' ? false : templateDisable;
+    const versionStatus = ConfigurationStore.getStatus === 'baseon' ? false : templateDisable;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -339,12 +339,12 @@ class CreateConfig extends Component {
               initialValue: service || undefined,
             })(
               <Select
-                disabled={ConfigurationStore.getStatus !== 'create'}
+                disabled={ConfigurationStore.getStatus === 'baseon'}
                 style={{ width: inputWidth }}
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
                 filterOption={
                   (input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 filter
                 onChange={this.handleChange.bind(this)}
@@ -424,12 +424,12 @@ class CreateConfig extends Component {
             this.getConfigYaml();
           } else {
             this.setState({
-              current: 2
-            })
+              current: 2,
+            });
           }
-        })
+        });
       }
-    })
+    });
   }
 
   /* 第二步 */
@@ -462,13 +462,13 @@ class CreateConfig extends Component {
           </Button>
         </section>
       </div>
-    )
+    );
   }
 
-  /*第二步-下一步*/
+  /* 第二步-下一步 */
   jumpToEnd = () => {
     this.setState({
-      current: 3
+      current: 3,
     });
   }
 
@@ -479,8 +479,8 @@ class CreateConfig extends Component {
       <div className="confirmContainer">
         <div>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col><Col
-            span={21}>{ service + '.' + version }</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col>
+            <Col span={21}>{ service + '.' + version }</Col>
           </Row>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{version}</Col>
@@ -525,18 +525,19 @@ class CreateConfig extends Component {
       serviceName: service,
       version,
       yaml: yamlData,
-      name: service + '.' + version
+      name: service + '.' + version,
     }
     ConfigurationStore.createConfig(data).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
       } else {
-        const currentService = ConfigurationStore.service.find(service => service.name === data.serviceName);
+        const currentService =
+          ConfigurationStore.service.find(service => service.name === data.serviceName);
         ConfigurationStore.setRelatedService(currentService);
         Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
         this.props.history.push('/iam/configuration');
       }
-    })
+    });
   }
 
   /* 取消 */
@@ -549,8 +550,7 @@ class CreateConfig extends Component {
   render() {
     const { current, service, template, version } = this.state;
     let code;
-    let values;
-    values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
+    const values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
     if (ConfigurationStore.getStatus === 'create') {
       code = `${intlPrefix}.create`;
     } else {
@@ -559,12 +559,13 @@ class CreateConfig extends Component {
     return (
       <Page
         service={[
-          'manager-service.config.queryYaml'
+          'manager-service.config.queryYaml',
         ]}
       >
         <Header
           title={<FormattedMessage
-            id={`${intlPrefix}.create`} />}
+            id={`${intlPrefix}.create`}
+          />}
           backPath="/iam/configuration"
         />
         <Content
@@ -588,10 +589,12 @@ class CreateConfig extends Component {
               <Step
                 title={<span style={{
                   color: current === 3 ? '#3F51B5' : '',
-                  fontSize: 14
-                }}>
+                  fontSize: 14,
+                }}
+                >
                   <FormattedMessage
-                    id={`${intlPrefix}.step3.create.title`} />
+                    id={`${intlPrefix}.step3.create.title`}
+                  />
                 </span>}
                 status={this.getStatus(3)}
               />
@@ -604,7 +607,7 @@ class CreateConfig extends Component {
           </div>
         </Content>
       </Page>
-    )
+    );
   }
 }
 

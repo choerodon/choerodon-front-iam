@@ -14,7 +14,7 @@ import ApitestStore from '../../../stores/globalStores/apitest';
 import './Apitest.scss';
 
 const intlPrefix = 'global.apitest';
-const urlPrefix = 'http://api.staging.saas.hand-china.com/manager/swagger-ui.html#!';
+const urlPrefix = '' + process.env.API_HOST;
 const Option = Select.Option;
 @inject('AppState')
 @observer
@@ -144,7 +144,7 @@ class Apitest extends Component {
   // 跳转至swagger
   goSwagger(record) {
     const { refController, operationId } = record;
-    const openUrl = `${urlPrefix}${ApitestStore.currentService.value.split('/')[0]}/${refController}/${operationId}`;
+    const openUrl = `${urlPrefix}/manager/swagger-ui.html#!${ApitestStore.currentService.value.split('/')[0]}/${refController}/${operationId}`;
     window.open(openUrl);
   }
 

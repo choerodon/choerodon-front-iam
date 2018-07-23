@@ -12,7 +12,7 @@ const intlPrefix = 'global.rolelabel';
 @injectIntl
 @inject('AppState')
 @observer
-class RoleLabel extends Component {
+export default class RoleLabel extends Component {
   render() {
     return (<div />);
   }

@@ -28,10 +28,10 @@ function noop() {
 
 @Form.create({})
 @withRouter
-@injectIntl()
+@injectIntl
 @inject('AppState')
 @observer
-class UserEdit extends Component {
+export default class UserEdit extends Component {
   state = this.getInitState();
 
   componentWillMount() {

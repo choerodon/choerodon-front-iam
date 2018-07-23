@@ -1,7 +1,7 @@
 .methodTag {
   display: inline-block;
+  height: 20px;
   padding: 1px 4px;
-  min-width: 43px;
   text-align: center;
   font-size: 13px;
   color: #fff;
@@ -32,6 +32,10 @@
   background: #F44336;
 }
 
+.options {
+  background: #743BE7;
+}
+
 .patch {
-  background: #7d7d7d;
+  background: #FF7043;
 }

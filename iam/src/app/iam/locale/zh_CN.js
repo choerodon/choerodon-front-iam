@@ -19,6 +19,11 @@ const pageDetail = {
   'global.menusetting.detail.description': '您可以在此查看菜单的名称、编码、层级、所属预置目录、权限。菜单是平台内置的，您不能创建、修改、删除菜单。',
   'global.menusetting.detail.link': `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
 
+  // 角色标签
+  'global.rolelabel.title': '平台"{name}"的角色标签',
+  'global.rolelabel.description': '角色标签是在角色管理中可以与角色相关联，用于定义角色的特定逻辑的功能，需与代码开发结合。',
+  'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/rootuser/`,
+
   // rootuser
   'global.rootuser.title': '平台"{name}"的Root用户设置',
   'global.rootuser.description': 'Root用户能管理平台以及平台中的所有组织和项目。平台中可以有一个或多个Root用户。您可以添加和移除Root用户。',
@@ -376,6 +381,12 @@ const zh_CN = {
   'global.menusetting.menu.withoutpermission': '此菜单无对应权限',
   'global.menusetting.menu.permission': '菜单所具有权限:',
   'global.menusetting.delete.disable.tooltip': '该目录下有菜单，将菜单移空后即可删除目录',
+
+  // 角色标签
+  'global.rolelabel.header.title': '角色标签',
+  'global.rolelabel.name': '编码',
+  'global.rolelabel.level': '层级',
+  'global.rolelabel.desc': '描述',
 
   // Root用户管理
   'global.rootuser.header.title': 'Root用户设置',

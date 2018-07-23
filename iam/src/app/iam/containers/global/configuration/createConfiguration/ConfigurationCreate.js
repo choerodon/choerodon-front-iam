@@ -229,12 +229,14 @@ class CreateConfig extends Component {
   }
 
   timeFilter(time) {
+    let handledTime;
     if (time < 10) {
-      time = '0' + String(time);
+      handledTime = `0${String(time)}`;
+      window.console.log(handledTime);
     } else {
-      time = String(time);
+      handledTime = String(time);
     }
-    return time;
+    return handledTime;
   }
 
   /* 配置版本唯一性校验 */
@@ -243,12 +245,12 @@ class CreateConfig extends Component {
     const { getFieldValue } = this.props.form;
     const serviceName = getFieldValue('service');
     const name = getFieldValue('template');
-    const data = {
+    const body = {
       configVersion: value,
       name,
       serviceName,
     };
-    ConfigurationStore.versionCheck(data).then((data) => {
+    ConfigurationStore.versionCheck(body).then((data) => {
       if (data.failed) {
         callback(intl.formatMessage({ id: 'global.configuration.version.only.msg' }));
       } else {
@@ -367,7 +369,7 @@ class CreateConfig extends Component {
               }],
               initialValue: template || undefined,
             })(
-              this.getSelect()
+              this.getSelect(),
             )}
           </FormItem>
           <FormItem
@@ -408,7 +410,7 @@ class CreateConfig extends Component {
           </Permission>
         </section>
       </div>
-    )
+    );
   }
 
   /* 第一步-下一步 */
@@ -514,7 +516,7 @@ class CreateConfig extends Component {
           </Button>
         </section>
       </div>
-    )
+    );
   }
 
   /* 创建配置 */
@@ -582,8 +584,10 @@ class CreateConfig extends Component {
                 status={this.getStatus(1)}
               />
               <Step
-                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}><FormattedMessage
-                  id={`${intlPrefix}.step2.title`} /></span>}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>
+                  <FormattedMessage
+                    id={`${intlPrefix}.step2.title`}
+                  /></span>}
                 status={this.getStatus(2)}
               />
               <Step

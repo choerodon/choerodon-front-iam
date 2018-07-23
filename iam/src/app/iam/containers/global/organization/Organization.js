@@ -11,9 +11,12 @@ const { HeaderStore } = stores;
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 
+@Form.create()
+@withRouter
+@injectIntl
 @inject('AppState')
 @observer
-class OrganizationHome extends Component {
+export default class Organization extends Component {
   state = this.getInitState();
 
   getInitState() {
@@ -416,4 +419,3 @@ class OrganizationHome extends Component {
   }
 }
 
-export default Form.create()(withRouter(injectIntl(OrganizationHome)));

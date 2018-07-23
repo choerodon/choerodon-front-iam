@@ -3,22 +3,23 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button,  Form, Select, Table, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
-import InstanceStore from '../../../stores/globalStores/instance'
+import InstanceStore from '../../../stores/global/instance';
 
-const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const intlPrefix = 'global.instance';
 
+@Form.create({})
+@withRouter
+@injectIntl
 @inject('AppState')
 @observer
-
-class Instance extends Component {
+export default class Instance extends Component {
   state = this.getInitState();
 
   getInitState() {
@@ -257,4 +258,3 @@ class Instance extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(Instance)));

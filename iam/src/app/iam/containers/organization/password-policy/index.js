@@ -2,8 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-
-const index = asyncRouter(() => import('./Project'), () => import('../../../stores/organization/project'));
+const index = asyncRouter(() => import('./PasswordPolicy'), () => import('../../../stores/organization/password-policy/PasswordPolicyStore'));
 
 const Index = ({ match }) => (
   <Switch>

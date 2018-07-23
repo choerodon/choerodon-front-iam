@@ -1,6 +1,18 @@
-/**
- *create by mading on 2018/4/3
- */
-import Organization from './OrganizationIndex';
 
-export default Organization;
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
+
+const index = asyncRouter(
+  () => import('./Organization'),
+  () => import('../../../stores/global/organization'),
+);
+
+const Index = ({ match }) => (
+  <Switch>
+    <Route exact path={match.url} component={index} />
+    <Route path={'*'} component={nomatch} />
+  </Switch>
+);
+
+export default Index;

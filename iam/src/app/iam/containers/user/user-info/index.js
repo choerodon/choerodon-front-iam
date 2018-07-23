@@ -2,13 +2,13 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const home = asyncRouter(() => import('./UserInfo'));
+const index = asyncRouter(() => import('./UserInfo'));
 
-const index = ({ match }) => (
+const Index = ({ match }) => (
   <Switch>
-    <Route exact path={match.url} component={home} />
+    <Route exact path={match.url} component={index} />
     <Route path={'*'} component={nomatch} />
   </Switch>
 );
 
-export default index;
+export default Index;

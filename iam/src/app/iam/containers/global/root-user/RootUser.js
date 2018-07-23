@@ -16,7 +16,7 @@ const intlPrefix = 'global.rootuser';
 @injectIntl
 @inject('AppState')
 @observer
-class RootUser extends Component {
+export default class RootUser extends Component {
   state = this.getInitState();
   getInitState() {
     return {

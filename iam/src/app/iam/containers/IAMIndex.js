@@ -54,7 +54,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/root-user`} component={rootUser} />
           <Route path={`${match.url}/route`} component={route} />
           <Route path={`${match.url}/client`} component={client} />
-          <Route path={`${match.url}/organization-info`} component={ldap} />
+          <Route path={`${match.url}/ldap`} component={ldap} />
           <Route path={`${match.url}/password-policy`} component={passwordPolicy} />
           <Route path={`${match.url}/project`} component={project} />
           <Route path={`${match.url}/user`} component={user} />

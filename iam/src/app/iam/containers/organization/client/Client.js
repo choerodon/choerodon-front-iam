@@ -44,7 +44,7 @@ const formItemNumLayout = {
 @injectIntl
 @inject('AppState')
 @observer
-class Client extends Component {
+export default class Client extends Component {
   state = this.getInitState();
   getInitState() {
     return {

@@ -46,88 +46,50 @@ export default class PasswordPolicy extends Component {
     this.loadData();
   }
 
-  /* 是否显示密码安全策略 */
-  isShowPwdPolicy = () => {
-    this.setState({
-      showPwd: !this.state.showPwd,
-    });
+
+  /**
+   * 显示面板
+   * @param policy showPwd/showLogin
+   */
+  isShowPanel = (policy) => {
+    this.setState((prevState, props) => ({
+      [policy]: !prevState[policy],
+    }));
   }
 
-  /* 是否显示登录安全策略 */
-  isShowLoginPolicy = () => {
+  /**
+   * 验证码和锁定的切换事件
+   * @param status codeStatus/lockStatus
+   * @param e
+   */
+  changeStatus = (status, e) => {
+    const { setFieldsValue } = this.props.form;
     this.setState({
-      showLogin: !this.state.showLogin,
-    });
-  }
+      [status]: e.target.value,
+    }, () => {
+      if (status === 'codeStatus' && e.target.value === 'disableCode') {
+        setFieldsValue({ maxCheckCaptcha: 0 });
+      }
 
-  /* 是否开启验证码切换事件 */
-  changeCodeStatus(e) {
-    this.setState({
-      codeStatus: e.target.value,
-    });
-  }
-
-  /* 是否开启锁定切换事件 */
-  changeLockStatus(e) {
-    this.setState({
-      lockStatus: e.target.value,
-    });
-  }
-
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-    const { intl } = this.props;
-    this.props.form.validateFieldsAndScroll((err, datas, modify) => {
-      if (!err) {
-        // if(!modify) {
-        //   Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
-        //   return;
-        // }
-        const value = Object.assign({}, PasswordPolicyStore.getPasswordPolicy, datas);
-        const newValue = {
-          enablePassword: value.enablePassword === 'enablePwd',
-          notUsername: value.notUsername === 'different',
-          originalPassword: value.originalPassword,
-          minLength: value.minLength ? parseInt(value.minLength, 10) : 0,
-          maxLength: value.maxLength ? parseInt(value.maxLength, 10) : 0,
-          digitsCount: value.digitsCount ? parseInt(value.digitsCount, 10) : 0,
-          lowercaseCount: value.lowercaseCount ? parseInt(value.lowercaseCount, 10) : 0,
-          uppercaseCount: value.uppercaseCount ? parseInt(value.uppercaseCount, 10) : 0,
-          specialCharCount: value.specialCharCount ? parseInt(value.specialCharCount, 10) : 0,
-          notRecentCount: value.notRecentCount ? parseInt(value.notRecentCount, 10) : 0,
-          regularExpression: value.regularExpression,
-          enableSecurity: value.enableSecurity === true || value.enableSecurity === 'enabled',
-          enableCaptcha: value.enableCaptcha === true || value.enableCaptcha === 'enableCode',
-          maxCheckCaptcha: value.maxCheckCaptcha ? parseInt(value.maxCheckCaptcha, 10) : 0,
-          enableLock: value.enableLock === true || value.enableLock === 'enableLock',
-          maxErrorTime: value.maxErrorTime ? parseInt(value.maxErrorTime, 10) : 0,
-          lockedExpireTime: value.lockedExpireTime ? parseInt(value.lockedExpireTime, 10) : 0,
-          name: value.name,
-          id: PasswordPolicyStore.getPasswordPolicy.id,
-          objectVersionNumber: PasswordPolicyStore.getPasswordPolicy.objectVersionNumber,
-          organizationId: value.organizationId ? parseInt(value.organizationId, 10) : 0,
-        };
-        this.setState({
-          submitting: true,
-          showPwd: true,
-          showLogin: true,
-        });
-        PasswordPolicyStore.updatePasswordPolicy(
-          this.props.AppState.currentMenuType.id, newValue.id, newValue)
-          .then((data) => {
-            this.setState({ submitting: false });
-            Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
-            PasswordPolicyStore.setPasswordPolicy(data);
-            this.loadData();
-          })
-          .catch((error) => {
-            this.setState({ submitting: false });
-            Choerodon.handleResponseError(error);
-          });
+      if (status === 'enableLock' && e.target.value === 'disableLock') {
+        setFieldsValue({ lockedExpireTime: 0, maxErrorTime: 0 });
       }
     });
-  };
+  }
+
+  /**
+   * inputNumber失焦事件
+   * @param fieldName form控件名称
+   * @param e
+   */
+  inputNumBlur = (fieldName, e) => {
+    const { setFieldsValue } = this.props.form;
+    if (!e.target.value) {
+      setFieldsValue({
+        [fieldName]: 0,
+      });
+    }
+  }
 
   /**
    * 刷新函数
@@ -141,6 +103,7 @@ export default class PasswordPolicy extends Component {
    */
   loadData() {
     const { organizationId } = this.state;
+    const { setFieldsValue } = this.props.form;
     this.setState({
       loading: true,
     });
@@ -167,11 +130,50 @@ export default class PasswordPolicy extends Component {
       });
   }
 
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { AppState, intl } = this.props;
+    this.props.form.validateFieldsAndScroll((err, datas, modify) => {
+      if (!err) {
+        // if(!modify) {
+        //   Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
+        //   return;
+        // }
+        const value = Object.assign({}, PasswordPolicyStore.getPasswordPolicy, datas);
+        const newValue = {
+          ...value,
+          id: PasswordPolicyStore.getPasswordPolicy.id,
+          objectVersionNumber: PasswordPolicyStore.getPasswordPolicy.objectVersionNumber,
+          enablePassword: value.enablePassword === 'enablePwd',
+          notUsername: value.notUsername === 'different',
+          enableSecurity: value.enableSecurity === true || value.enableSecurity === 'enabled',
+          enableCaptcha: value.enableCaptcha === true || value.enableCaptcha === 'enableCode',
+          enableLock: value.enableLock === true || value.enableLock === 'enableLock',
+        };
+        this.setState({
+          submitting: true,
+          showPwd: true,
+          showLogin: true,
+        });
+        PasswordPolicyStore.updatePasswordPolicy(
+          AppState.currentMenuType.id, newValue.id, newValue)
+          .then((data) => {
+            this.setState({ submitting: false });
+            Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+            PasswordPolicyStore.setPasswordPolicy(data);
+            this.loadData();
+          })
+          .catch((error) => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
+          });
+      }
+    });
+  };
 
   render() {
-    const { AppState, form, intl } = this.props;
+    const { AppState, form: { getFieldDecorator }, intl } = this.props;
     const { loading, submitting, showPwd, showLogin } = this.state;
-    const { getFieldDecorator } = form;
     const inputWidth = '512px';
     const passwordPolicy = PasswordPolicyStore.passwordPolicy;
     const pwdStatus = passwordPolicy && passwordPolicy.enablePassword ? 'enablePwd' : 'disablePwd'; // 密码安全策略是否启用
@@ -185,7 +187,7 @@ export default class PasswordPolicy extends Component {
           icon={showPwd ? 'expand_more' : 'expand_less'}
           size="small"
           style={{ float: 'left' }}
-          onClick={this.isShowPwdPolicy}
+          onClick={this.isShowPanel.bind(this, 'showPwd')}
         />
         <FormattedMessage id={`${inputPrefix}.password`} />
       </div>
@@ -240,11 +242,11 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.minLength : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'minLength')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.minlength`} />}
                 style={{ width: inputWidth }}
-                onBlur={this.minlengthBlur}
               />,
             )}
           </FormItem>
@@ -258,6 +260,7 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'maxLength')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.maxlength`} />}
@@ -275,6 +278,7 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'digitsCount')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.digitscount`} />}
@@ -292,6 +296,7 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'lowercaseCount')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.lowercasecount`} />}
@@ -309,6 +314,7 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'uppercaseCount')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.uppercasecount`} />}
@@ -326,6 +332,7 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'specialCharCount')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.specialcharcount`} />}
@@ -343,6 +350,7 @@ export default class PasswordPolicy extends Component {
               initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
             })(
               <InputNumber
+                onBlur={this.inputNumBlur.bind(this, 'notRecentCount')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.notrecentcount`} />}
@@ -369,7 +377,7 @@ export default class PasswordPolicy extends Component {
             icon={showLogin ? 'expand_more' : 'expand_less'}
             size="small"
             style={{ float: 'left' }}
-            onClick={this.isShowLoginPolicy}
+            onClick={this.isShowPanel.bind(this, 'showLogin')}
           />
           <FormattedMessage id={`${inputPrefix}.login`} />
         </div>
@@ -395,7 +403,7 @@ export default class PasswordPolicy extends Component {
               <RadioGroup
                 label={<FormattedMessage id={`${inputPrefix}.enabled.captcha`} />}
                 className="radioGroup"
-                onChange={this.changeCodeStatus.bind(this)}
+                onChange={this.changeStatus.bind(this, 'codeStatus')}
               >
                 <Radio value={'enableCode'}><FormattedMessage id="yes" /></Radio>
                 <Radio value={'disableCode'}><FormattedMessage id="no" /></Radio>
@@ -411,9 +419,11 @@ export default class PasswordPolicy extends Component {
                     type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
-                  initialValue: passwordPolicy ? passwordPolicy.maxCheckCaptcha : undefined,
+                  initialValue: passwordPolicy && passwordPolicy.enableCaptcha ?
+                    passwordPolicy.maxCheckCaptcha : 3,
                 })(
                   <InputNumber
+                    onBlur={this.inputNumBlur.bind(this, 'maxCheckCaptcha')}
                     autoComplete="off"
                     min={0}
                     label={<FormattedMessage id={`${inputPrefix}.maxerror.count`} />}
@@ -432,7 +442,7 @@ export default class PasswordPolicy extends Component {
               <RadioGroup
                 label={<FormattedMessage id={`${inputPrefix}.enabled.lock`} />}
                 className="radioGroup"
-                onChange={this.changeLockStatus.bind(this)}
+                onChange={this.changeStatus.bind(this, 'lockStatus')}
               >
                 <Radio value={'enableLock'}><FormattedMessage id="yes" /></Radio>
                 <Radio value={'disableLock'}><FormattedMessage id="no" /></Radio>
@@ -448,9 +458,11 @@ export default class PasswordPolicy extends Component {
                     type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
-                  initialValue: passwordPolicy ? passwordPolicy.maxErrorTime : undefined,
+                  initialValue: passwordPolicy && passwordPolicy.enableLock ?
+                    passwordPolicy.maxErrorTime : 5,
                 })(
                   <InputNumber
+                    onBlur={this.inputNumBlur.bind(this, 'maxErrorTime')}
                     autoComplete="off"
                     min={0}
                     label={<FormattedMessage id={`${inputPrefix}.maxerror.count`} />}
@@ -465,9 +477,11 @@ export default class PasswordPolicy extends Component {
                     type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
-                  initialValue: passwordPolicy ? passwordPolicy.lockedExpireTime : '',
+                  initialValue: passwordPolicy && passwordPolicy.enableLock ?
+                    passwordPolicy.lockedExpireTime : 3600,
                 })(
                   <InputNumber
+                    onBlur={this.inputNumBlur.bind(this, 'lockedExpireTime')}
                     autoComplete="off"
                     min={0}
                     label={<FormattedMessage id={`${inputPrefix}.locktime`} />}
@@ -475,7 +489,7 @@ export default class PasswordPolicy extends Component {
                   />,
                 )}
                 <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
-                {intl.formatMessage({id: 'second'})}
+                  {intl.formatMessage({ id: 'second' })}
                 </span>
               </FormItem>
             </div>

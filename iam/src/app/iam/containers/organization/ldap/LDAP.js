@@ -331,7 +331,13 @@ export default class LDAP extends Component {
     };
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
       <div className="serverContainer">
-        <Button shape="circle" funcType="raised" icon={this.state.showServer ? 'expand_more' : 'expand_less'} onClick={this.isShowServerSetting} />
+        <Button
+          shape="circle"
+          funcType="raised"
+          icon={this.state.showServer ? 'expand_more' : 'expand_less'}
+          size="small"
+          style={{ float: 'left' }}
+          onClick={this.isShowServerSetting} />
         <FormattedMessage id={`${intlPrefix}.server.setting`}/>
       </div>
       <Form onSubmit={this.handleSubmit} layout="vertical" className="ldapForm">
@@ -443,7 +449,13 @@ export default class LDAP extends Component {
           </FormItem>
         </div>
         <div className="serverContainer">
-          <Button shape="circle" funcType="raised" icon={this.state.showUser ? 'expand_more' : 'expand_less'} onClick={this.isShowUserSetting} />
+          <Button
+            shape="circle"
+            funcType="raised"
+            icon={this.state.showUser ? 'expand_more' : 'expand_less'}
+            size="small"
+            style={{ float: 'left' }}
+            onClick={this.isShowUserSetting} />
           <FormattedMessage id={`${intlPrefix}.user.setting`}/>
         </div>
         <div style={{ display: this.state.showUser ? 'block' : 'none' }}>

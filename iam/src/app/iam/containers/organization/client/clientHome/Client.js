@@ -431,6 +431,9 @@ class Client extends Component {
                   min={60}
                 />,
               )}
+              <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
+                {intl.formatMessage({id: 'second'})}
+              </span>
             </FormItem>
             <FormItem
               {...formItemNumLayout}
@@ -447,6 +450,9 @@ class Client extends Component {
                   min={60}
                 />,
               )}
+              <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
+                {intl.formatMessage({id: 'second'})}
+              </span>
             </FormItem>
             <FormItem
               {...formItemNumLayout}

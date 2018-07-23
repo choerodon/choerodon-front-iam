@@ -1,3 +1,3 @@
-import LADP from './LADPStore';
+import LDAP from './LDAPStore';
 
-export default LADP;
+export default LDAP;

@@ -1,32 +1,36 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
+import { asyncLocaleProvider, asyncRouter, nomatch, } from 'choerodon-front-boot';
 
-const ClientIndex = asyncRouter(() => import('./organization/client'));
-const UserIndex = asyncRouter(() => import('./organization/user'));
-const ProjectIndex = asyncRouter(() => import('./organization/project'));
-const PasswordPolicyIndex = asyncRouter(() => import('./organization/passwordPolicy'));
-const LDAPIndex = asyncRouter(() => import('./organization/ldap'));
+// global 对应目录
+const apiTest = asyncRouter(() => import('./global/api-test'));
+const configuration = asyncRouter(() => import('./global/configuration'));
+const instance = asyncRouter(() => import('./global/instance'));
+const memberRole = asyncRouter(() => import('./global/member-role'));
+const menuSetting = asyncRouter(() => import('./global/menu-setting'));
+const microService = asyncRouter(() => import('./global/micro-service'));
+const organization = asyncRouter(() => import('./global/organization'));
+const role = asyncRouter(() => import('./global/role'));
+const roleLabel = asyncRouter(() => import('./global/role-label'));
+const rootUser = asyncRouter(() => import('./global/root-user'));
+const route = asyncRouter(() => import('./global/route'));
 
-// global
-const OrganizationIndex = asyncRouter(() => import('./global/organization'));
-const RoleIndex = asyncRouter(() => import('./global/role'));
-const MemberRole = asyncRouter(() => import('./global/memberRole'));
-const menuTree = asyncRouter(() => import('./global/menuTree'));
-const MicroserviceIndex = asyncRouter(() => import('./global/microservice'));
-const InstanceIndex = asyncRouter(() => import('./global/instance'));
-const ConfigurationIndex = asyncRouter(() => import('./global/configuration'));
-const RouteIndex = asyncRouter(() => import('./global/route'));
-const RootUser = asyncRouter(() => import('./global/rootUser'));
-const ApitestIndex = asyncRouter(() => import('./global/apitest'));
+// organization
+const client = asyncRouter(() => import('./organization/client'));
+const ldap = asyncRouter(() => import('./organization/ldap'));
+const passwordPolicy = asyncRouter(() => import('./organization/password-policy'));
+const project = asyncRouter(() => import('./organization/project'));
+const user = asyncRouter(() => import('./organization/user'));
 
-const ProjectSettingIndex = asyncRouter(() => import('./project/projectSetting'));
+// project
+const projectSetting = asyncRouter(() => import('./project/project-setting'));
 
-const UserInfoIndex = asyncRouter(() => import('./user/userInfo'));
-const PasswordIndex = asyncRouter(() => import('./user/changePassword'));
-const OrganizationInfoIndex = asyncRouter(() => import('./user/organizationInfo'));
-const projectInfoIndex = asyncRouter(() => import('./user/projectInfo'));
+// user
+const password = asyncRouter(() => import('./user/password'));
+const organizationInfo = asyncRouter(() => import('./user/organization-info'));
+const projectInfo = asyncRouter(() => import('./user/project-info'));
+const userInfo = asyncRouter(() => import('./user/user-info'));
 
 
 @inject('AppState')
@@ -38,26 +42,27 @@ class IAMIndex extends React.Component {
     return (
       <IntlProviderAsync>
         <Switch>
-          <Route path={`${match.url}/client`} component={ClientIndex} />
-          <Route path={`${match.url}/user`} component={UserIndex} />
-          <Route path={`${match.url}/project`} component={ProjectIndex} />
-          <Route path={`${match.url}/organization`} component={OrganizationIndex} />
-          <Route path={`${match.url}/password-policy`} component={PasswordPolicyIndex} />
-          <Route path={`${match.url}/ldap`} component={LDAPIndex} />
-          <Route path={`${match.url}/role`} component={RoleIndex} />
-          <Route path={`${match.url}/microservice`} component={MicroserviceIndex} />
-          <Route path={`${match.url}/instance`} component={InstanceIndex} />
-          <Route path={`${match.url}/route`} component={RouteIndex} />
-          <Route path={`${match.url}/apitest`} component={ApitestIndex} />
-          <Route path={`${match.url}/configuration`} component={ConfigurationIndex} />
-          <Route path={`${match.url}/proManage`} component={ProjectSettingIndex} />
-          <Route path={`${match.url}/userinfo`} component={UserInfoIndex} />
-          <Route path={`${match.url}/organizationinfo`} component={OrganizationInfoIndex} />
-          <Route path={`${match.url}/projectinfo`} component={projectInfoIndex} />
-          <Route path={`${match.url}/memberRole`} component={MemberRole} />
-          <Route path={`${match.url}/menuTree`} component={menuTree} />
-          <Route path={`${match.url}/usermodifyPwd`} component={PasswordIndex} />
-          <Route path={`${match.url}/rootuser`} component={RootUser} />
+          <Route path={`${match.url}/api-test`} component={apiTest} />
+          <Route path={`${match.url}/configuration`} component={configuration} />
+          <Route path={`${match.url}/instance`} component={instance} />
+          <Route path={`${match.url}/member-role`} component={memberRole} />
+          <Route path={`${match.url}/menu-setting`} component={menuSetting} />
+          <Route path={`${match.url}/micro-service`} component={microService} />
+          <Route path={`${match.url}/organization`} component={organization} />
+          <Route path={`${match.url}/role`} component={role} />
+          <Route path={`${match.url}/role-label`} component={roleLabel} />
+          <Route path={`${match.url}/root-user`} component={rootUser} />
+          <Route path={`${match.url}/route`} component={route} />
+          <Route path={`${match.url}/client`} component={client} />
+          <Route path={`${match.url}/organization-info`} component={ldap} />
+          <Route path={`${match.url}/password-policy`} component={passwordPolicy} />
+          <Route path={`${match.url}/project`} component={project} />
+          <Route path={`${match.url}/user`} component={user} />
+          <Route path={`${match.url}/project-setting`} component={projectSetting} />
+          <Route path={`${match.url}/password`} component={password} />
+          <Route path={`${match.url}/organization-info`} component={organizationInfo} />
+          <Route path={`${match.url}/project-info`} component={projectInfo} />
+          <Route path={`${match.url}/user-info`} component={userInfo} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>

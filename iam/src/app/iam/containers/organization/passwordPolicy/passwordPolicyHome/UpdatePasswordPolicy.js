@@ -180,6 +180,8 @@ class UpdatePasswordPolicy extends Component {
           shape="circle"
           funcType="raised"
           icon={showPwd ? 'expand_more' : 'expand_less'}
+          size="small"
+          style={{ float: 'left' }}
           onClick={this.isShowPwdPolicy}
         />
         <FormattedMessage id={`${inputPrefix}.password`} />
@@ -362,6 +364,8 @@ class UpdatePasswordPolicy extends Component {
             shape="circle"
             funcType="raised"
             icon={showLogin ? 'expand_more' : 'expand_less'}
+            size="small"
+            style={{ float: 'left' }}
             onClick={this.isShowLoginPolicy}
           />
           <FormattedMessage id={`${inputPrefix}.login`} />
@@ -464,9 +468,12 @@ class UpdatePasswordPolicy extends Component {
                     autoComplete="off"
                     min={0}
                     label={<FormattedMessage id={`${inputPrefix}.locktime`} />}
-                    style={{ width: inputWidth }}
+                    style={{ width: '490px' }}
                   />,
                 )}
+                <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
+                {intl.formatMessage({id: 'second'})}
+                </span>
               </FormItem>
             </div>
           ) : ''}

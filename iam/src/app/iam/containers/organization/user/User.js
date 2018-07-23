@@ -4,6 +4,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import UserEdit from './UserEdit';
 import './User.scss';
 
 const { Sidebar } = Modal;
@@ -159,7 +160,7 @@ export default class User extends Component {
   renderSideBar() {
     const { selectedData, edit, visible } = this.state;
     return (
-      <EditUser
+      <UserEdit
         id={selectedData}
         visible={visible}
         edit={edit}

@@ -118,6 +118,10 @@ const pageDetail = {
   'global.apitest.description': 'API属于一个微服务。请先选择一个微服务，查看该微服务下的API信息。',
   'global.apitest.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+  'global.apitest.detail.title': 'API"{name}"的测试',
+  'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应',
+  'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
   'organization.project.description': '项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。',
@@ -535,6 +539,22 @@ const zh_CN = {
   'global.apitest.table.name': '名称/方法',
   'global.apitest.table.path': '路径',
   'global.apitest.table.description': '描述',
+  'global.apitest.interface.detail': '接口详情',
+  'global.apitest.interface.test': '接口测试',
+  'global.apitest.interface.info': '接口信息',
+  'global.apitest.request.parameter': '请求参数',
+  'global.apitest.response.data': '响应数据',
+  'global.apitest.response.code': '响应码',
+  'global.apitest.response.body': '响应主体',
+  'global.apitest.response.headers': '响应头部',
+  'global.apitest.property': '属性',
+  'global.apitest.value': '值',
+  'global.apitest.param.name': '参数名称',
+  'global.apitest.param.desc': '参数描述',
+  'global.apitest.param.type': '参数类型',
+  'global.apitest.request.data.type': '请求参数类型',
+  'global.apitest.request.data': '请求数据',
+  'global.apitest.send': '发送',
 
   // 组织层
   // 项目管理

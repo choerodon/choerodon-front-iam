@@ -52,7 +52,7 @@ export default class PasswordPolicy extends Component {
    * @param policy showPwd/showLogin
    */
   isShowPanel = (policy) => {
-    this.setState((prevState, props) => ({
+    this.setState(prevState => ({
       [policy]: !prevState[policy],
     }));
   }
@@ -63,17 +63,8 @@ export default class PasswordPolicy extends Component {
    * @param e
    */
   changeStatus = (status, e) => {
-    const { setFieldsValue } = this.props.form;
     this.setState({
       [status]: e.target.value,
-    }, () => {
-      if (status === 'codeStatus' && e.target.value === 'disableCode') {
-        setFieldsValue({ maxCheckCaptcha: 0 });
-      }
-
-      if (status === 'enableLock' && e.target.value === 'disableLock') {
-        setFieldsValue({ lockedExpireTime: 0, maxErrorTime: 0 });
-      }
     });
   }
 
@@ -133,12 +124,8 @@ export default class PasswordPolicy extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { AppState, intl } = this.props;
-    this.props.form.validateFieldsAndScroll((err, datas, modify) => {
+    this.props.form.validateFieldsAndScroll((err, datas) => {
       if (!err) {
-        // if(!modify) {
-        //   Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
-        //   return;
-        // }
         const value = Object.assign({}, PasswordPolicyStore.getPasswordPolicy, datas);
         const newValue = {
           ...value,
@@ -172,7 +159,8 @@ export default class PasswordPolicy extends Component {
   };
 
   render() {
-    const { AppState, form: { getFieldDecorator }, intl } = this.props;
+    const { AppState, form, intl } = this.props;
+    const { getFieldDecorator } = form;
     const { loading, submitting, showPwd, showLogin } = this.state;
     const inputWidth = '512px';
     const passwordPolicy = PasswordPolicyStore.passwordPolicy;
@@ -239,7 +227,8 @@ export default class PasswordPolicy extends Component {
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                 },
               ],
-              initialValue: passwordPolicy ? passwordPolicy.minLength : '',
+              initialValue: passwordPolicy && passwordPolicy.minLength ?
+                passwordPolicy.minLength : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'minLength')}
@@ -257,7 +246,8 @@ export default class PasswordPolicy extends Component {
                 type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
-              initialValue: passwordPolicy ? passwordPolicy.maxLength : '',
+              initialValue: passwordPolicy && passwordPolicy.maxLength ?
+                passwordPolicy.maxLength : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'maxLength')}
@@ -275,7 +265,8 @@ export default class PasswordPolicy extends Component {
                 type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
-              initialValue: passwordPolicy ? passwordPolicy.digitsCount : '',
+              initialValue: passwordPolicy && passwordPolicy.digitsCount ?
+                passwordPolicy.digitsCount : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'digitsCount')}
@@ -293,7 +284,8 @@ export default class PasswordPolicy extends Component {
                 type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
-              initialValue: passwordPolicy ? passwordPolicy.lowercaseCount : '',
+              initialValue: passwordPolicy && passwordPolicy.lowercaseCount ?
+                passwordPolicy.lowercaseCount : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'lowercaseCount')}
@@ -311,7 +303,8 @@ export default class PasswordPolicy extends Component {
                 type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
-              initialValue: passwordPolicy ? passwordPolicy.uppercaseCount : '',
+              initialValue: passwordPolicy && passwordPolicy.uppercaseCount ?
+                passwordPolicy.uppercaseCount : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'uppercaseCount')}
@@ -329,7 +322,8 @@ export default class PasswordPolicy extends Component {
                 type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
-              initialValue: passwordPolicy ? passwordPolicy.specialCharCount : '',
+              initialValue: passwordPolicy && passwordPolicy.specialCharCount ?
+                passwordPolicy.specialCharCount : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'specialCharCount')}
@@ -347,7 +341,8 @@ export default class PasswordPolicy extends Component {
                 type: 'number',
                 message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
               }],
-              initialValue: passwordPolicy ? passwordPolicy.notRecentCount : '',
+              initialValue: passwordPolicy && passwordPolicy.notRecentCount ?
+                passwordPolicy.notRecentCount : 0,
             })(
               <InputNumber
                 onBlur={this.inputNumBlur.bind(this, 'notRecentCount')}
@@ -360,7 +355,7 @@ export default class PasswordPolicy extends Component {
           </FormItem>
           <FormItem style={{ width: inputWidth }}>
             {getFieldDecorator('regularExpression', {
-              initialValue: passwordPolicy ? passwordPolicy.regularExpression : '',
+              initialValue: passwordPolicy ? passwordPolicy.regularExpression : 0,
             })(
               <TextArea
                 autoComplete="off"

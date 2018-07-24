@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
-import { Form, Input, Icon } from 'choerodon-ui';
+import { Form, Input, Icon, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';

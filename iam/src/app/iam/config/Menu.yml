@@ -115,6 +115,24 @@
         permission:
           - 'manager-service.service.pageManager'
 
+# 事务管理
+"global-transaction":
+  icon: insert_drive_file
+  sort: 6
+  site:
+    - "saga":
+        icon: insert_drive_file
+        Routes: /iam/saga
+        sort: 1
+    - "saga-instance":
+        icon: insert_drive_file
+        Routes: /iam/saga-instance
+        sort: 2
+        permission:
+          - 'choerodon-asgard-service.saga-task-instance.updateStatus'
+          - 'choerodon-asgard-service.saga-task-instance.pollBatch'
+          - 'choerodon-asgard-service.saga-instance.start'
+
 # 组织设置
 "rentsetting":
   icon: IAM
@@ -128,9 +146,9 @@
           - 'iam-service.organization-project.list'
           - 'iam-service.organization-project.create'
           - 'iam-service.organization-project.update'
-          - 'iam-service.organization-project.check',
+          - 'iam-service.organization-project.check'
           - 'iam-service.organization-project.enableProject'
-          - 'iam-service.organization-project.disableProject',
+          - 'iam-service.organization-project.disableProject'
     - "user":
         icon: manage_person
         Routes: /iam/user

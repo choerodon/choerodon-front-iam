@@ -49,7 +49,6 @@ export default class CreateRole extends Component {
     this.setState({
       currentPermission: permissions.map(item => item.id),
     });
-    RoleStore.getAllRoleLabel();
   }
 
   componentWillUnmount() {
@@ -198,14 +197,17 @@ export default class CreateRole extends Component {
     const { currentPermission } = this.state;
     const level = getFieldValue('level');
     const code = getFieldValue('code');
-    if (level && (currentPermission.length || code)) {
+    const label = getFieldValue('label');
+
+    if (level && (currentPermission.length || code || label.length)) {
       confirm({
         title: intl.formatMessage({id: `${intlPrefix}.modify.level.title`}),
         content: intl.formatMessage({id: `${intlPrefix}.modify.level.content`}),
         onOk() {
           RoleStore.setChosenLevel(value);
           RoleStore.setSelectedRolesPermission([]);
-          setFieldsValue({code: ''});
+          RoleStore.loadRoleLabel(value);
+          setFieldsValue({code: '', label: []});
           that.setState({
             currentPermission: [],
           });
@@ -217,7 +219,8 @@ export default class CreateRole extends Component {
     } else {
       RoleStore.setChosenLevel(value);
       RoleStore.setSelectedRolesPermission([]);
-      setFieldsValue({code: ''});
+      RoleStore.loadRoleLabel(value);
+      setFieldsValue({code: '', label: []});
       this.setState({
         currentPermission: [],
       });
@@ -361,11 +364,11 @@ export default class CreateRole extends Component {
                     mode="multiple"
                     label={<FormattedMessage id={`${intlPrefix}.label`}/>}
                     size="default"
-                    disabled={!RoleStore.getLabel.length}
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     style={{
                       width: '512px',
                     }}
+                    disabled={RoleStore.getChosenLevel === ''}
                   >
                     {this.renderRoleLabel()}
                   </Select>,

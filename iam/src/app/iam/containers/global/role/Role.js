@@ -48,6 +48,8 @@ export default class Role extends Component {
   }
 
   goCreate = () => {
+    RoleStore.setChosenLevel('');
+    RoleStore.setLabel([]);
     RoleStore.setSelectedRolesPermission([]);
     this.props.history.push('role/create');
   };
@@ -151,6 +153,7 @@ export default class Role extends Component {
       RoleStore.setChosenLevel(datas[0].level);
       RoleStore.setSelectedRolesPermission(datas);
       RoleStore.setInitSelectedPermission(datas);
+      RoleStore.loadRoleLabel(datas[0].level);
       this.linkToChange('role/create');
     }).catch((error) => {
       Choerodon.prompt(error);

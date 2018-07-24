@@ -42,11 +42,12 @@ export default class EditRole extends Component {
       RoleStore.setSelectedRolesPermission(data.permissions);
       this.setCanPermissionCanSee(data.level);
       RoleStore.setChosenLevel(data.level);
+      RoleStore.loadRoleLabel(data.level);
     }).catch((error) => {
       const message = this.props.intl.formatMessage({id: `${intlPrefix}.getinfo.error.msg`});
       Choerodon.prompt(`${message}: ${error}`);
     });
-    RoleStore.getAllRoleLabel();
+
   }
 
   componentWillUnmount() {

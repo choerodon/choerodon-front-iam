@@ -9,7 +9,7 @@ const configuration = asyncRouter(() => import('./global/configuration'));
 const instance = asyncRouter(() => import('./global/instance'));
 const memberRole = asyncRouter(() => import('./global/member-role'));
 const menuSetting = asyncRouter(() => import('./global/menu-setting'));
-const microService = asyncRouter(() => import('./global/micro-service'));
+const microService = asyncRouter(() => import('./global/microservice'));
 const organization = asyncRouter(() => import('./global/organization'));
 const role = asyncRouter(() => import('./global/role'));
 const roleLabel = asyncRouter(() => import('./global/role-label'));
@@ -47,7 +47,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/instance`} component={instance} />
           <Route path={`${match.url}/member-role`} component={memberRole} />
           <Route path={`${match.url}/menu-setting`} component={menuSetting} />
-          <Route path={`${match.url}/micro-service`} component={microService} />
+          <Route path={`${match.url}/microservice`} component={microService} />
           <Route path={`${match.url}/organization`} component={organization} />
           <Route path={`${match.url}/role`} component={role} />
           <Route path={`${match.url}/role-label`} component={roleLabel} />

@@ -280,13 +280,13 @@ class RoleStore {
     return Observable.fromPromise(axios.get(`iam/v1/permissions?level=${level}&page=${page.current - 1}&size=${page.pageSize}&code=${filters.code}&params=${filters.params}`));
   }
 
-  getAllRoleLabel = () => {
-    axios.get('iam/v1/labels?type=role').then((data) => {
+  loadRoleLabel = (level) => {
+    axios.get(`iam/v1/labels?type=role&level=${level}`).then((data) => {
       this.setLabel(data);
     }).catch((error) => {
       Choerodon.prompt(error);
     });
-  };
+  }
 
   loadRole({ current, pageSize },
     { columnKey, order },

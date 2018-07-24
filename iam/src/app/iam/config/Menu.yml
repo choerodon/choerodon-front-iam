@@ -71,7 +71,7 @@
   site:
     - "micro":
         icon: microservice
-        Routes: /iam/micro-service
+        Routes: /iam/microservice
         sort: 1
         permission:
           - 'manager-service.service.pageManager'

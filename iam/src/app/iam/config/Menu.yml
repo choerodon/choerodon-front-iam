@@ -146,9 +146,9 @@
           - 'iam-service.organization-project.list'
           - 'iam-service.organization-project.create'
           - 'iam-service.organization-project.update'
-          - 'iam-service.organization-project.check',
+          - 'iam-service.organization-project.check'
           - 'iam-service.organization-project.enableProject'
-          - 'iam-service.organization-project.disableProject',
+          - 'iam-service.organization-project.disableProject'
     - "user":
         icon: manage_person
         Routes: /iam/user

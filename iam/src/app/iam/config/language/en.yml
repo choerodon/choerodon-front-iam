@@ -16,6 +16,10 @@
 "api": "API Manage"
 "api.api-test": "API Test"
 
+"global-transaction": "Global Transaction"
+"global-transaction.saga": "Saga"
+"global-transaction.saga-instance": "Saga Instance"
+
 "rentsetting": "Organization settings"
 # organization
 "rentsetting.project": "Project"

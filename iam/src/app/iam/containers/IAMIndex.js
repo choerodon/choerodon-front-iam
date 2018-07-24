@@ -15,6 +15,8 @@ const role = asyncRouter(() => import('./global/role'));
 const roleLabel = asyncRouter(() => import('./global/role-label'));
 const rootUser = asyncRouter(() => import('./global/root-user'));
 const route = asyncRouter(() => import('./global/route'));
+const saga = asyncRouter(() => import('./global/saga'));
+const sagaInstance = asyncRouter(() => import('./global/saga-instance'));
 
 // organization
 const client = asyncRouter(() => import('./organization/client'));
@@ -53,6 +55,8 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/role-label`} component={roleLabel} />
           <Route path={`${match.url}/root-user`} component={rootUser} />
           <Route path={`${match.url}/route`} component={route} />
+          <Route path={`${match.url}/saga`} component={saga} />
+          <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
           <Route path={`${match.url}/client`} component={client} />
           <Route path={`${match.url}/ldap`} component={ldap} />
           <Route path={`${match.url}/password-policy`} component={passwordPolicy} />

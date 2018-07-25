@@ -150,6 +150,11 @@ export default class APITest extends Component {
     window.open(openUrl);
   }
 
+
+  goDetail(record) {
+    this.props.history.push('/iam/api-test/detail');
+  }
+
   render() {
     const { intl } = this.props;
     const { pagination, params } = this.state;
@@ -203,7 +208,7 @@ export default class APITest extends Component {
               shape="circle"
               icon="find_in_page"
               size="small"
-              onClick={this.goSwagger.bind(this, record)}
+              onClick={this.goDetail.bind(this, record)}
             />
           );
         }

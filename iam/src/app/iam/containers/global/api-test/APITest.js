@@ -125,7 +125,8 @@ export default class APITest extends Component {
 
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
-      this.loadInitData();
+      APITestStore.setCurrentService(APITestStore.service[0]);
+      this.loadApi();
     });
   };
 
@@ -152,7 +153,13 @@ export default class APITest extends Component {
 
 
   goDetail(record) {
-    this.props.history.push('/iam/api-test/detail');
+    const version = APITestStore.getCurrentService.value.split('/')[1];
+    const controller = record.refController;
+    const method = record.method;
+    const url = record.url;
+    APITestStore.setApiDetail(record);
+    // window.console.log(version, controller, method, url);
+    this.props.history.push(`/iam/api-test/detail/${controller}/${method}/${version}/${url}`);
   }
 
   render() {

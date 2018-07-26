@@ -10,6 +10,7 @@ class ApitestStore {
   @observable currentService = {};
   @observable apiData = [];
   @observable loading = true;
+  @observable apiDetail = {};
 
   @action setLoading(flag) {
     this.loading = flag;
@@ -33,6 +34,14 @@ class ApitestStore {
 
   @computed get getApiData() {
     return this.apiData;
+  }
+
+  @action setApiDetail(data) {
+    this.apiDetail = data;
+  }
+
+  @computed get getApiDetail() {
+    return this.apiDetail;
   }
 
   loadService = () => axios.get('manager/v1/swaggers/resources');

@@ -135,7 +135,10 @@ export default class Configuration extends Component {
   /* 刷新 */
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
-      this.loadInitData();
+      ConfigurationStore.setLoading(true);
+      const defaultService = ConfigurationStore.service[0];
+      ConfigurationStore.setCurrentService(defaultService);
+      this.loadConfig();
     });
   }
 

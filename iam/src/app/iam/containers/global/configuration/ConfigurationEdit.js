@@ -41,7 +41,7 @@ class EditConfig extends Component {
 
   componentWillMount() {
     ConfigurationStore.setRelatedService({}); // 保存时的微服务信息
-    this.loadInitData();
+    if (!ConfigurationStore.service.length) this.loadInitData();
     ConfigurationStore.getEditConfigData(this.state.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);

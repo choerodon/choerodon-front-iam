@@ -64,7 +64,7 @@ export default class APITest extends Component {
         const services = res.map(({ location, name }) => {
           return {
             name: name.split(':')[1],
-            value: `${location.split('?')[0].split('/')[2]}/${location.split('=')[1]}`,
+            value: `${name.split(':')[0]}/${location.split('=')[1]}`,
           };
         });
         APITestStore.setService(services);
@@ -116,7 +116,7 @@ export default class APITest extends Component {
       version,
       params,
     };
-    return axios.get(`/manager/v1/swaggers/controllers/${serviceName}?${querystring.stringify(queryObj)}`);
+    return axios.get(`/manager/v1/swaggers/${serviceName}/controllers?${querystring.stringify(queryObj)}`);
   }
 
   handlePageChange = (pagination, filters, sorter = {}, params) => {
@@ -153,13 +153,11 @@ export default class APITest extends Component {
 
 
   goDetail(record) {
-    const version = APITestStore.getCurrentService.value.split('/')[1];
-    const controller = record.refController;
-    const method = record.method;
-    const url = record.url;
     APITestStore.setApiDetail(record);
-    // window.console.log(version, controller, method, url);
-    this.props.history.push(`/iam/api-test/detail/${controller}/${method}/${version}/${url}`);
+    const version = APITestStore.getCurrentService.value.split('/')[1];
+    const url = record.url.slice(1);
+    const { refController, method } = record;
+    this.props.history.push(`/iam/api-test/detail/${refController}/${method}/${version}/${url}`);
   }
 
   render() {

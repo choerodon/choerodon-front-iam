@@ -24,7 +24,7 @@ export default class RoleLabel extends Component {
         columnKey: 'id',
         order: 'descend',
       },
-      filters: [],
+      filters: {},
       params: [],
       submitting: false,
     };

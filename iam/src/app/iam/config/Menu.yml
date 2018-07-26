@@ -124,6 +124,8 @@
         icon: insert_drive_file
         Routes: /iam/saga
         sort: 1
+        permission:
+          - 'manager-service.service.pageManager'
     - "saga-instance":
         icon: insert_drive_file
         Routes: /iam/saga-instance

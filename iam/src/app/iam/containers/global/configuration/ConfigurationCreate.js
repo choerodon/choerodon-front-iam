@@ -27,7 +27,7 @@ class CreateConfig extends Component {
   state = this.getInitState();
 
   componentDidMount() {
-    this.loadInitData();
+    if (!ConfigurationStore.service.length) this.loadInitData();
     ConfigurationStore.setRelatedService({}); // 保存时的微服务信息
     if (ConfigurationStore.getStatus === 'baseon') {
       this.loadCurrentServiceConfig(ConfigurationStore.getCurrentService.name);

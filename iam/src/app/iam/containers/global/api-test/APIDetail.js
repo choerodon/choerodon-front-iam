@@ -9,11 +9,36 @@ import './APITest.scss';
 
 const intlPrefix = 'global.apitest';
 const { TabPane } = Tabs;
+const Hjson = require('hjson');
 
 @withRouter
 @injectIntl
 export default class APIDetail extends Component {
+  state = this.getInitState();
+
+  getInitState() {
+    return {
+      controller: this.props.match.params.controller,
+      version: this.props.match.params.version,
+      url: this.props.match.params.url,
+      method: this.props.match.params.method,
+    };
+  }
+
+
   getDetail = () => {
+    // window.console.log(this.state);
+    // const hjson = '[\n {\n//controller下的方法集\n\"paths\":[\n{\n\"refController\":\"string\" //接口相关联的controller\n\"method\":\"string\" //请求方法\n\"produces\":[\narray\n]\n\"description\":\"string\" //接口自定义扩展详细信息\n\"operationId\":\"string\"\n//响应集合\n\"responses\":[\n{\n\"phonyJsonWithComment\":\"string\"\n\"requestBody\":\"string\"\n\"httpStatus\":\"string\" //http状态码\n\"description\":\"string\"\n}]\n\"remark\":\"string\" //接口描述\n\"parameters\":[\n{\n\"in\":\"string\"\n\"format\":\"string\"\n\"name\":\"string\"\n\"description\":\"string\"\n\"type\":\"string\"\n\"collectionFormat\":\"string\"\n\"items\":\"{}\"\n\"required\":\"boolean\"\n}]\n\"url\":\"string\" //请求url\n\"consumes\":[\narray\n]\n}]\n\"name\":\"string\" //controller的名字\n\"description\":\"string\" //controller的描述\n}\n]'
+    // const options = {
+    //   bracesSameLine: true,
+    //   quotes: 'all', // 全部加上引号
+    //   keepWsc: true,
+    // }
+    // let jstest = Hjson.parse(hjson, { keepWsc: true });
+    // jstest = Hjson.stringify(jstest, options);
+    // window.console.log(jstest);
+
+
     return (
       <div className="c7n-interface-detail">
         <div className="c7n-interface-info">
@@ -27,22 +52,11 @@ export default class APIDetail extends Component {
         <div className="c7n-response-data">
           <h5><FormattedMessage id={`${intlPrefix}.response.data`} /></h5>
           <div className="response-data-container">
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
-            233<br />
+            <pre>
+              <code>
+                {jstest}
+              </code>
+            </pre>
           </div>
         </div>
       </div>

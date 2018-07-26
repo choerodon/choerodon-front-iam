@@ -30,7 +30,7 @@ export default class RootUser extends Component {
         columnKey: 'id',
         order: 'descend',
       },
-      filters: [],
+      filters: {},
       params: [],
       onlyRootUser: false,
       submitting: false,

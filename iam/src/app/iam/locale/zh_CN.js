@@ -122,6 +122,22 @@ const pageDetail = {
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应',
   'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+  // 事务定义
+  'global.saga.title': '平台"{name}"的事务定义',
+  'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
+  'global.saga.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga.detail.title': '查看事务定义"{name}"的详情',
+  'global.saga.detail.description': '您可以在此查看事务定义图、事务定义Json。',
+  'global.saga.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  // 事务实例
+  'global.saga-instance.title': '平台"{name}"的事务实例',
+  'global.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
+  'global.saga-instance.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga-instance.detail.title': '查看事务实例"{name}"的详情',
+  'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
+  'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
   'organization.project.description': '项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。',
@@ -555,6 +571,47 @@ const zh_CN = {
   'global.apitest.request.data.type': '请求参数类型',
   'global.apitest.request.data': '请求数据',
   'global.apitest.send': '发送',
+
+  // 事务定义
+  'global.saga.header.title': '事务定义',
+  'global.saga.code': '编码',
+  'global.saga.service': '自定义的服务',
+  'global.saga.desc': '描述',
+  'global.saga.detail': '事务定义详情',
+  'global.saga.img': '事务定义图',
+  'global.saga.json': 'Json',
+  'global.saga.task.run.title': "任务运行情况",
+  'global.saga.task.code': "任务编码",
+  'global.saga.task.run.status': '状态',
+  'global.saga.task.seq': '序列',
+  'global.saga.task.run.service-instance': '运行的微服务实例',
+  'global.saga.task.max-retry': '最大重试次数',
+  'global.saga.task.run.retried': '已重试次数',
+  'global.saga.task.run.exception.msg': '异常信息',
+  'global.saga.task.run.result.msg': '运行结果',
+  'global.saga.task.detail.title': '任务详情',
+  'global.saga.task.desc': '任务描述',
+  'global.saga.task.timeout.time': '超时时间',
+  'global.saga.task.timeout.policy': '超时策略',
+  'global.saga.task.service': '定义任务的微服务',
+  'global.saga.task.input.title': '输入数据',
+  'global.saga.task.output.title': '输出数据',
+  'global.saga.task.unlock': '解锁',
+  'global.saga.task.retry': '重试',
+
+  // 事务实例
+  'global.saga-instance.header.title': '事务实例',
+  'global.saga-instance.detail': '事务实例详情',
+  'global.saga-instance.view': '查看实例',
+  'global.saga-instance.all': '所有实例',
+  'global.saga-instance.failed': '失败实例',
+  'global.saga-instance.id': 'ID',
+  'global.saga-instance.status': '状态',
+  'global.saga-instance.start.time': '开始时间',
+  'global.saga-instance.end.time': '中止时间',
+  'global.saga-instance.saga': '所属Saga',
+  'global.saga-instance.reftype': '关联业务类型',
+  'global.saga-instance.refid': '关联业务ID',
 
   // 组织层
   // 项目管理

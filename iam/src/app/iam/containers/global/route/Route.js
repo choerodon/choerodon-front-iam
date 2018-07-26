@@ -18,7 +18,7 @@ const intlPrefix = 'global.route';
 @injectIntl
 @inject('AppState')
 @observer
-class Route extends Component {
+export default class Route extends Component {
   state = this.getInitState();
 
   componentWillMount() {
@@ -189,7 +189,6 @@ class Route extends Component {
   /* 刷新 */
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
-      this.getService();
       this.loadRouteList();
     });
   };
@@ -327,7 +326,6 @@ class Route extends Component {
             customSensitiveHeaders: isFiltered,
             sensitiveHeaders: info,
           };
-          window.console.log(JSON.stringify(body));
           axios.post(`/manager/v1/routes/${id}`, JSON.stringify(body)).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
@@ -718,19 +716,13 @@ class Route extends Component {
 
   render() {
     const { AppState, intl } = this.props;
-    const { sort: { columnKey, order }, filters, params } = this.state;
+    const { sort: { columnKey, order }, filters, params, serviceArr } = this.state;
     const { content, loading, pagination, visible, show, submitting } = this.state;
     const { type } = AppState.currentMenuType;
-    let filtersService = content && content.map(({ serviceId }) => ({
-      value: serviceId,
-      text: serviceId,
+    const filtersService = serviceArr && serviceArr.map(({ name }) => ({
+      value: name,
+      text: name,
     }));
-    const obj = {};
-    filtersService = filtersService && filtersService.reduce((cur, next) => {
-      obj[next.value] ? '' : obj[next.value] = true && cur.push(next);
-      return cur;
-    }, []);
-
     const columns = [{
       title: <FormattedMessage id="name"/>,
       dataIndex: 'name',

@@ -1,6 +1,6 @@
 /**
  * Created by hulingfangzi on 2018/5/28.
  */
-import RoleLabel from './RoleLabel';
+import SagaStore from './SagaStore';
 
-export default RoleLabel;
+export default SagaStore;

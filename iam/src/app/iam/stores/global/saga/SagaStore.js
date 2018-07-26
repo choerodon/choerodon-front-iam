@@ -2,8 +2,8 @@ import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import querystring from 'query-string';
 
-@store('RoleLabelStore')
-class RoleLabelStore {
+@store('SagaStore')
+class SagaStore {
   @observable loading = true;
   @observable data = [];
 
@@ -27,14 +27,38 @@ class RoleLabelStore {
     return this.loading;
   }
 
+  /**
+   * detail data
+   * 详情页数据
+   * @param id
+   */
+  loadDetailData(id) {
+    return axios.get(`/asgard/v1/sagas/${id}`);
+  }
+
+  /**
+   * init data
+   * 初始加载数据
+   * @param current
+   * @param pageSize
+   * @param code
+   * @param description
+   * @param service
+   * @param columnKey
+   * @param order
+   * @param params
+   */
   loadData(
-    { name, level, description },
+    { current, pageSize },
+    { code, description, service },
     { columnKey = 'id', order = 'descend' },
     params) {
     const queryObj = {
-      name,
-      level,
+      page: current - 1,
+      size: pageSize,
+      code,
       description,
+      service,
       params,
     };
     if (columnKey) {
@@ -45,11 +69,10 @@ class RoleLabelStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/iam/v1/labels?${querystring.stringify(queryObj)}`);
+    return axios.get(`/asgard/v1/sagas?${querystring.stringify(queryObj)}`);
   }
-
 }
 
-const roleLabelStore = new RoleLabelStore();
+const sagaStore = new SagaStore();
 
-export default roleLabelStore;
+export default sagaStore;

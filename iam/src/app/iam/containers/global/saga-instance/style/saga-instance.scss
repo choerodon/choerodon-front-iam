@@ -1,0 +1,32 @@
+.c7n-saga-instance {
+  &-status {
+    color: white;
+    padding: 2px 5px;
+    border-radius: 2px;
+    &.failed {
+      background: #F44336;
+    }
+    &.running {
+      background: #00BFA5;
+    }
+    &.completed {
+      background: #4D90FE;
+    }
+  }
+  &-btns {
+    margin-bottom: 24px;
+    .text {
+      display: inline-block;
+      margin-right: 15px;
+    }
+    button:nth-child(2) {
+      border-radius: 2px 0 0 2px;
+    }
+    button:nth-child(3) {
+      border-radius: 0 2px 2px 0;
+    }
+    button.active {
+      background: rgba(140, 158, 255, 0.2);
+    }
+  }
+}

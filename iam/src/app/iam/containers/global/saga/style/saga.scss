@@ -1,0 +1,14 @@
+.c7n-saga {
+  &-detail {
+    &-json {
+      border: 1px solid #f1f9ff;
+      background-color: #f1f9ff;
+      padding: 10px;
+      margin: 10px 0;
+      code {
+        font-size: 14px;
+        line-height: 2;
+      }
+    }
+  }
+}

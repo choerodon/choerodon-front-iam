@@ -36,6 +36,7 @@ export default class Saga extends Component {
       filters: {},
       params: [],
       showJson: false,
+      detailId: null,
       data: {},
     };
   }
@@ -78,6 +79,7 @@ export default class Saga extends Component {
     SagaStore.loadDetailData(id).then((data) => {
       this.setState({
         data,
+        detailId: id,
       }, () => {
         this.setState({
           visible: true,
@@ -163,7 +165,7 @@ export default class Saga extends Component {
   }
 
   render() {
-    const { showJson, data } = this.state;
+    const { showJson, detailId, data } = this.state;
     return (
       <Page
         className="c7n-saga"
@@ -201,7 +203,7 @@ export default class Saga extends Component {
               </Tabs>
               {showJson
                 ? (<div className="c7n-saga-detail-json"><pre><code id="json">{JSON.stringify(data, null, 2)}</code></pre></div>)
-                : (<SagaImg data={data} />)
+                : (<SagaImg id={detailId} />)
               }
             </Content>
           </Sidebar>

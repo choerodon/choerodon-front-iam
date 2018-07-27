@@ -598,6 +598,8 @@ const zh_CN = {
   'global.saga.task.output.title': '输出数据',
   'global.saga.task.unlock': '解锁',
   'global.saga.task.retry': '重试',
+  'global.saga.task.retry.success': '重试成功',
+  'global.saga.task.unlock.success': '解锁成功',
 
   // 事务实例
   'global.saga-instance.header.title': '事务实例',
@@ -608,7 +610,7 @@ const zh_CN = {
   'global.saga-instance.id': 'ID',
   'global.saga-instance.status': '状态',
   'global.saga-instance.start.time': '开始时间',
-  'global.saga-instance.end.time': '中止时间',
+  'global.saga-instance.end.time': '结束时间',
   'global.saga-instance.saga': '所属Saga',
   'global.saga-instance.reftype': '关联业务类型',
   'global.saga-instance.refid': '关联业务ID',

@@ -84,7 +84,17 @@ export default class RoleLabel extends Component {
         title: <FormattedMessage id={`${intlPrefix}.level`} />,
         key: 'level',
         dataIndex: 'level',
-        filters: [],
+        filters: [
+          {
+            text: intl.formatMessage({ id: 'global' }),
+            value: 'site',
+          }, {
+            text: intl.formatMessage({ id: 'organization' }),
+            value: 'organization',
+          }, {
+            text: intl.formatMessage({ id: 'project' }),
+            value: 'project',
+          }],
         filteredValue: filters.level || [],
         render: level => this.renderLevel(level),
       },

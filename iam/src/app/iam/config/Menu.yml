@@ -125,15 +125,15 @@
         Routes: /iam/saga
         sort: 1
         permission:
-          - 'manager-service.service.pageManager'
+          - 'asgard-service.saga.pagingQuery'
+          - 'asgard-service.saga.query'
     - "saga-instance":
         icon: insert_drive_file
         Routes: /iam/saga-instance
         sort: 2
         permission:
-          - 'choerodon-asgard-service.saga-task-instance.updateStatus'
-          - 'choerodon-asgard-service.saga-task-instance.pollBatch'
-          - 'choerodon-asgard-service.saga-instance.start'
+          - 'asgard-service.saga-instance.pagingQuery'
+          - 'asgard-service.saga-instance.query'
 
 # 组织设置
 "rentsetting":

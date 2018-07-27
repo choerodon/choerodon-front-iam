@@ -15,7 +15,7 @@ const { TabPane } = Tabs;
 export default class SagaImg extends Component {
   state = this.getInitState();
   getInitState() {
-    const { instance } = this.props;
+    const { instance, data } = this.props;
     return {
       showDetail: false,
       task: {},
@@ -24,35 +24,38 @@ export default class SagaImg extends Component {
       activeCode: '',
       activeTab: instance ? 'run' : 'detail',
       jsonTitle: false, // 是否展示input output
-      data: {
-        tasks: [],
-      },
+      data,
     };
   }
 
   componentWillMount() {
-    this.reload();
+    const { data: { tasks } } = this.state;
+    this.getLineData(tasks);
   }
 
-  reload(props) {
-    const { id, instance } = props || this.props;
+  reload() {
+    const { data: { id } } = this.state;
+    const { instance } = this.props;
     const store = instance ? SagaInstanceStore : SagaStore;
     store.loadDetailData(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
         const { tasks } = data;
-        this.setState({
-          data,
-        });
+        this.setState({ data })
         this.getLineData(tasks);
       }
     });
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState(this.getInitState());
-    this.reload(nextProps);
+    const { data: { tasks, id } } = nextProps;
+    // const { data } = this.props;
+
+    this.setState(this.getInitState(), () => {
+      this.setState({ data: nextProps.data });
+      this.getLineData(tasks);
+    });
   }
 
   getLineData = (tasks) => {
@@ -99,7 +102,7 @@ export default class SagaImg extends Component {
           onClick={this.showDetail.bind(this, node)}
           key={node}
         >
-          {node}
+          <span>{node}</span>
         </div>
       );
     }
@@ -269,7 +272,7 @@ export default class SagaImg extends Component {
     };
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
-      value: output,
+      value: output && JSON.stringify(JSON.parse(output), null, 2),
     };
     return (
       <div className="c7n-saga-task-run">
@@ -354,7 +357,7 @@ export default class SagaImg extends Component {
           <div className="c7n-saga-detail-json">
             <pre>
               <code id="json">
-                {json}
+                {json && JSON.stringify(JSON.parse(json), null, 2)}
               </code>
             </pre>
           </div>

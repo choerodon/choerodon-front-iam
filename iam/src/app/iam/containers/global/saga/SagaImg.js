@@ -3,6 +3,8 @@ import { Icon, Tabs } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
+import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
+import SagaStore from '../../../stores/global/saga/SagaStore';
 import './style/saga-img.scss';
 import './style/saga.scss';
 
@@ -13,39 +15,64 @@ const { TabPane } = Tabs;
 export default class SagaImg extends Component {
   state = this.getInitState();
   getInitState() {
+    const { instance } = this.props;
     return {
       showDetail: false,
       task: {},
       json: '',
       lineData: {},
       activeCode: '',
-      activeTab: 'run',
+      activeTab: instance ? 'run' : 'detail',
       jsonTitle: false, // 是否展示input output
+      data: {
+        tasks: [],
+      },
     };
   }
+
   componentWillMount() {
-    this.getLineData();
+    this.reload();
   }
 
-  componentWillReceiveProps() {
+  reload(props) {
+    const { id, instance } = props || this.props;
+    const store = instance ? SagaInstanceStore : SagaStore;
+    store.loadDetailData(id).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        const { tasks } = data;
+        this.setState({
+          data,
+        });
+        this.getLineData(tasks);
+      }
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
     this.setState(this.getInitState());
-    this.getLineData();
+    this.reload(nextProps);
   }
 
-  getLineData = () => {
-    const { data: { tasks } } = this.props;
+  getLineData = (tasks) => {
     const lineData = {};
+    const { task: { code, taskCode } } = this.state;
     tasks.forEach(items => items.forEach(
       (task) => { lineData[task.code || task.taskCode] = task; }));
+    const task = { ...lineData[code || taskCode] };
     this.setState({
       lineData,
+      task,
     });
   }
 
   circleWrapper = (code) => {
     const { activeCode } = this.state;
+    const { instance } = this.props;
     const clsNames = classnames('c7n-saga-img-circle', {
       'c7n-saga-task-active': code.toLowerCase() === activeCode,
+      'output': !instance && code === 'Output',
     });
     return (
       <div
@@ -96,7 +123,7 @@ export default class SagaImg extends Component {
     }
     if (code === 'input' || code === 'output') {
       const { intl: { formatMessage } } = this.props;
-      const { data } = this.props;
+      const { data } = this.state;
       this.setState({
         showDetail: false,
         jsonTitle: formatMessage({ id: `${intlPrefix}.task.${code}.title` }),
@@ -122,13 +149,38 @@ export default class SagaImg extends Component {
     });
   }
 
+  handleUnLock = () => {
+    const { task: { id } } = this.state;
+    const { intl: { formatMessage } } = this.props;
+    SagaInstanceStore.unLock(id).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.reload();
+        Choerodon.prompt(formatMessage({ id: `${intlPrefix}.task.unlock.success` }));
+      }
+    });
+  }
+
+  handleRetry = () => {
+    const { task: { id } } = this.state;
+    const { intl: { formatMessage } } = this.props;
+    SagaInstanceStore.retry(id).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.reload();
+        Choerodon.prompt(formatMessage({ id: `${intlPrefix}.task.retry.success` }));
+      }
+    });
+  }
   renderContent = () => {
-    const { data: { tasks } } = this.props;
+    const { data: { tasks } } = this.state;
     const line = this.line();
     const content = [];
     if (tasks.length) {
       content.push(line);
-      tasks.forEach((items, index) => {
+      tasks.forEach((items) => {
         const node = items.map((
           { code, taskCode, status }) => this.squareWrapper(code || taskCode, status));
         if (node.length === 1) {
@@ -180,45 +232,6 @@ export default class SagaImg extends Component {
     );
   }
 
-  instanceLock
-    :
-    null
-  maxRetryCount
-    :
-    0
-  output
-    :
-    null
-  refId
-    :
-    "324"
-  refType
-    :
-    "project"
-  retriedCount
-    :
-    0
-  sagaCode
-    :
-    "iam-create-project"
-  sagaInstanceId
-    :
-    1
-  seq
-    :
-    0
-  status
-    :
-    "RUNNING"
-  taskCode
-    :
-    "123"
-  timeoutPolicy
-    :
-    "123"
-  timeoutSeconds
-    :
-    3434
   renderTaskRunDetail = () => {
     const { intl: { formatMessage } } = this.props;
     const { task: {
@@ -273,14 +286,16 @@ export default class SagaImg extends Component {
           </div>
         </div>
         <div className="c7n-saga-task-btns">
-          <span>
-            <Icon type="lock_open" />
-            {formatMessage({ id: `${intlPrefix}.task.unlock` })}
-          </span>
-          <span>
-            <Icon type="sync" />
-            {formatMessage({ id: `${intlPrefix}.task.retry` })}
-          </span>
+          {instanceLock && (status === 'RUNNING' || status === 'FAILED') && (
+            <span onClick={this.handleUnLock}>
+              <Icon type="lock_open" />
+              {formatMessage({ id: `${intlPrefix}.task.unlock` })}
+            </span>)}
+          {status === 'FAILED' && (
+            <span onClick={this.handleRetry}>
+              <Icon type="sync" />
+              {formatMessage({ id: `${intlPrefix}.task.retry` })}
+            </span>)}
         </div>
       </div>
     );
@@ -365,7 +380,7 @@ export default class SagaImg extends Component {
         </div>
         {showDetail && (
           <div className="c7n-saga-img-detail">
-            <Tabs defaultActiveKey={instance ? 'run' : 'detail'} onChange={this.handleTabChange}>
+            <Tabs activeKey={activeTab} onChange={this.handleTabChange}>
               {instance && (<TabPane tab={<FormattedMessage id={`${intlPrefix}.task.run.title`} />} key="run" />)}
               <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.detail.title`} />} key="detail" />
             </Tabs>

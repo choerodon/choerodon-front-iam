@@ -27,10 +27,43 @@ class SagaInstanceStore {
     return this.loading;
   }
 
+  /**
+   * 重试
+   * @param id
+   * @returns {IDBRequest | Promise<void>}
+   */
+  retry(id) {
+    return axios.put(`/asgard/v1/sagas/tasks/instances/${id}/retry`);
+  }
+
+  /**
+   * 解锁
+   */
+  unLock(id) {
+    return axios.put(`/asgard/v1/sagas/tasks/instances/${id}/unlock`);
+  }
+
+  /**
+   * 详情
+   * @param id
+   */
   loadDetailData(id) {
     return axios.get(`/asgard/v1/sagas/instances/${id}`);
   }
 
+  /**
+   * 初始数据
+   * @param current
+   * @param pageSize
+   * @param id
+   * @param status
+   * @param sagaCode
+   * @param refType
+   * @param refId
+   * @param columnKey
+   * @param order
+   * @param params
+   */
   loadData(
     { current, pageSize },
     { id, status, sagaCode, refType, refId },

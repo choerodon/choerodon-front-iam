@@ -35,7 +35,7 @@ export default class SagaInstance extends Component {
       },
       filters: {},
       params: [],
-      data: {},
+      detailId: null,
       activeTab: 'all',
     };
   }
@@ -96,13 +96,11 @@ export default class SagaInstance extends Component {
   }
 
   openSidebar = (id) => {
-    SagaInstanceStore.loadDetailData(id).then((data) => {
+    this.setState({
+      detailId: id,
+    }, () => {
       this.setState({
-        data,
-      }, () => {
-        this.setState({
-          visible: true,
-        });
+        visible: true,
       });
     });
   }
@@ -249,7 +247,7 @@ export default class SagaInstance extends Component {
   }
 
   render() {
-    const { data, activeTab } = this.state;
+    const { detailId, activeTab } = this.state;
     return (
       <Page
         className="c7n-saga"
@@ -292,7 +290,7 @@ export default class SagaInstance extends Component {
               className="sidebar-content"
               code={`${intlPrefix}.detail`}
             >
-              <SagaImg data={data} instance />
+              <SagaImg id={detailId} instance />
             </Content>
           </Sidebar>
         </Content>

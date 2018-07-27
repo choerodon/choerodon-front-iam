@@ -117,18 +117,18 @@
 
 # 事务管理
 "global-transaction":
-  icon: insert_drive_file
+  icon: developer_board
   sort: 6
   site:
     - "saga":
-        icon: insert_drive_file
+        icon: saga_define
         Routes: /iam/saga
         sort: 1
         permission:
           - 'asgard-service.saga.pagingQuery'
           - 'asgard-service.saga.query'
     - "saga-instance":
-        icon: insert_drive_file
+        icon: outline
         Routes: /iam/saga-instance
         sort: 2
         permission:

@@ -575,7 +575,7 @@ const zh_CN = {
   // 事务定义
   'global.saga.header.title': '事务定义',
   'global.saga.code': '编码',
-  'global.saga.service': '自定义的服务',
+  'global.saga.service': '所属微服务',
   'global.saga.desc': '描述',
   'global.saga.detail': '事务定义详情',
   'global.saga.img': '事务定义图',
@@ -593,7 +593,7 @@ const zh_CN = {
   'global.saga.task.desc': '任务描述',
   'global.saga.task.timeout.time': '超时时间',
   'global.saga.task.timeout.policy': '超时策略',
-  'global.saga.task.service': '定义任务的微服务',
+  'global.saga.task.service': '所属微服务',
   'global.saga.task.input.title': '输入数据',
   'global.saga.task.output.title': '输出数据',
   'global.saga.task.unlock': '解锁',
@@ -611,7 +611,7 @@ const zh_CN = {
   'global.saga-instance.status': '状态',
   'global.saga-instance.start.time': '开始时间',
   'global.saga-instance.end.time': '结束时间',
-  'global.saga-instance.saga': '所属Saga',
+  'global.saga-instance.saga': '所属事务定义',
   'global.saga-instance.reftype': '关联业务类型',
   'global.saga-instance.refid': '关联业务ID',
 

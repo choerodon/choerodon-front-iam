@@ -6,7 +6,6 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from './../saga/SagaImg';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
 import './style/saga-instance.scss';
-import SagaStore from "../../../stores/global/saga/SagaStore";
 
 const intlPrefix = 'global.saga-instance';
 const { Sidebar } = Modal;
@@ -35,7 +34,6 @@ export default class SagaInstance extends Component {
       },
       filters: {},
       params: [],
-      detailId: null,
       activeTab: 'all',
     };
   }
@@ -96,11 +94,13 @@ export default class SagaInstance extends Component {
   }
 
   openSidebar = (id) => {
-    this.setState({
-      detailId: id,
-    }, () => {
+    SagaInstanceStore.loadDetailData(id).then((data) => {
       this.setState({
-        visible: true,
+        data,
+      }, () => {
+        this.setState({
+          visible: true,
+        });
       });
     });
   }
@@ -247,10 +247,14 @@ export default class SagaInstance extends Component {
   }
 
   render() {
-    const { detailId, activeTab } = this.state;
+    const { data, activeTab } = this.state;
     return (
       <Page
         className="c7n-saga"
+        service={[
+          'asgard-service.saga-instance.pagingQuery',
+          'asgard-service.saga-instance.query',
+        ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button
@@ -290,7 +294,7 @@ export default class SagaInstance extends Component {
               className="sidebar-content"
               code={`${intlPrefix}.detail`}
             >
-              <SagaImg id={detailId} instance />
+              <SagaImg data={data} instance />
             </Content>
           </Sidebar>
         </Content>

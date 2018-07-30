@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
-import { Table, Input, Button, Form, Select, Tabs } from 'choerodon-ui';
+import { Table, Input, Button, Select, Tabs, Spin } from 'choerodon-ui';
 import querystring from 'query-string';
+import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './APITest.scss';
 import APITestStore from '../../../stores/global/api-test';
@@ -11,6 +12,12 @@ import APITestStore from '../../../stores/global/api-test';
 const intlPrefix = 'global.apitest';
 const { TabPane } = Tabs;
 const Hjson = require('hjson');
+// Hjson编译配置
+const options = {
+  bracesSameLine: true,
+  quotes: 'all', // 全部加上引号
+  keepWsc: true,
+}
 
 @withRouter
 @injectIntl
@@ -18,25 +25,46 @@ export default class APIDetail extends Component {
   state = this.getInitState();
 
   getInitState() {
-    const { params } = this.props.match;
+    const { controller, version, service, operationId } = this.props.match.params;
     return {
-      method: params.method,
-      controller: params.controller,
-      version: params.version,
-      url: params['0'],
+      loading: true,
+      controller,
+      version,
+      service,
+      operationId,
     };
   }
 
 
-  componentDidMount() {
-    if (JSON.stringify(APITestStore.apiDetail) === '{}') {
-      window.console.log('刷新了');
+  componentWillMount() {
+    const { description } = APITestStore.getApiDetail;
+    if (description === '[]') {
+      const { controller, version, service, operationId } = this.state;
+      const queryObj = {
+        version,
+        operation_id: operationId,
+      };
+      axios.get(`manager/v1/swaggers/${service}/controllers/${controller}/paths?${querystring.stringify(queryObj)}`).then((data) => {
+        for (const item of data.paths) {
+          if (item.operationId === operationId) {
+            APITestStore.setApiDetail(item);
+            this.setState({
+              loading: false,
+            });
+            return;
+          }
+        }
+      });
+    } else {
+      this.setState({
+        loading: false,
+      });
     }
   }
 
 
-  getDetail = () => {
-    const { method, url } = this.state;
+  getDetail() {
+    const { intl } = this.props;
     const keyArr = ['请求方式', '路径', '描述', 'Action', '权限层级', '是否为登录可访问', '是否为公开权限', '请求格式', '响应格式'];
     const tableValue = keyArr.map((item) => {
       return {
@@ -44,7 +72,11 @@ export default class APIDetail extends Component {
       };
     })
 
-    const desc = APITestStore && APITestStore.apiDetail.description;
+    const desc = APITestStore.getApiDetail && APITestStore.getApiDetail.description;
+    const responseDataExample = APITestStore.getApiDetail &&
+      APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body : '{}';
+    let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
+    handledDescWithComment = Hjson.stringify(handledDescWithComment, options);
     const handledDesc = Hjson.parse(desc);
     const { permission } = handledDesc;
     const roles = permission.roles.length && permission.roles.map((item) => {
@@ -53,8 +85,8 @@ export default class APIDetail extends Component {
         value: item,
       };
     })
-    tableValue[0].value = method;
-    tableValue[1].value = `/${url}`;
+    tableValue[0].value = APITestStore && APITestStore.apiDetail.method;
+    tableValue[1].value = APITestStore && APITestStore.apiDetail.url;
     tableValue[2].value = APITestStore && APITestStore.apiDetail.remark;
     tableValue[3].value = permission.action;
     tableValue[4].value = permission.permissionLevel;
@@ -63,20 +95,12 @@ export default class APIDetail extends Component {
     tableValue[7].value = APITestStore && APITestStore.apiDetail.consumes[0];
     tableValue[8].value = APITestStore && APITestStore.apiDetail.produces[0];
     tableValue.splice(5, 0, ...roles);
-    // const hjson = '[\n {\n//controller下的方法集\n\"paths\":[\n{\n\"refController\":\"string\" //接口相关联的controller\n\"method\":\"string\" //请求方法\n\"produces\":[\narray\n]\n\"description\":\"string\" //接口自定义扩展详细信息\n\"operationId\":\"string\"\n//响应集合\n\"responses\":[\n{\n\"phonyJsonWithComment\":\"string\"\n\"requestBody\":\"string\"\n\"httpStatus\":\"string\" //http状态码\n\"description\":\"string\"\n}]\n\"remark\":\"string\" //接口描述\n\"parameters\":[\n{\n\"in\":\"string\"\n\"format\":\"string\"\n\"name\":\"string\"\n\"description\":\"string\"\n\"type\":\"string\"\n\"collectionFormat\":\"string\"\n\"items\":\"{}\"\n\"required\":\"boolean\"\n}]\n\"url\":\"string\" //请求url\n\"consumes\":[\narray\n]\n}]\n\"name\":\"string\" //controller的名字\n\"description\":\"string\" //controller的描述\n}\n]'
-    // const options = {
-    //   bracesSameLine: true,
-    //   quotes: 'all', // 全部加上引号
-    //   keepWsc: true,
-    // }
-    // let jstest = Hjson.parse(hjson, { keepWsc: true });
-    // jstest = Hjson.stringify(jstest, options);
 
-    const { intl } = this.props;
     const infoColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.property`} />,
       dataIndex: 'name',
       key: 'name',
+      width: '30%',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.value`} />,
       dataIndex: 'value',
@@ -87,6 +111,18 @@ export default class APIDetail extends Component {
       title: <FormattedMessage id={`${intlPrefix}.param.name`} />,
       dataIndex: 'name',
       key: 'name',
+      render: (text, record) => {
+        if (record.required) {
+          return (
+            <div>
+              <span>{text}</span>
+              <span style={{ color: '#d50000' }}>*</span>
+            </div>
+          );
+        } else {
+          return text;
+        }
+      },
     }, {
       title: <FormattedMessage id={`${intlPrefix}.param.desc`} />,
       dataIndex: 'description',
@@ -100,7 +136,26 @@ export default class APIDetail extends Component {
       dataIndex: 'type',
       key: 'type',
       render: (text, record) => {
-        return text === 'integer' && record.format === 'int64' ? 'long' : text;
+        if (text === 'integer' && record.format === 'int64') {
+          return 'long';
+        } else if (!text) {
+          let value = Hjson.parse(record.body, { keepWsc: true });
+          value = Hjson.stringify(value, options);
+          return (
+            <div>
+              Example Value
+              <div className="body-container">
+                <pre>
+                  <code>
+                    {value}
+                  </code>
+                </pre>
+              </div>
+            </div>
+          );
+        } else {
+          return text;
+        }
       },
     }]
 
@@ -111,8 +166,11 @@ export default class APIDetail extends Component {
           <Table
             columns={infoColumns}
             dataSource={tableValue}
-            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
             pagination={false}
+            filterBar={false}
+            rowKey={(record) => {
+              return `${record.name}-${record.value}`;
+            }}
           />
         </div>
         <div className="c7n-request-params">
@@ -120,15 +178,18 @@ export default class APIDetail extends Component {
           <Table
             columns={paramsColumns}
             dataSource={APITestStore && APITestStore.apiDetail.parameters}
-            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
             pagination={false}
+            filterBar={false}
+            rowKey="name"
           />
         </div>
         <div className="c7n-response-data">
           <h5><FormattedMessage id={`${intlPrefix}.response.data`} /></h5>
           <div className="response-data-container">
             <pre>
-              <code />
+              <code>
+                {handledDescWithComment}
+              </code>
             </pre>
           </div>
         </div>
@@ -137,14 +198,72 @@ export default class APIDetail extends Component {
   }
 
   getTest = () => {
+    const method = APITestStore && APITestStore.apiDetail.method;
+    const requestColumns = [{
+      title: <FormattedMessage id={`${intlPrefix}.param.name`} />,
+      dataIndex: 'name',
+      key: 'name',
+      width: '20%',
+      render: (text, record) => {
+        if (record.required) {
+          return (
+            <div>
+              <span>{text}</span>
+              <span style={{ color: '#d50000' }}>*</span>
+            </div>
+          );
+        } else {
+          return text;
+        }
+      },
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.request.data`} />,
+      dataIndex: 'in',
+      key: 'in',
+      width: '40%',
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.request.data.type`} />,
+      dataIndex: 'type',
+      key: 'type',
+      width: '40%',
+      render: (text, record) => {
+        if (text === 'integer' && record.format === 'int64') {
+          return 'long';
+        } else if (!text) {
+          let value = Hjson.parse(record.body, { keepWsc: true });
+          value = Hjson.stringify(value, options);
+          return (
+            <div>
+              Example Value
+              <div className="body-container">
+                <pre>
+                  <code>
+                    {value}
+                  </code>
+                </pre>
+              </div>
+            </div>
+          );
+        } else {
+          return text;
+        }
+      },
+    }]
     return (
       <div className="c7n-interface-test">
         <div className="c7n-interface-test-response-params">
           <h5><FormattedMessage id={`${intlPrefix}.request.parameter`} /></h5>
-          <Table />
+          <Table
+            pagination={false}
+            filterBar={false}
+            columns={requestColumns}
+            dataSource={APITestStore && APITestStore.apiDetail.parameters}
+            rowKey="name"
+          />
+
         </div>
         <div className="c7n-url-container">
-          <span className="method">POST</span>
+          <span className={classnames('method', method)}>{method}</span>
           <input type="text" />
           <Button
             funcType="raised"
@@ -161,51 +280,15 @@ export default class APIDetail extends Component {
           </div>
           <div className="c7n-response-body">
             <h5><FormattedMessage id={`${intlPrefix}.response.body`} /></h5>
-            <div className="response-body-container">
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-            </div>
+            <div className="response-body-container" />
           </div>
           <div className="c7n-response-body">
             <h5><FormattedMessage id={`${intlPrefix}.response.headers`} /></h5>
-            <div className="response-body-container">
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-              233<br />
-            </div>
+            <div className="response-body-container" />
           </div>
           <div className="c7n-curl">
             <h5>CURL</h5>
-            <div className="curl-container">
-              白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽
-              黄河入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河
-              入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河入海流白日依山尽黄河入
-            </div>
+            <div className="curl-container" />
           </div>
         </div>
       </div>
@@ -214,7 +297,7 @@ export default class APIDetail extends Component {
 
 
   render() {
-    const { url } = this.state;
+    const url = APITestStore && APITestStore.apiDetail.url;
     return (
       <Page>
         <Header
@@ -231,11 +314,15 @@ export default class APIDetail extends Component {
         <Content
           className="c7n-api-test"
           code={`${intlPrefix}.detail`}
-          values={{ name: `/${url}` }}
+          values={{ name: url }}
         >
           <Tabs>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.detail`} />} key="detail">{this.getDetail()}</TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.test`} />} key="test">{this.getTest()}</TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.detail`} />} key="detail">
+              {this.state.loading ? <div style={{ textAlign: 'center' }}><Spin size="large" /></div> : this.getDetail()}
+            </TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.test`} />} key="test">
+              {this.state.loading ? <div style={{ textAlign: 'center' }}><Spin size="large" /></div> : this.getTest()}
+            </TabPane>
           </Tabs>
         </Content>
       </Page>

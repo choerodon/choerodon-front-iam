@@ -568,7 +568,7 @@ const zh_CN = {
   'global.apitest.param.name': '参数名称',
   'global.apitest.param.desc': '参数描述',
   'global.apitest.param.type': '参数类型',
-  'global.apitest.request.data.type': '请求参数类型',
+  'global.apitest.request.data.type': '请求数据类型',
   'global.apitest.request.data': '请求数据',
   'global.apitest.send': '发送',
 

@@ -41,6 +41,9 @@
 }
 
 .c7n-api-test {
+  .title {
+    white-space: nowrap;
+  }
   h5 {
     font-size: 16px;
     margin-bottom: 14px;
@@ -55,15 +58,21 @@
 
     .c7n-request-params {
       margin-top: 32px;
+
+      .body-container {
+        height: 120px;
+        overflow-y: scroll;
+      }
     }
 
     .c7n-response-data {
       margin-top: 32px;
 
       .response-data-container {
-        max-height: 800px;
-        overflow-y: scroll;
-        background: #F1F9FF ;
+        //max-height: 800px;
+        //overflow-y: scroll;
+        padding: 5px;
+        background: #F1F9FF;
       }
     }
   }
@@ -72,7 +81,10 @@
     margin-top: 8px;
 
     .c7n-interface-test-response-params {
-
+      .body-container {
+        height: 120px;
+        overflow-y: scroll;
+      }
     }
 
     .c7n-url-container {
@@ -81,10 +93,9 @@
       .method {
         display: inline-block;
         width: 60px;
-        height: 32px;
+        padding: 8px 12px;
         text-align: center;
-        line-height: 32px;
-        background: #00BFA5;
+        text-transform: uppercase;
         border-radius: 2px 0 0 2px;
         font-size: 13px;
         color: #FFFFFF;
@@ -92,15 +103,14 @@
 
       input {
         outline: none;
-        display: inline;
+        display: inline-block;
         margin-left: 0;
         margin-right: 24px;
         width: 452px;
-        height: 32px;
-        padding-left: 14px;
-        border-top: 1px solid rgba(0,0,0,0.12);
-        border-right: 1px solid rgba(0,0,0,0.12);
-        border-bottom: 1px solid rgba(0,0,0,0.12);
+        padding: 7px 0 7px 14px;
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         border-left: none;
         border-top-right-radius: 2px;
         border-bottom-right-radius: 2px;
@@ -140,7 +150,6 @@
         margin-top: 24px;
 
         .curl-container {
-          height: 65px;
           line-height: 65px;
           margin-top: 12px;
           white-space: nowrap;

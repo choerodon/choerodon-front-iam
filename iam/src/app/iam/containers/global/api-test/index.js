@@ -8,7 +8,7 @@ const detail = asyncRouter(() => import('./APIDetail'));
 const Index = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={index} />
-    <Route path={`${match.url}/detail/:controller/:method/:version/*`} component={detail} />
+    <Route path={`${match.url}/detail/:controller/:service/:operationId/:version`} component={detail} />
     <Route path={'*'} component={nomatch} />
   </Switch>
 );

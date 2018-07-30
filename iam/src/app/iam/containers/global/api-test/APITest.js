@@ -143,21 +143,12 @@ export default class APITest extends Component {
     });
   }
 
-
-  // 跳转至swagger
-  goSwagger(record) {
-    const { refController, operationId } = record;
-    const openUrl = `${urlPrefix}/manager/swagger-ui.html#!${APITestStore.currentService.value.split('/')[0]}/${refController}/${operationId}`;
-    window.open(openUrl);
-  }
-
-
   goDetail(record) {
     APITestStore.setApiDetail(record);
     const version = APITestStore.getCurrentService.value.split('/')[1];
-    const url = record.url.slice(1);
-    const { refController, method } = record;
-    this.props.history.push(`/iam/api-test/detail/${refController}/${method}/${version}/${url}`);
+    const service = APITestStore.getCurrentService.value.split('/')[0];
+    const { refController, operationId } = record;
+    this.props.history.push(`/iam/api-test/detail/${refController}/${service}/${operationId}/${version}`);
   }
 
   render() {

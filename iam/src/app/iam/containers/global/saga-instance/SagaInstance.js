@@ -103,6 +103,7 @@ export default class SagaInstance extends Component {
         });
       });
     });
+
   }
 
   handleOk = () => {
@@ -250,7 +251,7 @@ export default class SagaInstance extends Component {
     const { data, activeTab } = this.state;
     return (
       <Page
-        className="c7n-saga"
+        className="c7n-saga-instance"
         service={[
           'asgard-service.saga-instance.pagingQuery',
           'asgard-service.saga-instance.query',
@@ -288,6 +289,7 @@ export default class SagaInstance extends Component {
             onOk={this.handleOk}
             okText={<FormattedMessage id="close" />}
             okCancel={false}
+            className="c7n-saga-instance-sidebar"
             visible={this.state.visible}
           >
             <Content

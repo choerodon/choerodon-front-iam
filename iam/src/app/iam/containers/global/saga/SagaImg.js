@@ -28,9 +28,67 @@ export default class SagaImg extends Component {
     };
   }
 
+  constructor(props) {
+    super(props);
+    this.taskDetail = React.createRef();
+    this.taskImg = React.createRef();
+  }
   componentWillMount() {
     const { data: { tasks } } = this.state;
     this.getLineData(tasks);
+  }
+
+  componentDidMount() {
+    this.addScrollEventListener();
+  }
+
+  componentWillUnmount() {
+    this.removeScrollEventListener();
+  }
+
+  getSidebarContainer() {
+    const content = document.body.getElementsByClassName('ant-modal-sidebar')[0];
+    return content.getElementsByClassName('ant-modal-body')[0];
+  }
+  addScrollEventListener() {
+    const container = this.getSidebarContainer();
+    container.addEventListener('scroll', this.handleScroll.bind(this, container));
+  }
+
+  removeScrollEventListener() {
+    const container = this.getSidebarContainer();
+    container.removeEventListener('scroll', this.handleScroll);
+  }
+
+  /**
+   * 1. taskImg 超出 detail未超出屏幕高度
+   * 2. taskImg 未超出 detail超出屏幕高度 (不做处理)
+   * 3. taskImg 未超出 detail也没有超出 (不会有滚动)
+   * 4. taskImg 超出 detail也超出  taskImg没有detail超出的多
+   * 5. taskImg 超出 detail也超出  taskImg比detail超出的多
+   */
+  handleScroll = (container) => {
+    const imgDom = this.taskImg.current;
+    const imgHeight = imgDom.scrollHeight;
+    const top = imgDom.offsetTop + 24; // 加顶边24px
+    const detail = this.taskDetail.current;
+    if (detail && imgHeight > container.clientHeight && imgHeight > detail.scrollHeight) {
+      const detailHeight = detail.scrollHeight;
+      let detailTop = container.scrollTop;
+      if (detailTop > top) {
+        if (detailHeight > container.clientHeight) {
+          detailTop = Math.min(imgHeight - detailHeight + top, detailTop);
+        }
+        detail.style.cssText = `top: ${detailTop - 24}px`;
+        detail.classList.add('autoscroll');
+      } else {
+        detail.classList.remove('autoscroll');
+        detail.style.cssText = '';
+      }
+    } else if (detail) {
+      detail.classList.remove('autoscroll');
+      detail.style.cssText = '';
+    }
   }
 
   reload() {
@@ -49,9 +107,8 @@ export default class SagaImg extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { data: { tasks, id } } = nextProps;
+    const { data: { tasks } } = nextProps;
     // const { data } = this.props;
-
     this.setState(this.getInitState(), () => {
       this.setState({ data: nextProps.data });
       this.getLineData(tasks);
@@ -132,6 +189,9 @@ export default class SagaImg extends Component {
         jsonTitle: formatMessage({ id: `${intlPrefix}.task.${code}.title` }),
         json: data[code],
         activeCode: code,
+      }, () => {
+        const container = this.getSidebarContainer();
+        this.handleScroll(container);
       });
       return;
     }
@@ -142,8 +202,10 @@ export default class SagaImg extends Component {
       jsonTitle: false,
       task,
       activeCode: code,
+    }, () => {
+      const container = this.getSidebarContainer();
+      this.handleScroll(container);
     });
-
   }
 
   handleTabChange = (activeTab) => {
@@ -177,6 +239,17 @@ export default class SagaImg extends Component {
       }
     });
   }
+
+  handleCopy = () => {
+    const { intl: { formatMessage } } = this.props;
+    const { task: { exceptionMessage } } = this.state;
+    const failed = document.getElementById('failed');
+    failed.value = exceptionMessage;
+    failed.select();
+    document.execCommand('copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
   renderContent = () => {
     const { data: { tasks } } = this.state;
     const line = this.line();
@@ -272,18 +345,29 @@ export default class SagaImg extends Component {
     };
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
-      value: output && JSON.stringify(JSON.parse(output), null, 2),
+      value: output ? JSON.stringify(JSON.parse(output), null, 2) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
     };
     return (
       <div className="c7n-saga-task-run">
         <div className="c7n-saga-task-detail">
           <div className="c7n-saga-task-detail-content">
             {list.map(({ key, value }, index) => <div key={`task-run-${index}`}>{key}: {value}</div>)}
-            {status === 'FAILED' && (<div>{failed.key}: {failed.value}</div>) }
+            {status === 'FAILED' && (
+              <div>{failed.key}:
+                <div className="c7n-saga-detail-json">
+                  <pre style={{ maxHeight: '350px' }}><code>{failed.value.trim()}</code></pre>
+                  <textarea id="failed" />
+                  {failed.value && (
+                    <Icon
+                      type="library_books"
+                      onClick={this.handleCopy}
+                    />)}
+                </div>
+              </div>)}
             {status === 'COMPLETED' && (
               <div>{completed.key}:
                 <div className="c7n-saga-detail-json">
-                  <pre><code>{completed.value}</code></pre>
+                  <pre style={{ maxHeight: '350px' }}><code>{completed.value}</code></pre>
                 </div>
               </div>)}
           </div>
@@ -314,7 +398,10 @@ export default class SagaImg extends Component {
       maxRetryCount,
       timeoutSeconds,
       timeoutPolicy,
-      service } } = this.state;
+      service,
+      concurrentLimitPolicy,
+      concurrentLimitNum,
+    } } = this.state;
     const list = [{
       key: formatMessage({ id: `${intlPrefix}.task.code` }),
       value: code || taskCode,
@@ -324,6 +411,12 @@ export default class SagaImg extends Component {
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.seq` }),
       value: seq,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.task.concurrentlimit.policy` }),
+      value: concurrentLimitPolicy,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.task.concurrentlimit.num` }),
+      value: concurrentLimitNum,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.max-retry` }),
       value: maxRetryCount,
@@ -348,6 +441,7 @@ export default class SagaImg extends Component {
 
   renderJson() {
     const { jsonTitle, json } = this.state;
+    const { intl: { formatMessage } } = this.props;
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-title">
@@ -357,7 +451,7 @@ export default class SagaImg extends Component {
           <div className="c7n-saga-detail-json">
             <pre>
               <code id="json">
-                {json && JSON.stringify(JSON.parse(json), null, 2)}
+                {json ? JSON.stringify(JSON.parse(json), null, 2) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
               </code>
             </pre>
           </div>
@@ -376,13 +470,13 @@ export default class SagaImg extends Component {
     });
     return (
       <div className={clsNames}>
-        <div className="c7n-saga-img">
+        <div className="c7n-saga-img" ref={this.taskImg}>
           {input}
           {this.renderContent()}
           {output}
         </div>
         {showDetail && (
-          <div className="c7n-saga-img-detail">
+          <div className="c7n-saga-img-detail" ref={this.taskDetail}>
             <Tabs activeKey={activeTab} onChange={this.handleTabChange}>
               {instance && (<TabPane tab={<FormattedMessage id={`${intlPrefix}.task.run.title`} />} key="run" />)}
               <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.detail.title`} />} key="detail" />
@@ -391,7 +485,7 @@ export default class SagaImg extends Component {
           </div>
         )}
         {jsonTitle && (
-          <div className="c7n-saga-img-detail">
+          <div className="c7n-saga-img-detail" ref={this.taskDetail}>
             {this.renderJson()}
           </div>
         )}

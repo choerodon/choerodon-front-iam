@@ -29,4 +29,9 @@
       background: rgba(140, 158, 255, 0.2);
     }
   }
+  &-sidebar {
+    &.ant-modal-sidebar .ant-modal-body {
+      height: calc(100% - 121px);
+    }
+  }
 }

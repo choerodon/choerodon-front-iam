@@ -14,7 +14,6 @@ import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
 
 const intlPrefix = 'global.apitest';
-const urlPrefix = '' + process.env.API_HOST;
 const Option = Select.Option;
 
 @withRouter
@@ -129,7 +128,6 @@ export default class APITest extends Component {
       this.loadApi();
     });
   };
-
 
   /**
    * 微服务下拉框改变事件

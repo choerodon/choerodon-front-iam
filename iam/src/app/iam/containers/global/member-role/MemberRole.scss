@@ -28,7 +28,8 @@
 .delete-role {
   margin-left: 15px;
   cursor: pointer;
-  vertical-align: bottom;
+  position: absolute;
+  bottom: -3px;
   > i.icon {
     vertical-align: inherit;
   }

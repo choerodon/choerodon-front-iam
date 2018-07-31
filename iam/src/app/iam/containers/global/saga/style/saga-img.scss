@@ -116,6 +116,10 @@
     .ant-tabs {
       margin-top: -12px;
     }
+    &.autoscroll {
+      position: absolute;
+      right: 0;
+    }
   }
 
   &-task-active {
@@ -150,6 +154,24 @@
       font-size: 13px;
       line-height: 20px;
       margin-top: 10px;
+    }
+    .c7n-saga-detail-json {
+      position: relative;
+      i.icon {
+        color: #3F51B5;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+    }
+    #failed {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      z-index: -999;
     }
   }
 

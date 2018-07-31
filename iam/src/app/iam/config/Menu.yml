@@ -128,7 +128,7 @@
           - 'asgard-service.saga.pagingQuery'
           - 'asgard-service.saga.query'
     - "saga-instance":
-        icon: outline
+        icon: instance_outline
         Routes: /iam/saga-instance
         sort: 2
         permission:

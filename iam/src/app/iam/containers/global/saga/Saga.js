@@ -194,6 +194,7 @@ export default class Saga extends Component {
             okText={<FormattedMessage id="close" />}
             okCancel={false}
             visible={this.state.visible}
+            className="c7n-saga-sidebar"
           >
             <Content
               className="sidebar-content"

@@ -2,6 +2,7 @@
 # site
 "iam.organization": "Organization"
 "iam.menu-management": "Menu Setting"
+"iam.role-label": "Role Label"
 "iam.role": "Role"
 "iam.member-role-global": "Role Assignment"
 "iam.root-user": "Root User Setting"
@@ -14,6 +15,10 @@
 
 "api": "API Manage"
 "api.api-test": "API Test"
+
+"global-transaction": "Global Transaction"
+"global-transaction.saga": "Saga"
+"global-transaction.saga-instance": "Saga Instance"
 
 "rentsetting": "Organization settings"
 # organization

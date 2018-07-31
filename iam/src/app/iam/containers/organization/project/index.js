@@ -1,6 +1,15 @@
-/**
- *create by mading on 2018/4/2
- */
-import ProjectIndex from './ProjectIndex';
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-export default ProjectIndex;
+
+const index = asyncRouter(() => import('./Project'), () => import('../../../stores/organization/project'));
+
+const Index = ({ match }) => (
+  <Switch>
+    <Route exact path={match.url} component={index} />
+    <Route path={'*'} component={nomatch} />
+  </Switch>
+);
+
+export default Index;

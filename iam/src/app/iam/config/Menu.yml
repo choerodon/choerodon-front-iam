@@ -16,7 +16,7 @@
           - 'iam-service.organization.enableOrganization'
     - "menu-management":
         icon: view_list
-        Routes: /iam/menuTree
+        Routes: /iam/menu-setting
         sort: 2
         permission:
           - 'iam-service.menu.create'
@@ -24,10 +24,16 @@
           - 'iam-service.menu.query'
           - 'iam-service.menu.update'
           - 'iam-service.menu.delete'
+    - "role-label":
+        icon: assignment_ind
+        Routes: /iam/role-label
+        sort: 3
+        permission:
+          - 'iam-service.label.listByType'
     - "role":
         icon: assignment_ind
         Routes: /iam/role
-        sort: 3
+        sort: 4
         permission:
           - 'iam-service.role.create'
           - 'iam-service.role.createBaseOnRoles'
@@ -41,8 +47,8 @@
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel'
     - "member-role-global":
         icon: person_add
-        Routes: /iam/memberRole
-        sort: 4
+        Routes: /iam/member-role
+        sort: 5
         permission:
           - 'iam-service.role-member.createOrUpdateOnSiteLevel'
           - 'iam-service.role-member.deleteOnSiteLevel'
@@ -51,8 +57,8 @@
           - 'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles'
     - "root-user":
         icon: root
-        Routes: /iam/rootuser
-        sort: 5
+        Routes: /iam/root-user
+        sort: 6
         permission:
           - 'iam-service.user.pagingQueryAdminUsers'
           - 'iam-service.user.addDefaultUsers'
@@ -104,10 +110,30 @@
   site:
     - "api-test":
         icon: APItest
-        Routes: /iam/apitest
+        Routes: /iam/api-test
         sort: 1
         permission:
           - 'manager-service.service.pageManager'
+
+# 事务管理
+"global-transaction":
+  icon: developer_board
+  sort: 6
+  site:
+    - "saga":
+        icon: saga_define
+        Routes: /iam/saga
+        sort: 1
+        permission:
+          - 'asgard-service.saga.pagingQuery'
+          - 'asgard-service.saga.query'
+    - "saga-instance":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 2
+        permission:
+          - 'asgard-service.saga-instance.pagingQuery'
+          - 'asgard-service.saga-instance.query'
 
 # 组织设置
 "rentsetting":
@@ -122,7 +148,9 @@
           - 'iam-service.organization-project.list'
           - 'iam-service.organization-project.create'
           - 'iam-service.organization-project.update'
+          - 'iam-service.organization-project.check'
           - 'iam-service.organization-project.enableProject'
+          - 'iam-service.organization-project.disableProject'
     - "user":
         icon: manage_person
         Routes: /iam/user
@@ -138,7 +166,7 @@
           - 'iam-service.organization-user.unlock'
     - "member-role-organization":
         icon: person_add
-        Routes: /iam/memberRole
+        Routes: /iam/member-role
         sort: 3
         permission:
           - 'iam-service.role-member.createOrUpdateOnOrganizationLevel'
@@ -160,7 +188,7 @@
           - 'iam-service.client.update'
     - "ldap":
         icon: device_hub
-        Routes: '/iam/ldap'
+        Routes: /iam/ldap
         sort: 5
         permission:
           - 'iam-service.ldap.create'
@@ -185,7 +213,7 @@
   project:
     - "member-role-project":
         icon: person_add
-        Routes: /iam/memberRole
+        Routes: /iam/member-role
         sort: 1
         permission:
           - 'iam-service.role-member.createOrUpdateOnSiteLevel'
@@ -195,7 +223,7 @@
           - 'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles'
     - "proManage":
         icon: settings_applications
-        Routes: /iam/proManage
+        Routes: /iam/project-setting
         sort: 2
         permission:
           - 'iam-service.project.disableProject'
@@ -209,7 +237,7 @@
   user:
     - "user-info":
         icon: person
-        Routes: /iam/userinfo
+        Routes: /iam/user-info
         sort: 1
         permission:
           - 'iam-service.user.queryInfo'
@@ -218,19 +246,19 @@
           - 'iam-service.user.querySelf'
     - "password":
         icon: vpn_key
-        Routes: /iam/usermodifyPwd
+        Routes: /iam/password
         sort: 2
         permission:
           - 'iam-service.user.selfUpdatePassword'
     - "organization-info":
         icon: domain
-        Routes: /iam/organizationinfo
+        Routes: /iam/organization-info
         sort: 3
         permission:
           - 'iam-service.user.listOrganizationAndRoleById'
     - "project-info":
         icon: project
-        Routes: /iam/projectinfo
+        Routes: /iam/project-info
         sort: 4
         permission:
           - 'iam-service.user.listProjectAndRoleById'

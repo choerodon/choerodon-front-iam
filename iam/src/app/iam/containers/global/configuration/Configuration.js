@@ -8,15 +8,18 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
-import ConfigurationStore from '../../../stores/globalStores/configuration';
+import ConfigurationStore from '../../../stores/global/configuration';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const intlPrefix = 'global.configuration';
 
+@Form.create({})
+@withRouter
+@injectIntl
 @inject('AppState')
 @observer
-class Configuration extends Component {
+export default class Configuration extends Component {
   state = this.getInitState();
 
   componentDidMount() {
@@ -66,7 +69,7 @@ class Configuration extends Component {
           ConfigurationStore.setLoading(false);
         }
       }
-    })
+    });
   }
 
   loadConfig(paginationIn, sortIn, filtersIn, paramsIn) {
@@ -132,7 +135,10 @@ class Configuration extends Component {
   /* 刷新 */
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
-      this.loadInitData();
+      ConfigurationStore.setLoading(true);
+      const defaultService = ConfigurationStore.service[0];
+      ConfigurationStore.setCurrentService(defaultService);
+      this.loadConfig();
     });
   }
 
@@ -186,7 +192,7 @@ class Configuration extends Component {
           if (failed) {
             Choerodon.prompt(message);
           } else {
-            Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
+            Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
             this.loadConfig();
           }
         });
@@ -267,7 +273,7 @@ class Configuration extends Component {
       }],
       filteredValue: filters.isDefault || [],
       render: (text) => {
-        intl.formatMessage({ id: text ? 'yes' : 'no' });
+        return intl.formatMessage({ id: text ? 'yes' : 'no' });
       },
     }, {
       title: '',
@@ -353,5 +359,3 @@ class Configuration extends Component {
     );
   }
 }
-
-export default Form.create({})(withRouter(injectIntl(Configuration)));

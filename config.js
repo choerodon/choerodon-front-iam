@@ -7,7 +7,7 @@ const config = {
     'primary-color': '#3F51B5',
   },
   cookieServer: '', //  子域名token共享
-  server: 'http://api.staging.saas.hand-china.com',
+  server: 'http://api.choerodon.com.cn',
 };
 
 module.exports = config;

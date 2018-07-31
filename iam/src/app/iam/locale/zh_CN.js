@@ -119,7 +119,7 @@ const pageDetail = {
   'global.apitest.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   'global.apitest.detail.title': 'API"{name}"的测试',
-  'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应',
+  'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
   'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   // 事务定义

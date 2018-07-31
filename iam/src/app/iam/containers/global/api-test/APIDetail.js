@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
-import { Table, Input, Button, Select, Tabs, Spin } from 'choerodon-ui';
+import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip } from 'choerodon-ui';
 import querystring from 'query-string';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -10,7 +10,11 @@ import './APITest.scss';
 import APITestStore from '../../../stores/global/api-test';
 
 const intlPrefix = 'global.apitest';
+const urlPrefix = process.env.API_HOST;
 const { TabPane } = Tabs;
+const { Option } = Select;
+const { TextArea } = Input;
+const FormItem = Form.Item;
 const Hjson = require('hjson');
 // Hjson编译配置
 const options = {
@@ -19,6 +23,7 @@ const options = {
   keepWsc: true,
 }
 
+@Form.create()
 @withRouter
 @injectIntl
 export default class APIDetail extends Component {
@@ -32,6 +37,8 @@ export default class APIDetail extends Component {
       version,
       service,
       operationId,
+      requestUrl: null,
+      isShowResult: false,
     };
   }
 
@@ -50,6 +57,7 @@ export default class APIDetail extends Component {
             APITestStore.setApiDetail(item);
             this.setState({
               loading: false,
+              requestUrl: `${urlPrefix}${APITestStore.getApiDetail.url}`,
             });
             return;
           }
@@ -58,6 +66,7 @@ export default class APIDetail extends Component {
     } else {
       this.setState({
         loading: false,
+        requestUrl: `${urlPrefix}${APITestStore.getApiDetail.url}`,
       });
     }
   }
@@ -72,13 +81,13 @@ export default class APIDetail extends Component {
       };
     })
 
-    const desc = APITestStore.getApiDetail && APITestStore.getApiDetail.description;
+    const desc = (APITestStore.getApiDetail && APITestStore.getApiDetail.description) || '[]';
     const responseDataExample = APITestStore.getApiDetail &&
       APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
     handledDescWithComment = Hjson.stringify(handledDescWithComment, options);
     const handledDesc = Hjson.parse(desc);
-    const { permission } = handledDesc;
+    const { permission = { roles: [] } } = handledDesc;
     const roles = permission.roles.length && permission.roles.map((item) => {
       return {
         name: '默认角色',
@@ -94,7 +103,10 @@ export default class APIDetail extends Component {
     tableValue[6].value = permission.permissionPublic ? '是' : '否';
     tableValue[7].value = APITestStore && APITestStore.apiDetail.consumes[0];
     tableValue[8].value = APITestStore && APITestStore.apiDetail.produces[0];
-    tableValue.splice(5, 0, ...roles);
+    if (roles) {
+      tableValue.splice(5, 0, ...roles);
+    }
+
 
     const infoColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.property`} />,
@@ -153,6 +165,8 @@ export default class APIDetail extends Component {
               </div>
             </div>
           );
+        } else if (text === 'array') {
+          return 'Array[string]';
         } else {
           return text;
         }
@@ -197,13 +211,15 @@ export default class APIDetail extends Component {
     );
   }
 
+
   getTest = () => {
     const method = APITestStore && APITestStore.apiDetail.method;
+    const { getFieldDecorator } = this.props.form;
     const requestColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.param.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: '20%',
+      width: '30%',
       render: (text, record) => {
         if (record.required) {
           return (
@@ -221,6 +237,54 @@ export default class APIDetail extends Component {
       dataIndex: 'in',
       key: 'in',
       width: '40%',
+      render: (text, record) => {
+        let editableNode;
+        if (record.type === 'boolean') {
+          editableNode = (<FormItem>
+            {getFieldDecorator(`${record.name}`, {
+              rules: [],
+            })(
+              <div style={{ width: '55px' }}>
+                <Select
+                  dropdownStyle={{ width: '55px' }}
+                >
+                  <Option value="" style={{ height: '22px' }}> </Option>
+                  <Option value="true">true</Option>
+                  <Option value="false">false</Option>
+                </Select>
+              </div>
+            )}
+          </FormItem>);
+        } else if (!record.type || record.type === 'array') {
+          editableNode = (
+            <div style={{ width: '50%' }}>
+              <FormItem>
+                {getFieldDecorator(`${record.name}`, {
+                  rules: [{
+                    required: !record.type ? true : false,
+                    message: `请输入${record.name}`,
+                  }],
+                })(
+                  <TextArea rows={6} />,
+                )}
+              </FormItem>
+            </div>);
+        } else {
+          editableNode = (<FormItem>
+            {getFieldDecorator(`${record.name}`, {
+              rules: [{
+                required: record.required,
+                message: `请输入${record.name}`,
+              }],
+            })(
+              <div style={{ width: '50%' }}>
+                <Input autoComplete="off" />
+              </div>,
+            )}
+          </FormItem>);
+        }
+        return editableNode;
+      },
     }, {
       title: <FormattedMessage id={`${intlPrefix}.request.data.type`} />,
       dataIndex: 'type',
@@ -235,65 +299,101 @@ export default class APIDetail extends Component {
           return (
             <div>
               Example Value
-              <div className="body-container">
-                <pre>
-                  <code>
-                    {value}
-                  </code>
-                </pre>
-              </div>
+              <Tooltip placement="left" title="点击复制至左侧">
+                <div className="body-container" onClick={this.copyToLeft.bind(this, value, record.name)}>
+                  <pre>
+                    <code>
+                      {value}
+                    </code>
+                  </pre>
+                </div>
+              </Tooltip>
             </div>
           );
+        } else if (text === 'array') {
+          return 'Array[string]';
         } else {
           return text;
         }
       },
     }]
+
     return (
       <div className="c7n-interface-test">
         <div className="c7n-interface-test-response-params">
           <h5><FormattedMessage id={`${intlPrefix}.request.parameter`} /></h5>
-          <Table
-            pagination={false}
-            filterBar={false}
-            columns={requestColumns}
-            dataSource={APITestStore && APITestStore.apiDetail.parameters}
-            rowKey="name"
-          />
-
+          <Form>
+            <Table
+              pagination={false}
+              filterBar={false}
+              columns={requestColumns}
+              dataSource={APITestStore && APITestStore.apiDetail.parameters}
+              rowKey="name"
+            />
+          </Form>
         </div>
         <div className="c7n-url-container">
           <span className={classnames('method', method)}>{method}</span>
-          <input type="text" />
+          <input type="text" value={this.state.requestUrl} readOnly />
           <Button
             funcType="raised"
             type="primary"
             htmlType="submit"
+            onClick={this.handleSubmit}
           >
             发送
           </Button>
         </div>
-        <div className="c7n-response-container">
-          <div className="c7n-response-code">
-            <h5><FormattedMessage id={`${intlPrefix}.response.code`} /></h5>
-            <div className="response-code-container">200</div>
+        {!this.state.isShowResult ? '' : (
+          <div className="c7n-response-container">
+            <div className="c7n-response-code">
+              <h5><FormattedMessage id={`${intlPrefix}.response.code`} /></h5>
+              <div className="response-code-container">200</div>
+            </div>
+            <div className="c7n-response-body">
+              <h5><FormattedMessage id={`${intlPrefix}.response.body`} /></h5>
+              <div className="response-body-container" />
+            </div>
+            <div className="c7n-response-body">
+              <h5><FormattedMessage id={`${intlPrefix}.response.headers`} /></h5>
+              <div className="response-body-container" />
+            </div>
+            <div className="c7n-curl">
+              <h5>CURL</h5>
+              <div className="curl-container" />
+            </div>
           </div>
-          <div className="c7n-response-body">
-            <h5><FormattedMessage id={`${intlPrefix}.response.body`} /></h5>
-            <div className="response-body-container" />
-          </div>
-          <div className="c7n-response-body">
-            <h5><FormattedMessage id={`${intlPrefix}.response.headers`} /></h5>
-            <div className="response-body-container" />
-          </div>
-          <div className="c7n-curl">
-            <h5>CURL</h5>
-            <div className="curl-container" />
-          </div>
-        </div>
+        )}
       </div>
     );
   }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        if (APITestStore.apiDetail.method === 'get') {
+          axios.get(this.state.requestUrl).then(function (response) {
+            window.console.log(response.headers);
+          }).catch((error) => {
+            window.console.log(error);
+          });
+        }
+      }
+    });
+  }
+
+  copyToLeft(value, name) {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ [name]: value });
+  }
+
+  // changeNormalValue = (name, e) => {
+  //   // const { requestUrl } = this.state;
+  //   // name = '{' + name + '}';
+  //   // const newUrl = requestUrl.replace(name, e.target.value);
+  //   // window.console.log(newUrl);
+  // }
 
 
   render() {

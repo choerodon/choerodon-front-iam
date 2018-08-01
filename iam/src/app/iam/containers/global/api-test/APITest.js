@@ -55,6 +55,10 @@ export default class APITest extends Component {
 
   loadInitData = () => {
     APITestStore.setLoading(true);
+    // if (APITestStore.service.length) {
+    //   APITestStore.setCurrentService(APITestStore.getCurrentService || APITestStore.service[0]);
+    //   this.loadApi();
+    // } else {
     APITestStore.loadService().then((res) => {
       if (res.failed) {
         Choerodon.prompt(res.message);
@@ -71,6 +75,7 @@ export default class APITest extends Component {
         this.loadApi();
       }
     });
+    // }
   }
 
   loadApi = (paginationIn, filtersIn, paramsIn) => {

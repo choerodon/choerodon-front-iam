@@ -86,14 +86,38 @@
         overflow-y: scroll;
       }
 
-      //.ant-form-item {
-      //  margin-bottom: 0;
-      //}
-      //
-      //.ant-form-explain {
-      //  position: absolute;
-      //  bottom: 5px;
-      //}
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+
+      .ant-input-placeholder {
+        color: #d50000;
+      }
+
+      .ant-form-explain {
+        display: none;
+      }
+
+
+      .paramTextarea::-webkit-input-placeholder {
+        /* WebKit browsers */
+        color: #d50000;
+      }
+
+      .paramTextarea:-moz-placeholder {
+        /* Mozilla Firefox 4 to 18 */
+        color: #d50000;
+      }
+
+      .paramTextarea::-moz-placeholder {
+        /* Mozilla Firefox 19+ */
+        color: #d50000;
+      }
+
+      .paramTextarea::-ms-input-placeholder {
+        /* Internet Explorer 10+ */
+        color: #d50000;
+      }
     }
 
     .c7n-url-container {
@@ -146,11 +170,13 @@
         margin-top: 24px;
 
         .response-body-container {
+          padding: 16px;
           max-height: 228px;
+          overflow-x: scroll;
           overflow-y: scroll;
           background: #F1F9FF;
           white-space: nowrap;
-          overflow-x: scroll;
+          font-size: 14px;
         }
       }
 

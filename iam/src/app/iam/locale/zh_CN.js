@@ -320,7 +320,7 @@ const zh_CN = {
   'remove.success': '移除成功',
   'enable.success': '启用成功',
   'disable.success': '停用成功',
-  'copy.success': '复制成功',
+  'copy.success': '已复制到剪贴板',
 
 // error
   'error': '失败',

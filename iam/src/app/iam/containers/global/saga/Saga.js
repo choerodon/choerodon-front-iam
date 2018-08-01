@@ -4,8 +4,10 @@ import { Button, Table, Tooltip, Modal, Tabs } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from './SagaImg';
+import jsonFormat from './util/JsonFormatter';
 import SagaStore from '../../../stores/global/saga/SagaStore';
 import './style/saga.scss';
+import './style/json.scss';
 
 const intlPrefix = 'global.saga';
 const { Sidebar } = Modal;
@@ -205,7 +207,7 @@ export default class Saga extends Component {
                 <TabPane tab={<FormattedMessage id={`${intlPrefix}.json`} />} key="json" />
               </Tabs>
               {showJson
-                ? (<div className="c7n-saga-detail-json"><pre><code id="json">{JSON.stringify(data, null, 2)}</code></pre></div>)
+                ? (<div className="c7n-saga-detail-json"><pre><code id="json">{jsonFormat(data)}</code></pre></div>)
                 : (<SagaImg data={data} />)
               }
             </Content>

@@ -4,9 +4,11 @@ import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
+import jsonFormat from './util/JsonFormatter';
 import SagaStore from '../../../stores/global/saga/SagaStore';
 import './style/saga-img.scss';
 import './style/saga.scss';
+import './style/json.scss';
 
 const intlPrefix = 'global.saga';
 const { TabPane } = Tabs;
@@ -33,6 +35,7 @@ export default class SagaImg extends Component {
     this.taskDetail = React.createRef();
     this.taskImg = React.createRef();
   }
+
   componentWillMount() {
     const { data: { tasks } } = this.state;
     this.getLineData(tasks);
@@ -42,23 +45,21 @@ export default class SagaImg extends Component {
     this.addScrollEventListener();
   }
 
-  componentWillUnmount() {
-    this.removeScrollEventListener();
-  }
 
   getSidebarContainer() {
     const content = document.body.getElementsByClassName('ant-modal-sidebar')[0];
     return content.getElementsByClassName('ant-modal-body')[0];
   }
+
   addScrollEventListener() {
     const container = this.getSidebarContainer();
     container.addEventListener('scroll', this.handleScroll.bind(this, container));
   }
 
-  removeScrollEventListener() {
-    const container = this.getSidebarContainer();
-    container.removeEventListener('scroll', this.handleScroll);
-  }
+  // removeScrollEventListener() {
+  //   const container = this.getSidebarContainer();
+  //   container.removeEventListener('scroll', this.handleScroll);
+  // }
 
   /**
    * 1. taskImg 超出 detail未超出屏幕高度
@@ -69,17 +70,20 @@ export default class SagaImg extends Component {
    */
   handleScroll = (container) => {
     const imgDom = this.taskImg.current;
-    const imgHeight = imgDom.scrollHeight;
-    const top = imgDom.offsetTop + 24; // 加顶边24px
     const detail = this.taskDetail.current;
-    if (detail && imgHeight > container.clientHeight && imgHeight > detail.scrollHeight) {
+    if (!imgDom) {
+      return;
+    }
+    const imgHeight = imgDom.scrollHeight;
+    const top = imgDom.offsetTop;
+    if (detail && imgHeight + top > container.clientHeight && imgHeight > detail.scrollHeight) {
       const detailHeight = detail.scrollHeight;
       let detailTop = container.scrollTop;
       if (detailTop > top) {
         if (detailHeight > container.clientHeight) {
           detailTop = Math.min(imgHeight - detailHeight + top, detailTop);
         }
-        detail.style.cssText = `top: ${detailTop - 24}px`;
+        detail.style.cssText = `top: ${detailTop}px`;
         detail.classList.add('autoscroll');
       } else {
         detail.classList.remove('autoscroll');
@@ -345,7 +349,7 @@ export default class SagaImg extends Component {
     };
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
-      value: output ? JSON.stringify(JSON.parse(output), null, 2) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
+      value: output ? jsonFormat(JSON.parse(output)) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
     };
     return (
       <div className="c7n-saga-task-run">
@@ -451,7 +455,7 @@ export default class SagaImg extends Component {
           <div className="c7n-saga-detail-json">
             <pre>
               <code id="json">
-                {json ? JSON.stringify(JSON.parse(json), null, 2) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
+                {json ? jsonFormat(JSON.parse(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
               </code>
             </pre>
           </div>

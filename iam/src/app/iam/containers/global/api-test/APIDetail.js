@@ -48,7 +48,6 @@ instance.interceptors.response.use((res) => {
   responseHeader = Hjson.stringify(res.headers, options); // 响应头
   response = Hjson.stringify(res.data, options);
 }, (error) => {
-  debugger;
   statusCode = error.response.status; // 响应码
   responseHeader = Hjson.stringify(error.response.headers, options); // 响应头
   response = Hjson.stringify(error.response.data, options);
@@ -120,6 +119,7 @@ export default class APIDetail extends Component {
     const responseDataExample = APITestStore.getApiDetail &&
       APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
+    window.console.log(handledDescWithComment)
     handledDescWithComment = Hjson.stringify(handledDescWithComment, options);
     const handledDesc = Hjson.parse(desc);
     const { permission = { roles: [] } } = handledDesc;
@@ -279,8 +279,11 @@ export default class APIDetail extends Component {
   }
 
 
-  changeTextareaValue = (name, e) => {
-    window.console.log(name, e.target.value);
+  changeTextareaValue = (isBody, e) => {
+    if (isBody === 'body') {
+      let postBody = JSON.stringify(e.target.value);
+      postBody = Hjson.parse(postBody);
+    }
   }
 
 
@@ -311,7 +314,21 @@ export default class APIDetail extends Component {
       width: '40%',
       render: (text, record) => {
         let editableNode;
-        if (record.type === 'boolean') {
+        if (!record.type) {
+          editableNode = (
+            <div style={{ width: '50%' }}>
+              <FormItem>
+                {getFieldDecorator('bodyData', {
+                  rules: [{
+                    required: !record.type ? true : false,
+                    message: `请输入${record.name}`,
+                  }],
+                })(
+                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.in)} />,
+                )}
+              </FormItem>
+            </div>);
+        } else if (record.type === 'boolean') {
           editableNode = (<FormItem>
             {getFieldDecorator(`${record.name}`, {
               rules: [],
@@ -329,7 +346,7 @@ export default class APIDetail extends Component {
               </div>
             )}
           </FormItem>);
-        } else if (!record.type || record.type === 'array') {
+        } else if (record.type === 'array') {
           editableNode = (
             <div style={{ width: '50%' }}>
               <FormItem>
@@ -339,7 +356,7 @@ export default class APIDetail extends Component {
                     message: `请输入${record.name}`,
                   }],
                 })(
-                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.name)} />,
+                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.in)} />,
                 )}
               </FormItem>
             </div>);
@@ -352,7 +369,7 @@ export default class APIDetail extends Component {
               }],
             })(
               <div style={{ width: '50%' }}>
-                <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name)} placeholder={getFieldError(`${record.name}`)} />
+                <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
               </div>,
             )}
           </FormItem>);
@@ -479,8 +496,20 @@ export default class APIDetail extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.setState({ isSending: true, isShowResult: false });
-        if (APITestStore.getApiDetail.method === 'get') {
-          instance.get(this.state.requestUrl).then(function (res) {
+        if ('bodyData' in values) {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl, JSON.stringify(Hjson.parse(values.bodyData))).then(function (res) {
+            this.setState({
+              isSending: false,
+              isShowResult: true,
+            });
+          }).catch((error) => {
+            this.setState({
+              isSending: false,
+              isShowResult: true,
+            });
+          });
+        } else {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({
               isSending: false,
               isShowResult: true,
@@ -498,18 +527,21 @@ export default class APIDetail extends Component {
 
   copyToLeft(value, name) {
     const { setFieldsValue } = this.props.form;
-    setFieldsValue({ [name]: value });
+    setFieldsValue({ bodyData: value });
   }
 
-  changeNormalValue = (name, e) => {
-    window.console.log(e.target.value);
-    const { urlPathValues } = this.state;
-    let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
-    urlPathValues[`{${name}}`] = e.target.value;
-    Object.entries(urlPathValues).forEach((items) => {
-      requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
-    });
-    this.setState({ requestUrl, urlPathValues });
+  changeNormalValue = (name, paramPosition, e) => {
+    if (paramPosition === 'query') {
+      let handledQuery = `&${name}=${e.target.value}`;
+    } else {
+      const { urlPathValues } = this.state;
+      let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
+      urlPathValues[`{${name}}`] = e.target.value;
+      Object.entries(urlPathValues).forEach((items) => {
+        requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
+      });
+      this.setState({ requestUrl, urlPathValues });
+    }
   }
 
   render() {

@@ -323,7 +323,11 @@ export default class SagaImg extends Component {
       retriedCount,
       instanceLock,
       exceptionMessage,
-      output } } = this.state;
+      output,
+      plannedStartTime,
+      actualStartTime,
+      actualEndTime,
+    } } = this.state;
     const list = [{
       key: formatMessage({ id: `${intlPrefix}.task.code` }),
       value: code || taskCode,
@@ -342,6 +346,15 @@ export default class SagaImg extends Component {
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.run.retried` }),
       value: retriedCount,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.task.plannedstarttime` }),
+      value: plannedStartTime,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.task.actualstarttime` }),
+      value: actualStartTime,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.task.actualendtime` }),
+      value: actualEndTime,
     }];
     const failed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.exception.msg` }),

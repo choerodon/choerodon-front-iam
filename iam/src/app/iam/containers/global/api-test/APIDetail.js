@@ -6,6 +6,7 @@ import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip } from 'choerod
 import querystring from 'query-string';
 import classnames from 'classnames';
 import Hjson from 'hjson';
+import jsonFormat from '../../../common/json-format';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './APITest.scss';
 import APITestStore from '../../../stores/global/api-test';
@@ -20,6 +21,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 const FormItem = Form.Item;
 const instance = defaultAxios.create();
+
 // Hjson编译配置
 const options = {
   bracesSameLine: true,
@@ -45,13 +47,13 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
-  responseHeader = Hjson.stringify(res.headers, options); // 响应头
-  response = Hjson.stringify(res.data, options);
+  responseHeader = jsonFormat(res.headers);
+  response = jsonFormat(res.data);
 }, (error) => {
   statusCode = error.response.status; // 响应码
-  responseHeader = Hjson.stringify(error.response.headers, options); // 响应头
-  response = Hjson.stringify(error.response.data, options);
-})
+  responseHeader = jsonFormat(error.response.headers);
+  response = jsonFormat(error.response.data);
+});
 
 @Form.create()
 @withRouter
@@ -105,7 +107,6 @@ export default class APIDetail extends Component {
     }
   }
 
-
   getDetail() {
     const { intl } = this.props;
     const { method, url, remark, consumes, produces } = APITestStore.getApiDetail;
@@ -119,8 +120,7 @@ export default class APIDetail extends Component {
     const responseDataExample = APITestStore.getApiDetail &&
       APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
-    window.console.log(handledDescWithComment)
-    handledDescWithComment = Hjson.stringify(handledDescWithComment, options);
+    handledDescWithComment = jsonFormat(handledDescWithComment);
     const handledDesc = Hjson.parse(desc);
     const { permission = { roles: [] } } = handledDesc;
     const roles = permission.roles.length && permission.roles.map((item) => {
@@ -194,7 +194,7 @@ export default class APIDetail extends Component {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
-              value = Hjson.stringify(value, options);
+              value = jsonFormat(value);
             } else {
               value = null;
             }
@@ -393,7 +393,7 @@ export default class APIDetail extends Component {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
-              value = Hjson.stringify(value, options);
+              value = jsonFormat(value);
             } else {
               value = null;
             }
@@ -497,7 +497,7 @@ export default class APIDetail extends Component {
       if (!err) {
         this.setState({ isSending: true, isShowResult: false });
         if ('bodyData' in values) {
-          instance[APITestStore.getApiDetail.method](this.state.requestUrl, JSON.stringify(Hjson.parse(values.bodyData))).then(function (res) {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl, jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
             this.setState({
               isSending: false,
               isShowResult: true,

@@ -41,6 +41,18 @@
 }
 
 .c7n-api-test {
+  .string,
+  .number {
+    color: #f44336;
+  }
+  .boolean,
+  .undefined,
+  .null {
+    color: #00BFA5;
+  }
+  .comment {
+    color: rgba(0,0,0,0.56);
+  }
   .title {
     white-space: nowrap;
   }
@@ -51,7 +63,6 @@
 
   .c7n-interface-detail {
     margin-top: 8px;
-
     .c7n-interface-info {
       width: 512px;
     }

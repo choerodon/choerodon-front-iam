@@ -4,7 +4,7 @@ import { Button, Table, Tooltip, Modal, Tabs } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from './SagaImg';
-import jsonFormat from './util/JsonFormatter';
+import jsonFormat from '../../../common/json-format';
 import SagaStore from '../../../stores/global/saga/SagaStore';
 import './style/saga.scss';
 import './style/json.scss';

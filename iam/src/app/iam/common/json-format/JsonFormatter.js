@@ -6,6 +6,8 @@ import React, { Component } from 'react';
  *  递归遍历这个json对象
  *  对key和value做操作
  */
+const tabSize = 2;
+
 class JsonFormatter extends Component {
   constructor(props) {
     super(props);
@@ -28,20 +30,28 @@ class JsonFormatter extends Component {
    */
   wrapper = (value, className, count, newLine = false, quote = false) => {
     const space = this.getSpace(count);
-    return <span className={className}>{space}{quote && '"'}{value || ''}{newLine && '\n'}{quote && '"'}</span>;
+    const { renderItem } = this.props;
+    const tag = <span className={className}>{space}{quote && '"'}{value || ''}{newLine && '\n'}{quote && '"'}</span>;
+    return renderItem ? renderItem(tag) : tag;
   };
 
   withArray = (value, count, space) => {
     const { wrapper, process } = this;
-    const { tabSize } = this.props;
     const html = [];
+    const comments = this.comments(value);
     if (value.length) {
       html.push(wrapper('[', 'array', space, true));
       value.forEach((item, index) => {
         const values = [];
+        if (comments[item] && comments[item][0]) {
+          values.push(wrapper(comments[item], 'comment', count + tabSize, true));
+        }
         values.push(process(item, count + tabSize));
         if (index !== value.length - 1) {
           values.push(',');
+        }
+        if (comments[item] && comments[item][1]) {
+          values.push(wrapper(comments[item], 'comment', 1));
         }
         html.push(wrapper(values, 'items-wrapper', 0, true));
       });
@@ -52,25 +62,33 @@ class JsonFormatter extends Component {
     return html;
   };
 
+  comments = (obj = {}) => {
+    if (obj.__COMMENTS__) {
+      return obj.__COMMENTS__.c || {};
+    }
+    return {};
+  };
 
   withObject = (value, count, space) => {
     const { wrapper, process } = this;
-    const { tabSize } = this.props;
     const html = [];
+    const comments = this.comments(value);
     const arr = Object.keys(value);
     if (arr.length) {
       html.push(wrapper('{', 'object', space, true));
       arr.forEach((item, index) => {
         const values = [];
+        if (comments[item] && comments[item][0]) {
+          values.push(wrapper(comments[item], 'comment', count + tabSize, true));
+        }
         values.push(wrapper(item, 'item-key', count + tabSize, false, true));
         values.push(':');
-        if (value[item] === null) {
-          values.push(wrapper('null', 'null', 1));
-        } else {
-          values.push(process(value[item], count + 2, 1));
-        }
+        values.push(process(value[item], count + tabSize, 1));
         if (index !== arr.length - 1) {
           values.push(',');
+        }
+        if (comments[item] && comments[item][1]) {
+          values.push(wrapper(comments[item], 'comment', 1));
         }
         html.push(wrapper(values, 'items-wrapper', 0, true));
       });
@@ -84,8 +102,12 @@ class JsonFormatter extends Component {
   process = (value, count = 0, space = count) => {
     const html = [];
     const type = typeof value;
-    if (type === 'object' && value instanceof Array) {
+    if (value === null) {
+      html.push(this.wrapper('null', 'null', space));
+    } else if (type === 'object' && value instanceof Array) {
       html.push(this.withArray(value, count, space));
+    } else if (type === 'object' && value instanceof Date) {
+      html.push(this.wrapper(value, 'date', space));
     } else if (type === 'object') {
       html.push(this.withObject(value, count, space));
     } else if (type === 'number') {
@@ -106,4 +128,6 @@ const defaultProps = {
 };
 
 const jsonFormat = new JsonFormatter(defaultProps);
+
 export default jsonFormat.process;
+

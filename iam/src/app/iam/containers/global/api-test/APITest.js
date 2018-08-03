@@ -54,7 +54,7 @@ export default class APITest extends Component {
   }
 
   loadInitData = () => {
-    APITestStore.setLoading(true);
+    // APITestStore.setLoading(true);
     // if (APITestStore.service.length) {
     //   APITestStore.setCurrentService(APITestStore.getCurrentService || APITestStore.service[0]);
     //   this.loadApi();

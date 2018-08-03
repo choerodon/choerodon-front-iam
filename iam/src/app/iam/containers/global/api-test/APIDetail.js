@@ -5,6 +5,7 @@ import { axios as defaultAxios, Content, Header, Page, Permission } from 'choero
 import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip } from 'choerodon-ui';
 import querystring from 'query-string';
 import classnames from 'classnames';
+import _ from 'lodash';
 import Hjson from 'hjson';
 import jsonFormat from '../../../common/json-format';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -14,6 +15,7 @@ import APITestStore from '../../../stores/global/api-test';
 let statusCode;
 let responseHeader;
 let response;
+let authorization;
 const intlPrefix = 'global.apitest';
 const urlPrefix = process.env.API_HOST;
 const { TabPane } = Tabs;
@@ -37,6 +39,7 @@ instance.interceptors.request.use(
     const accessToken = Choerodon.getAccessToken();
     if (accessToken) {
       newConfig.headers.Authorization = accessToken;
+      authorization = accessToken;
     }
     return newConfig;
   },
@@ -48,11 +51,11 @@ instance.interceptors.request.use(
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
   responseHeader = jsonFormat(res.headers);
-  response = jsonFormat(res.data);
+  response = res.data instanceof Object ? jsonFormat(res.data) : res.data; // 响应主体
 }, (error) => {
   statusCode = error.response.status; // 响应码
   responseHeader = jsonFormat(error.response.headers);
-  response = jsonFormat(error.response.data);
+  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : error.response.data; // 响应主体
 });
 
 @Form.create()
@@ -74,6 +77,10 @@ export default class APIDetail extends Component {
       isShowResult: null,
       isSending: false,
       urlPathValues: {},
+      bData: {},
+      queryArr: {},
+      query: '',
+      taArr: {},
     };
   }
 
@@ -188,12 +195,13 @@ export default class APIDetail extends Component {
         } else if (text === 'array') {
           return 'Array[string]';
         } else if (!text) {
-          if ('type' in record.schema) {
+          if (record.schema && record.schema.type) {
             return record.schema.type;
           } else {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
+              debugger;
               value = jsonFormat(value);
             } else {
               value = null;
@@ -256,36 +264,26 @@ export default class APIDetail extends Component {
   }
 
   handleSelectChange = (name, select) => {
-    let {requestUrl} = this.state;
-    // console.log(requestUrl);
-    // const aaa = requestUrl.search('123') === -1 ? '没有问号' : '有问号';
-    // console.log(aaa);
+    const a = {target: {value: select}};
+    this.changeNormalValue(name, 'query', a);
+  };
 
-    if (requestUrl.search('?') !== -1) { // 有问号
-      //   if (requestUrl.search(name) !== -1) {
-      //     requestUrl = '有了';
-      //   } else {
-      //     requestUrl += `&${name}=${select}`;
-      //   }
-      // } else {
-      //   requestUrl += `?${name}=${select}`;
-      // }
-      // this.setState({ requestUrl });
+
+  changeTextareaValue = (name, type, e) => {
+    if(type !== 'array') {
+      this.setState({
+        bData: e.target.value,
+      });
     } else {
-      requestUrl += `?${name}=${select}`;
+      this.changeNormalValue(name, 'array', e);
     }
+  };
 
-    this.setState({ requestUrl });
-  }
-
-
-  changeTextareaValue = (isBody, e) => {
-    if (isBody === 'body') {
-      let postBody = JSON.stringify(e.target.value);
-      postBody = Hjson.parse(postBody);
+  uploadRef = (node) => {
+    if (node) {
+      this.fileInput = node;
     }
-  }
-
+  };
 
   getTest = () => {
     const method = APITestStore && APITestStore.apiDetail.method;
@@ -324,7 +322,7 @@ export default class APIDetail extends Component {
                     message: `请输入${record.name}`,
                   }],
                 })(
-                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.in)} />,
+                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} />,
                 )}
               </FormItem>
             </div>);
@@ -356,10 +354,16 @@ export default class APIDetail extends Component {
                     message: `请输入${record.name}`,
                   }],
                 })(
-                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.in)} />,
+                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />,
                 )}
               </FormItem>
             </div>);
+        } else if (record.type === 'file') {
+          editableNode = (
+            <div>
+              <input type="file" name="file" ref={this.uploadRef} />
+            </div>
+          );
         } else {
           editableNode = (<FormItem>
             {getFieldDecorator(`${record.name}`, {
@@ -387,7 +391,7 @@ export default class APIDetail extends Component {
         } else if (text === 'array') {
           return 'Array[string]';
         } else if (!text) {
-          if ('type' in record.schema) {
+          if (record.schema && record.schema.type) {
             return record.schema.type;
           } else {
             let value;
@@ -508,6 +512,20 @@ export default class APIDetail extends Component {
               isShowResult: true,
             });
           });
+        } else if (this.fileInput) {
+          const formData = new FormData();
+          formData.append('file',  this.fileInput.files[0]);
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData).then(function (res) {
+            this.setState({
+              isSending: false,
+              isShowResult: true,
+            });
+          }).catch((error) => {
+            this.setState({
+              isSending: false,
+              isShowResult: true,
+            });
+          });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({
@@ -530,19 +548,36 @@ export default class APIDetail extends Component {
     setFieldsValue({ bodyData: value });
   }
 
-  changeNormalValue = (name, paramPosition, e) => {
-    if (paramPosition === 'query') {
-      let handledQuery = `&${name}=${e.target.value}`;
-    } else {
-      const { urlPathValues } = this.state;
-      let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
-      urlPathValues[`{${name}}`] = e.target.value;
-      Object.entries(urlPathValues).forEach((items) => {
-        requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
+
+  changeNormalValue = (name, valIn, e) => {
+    const { urlPathValues } = this.state;
+    let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
+    urlPathValues[`{${name}}`] = e.target.value;
+    Object.entries(urlPathValues).forEach((items) => {
+      requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
+    });
+    let query = '';
+    if (valIn === 'query' || valIn === 'array') {
+      const arr = e.target.value.split('\n');
+      this.state.taArr[name] = arr;
+      this.setState({
+        taArr: this.state.taArr,
       });
-      this.setState({ requestUrl, urlPathValues });
+      Object.entries(this.state.taArr).map(a => {
+        const name = a[0];
+        if (Array.isArray(a[1])) {
+          a[1].map(v => { query = `${query}&${name}=${v}`});
+        } else {
+          query = `${query}&${name}=${a[1]}`;
+        }
+      });
+      this.setState({
+        query,
+      });
     }
-  }
+    query = _.replace(query, '&', '?');
+    this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
+  };
 
   render() {
     const url = APITestStore && APITestStore.apiDetail.url;

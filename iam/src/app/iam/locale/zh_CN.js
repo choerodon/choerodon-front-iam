@@ -138,6 +138,14 @@ const pageDetail = {
   'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
   'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+  // 仪表盘配置
+  'global.dashboard-setting.title': '仪表盘配置',
+  'global.dashboard-setting.description': '仪表盘为首页所展示的卡片合集，用户可以自定义自己的仪表盘。您可以在此配置仪表盘的卡片。',
+  'global.dashboard-setting.link': '',
+  'global.dashboard-setting.modify.title': '对卡片"{name}"进行修改',
+  'global.dashboard-setting.modify.description': '您可以在此修改仪表盘中卡片的配置。',
+  'global.dashboard-setting.modify.link': '',
+
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
   'organization.project.description': '项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。',
@@ -366,7 +374,7 @@ const zh_CN = {
   'global.organization.codemaxmsg': '组织编码不能超过15个字符',
   'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'global.organization.namerequiredmsg': '请输入组织名称',
-  "global.organization.project.count": "项目数量",
+  'global.organization.project.count': '项目数量',
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',
@@ -582,8 +590,8 @@ const zh_CN = {
   'global.saga.detail': '事务定义详情',
   'global.saga.img': '事务定义图',
   'global.saga.json': 'Json',
-  'global.saga.task.run.title': "任务运行情况",
-  'global.saga.task.code': "任务编码",
+  'global.saga.task.run.title': '任务运行情况',
+  'global.saga.task.code': '任务编码',
   'global.saga.task.run.status': '状态',
   'global.saga.task.seq': '序列',
   'global.saga.task.run.service-instance': '运行的微服务实例',
@@ -622,6 +630,21 @@ const zh_CN = {
   'global.saga-instance.saga': '所属事务定义',
   'global.saga-instance.reftype': '关联业务类型',
   'global.saga-instance.refid': '关联业务ID',
+
+  // 仪表盘配置
+  'global.dashboard-setting.header.title': '仪表盘配置',
+  'global.dashboard-setting.sidebar.title': '修改卡片',
+  'global.dashboard-setting.name': '卡片名称',
+  'global.dashboard-setting.name.required': '请输入卡片名称',
+  'global.dashboard-setting.code': '卡片编码',
+  'global.dashboard-setting.icon': '卡片图标',
+  'global.dashboard-setting.level': '卡片层级',
+  'global.dashboard-setting.level.required': '请选择卡片层级',
+  'global.dashboard-setting.level.site': '平台层',
+  'global.dashboard-setting.level.organization': '组织层',
+  'global.dashboard-setting.level.project': '项目层',
+  'global.dashboard-setting.card.title': '卡片标题',
+  'global.dashboard-setting.card.title.required': '请输入卡片标题',
 
   // 组织层
   // 项目管理
@@ -827,7 +850,6 @@ const zh_CN = {
   'user.proinfo.detail.header.title': '角色权限',
   'user.proinfo.detail.table.permission': '权限',
   'user.proinfo.detail.table.description': '描述',
-
 
 
   // 角色分配

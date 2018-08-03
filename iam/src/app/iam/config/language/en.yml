@@ -6,6 +6,7 @@
 "iam.role": "Role"
 "iam.member-role-global": "Role Assignment"
 "iam.root-user": "Root User Setting"
+"iam.dashboard-management": "Dashboard Setting"
 
 "microservice": "Microservice"
 "microservice.micro": "Microservice"

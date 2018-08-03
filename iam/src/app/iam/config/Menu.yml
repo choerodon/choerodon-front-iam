@@ -63,6 +63,13 @@
           - 'iam-service.user.pagingQueryAdminUsers'
           - 'iam-service.user.addDefaultUsers'
           - 'iam-service.user.deleteDefaultUser'
+    - "dashboard-management":
+        icon: donut_small
+        Routes: /iam/dashboard-setting
+        sort: 7
+        permission:
+          - 'iam-service.dashboard.query'
+          - 'iam-service.dashboard.update'
 
 # 微服务管理
 "microservice":

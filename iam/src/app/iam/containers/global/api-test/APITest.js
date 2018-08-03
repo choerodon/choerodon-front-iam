@@ -54,11 +54,7 @@ export default class APITest extends Component {
   }
 
   loadInitData = () => {
-    // APITestStore.setLoading(true);
-    // if (APITestStore.service.length) {
-    //   APITestStore.setCurrentService(APITestStore.getCurrentService || APITestStore.service[0]);
-    //   this.loadApi();
-    // } else {
+    APITestStore.setLoading(true);
     APITestStore.loadService().then((res) => {
       if (res.failed) {
         Choerodon.prompt(res.message);
@@ -71,11 +67,14 @@ export default class APITest extends Component {
           };
         });
         APITestStore.setService(services);
-        APITestStore.setCurrentService(services[0]);
+        if (!APITestStore.detailFlag) {
+          APITestStore.setCurrentService(services[0]);
+        } else {
+          APITestStore.setDetailFlag(false);
+        }
         this.loadApi();
       }
     });
-    // }
   }
 
   loadApi = (paginationIn, filtersIn, paramsIn) => {
@@ -148,6 +147,7 @@ export default class APITest extends Component {
 
   goDetail(record) {
     APITestStore.setApiDetail(record);
+    APITestStore.setDetailFlag(true);
     const version = APITestStore.getCurrentService.value.split('/')[1];
     const service = APITestStore.getCurrentService.value.split('/')[0];
     const { refController, operationId } = record;

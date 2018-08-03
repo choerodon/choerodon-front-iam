@@ -10,10 +10,15 @@ class ApitestStore {
   @observable currentService = {};
   @observable apiData = [];
   @observable loading = true;
+  @observable detailFlag = false;
   @observable apiDetail = {
     description: '[]',
     responses: [],
   };
+
+  @action setDetailFlag(flag) {
+    this.detailFlag = flag;
+  }
 
   @action setLoading(flag) {
     this.loading = flag;

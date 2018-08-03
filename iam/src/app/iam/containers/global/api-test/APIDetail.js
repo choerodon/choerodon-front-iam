@@ -195,12 +195,13 @@ export default class APIDetail extends Component {
         } else if (text === 'array') {
           return 'Array[string]';
         } else if (!text) {
-          if ('type' in record.schema) {
+          if (record.schema && record.schema.type) {
             return record.schema.type;
           } else {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
+              debugger;
               value = jsonFormat(value);
             } else {
               value = null;
@@ -390,7 +391,7 @@ export default class APIDetail extends Component {
         } else if (text === 'array') {
           return 'Array[string]';
         } else if (!text) {
-          if ('type' in record.schema) {
+          if (record.schema && record.schema.type) {
             return record.schema.type;
           } else {
             let value;

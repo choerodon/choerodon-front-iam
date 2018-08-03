@@ -51,11 +51,11 @@ instance.interceptors.request.use(
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
   responseHeader = jsonFormat(res.headers);
-  response = res.data instanceof Object ? jsonFormat(res.data) : res.data; // 响应主体
+  response = res.data instanceof Object ? jsonFormat(res.data) : '' + res.data; // 响应主体
 }, (error) => {
   statusCode = error.response.status; // 响应码
   responseHeader = jsonFormat(error.response.headers);
-  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : error.response.data; // 响应主体
+  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : '' + error.response.data; // 响应主体
 });
 
 @Form.create()
@@ -201,7 +201,6 @@ export default class APIDetail extends Component {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
-              debugger;
               value = jsonFormat(value);
             } else {
               value = null;
@@ -249,7 +248,7 @@ export default class APIDetail extends Component {
             rowKey="name"
           />
         </div>
-        <div className="c7n-response-data">
+        <div className="c7n-response-data" style={{ display: responseDataExample === 'false' ? 'none' : 'block' }}>
           <h5><FormattedMessage id={`${intlPrefix}.response.data`} /></h5>
           <div className="response-data-container">
             <pre>
@@ -286,6 +285,19 @@ export default class APIDetail extends Component {
   };
 
   getTest = () => {
+    let curlContent;
+    const upperMethod = {
+      get: 'GET',
+      post: 'POST',
+      options: 'OPTIONS',
+      put: 'PUT',
+      delete: 'DELETE',
+      patch: 'PATCH',
+    }
+    const handleUrl = encodeURI(this.state.requestUrl);
+    const handleMethod = upperMethod[APITestStore.getApiDetail.method];
+    const token = authorization ? authorization.split(' ')[1] : null;
+    curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
     const method = APITestStore && APITestStore.apiDetail.method;
     const { getFieldDecorator, getFieldError } = this.props.form;
     const requestColumns = [{
@@ -370,6 +382,9 @@ export default class APIDetail extends Component {
               rules: [{
                 required: record.required,
                 message: `请输入${record.name}`,
+              }, {
+                whitespace: true,
+                message: `请输入${record.name}`,
               }],
             })(
               <div style={{ width: '50%' }}>
@@ -394,18 +409,21 @@ export default class APIDetail extends Component {
           if (record.schema && record.schema.type) {
             return record.schema.type;
           } else {
+            let normalBody;
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
+              normalBody = Hjson.stringify(value, options);
               value = jsonFormat(value);
             } else {
               value = null;
+              normalBody = null;
             }
             return (
               <div>
                 Example Value
                 <Tooltip placement="left" title="点击复制至左侧">
-                  <div className="body-container" onClick={this.copyToLeft.bind(this, value, record.name)}>
+                  <div className="body-container" onClick={this.copyToLeft.bind(this, normalBody, record.name)}>
                     <pre>
                       <code>
                         {value}
@@ -488,7 +506,13 @@ export default class APIDetail extends Component {
           </div>
           <div className="c7n-curl">
             <h5>CURL</h5>
-            <div className="curl-container" />
+            <div className="curl-container">
+              <pre>
+                <code>
+                  {curlContent}
+                </code>
+              </pre>
+            </div>
           </div>
         </div>
       </div>

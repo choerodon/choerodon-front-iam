@@ -40,9 +40,11 @@ class DashboardSettingStore {
   updateData(values) {
     this.loading = true;
     return axios.post(`/iam/v1/dashboards/${this.editData.id}`, JSON.stringify(Object.assign({}, this.editData, values)))
-      .then(action(() => {
+      .then(action((data) => {
+        Object.assign(this.editData, data);
         this.loading = false;
         this.sidebarVisible = false;
+        return data;
       }))
       .catch(action(error => {
         Choerodon.handleResponseError(error);

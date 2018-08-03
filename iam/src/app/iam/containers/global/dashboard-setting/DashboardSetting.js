@@ -24,7 +24,7 @@ const inputWidth = 512;
 
 @Form.create({})
 @injectIntl
-@inject('AppState')
+@inject('AppState', 'DashboardStore')
 @observer
 export default class DashboardSetting extends Component {
 
@@ -37,12 +37,12 @@ export default class DashboardSetting extends Component {
   };
 
   handleOk = () => {
-    const { form, intl } = this.props;
+    const { form, intl, DashboardStore, DashboardSettingStore } = this.props;
     form.validateFields((error, values, modify) => {
       if (!error) {
         if (modify) {
-          this.props.DashboardSettingStore.updateData(values).then(() => {
-            this.fetchData();
+          DashboardSettingStore.updateData(values).then((data) => {
+            DashboardStore.updateCachedData(data);
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
           });
         } else {

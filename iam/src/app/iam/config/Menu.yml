@@ -115,12 +115,24 @@
   icon: API
   sort: 3
   site:
-    - "api-test":
-        icon: APItest
-        Routes: /iam/api-test
-        sort: 1
-        permission:
-          - 'manager-service.service.pageManager'
+  - "api-test":
+      icon: APItest
+      Routes: /iam/api-test
+      sort: 1
+      permission:
+      - 'manager-service.service.pageManager'
+
+# 消息中心
+"msg-center":
+  icon: API
+  sort: 4
+  site:
+  - "mail-template":
+      icon: APItest
+      Routes: /iam/mail-template
+      sort: 1
+      permission:
+      - 'manager-service.service.pageManager'
 
 # 事务管理
 "global-transaction":

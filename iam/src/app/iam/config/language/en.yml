@@ -21,6 +21,9 @@
 "global-transaction.saga": "Saga"
 "global-transaction.saga-instance": "Saga Instance"
 
+"msg-center": "Message Center"
+"msg-center.mail-template": "Mail Template"
+
 "rentsetting": "Organization settings"
 # organization
 "rentsetting.project": "Project"

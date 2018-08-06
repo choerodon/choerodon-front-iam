@@ -21,6 +21,9 @@
 "global-transaction.saga": "事务定义"
 "global-transaction.saga-instance": "事务实例"
 
+"msg-center": "消息中心"
+"msg-center.mail-template": "邮件模板"
+
 "rentsetting": 组织设置
 # organization
 "rentsetting.project": "项目管理"

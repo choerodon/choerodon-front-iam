@@ -592,6 +592,13 @@ const zh_CN = {
   'global.apitest.request.data': '请求数据',
   'global.apitest.send': '发送',
 
+  // 邮件模板
+  'global.mailtemplate.header.title': '邮件模板',
+  'global.mailtemplate.table.name': '名称',
+  'global.mailtemplate.table.code': '编码',
+  'global.mailtemplate.table.type': '来源类型',
+
+
   // 事务定义
   'global.saga.header.title': '事务定义',
   'global.saga.code': '编码',

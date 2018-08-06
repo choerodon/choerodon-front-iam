@@ -122,6 +122,16 @@ const pageDetail = {
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
   'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+
+  // 邮件模板
+  'global.mailtemplate.title': '平台"{name}"的邮件模板',
+  'global.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'global.mailtemplate.detail.title': '平台"{name}"的邮件模板',
+  'global.mailtemplate.detail.description': 'description',
+  'global.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',

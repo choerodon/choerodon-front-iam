@@ -13,7 +13,7 @@ import {
   axios, Content, Header, Page, Permission, 
 } from 'choerodon-front-boot';
 
-const intlPrefix = 'global.mailtemplate';
+const intlPrefix = 'global.mailsetting';
 
 @withRouter
 @injectIntl
@@ -22,7 +22,6 @@ const intlPrefix = 'global.mailtemplate';
 export default class APITest extends Component {
   render() {
     const { intl } = this.props;
-    const { pagination, params } = this.state;
 
     return (
       <Page

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { axios as defaultAxios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip } from 'choerodon-ui';
+import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Upload, Icon } from 'choerodon-ui';
 import querystring from 'query-string';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -81,6 +81,7 @@ export default class APIDetail extends Component {
       queryArr: {},
       query: '',
       taArr: {},
+      loadFile: null,
     };
   }
 
@@ -284,6 +285,23 @@ export default class APIDetail extends Component {
     }
   };
 
+  responseNode = (node) => {
+    if (node) {
+      this.responseNode = node;
+    }
+  }
+
+  curlNode = (node) => {
+    if (node) {
+      this.curlNode = node;
+    }
+  }
+
+
+  relateChoose = () => {
+    this.fileInput.click();
+  }
+
   getTest = () => {
     let curlContent;
     const upperMethod = {
@@ -334,7 +352,7 @@ export default class APIDetail extends Component {
                     message: `请输入${record.name}`,
                   }],
                 })(
-                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} />,
+                  <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
                 )}
               </FormItem>
             </div>);
@@ -353,7 +371,7 @@ export default class APIDetail extends Component {
                   <Option value="true">true</Option>
                   <Option value="false">false</Option>
                 </Select>
-              </div>
+              </div>,
             )}
           </FormItem>);
         } else if (record.type === 'array') {
@@ -366,14 +384,18 @@ export default class APIDetail extends Component {
                     message: `请输入${record.name}`,
                   }],
                 })(
-                  <TextArea className="paramTextarea" rows={6} placeholder={getFieldError(`${record.name}`)} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />,
+                  <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />,
                 )}
               </FormItem>
             </div>);
         } else if (record.type === 'file') {
           editableNode = (
-            <div>
+            <div className="uploadContainer">
               <input type="file" name="file" ref={this.uploadRef} />
+              <Button onClick={this.relateChoose}>
+                <Icon type="file_upload" /> 选择文件
+              </Button>
+              <div className="emptyMask"></div>
             </div>
           );
         } else {
@@ -381,8 +403,6 @@ export default class APIDetail extends Component {
             {getFieldDecorator(`${record.name}`, {
               rules: [{
                 required: record.required,
-                message: `请输入${record.name}`,
-              }, {
                 whitespace: true,
                 message: `请输入${record.name}`,
               }],
@@ -413,7 +433,7 @@ export default class APIDetail extends Component {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
-              normalBody = Hjson.stringify(value, options);
+              normalBody = Hjson.stringify(value, { bracesSameLine: true, quotes: 'all' });
               value = jsonFormat(value);
             } else {
               value = null;
@@ -470,8 +490,9 @@ export default class APIDetail extends Component {
             <Button
               funcType="raised"
               type="primary"
+              loading
             >
-              发送中...
+              发送中
             </Button>
           )
           }
@@ -486,7 +507,7 @@ export default class APIDetail extends Component {
           </div>
           <div className="c7n-response-body">
             <h5><FormattedMessage id={`${intlPrefix}.response.body`} /></h5>
-            <div className="response-body-container">
+            <div className="response-body-container" ref={this.responseNode}>
               <pre>
                 <code>
                   {response}
@@ -506,7 +527,7 @@ export default class APIDetail extends Component {
           </div>
           <div className="c7n-curl">
             <h5>CURL</h5>
-            <div className="curl-container">
+            <div className="curl-container" ref={this.curlNode}>
               <pre>
                 <code>
                   {curlContent}
@@ -524,6 +545,8 @@ export default class APIDetail extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.setState({ isSending: true, isShowResult: false });
+        this.responseNode.scrollTop = 0;
+        this.curlNode.scrollLeft = 0;
         if ('bodyData' in values) {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl, jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
             this.setState({

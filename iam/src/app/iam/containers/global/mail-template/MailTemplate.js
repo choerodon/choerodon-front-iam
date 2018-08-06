@@ -5,14 +5,14 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import {
-  Button, Select, Table, Tooltip, 
+  Button, Select, Table, Tooltip, Modal,
 } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import {
-  axios, Content, Header, Page, Permission, 
+  axios, Content, Header, Page, Permission,
 } from 'choerodon-front-boot';
-import classnames from 'classnames';
+import MailTemplateStore from '../../../stores/global/mail-template';
 
 const intlPrefix = 'global.mailtemplate';
 
@@ -21,97 +21,138 @@ const intlPrefix = 'global.mailtemplate';
 @inject('AppState')
 @observer
 export default class APITest extends Component {
+  state = this.getInitState();
+
+
+  componentDidMount() {
+    console.log(MailTemplateStore);
+    this.loadTemplate();
+  }
+
+  getInitState() {
+    return {
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      sort: {
+        columnKey: 'name',
+        order: 'descend',
+      },
+      filters: {},
+      params: [],
+    };
+  }
+
+  handleAdd = (e) => {
+    // TODO:点击添加的时候调用
+  }
+
+  loadTemplate(paginationIn, sortIn, filtersIn, paramsIn) {
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
+    MailTemplateStore.loadMailTemplate(pagination, sort, filters, params)
+      .then((data) => {
+        console.log(`data${data}`);
+        MailTemplateStore.setLoading(false);
+        MailTemplateStore.setMailTemplate(data.content);
+        this.setState({
+          sort,
+          filters,
+          params,
+          pagination: {
+            current: data.number + 1,
+            pageSize: data.size,
+            total: data.totalElements,
+          },
+        });
+      })
+      .catch((error) => {
+        Choerodon.handleResponseError(error);
+      });
+  }
+
+
   render() {
     const { intl } = this.props;
+
+    const mailTemplateData = MailTemplateStore.getMailTemplate();
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'realName',
+      key: 'realName',
       width: 350,
-      render: (text, data) => {
-        const { name } = data;
-        if (name) {
-          return (
-            <span>
-              {name}
-            </span>
-          );
-        }
-      },
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
-      dataIndex: 'url',
-      key: 'url',
+      dataIndex: 'enabled',
+      key: 'enabled',
+      render: enabled => intl.formatMessage({ id: enabled ? 'enable' : 'disable' }),
       width: 438,
-      render: (text, record) => (
-        <Tooltip
-          title={text}
-          placement="bottomLeft"
-          overlayStyle={{ wordBreak: 'break-all' }}
-        >
-          <div className="urlContainer">
-            {text}
-          </div>
-        </Tooltip>
-      ),
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.type`} />,
-      dataIndex: 'remark',
-      key: 'remark',
+      title: <FormattedMessage id={`${intlPrefix}.table.mailtype`} />,
+      dataIndex: 'email',
+      key: 'email',
       width: 475,
-      render: (text, data) => {
-        const { description, remark } = data;
-        if (remark) {
-          return remark;
-        } else {
-          return description;
-        }
-      },
-    }, {
+    },
+    {
+      title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,
+      dataIndex: 'locked',
+      key: 'locked',
+      width: 475,
+    },
+    {
       title: '',
       width: '100px',
       key: 'action',
       align: 'right',
-      render: (text, record) => {
-        if ('method' in record) {
-          return (
-            <Button
-              shape="circle"
-              icon="find_in_page"
-              size="small"
-              onClick={this.goDetail.bind(this, record)}
-            />
-          );
-        }
-      },
+      render: (text, record) => (
+        <Button
+          shape="circle"
+          icon="more_vert"
+          size="small"
+        />
+      ),
     }];
 
     return (
 
       <Page
+        className="root-user-setting"
         service={['manager-service.service.pageManager']}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
-            onClick={this.handleRefresh}
-            icon="refresh"
+            onClick={this.handleAdd}
           >
-            <FormattedMessage id="refresh" />
+            <FormattedMessage id="add" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
           values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
-        />
-        <Table
-          columns={columns}
-          childrenColumnName="paths"
-          onChange={this.handlePageChange}
-          rowKey={record => ('paths' in record ? record.name : record.operationId)}
-          filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
-        />
+        >
+
+          <Table
+            columns={columns}
+            childrenColumnName="paths"
+            dataSource={mailTemplateData}
+            onChange={this.handlePageChange}
+            rowKey={record => ('paths' in record ? record.name : record.operationId)}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+          />
+        </Content>
+
       </Page>
     );
   }

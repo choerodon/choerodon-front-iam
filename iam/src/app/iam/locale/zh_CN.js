@@ -596,7 +596,8 @@ const zh_CN = {
   'global.mailtemplate.header.title': '邮件模板',
   'global.mailtemplate.table.name': '名称',
   'global.mailtemplate.table.code': '编码',
-  'global.mailtemplate.table.type': '来源类型',
+  'global.mailtemplate.table.mailtype': '邮件类型',
+  'global.mailtemplate.table.fromtype': '来源类型',
 
 
   // 事务定义

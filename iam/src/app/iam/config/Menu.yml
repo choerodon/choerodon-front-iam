@@ -115,12 +115,48 @@
   icon: API
   sort: 3
   site:
-    - "api-test":
-        icon: APItest
-        Routes: /iam/api-test
-        sort: 1
-        permission:
-          - 'manager-service.service.pageManager'
+  - "api-test":
+      icon: APItest
+      Routes: /iam/api-test
+      sort: 1
+      permission:
+      - 'manager-service.service.pageManager'
+
+# 消息中心
+"msg-center":
+  icon: filter_center_focus
+  sort: 4
+  site:
+  - "mail-template":
+      icon: test
+      Routes: /iam/mail-template
+      sort: 1
+      permission:
+      - 'manager-service.service.pageManager'
+  - "sms-template":
+      icon: test
+      Routes: /iam/sms-template
+      sort: 2
+      permission:
+      - 'manager-service.service.pageManager'
+  - "mail-setting":
+      icon: contact_mail
+      Routes: /iam/mail-setting
+      sort: 3
+      permission:
+      - 'manager-service.service.pageManager'
+  - "sms-setting":
+      icon: textsms
+      Routes: /iam/sms-setting
+      sort: 4
+      permission:
+      - 'manager-service.service.pageManager'
+  - "msg-record":
+      icon: textsms
+      Routes: /iam/msg-record
+      sort: 5
+      permission:
+      - 'manager-service.service.pageManager'
 
 # 事务管理
 "global-transaction":

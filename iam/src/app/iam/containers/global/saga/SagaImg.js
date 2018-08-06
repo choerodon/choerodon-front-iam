@@ -406,7 +406,7 @@ export default class SagaImg extends Component {
   }
 
   renderTaskDetail = () => {
-    const { intl: { formatMessage } } = this.props;
+    const { intl: { formatMessage }, instance } = this.props;
     const { task: {
       code,
       taskCode,
@@ -418,6 +418,7 @@ export default class SagaImg extends Component {
       service,
       concurrentLimitPolicy,
       concurrentLimitNum,
+      inputSchema,
     } } = this.state;
     const list = [{
       key: formatMessage({ id: `${intlPrefix}.task.code` }),
@@ -447,10 +448,20 @@ export default class SagaImg extends Component {
       key: formatMessage({ id: `${intlPrefix}.task.service` }),
       value: service,
     }];
+    const input = {
+      key: formatMessage({ id: `${intlPrefix}.task.input.title` }),
+      value: inputSchema ? jsonFormat(JSON.parse(inputSchema)) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
+    };
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-content">
           {list.map(({ key, value }, index) => <div key={`task-detail-${index}`}>{key}: {value}</div>)}
+          {!instance && (
+            <div>{input.key}:
+              <div className="c7n-saga-detail-json">
+                <pre style={{ maxHeight: '350px' }}><code>{input.value}</code></pre>
+              </div>
+            </div>)}
         </div>
       </div>
     );
@@ -466,7 +477,7 @@ export default class SagaImg extends Component {
         </div>
         <div className="c7n-saga-task-detail-content">
           <div className="c7n-saga-detail-json">
-            <pre>
+            <pre style={{ maxHeight: '350px' }}>
               <code id="json">
                 {json ? jsonFormat(JSON.parse(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
               </code>

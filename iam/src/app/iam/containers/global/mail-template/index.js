@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const index = asyncRouter(() => (import('./MailTemplate')));
+const index = asyncRouter(() => (import('./MailTemplate')), () => import('../../../stores/global/mail-template'));
 // const detail = asyncRouter(() => import('./APIDetail'));
 
 const Index = ({ match }) => (

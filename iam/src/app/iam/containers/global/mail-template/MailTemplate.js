@@ -10,7 +10,7 @@ import {
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import {
-  axios, Content, Header, Page, Permission,
+  axios, Content, Header, Page, Permission, Action,
 } from 'choerodon-front-boot';
 import MailTemplateStore from '../../../stores/global/mail-template';
 
@@ -69,8 +69,8 @@ export default class MailTemplate extends Component {
     };
   }
 
-  handleAdd = (e) => {
-    // TODO:点击添加的时候调用
+  handleCreate = () => {
+    this.props.history.push('/iam/mail-template/create');
   };
 
   handlePageChange = (pagination, filters, sort, params) => {
@@ -114,6 +114,14 @@ export default class MailTemplate extends Component {
       });
   }
 
+  handleModify = (record) => {
+    // TODO 修改
+  }
+
+  createByThis = (record) => {
+    // TODO 基于此创建
+  }
+
 
   render() {
     const { intl } = this.props;
@@ -150,17 +158,35 @@ export default class MailTemplate extends Component {
       width: '100px',
       key: 'action',
       align: 'right',
-      render: (text, record) => (
-        <Button
-          shape="circle"
-          icon="more_vert"
-          size="small"
-        />
-      ),
+      render: (text, record) => {
+        const actionsDatas = [{
+          service: ['manager-service.service.pageManager'],
+          type: 'site',
+          icon: '',
+          text: intl.formatMessage({ id: `${intlPrefix}.create.baseon` }),
+          action: this.createByThis.bind(this, record),
+        }, {
+          service: ['manager-service.service.pageManager'],
+          type: 'site',
+          icon: '',
+          text: intl.formatMessage({ id: 'modify' }),
+          action: this.handleModify.bind(this, record.realName),
+        }];
+        // 根据来源类型判断
+        if (!record.realName) {
+          actionsDatas.push({
+            service: ['manager-service.service.pageManager'],
+            type: 'site',
+            icon: '',
+            text: intl.formatMessage({ id: 'delete' }),
+            action: '',
+          });
+        }
+        return <Action data={actionsDatas} />;
+      },
     }];
 
     return (
-
       <Page
         className="root-user-setting"
         service={['manager-service.service.pageManager']}
@@ -169,9 +195,16 @@ export default class MailTemplate extends Component {
           title={<FormattedMessage id={`${this.roles.code}.header.title`} />}
         >
           <Button
-            onClick={this.handleAdd}
+            icon="playlist_add"
+            onClick={this.handleCreate}
           >
-            <FormattedMessage id="add" />
+            <FormattedMessage id={`${intlPrefix}.create.template`} />
+          </Button>
+          <Button
+            onClick={this.handleRefresh}
+            icon="refresh"
+          >
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content

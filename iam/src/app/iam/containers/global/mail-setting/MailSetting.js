@@ -65,6 +65,10 @@ export default class MailSetting extends Component {
     // TODO 提交函数
   }
 
+  testContact = () => {
+    // TODO 测试连接
+  }
+
   render() {
     const { intl, form } = this.props;
     const { loading, saving } = this.state;
@@ -128,6 +132,16 @@ export default class MailSetting extends Component {
             <FormItem
               {...formItemLayout}
             >
+              {getFieldDecorator('address', {
+                rules: [],
+                initialValue: 998,
+              })(
+                <Input label={intl.formatMessage({ id: `${intlPrefix}.server.address` })} style={{ width: inputWidth }} autoComplete="off" />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
               {getFieldDecorator('SSL', {
                 initialValue: 'Y',
               })(
@@ -151,29 +165,27 @@ export default class MailSetting extends Component {
               )}
             </FormItem>
             <hr className="divider" />
-            <Permission service={['iam-service.ldap.update']}>
-              <div className="btnGroup">
-                <Button
-                  funcType="raised"
-                  type="primary"
-                  htmlType="submit"
-                  loading={saving}
-                >
-                  <FormattedMessage id="modify" />
-                </Button>
-                <Button
-                  funcType="raised"
-                  onClick={() => {
-                    const { resetFields } = this.props.form;
-                    resetFields();
-                  }}
-                  style={{ color: '#3F51B5' }}
-                  disabled={saving}
-                >
-                  <FormattedMessage id="cancel" />
-                </Button>
-              </div>
-            </Permission>
+            <div className="btnGroup">
+              <Button
+                funcType="raised"
+                type="primary"
+                htmlType="submit"
+                loading={saving}
+              >
+                <FormattedMessage id={`${intlPrefix}.save.test`} />
+              </Button>
+              <Button
+                funcType="raised"
+                onClick={() => {
+                  const { resetFields } = this.props.form;
+                  resetFields();
+                }}
+                style={{ color: '#3F51B5' }}
+                disabled={saving}
+              >
+                <FormattedMessage id="cancel" />
+              </Button>
+            </div>
           </Form>
         )}
       </div>
@@ -187,6 +199,12 @@ export default class MailSetting extends Component {
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
+          <Button
+            onClick={this.testContact}
+            icon="low_priority"
+          >
+            <FormattedMessage id={`${intlPrefix}.test.contact`} />
+          </Button>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

@@ -225,6 +225,16 @@ const pageDetail = {
   'organization.user.modify.description': '您可以在此修改用户名、邮箱、语言、时区。',
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
+  // 邮件模板
+  'organization.mailtemplate.title': '组织"{name}"的邮件模板',
+  'organization.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'organization.mailtemplate.detail.title': '组织"{name}"的邮件模板',
+  'organization.mailtemplate.detail.description': 'description',
+  'organization.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+
   //项目设置
   'project.info.title': '对项目"{name}"进行项目设置',
   'project.info.description': '您可以在此修改项目名称、停用项目。',
@@ -811,6 +821,13 @@ const zh_CN = {
   'organization.user.repassword': '确认密码',
   'organization.user.repassword.require.msg': '请确认密码',
   'organization.user.timezone': '时区',
+
+  // 邮件模板
+  'organization.mailtemplate.header.title': '邮件模板',
+  'organization.mailtemplate.table.name': '名称',
+  'organization.mailtemplate.table.code': '编码',
+  'organization.mailtemplate.table.mailtype': '邮件类型',
+  'organization.mailtemplate.table.fromtype': '来源类型',
 
 
   // 项目层

@@ -36,6 +36,7 @@
 "rentsetting.client": "Client"
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "Password Policy"
+"rentsetting.mail-template-organization": "Mail Template"
 
 "prosetting": "Project Manage"
 # project

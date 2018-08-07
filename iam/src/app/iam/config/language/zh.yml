@@ -37,6 +37,7 @@
 "rentsetting.client": "客户端"
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "密码策略"
+"rentsetting.mail-template-organization": "邮件模板"
 
 "prosetting": 项目设置
 # project

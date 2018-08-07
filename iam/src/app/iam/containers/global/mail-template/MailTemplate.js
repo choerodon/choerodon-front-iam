@@ -16,16 +16,40 @@ import MailTemplateStore from '../../../stores/global/mail-template';
 
 const intlPrefix = 'global.mailtemplate';
 
+
+// 公用方法类
+class MailTemplateType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      default:
+        codePrefix = 'global';
+    }
+    this.code = `${codePrefix}.mailtemplate`;
+    this.values = { name: name || 'Choerodon' };
+  }
+}
+
 @withRouter
 @injectIntl
 @inject('AppState')
 @observer
-export default class APITest extends Component {
+export default class MailTemplate extends Component {
   state = this.getInitState();
 
 
-  componentDidMount() {
-    console.log(MailTemplateStore);
+  componentWillMount() {
+    this.initMailTemplate();
     this.loadTemplate();
   }
 
@@ -47,6 +71,14 @@ export default class APITest extends Component {
 
   handleAdd = (e) => {
     // TODO:点击添加的时候调用
+  };
+
+  handlePageChange = (pagination, filters, sort, params) => {
+    this.loadTemplate(pagination, sort, filters, params);
+  };
+
+  initMailTemplate() {
+    this.roles = new MailTemplateType(this);
   }
 
   loadTemplate(paginationIn, sortIn, filtersIn, paramsIn) {
@@ -60,6 +92,7 @@ export default class APITest extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    console.log(paramsIn);
     MailTemplateStore.loadMailTemplate(pagination, sort, filters, params)
       .then((data) => {
         console.log(`data${data}`);
@@ -84,6 +117,7 @@ export default class APITest extends Component {
 
   render() {
     const { intl } = this.props;
+    const { filters, loading, params } = this.state;
 
     const mailTemplateData = MailTemplateStore.getMailTemplate();
     const columns = [{
@@ -91,6 +125,8 @@ export default class APITest extends Component {
       dataIndex: 'realName',
       key: 'realName',
       width: 350,
+      filters: [],
+      filteredValue: filters.name || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
       dataIndex: 'enabled',
@@ -130,7 +166,7 @@ export default class APITest extends Component {
         service={['manager-service.service.pageManager']}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
+          title={<FormattedMessage id={`${this.roles.code}.header.title`} />}
         >
           <Button
             onClick={this.handleAdd}
@@ -139,16 +175,17 @@ export default class APITest extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          code={this.roles.code}
+          values={{ name: `${this.roles.values.name || 'Choerodon'}` }}
         >
 
           <Table
+            loading={loading}
             columns={columns}
-            childrenColumnName="paths"
             dataSource={mailTemplateData}
+            filters={params}
             onChange={this.handlePageChange}
-            rowKey={record => ('paths' in record ? record.name : record.operationId)}
+            rowKey="id"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>

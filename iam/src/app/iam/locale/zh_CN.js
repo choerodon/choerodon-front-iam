@@ -136,6 +136,12 @@ const pageDetail = {
   'global.mailsetting.title': '平台"{name}"的邮箱配置',
   'global.mailsetting.description': '邮箱配置用于管理发件邮箱的账号信息与邮件服务器信息。',
   'global.mailsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailsetting.create.title': '在平台"{name}"中创建配置',
+  'global.mailsetting.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
+  'global.mailsetting.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.mailsetting.create.base.title': '在平台"{name}"中创建配置',
+  'global.mailsetting.create.base.description': '您可自定义您的配置版本。系统将自动生成您的配置ID。',
+  'global.mailsetting.create.base.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
@@ -617,6 +623,8 @@ const zh_CN = {
   'global.mailtemplate.table.code': '编码',
   'global.mailtemplate.table.mailtype': '邮件类型',
   'global.mailtemplate.table.fromtype': '来源类型',
+  'global.mailtemplate.create.template': '创建模板',
+  'global.mailtemplate.create.baseon': '基于此创建',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',
@@ -627,6 +635,8 @@ const zh_CN = {
   'global.mailsetting.server.address': '服务器地址',
   'global.mailsetting.ssl': '是否为SSL协议',
   'global.mailsetting.port': '端口号',
+  'global.mailsetting.save.test': '保存并测试',
+  'global.mailsetting.test.contact': '测试连接',
 
   // 事务定义
   'global.saga.header.title': '事务定义',

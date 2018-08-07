@@ -22,7 +22,6 @@ const intlPrefix = 'global.configuration';
 
 @inject('AppState')
 @observer
-
 class CreateConfig extends Component {
   state = this.getInitState();
 

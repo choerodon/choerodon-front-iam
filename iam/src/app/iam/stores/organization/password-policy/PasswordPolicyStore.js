@@ -42,19 +42,6 @@ class PasswordPolicyStore {
     return this.passwordChange;
   }
 
-  loadPasswordPolicy = (handleErr) => {
-    this.setIsLoading(true);
-    axios.get('/uaa/v1/passwordPolicies/querySelf').then((data) => {
-      this.setPasswordPolicy(data);
-    }).catch((error) => {
-      this.cleanData();
-      if (error.response.status === 400) {
-        this.setIsLoading(false);
-        handleErr(Choerodon.getMessage('密码策略不存在', 'Policy is not found!'));
-      }
-    });
-  };
-
   loadData(organizationId) {
     return axios.get(`/iam/v1/organizations/${organizationId}/password_policies`);
   }

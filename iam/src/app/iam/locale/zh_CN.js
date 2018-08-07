@@ -132,6 +132,11 @@ const pageDetail = {
   'global.mailtemplate.detail.description': 'description',
   'global.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+  // 邮箱配置
+  'global.mailsetting.title': '平台"{name}"的邮箱配置',
+  'global.mailsetting.description': '邮箱配置用于管理发件邮箱的账号信息与邮件服务器信息。',
+  'global.mailsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
@@ -601,6 +606,10 @@ const zh_CN = {
   'global.apitest.request.data.type': '请求数据类型',
   'global.apitest.request.data': '请求数据',
   'global.apitest.send': '发送',
+  'global.apitest.required.msg': '请输入{name}',
+  'global.apitest.choose.file': '选择文件',
+  'global.apitest.copyleft': '点击复制至左侧',
+  'global.apitest.sending': '发送中',
 
   // 邮件模板
   'global.mailtemplate.header.title': '邮件模板',
@@ -609,6 +618,15 @@ const zh_CN = {
   'global.mailtemplate.table.mailtype': '邮件类型',
   'global.mailtemplate.table.fromtype': '来源类型',
 
+  // 邮箱配置
+  'global.mailsetting.header.title': '邮箱配置',
+  'global.mailsetting.code': '配置编码',
+  'global.mailsetting.sending.mail': '发件邮箱账号',
+  'global.mailsetting.sending.password': '发件邮箱密码',
+  'global.mailsetting.server.type': '服务器类型',
+  'global.mailsetting.server.address': '服务器地址',
+  'global.mailsetting.ssl': '是否为SSL协议',
+  'global.mailsetting.port': '端口号',
 
   // 事务定义
   'global.saga.header.title': '事务定义',

@@ -189,10 +189,10 @@ export default class ProjectInfo extends Component {
   renderSidebarContent() {
     const { intl } = this.props;
     const { percontent, perpagination, perloading, perparams, proName, roleName, totalCount } = this.state;
-    const title = intl.formatMessage({id: `${intlPrefix}.detail.title`}, {
+    const title = intl.formatMessage({ id: `${intlPrefix}.detail.title` }, {
       roleName,
     });
-    const description = intl.formatMessage({id: `${intlPrefix}.detail.description`}, {
+    const description = intl.formatMessage({ id: `${intlPrefix}.detail.description` }, {
       proName,
       roleName,
     });
@@ -203,7 +203,7 @@ export default class ProjectInfo extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.detail.table.description`} />,
       dataIndex: 'description',
-      key: 'description'
+      key: 'description',
     }]
     return (
       <Content
@@ -224,7 +224,7 @@ export default class ProjectInfo extends Component {
           onChange={this.handlePerPageChange}
         />
       </Content>
-    )
+    );
   }
 
   render() {
@@ -261,8 +261,8 @@ export default class ProjectInfo extends Component {
       render: (text, record) => {
         return (
           record.hasOwnProperty('organizationId') ? '项目' : '角色'
-        )
-      }
+        );
+      },
     }, {
       title: '',
       width: 100,

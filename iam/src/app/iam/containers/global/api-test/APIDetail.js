@@ -3,13 +3,13 @@ import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { axios as defaultAxios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Upload, Icon } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import classnames from 'classnames';
 import _ from 'lodash';
 import Hjson from 'hjson';
-import jsonFormat from '../../../common/json-format';
-import { injectIntl, FormattedMessage } from 'react-intl';
 import './APITest.scss';
+import jsonFormat from '../../../common/json-format';
 import APITestStore from '../../../stores/global/api-test';
 
 let statusCode;
@@ -312,6 +312,7 @@ export default class APIDetail extends Component {
       delete: 'DELETE',
       patch: 'PATCH',
     }
+    const { intl } = this.props;
     const handleUrl = encodeURI(this.state.requestUrl);
     const handleMethod = upperMethod[APITestStore.getApiDetail.method];
     const token = authorization ? authorization.split(' ')[1] : null;
@@ -349,7 +350,7 @@ export default class APIDetail extends Component {
                 {getFieldDecorator('bodyData', {
                   rules: [{
                     required: !record.type ? true : false,
-                    message: `请输入${record.name}`,
+                    message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
                   <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
@@ -380,8 +381,8 @@ export default class APIDetail extends Component {
               <FormItem>
                 {getFieldDecorator(`${record.name}`, {
                   rules: [{
-                    required: !record.type ? true : false,
-                    message: `请输入${record.name}`,
+                    required: !record.type,
+                    message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
                   <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />,
@@ -393,9 +394,9 @@ export default class APIDetail extends Component {
             <div className="uploadContainer">
               <input type="file" name="file" ref={this.uploadRef} />
               <Button onClick={this.relateChoose}>
-                <Icon type="file_upload" /> 选择文件
+                <Icon type="file_upload" /> {intl.formatMessage({ id: `${intlPrefix}.choose.file` })}
               </Button>
-              <div className="emptyMask"></div>
+              <div className="emptyMask" />
             </div>
           );
         } else {
@@ -404,7 +405,7 @@ export default class APIDetail extends Component {
               rules: [{
                 required: record.required,
                 whitespace: true,
-                message: `请输入${record.name}`,
+                message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
               }],
             })(
               <div style={{ width: '50%' }}>
@@ -442,7 +443,7 @@ export default class APIDetail extends Component {
             return (
               <div>
                 Example Value
-                <Tooltip placement="left" title="点击复制至左侧">
+                <Tooltip placement="left" title={intl.formatMessage({ id: `${intlPrefix}.copyleft` })}>
                   <div className="body-container" onClick={this.copyToLeft.bind(this, normalBody, record.name)}>
                     <pre>
                       <code>
@@ -484,7 +485,7 @@ export default class APIDetail extends Component {
               htmlType="submit"
               onClick={this.handleSubmit}
             >
-              发送
+              {intl.formatMessage({ id: `${intlPrefix}.send` })}
             </Button>
           ) : (
             <Button
@@ -492,7 +493,7 @@ export default class APIDetail extends Component {
               type="primary"
               loading
             >
-              发送中
+              {intl.formatMessage({ id: `${intlPrefix}.sending` })}
             </Button>
           )
           }
@@ -548,7 +549,8 @@ export default class APIDetail extends Component {
         this.responseNode.scrollTop = 0;
         this.curlNode.scrollLeft = 0;
         if ('bodyData' in values) {
-          instance[APITestStore.getApiDetail.method](this.state.requestUrl, jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl,
+            jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
             this.setState({
               isSending: false,
               isShowResult: true,
@@ -562,17 +564,18 @@ export default class APIDetail extends Component {
         } else if (this.fileInput) {
           const formData = new FormData();
           formData.append('file',  this.fileInput.files[0]);
-          instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData).then(function (res) {
-            this.setState({
-              isSending: false,
-              isShowResult: true,
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData)
+            .then(function (res) {
+              this.setState({
+                isSending: false,
+                isShowResult: true,
+              });
+            }).catch((error) => {
+              this.setState({
+                isSending: false,
+                isShowResult: true,
+              });
             });
-          }).catch((error) => {
-            this.setState({
-              isSending: false,
-              isShowResult: true,
-            });
-          });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({

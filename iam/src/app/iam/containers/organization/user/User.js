@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { Button, Modal, Table, Tooltip } from 'choerodon-ui';
+import { findDOMNode } from 'react-dom'; // ES6
+import { Button, Modal, Table, Tooltip, Upload } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserEdit from './UserEdit';
+
 import './User.scss';
+
 
 const { Sidebar } = Modal;
 const intlPrefix = 'organization.user';
@@ -148,6 +151,51 @@ export default class User extends Component {
     }
     this.loadUser(pagination, sorter.join(','), filters, params);
   }
+
+  handleDownLoad = (organizationId) => {
+    const { UserStore } = this.props;
+    UserStore.downloadTemplate(organizationId).then((result) => {
+      const blob = new Blob([result], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const linkElement = document.getElementById('c7n-user-download-template');
+      linkElement.setAttribute('href', url);
+      linkElement.click();
+    });
+  };
+
+  /**
+   *  application/vnd.ms-excel 2003-2007
+   *  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 2010
+   */
+  getUploadProps = (organizationId) => {
+    const { intl } = this.props;
+    return {
+      multiple: false,
+      name: 'file',
+      accept: 'application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      action: organizationId && `${process.env.API_HOST}/iam/v1/organizations/${organizationId}/users/batch_import`,
+      headers: {
+        Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
+      },
+      showUploadList: false,
+      onChange: ({ file }) => {
+        const { status, response } = file;
+        if (status === 'done') {
+          Choerodon.prompt(intl.formatMessage({id: 'upload.success'}));
+        } else if (status === 'error') {
+          Choerodon.prompt(`${response.message}`);
+        }
+      },
+    };
+  }
+
+
+  renderUpload() {
+    const { processStyle = {} } = this.state;
+    return (<div />);
+  }
+
 
   renderSideTitle() {
     if (this.state.edit) {
@@ -414,6 +462,20 @@ export default class User extends Component {
             </Button>
           </Permission>
           <Button
+            onClick={this.handleDownLoad.bind(this, organizationId)}
+            icon="get_app"
+          >
+            <FormattedMessage id={`${intlPrefix}.download.template`} />
+            <a id="c7n-user-download-template" href="" onClick={(event) => { event.stopPropagation(); }} download="userTemplate.xlsx" />
+          </Button>
+          {/* <Upload {...this.getUploadProps(organizationId)}>
+            <Button
+              icon="file_upload"
+            >
+              <FormattedMessage id={`${intlPrefix}.upload.file`} />
+            </Button>
+          </Upload> */}
+          <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
@@ -454,6 +516,9 @@ export default class User extends Component {
             }
           </Sidebar>
         </Content>
+        {
+          this.renderUpload()
+        }
       </Page>
     );
   }

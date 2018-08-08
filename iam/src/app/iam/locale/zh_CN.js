@@ -360,6 +360,7 @@ const zh_CN = {
   'enable.success': '启用成功',
   'disable.success': '停用成功',
   'copy.success': '已复制到剪贴板',
+  'upload.success': '上传成功',
 
 // error
   'error': '失败',
@@ -372,6 +373,7 @@ const zh_CN = {
   'remove.error': '移除失败',
   'enabled.error': '启用失败',
   'disable.error': '停用失败',
+  'upload.error': '上传失败',
 
   // 统一字段
   'name': '名称',
@@ -849,6 +851,8 @@ const zh_CN = {
   'organization.user.repassword': '确认密码',
   'organization.user.repassword.require.msg': '请确认密码',
   'organization.user.timezone': '时区',
+  'organization.user.download.template': '下载',
+  'organization.user.upload.file': '上传',
 
   // 邮件模板
   'organization.mailtemplate.header.title': '邮件模板',

@@ -125,7 +125,7 @@ const pageDetail = {
 
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
-  'global.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'global.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
   'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   'global.mailtemplate.detail.title': '平台"{name}"的邮件模板',
@@ -238,7 +238,7 @@ const pageDetail = {
 
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
-  'organization.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
   'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   'organization.mailtemplate.detail.title': '组织"{name}"的邮件模板',

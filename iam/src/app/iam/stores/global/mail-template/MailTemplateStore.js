@@ -3,6 +3,7 @@
  */
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import querystring from 'query-string';
 
 @store('MailTemplateStore')
 class MailTemplateStore {
@@ -19,6 +20,10 @@ class MailTemplateStore {
     responses: [],
   };
 
+  // TODO: 这里调用删除的接口
+  deleteMailTemplate = id => console.log(`delete${id}`);
+
+
   @action setLoading(flag) {
     this.loading = flag;
   }
@@ -31,7 +36,27 @@ class MailTemplateStore {
     return this.mailTemplate;
   }
 
-  loadMailTemplate = () => axios.get('/iam/v1/users/admin');
+  loadMailTemplate = ({
+    current,
+    pageSize,
+  }, { realName, email },
+  { columnKey = 'id', order = 'descend' },
+  params) => {
+    const queryObj = {
+      realName: realName && realName[0],
+      params,
+    };
+
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/iam/v1/users/admin?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
+  }
 }
 
 const mailTemplateStore = new MailTemplateStore();

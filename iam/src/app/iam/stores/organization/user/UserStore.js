@@ -103,6 +103,16 @@ class UserStore {
     return this.totalPage;
   }
 
+  /**
+   * 下载文件
+   */
+  @action
+  downloadTemplate(organizationId) {
+    return axios.get(`/iam/v1/organizations/${organizationId}/users/download_templates`, {
+      responseType: 'arraybuffer',
+    });
+  }
+
   unLockUser(orgId, UserId) {
     return axios.get(`/iam/v1/organizations/${orgId}/users/${UserId}/unlock`);
   }

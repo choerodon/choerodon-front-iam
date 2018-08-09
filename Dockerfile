@@ -12,7 +12,9 @@ RUN echo "Asia/shanghai" > /etc/timezone;
 ADD dist /usr/share/nginx/html
 COPY structure/enterpoint.sh /usr/share/nginx/html
 COPY config.yml /usr/share/nginx/html
+COPY dashboard.yml /usr/share/nginx/html
 COPY structure/sql.py /usr/share/nginx/html
+COPY structure/dashboard.py /usr/share/nginx/html
 RUN chmod 777 /usr/share/nginx/html/enterpoint.sh
 ENTRYPOINT ["/usr/share/nginx/html/enterpoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

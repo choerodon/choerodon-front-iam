@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom'; // ES6
-import { Button, Modal, Table, Tooltip, Upload } from 'choerodon-ui';
+import { Button, Modal, Table, Tooltip, Upload, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -23,7 +22,7 @@ export default class User extends Component {
     return {
       submitting: false,
       open: false,
-      edit: false,
+      status: 'create', // 'create' 'edit' 'upload'
       id: '',
       page: 0,
       isLoading: true,
@@ -36,11 +35,15 @@ export default class User extends Component {
       },
       sort: 'id,desc',
       visible: false,
+      fileLoading: false,
       selectedData: '',
     };
   }
   componentDidMount() {
     this.loadUser();
+  }
+  componentWillUnmount() {
+    this.timer = 0;
   }
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
@@ -51,14 +54,19 @@ export default class User extends Component {
   onEdit = (id) => {
     this.setState({
       visible: true,
-      edit: true,
+      status: 'modify',
       selectedData: id,
     });
   };
 
   loadUser = (paginationIn, sortIn, filtersIn, paramsIn) => {
     const { AppState, UserStore } = this.props;
-    const { pagination: paginationState, sort: sortState, filters: filtersState, params: paramsState, } = this.state;
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
     const { id } = AppState.currentMenuType;
     const pagination = paginationIn || paginationState;
     const sort = sortIn || sortState;
@@ -69,7 +77,7 @@ export default class User extends Component {
       pagination,
       sort,
       filters,
-      params
+      params,
     ).then((data) => {
       UserStore.setUsers(data.content);
       this.setState({
@@ -86,10 +94,10 @@ export default class User extends Component {
       .catch(error => Choerodon.handleResponseError(error));
   };
 
-  openNewPage = () => {
+  handleCreate = () => {
     this.setState({
       visible: true,
-      edit: false,
+      status: 'create',
     });
   };
 
@@ -164,6 +172,24 @@ export default class User extends Component {
     });
   };
 
+  upload = (e) => {
+    e.stopPropagation();
+    const { UserStore } = this.props;
+    const uploading = UserStore.getUploading;
+    if (uploading) {
+      return;
+    }
+    const uploadElement = document.getElementsByClassName('c7n-user-upload-hidden')[0];
+    uploadElement.click();
+  };
+
+  handleUpload = () => {
+    this.handleUploadInfo(true);
+    this.setState({
+      visible: true,
+      status: 'upload',
+    });
+  };
   /**
    *  application/vnd.ms-excel 2003-2007
    *  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 2010
@@ -181,37 +207,176 @@ export default class User extends Component {
       showUploadList: false,
       onChange: ({ file }) => {
         const { status, response } = file;
+        const { fileLoading } = this.state;
         if (status === 'done') {
-          Choerodon.prompt(intl.formatMessage({id: 'upload.success'}));
+          this.handleUploadInfo(true);
+          Choerodon.prompt(intl.formatMessage({ id: 'upload.success' }));
         } else if (status === 'error') {
           Choerodon.prompt(`${response.message}`);
+        }
+        if (!fileLoading) {
+          this.setState({
+            fileLoading: status === 'uploading',
+          });
         }
       },
     };
   }
 
+  handleSubmit = (e) => {
+    this.editUser.handleSubmit(e);
+  }
 
-  renderUpload() {
-    const { processStyle = {} } = this.state;
-    return (<div />);
+  handleUploadInfo = (immediately) => {
+    const { UserStore, AppState } = this.props;
+    const userId = AppState.getUserId;
+    if (immediately) {
+      UserStore.handleUploadInfo(userId);
+      return;
+    }
+    this.timer = setTimeout(() => {
+      this.timer = 0;
+      UserStore.handleUploadInfo(userId);
+    }, 9000);
+  }
+
+  getSidebarText() {
+    const { submitting, status, fileLoading } = this.state;
+    const { UserStore } = this.props;
+    const uploading = UserStore.getUploading;
+    if (submitting) {
+      return <FormattedMessage id="loading" />;
+    } else if (uploading) {
+      return <FormattedMessage id="uploading" />;
+    } else if (fileLoading) {
+      return <FormattedMessage id={`${intlPrefix}.fileloading`} />;
+    }
+    return <FormattedMessage id={status} />;
+  }
+
+  getSpentTime = (startTime, endTime) => {
+    const { intl } = this.props;
+    const timeUnit = {
+      day: intl.formatMessage({id: 'day'}),
+      hour: intl.formatMessage({id: 'hour'}),
+      minute: intl.formatMessage({id: 'minute'}),
+      second: intl.formatMessage({id: 'second'}),
+    };
+    const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
+    // 天数
+    const days = Math.floor(spentTime / (24 * 3600 * 1000));
+    // 小时
+    const leave1 = spentTime % (24 * 3600 * 1000); //  计算天数后剩余的毫秒数
+    const hours = Math.floor(leave1 / (3600 * 1000));
+    // 分钟
+    const leave2 = leave1 % (3600 * 1000); //  计算小时数后剩余的毫秒数
+    const minutes = Math.floor(leave2 / (60 * 1000));
+    // 秒数
+    const leave3 = leave2 % (60 * 1000); //  计算分钟数后剩余的毫秒数
+    const seconds = Math.round(leave3 / 1000);
+    const resultDays = days ? (days + timeUnit.day) : '';
+    const resultHours = hours ? (hours + timeUnit.hour) : '';
+    const resultMinutes = minutes ? (minutes + timeUnit.minute) : '';
+    const resultSeconds = seconds ? (seconds + timeUnit.second) : '';
+    return resultDays + resultHours + resultMinutes + resultSeconds;
+  }
+
+  getUploadInfo = () => {
+    const { UserStore } = this.props;
+    const { fileLoading } = this.state;
+    const uploadInfo = UserStore.getUploadInfo || {};
+    const uploading = UserStore.getUploading;
+    const container = [];
+    if (uploading) {
+      container.push(this.renderLoading());
+      this.handleUploadInfo();
+      if (fileLoading) {
+        this.setState({
+          fileLoading: false,
+        });
+      }
+    } else if (fileLoading) {
+      container.push(this.renderLoading());
+    } else if (!uploadInfo.noData) {
+      container.push(<p key={`${intlPrefix}.upload.lasttime`}>
+        <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
+        {uploadInfo.beginTime}</p>);
+      container.push(<p key={`${intlPrefix}.upload.time`}>
+        <FormattedMessage
+          id={`${intlPrefix}.upload.time`}
+          values={{
+            time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime),
+            successCount: uploadInfo.successCount || 0,
+            failedCount: uploadInfo.failedCount || 0,
+          }}
+        /></p>);
+    } else {
+      container.push(<p key={`${intlPrefix}.upload.norecord`}><FormattedMessage id={`${intlPrefix}.upload.norecord`} /></p>);
+    }
+    return (
+      <div className="c7n-user-upload-container">
+        {container}
+      </div>
+    );
+  };
+
+  renderLoading() {
+    const { intl: { formatMessage } } = this.props;
+    const { fileLoading } = this.state;
+    return (
+      <div className="c7n-user-uploading-container" key="c7n-user-uploading-container">
+        <div className="loading">
+          <Spin size="large" />
+        </div>
+        <p className="text">{formatMessage({
+          id: `${intlPrefix}.${fileLoading ? 'fileloading' : 'uploading'}.text` })}</p>
+        {!fileLoading && (<p className="tip">{formatMessage({ id: `${intlPrefix}.uploading.tip` })}</p>)}
+      </div>
+    );
+  }
+
+  renderUpload(organizationId, organizationName) {
+    return (
+      <Content
+        code={`${intlPrefix}.upload`}
+        values={{
+          name: organizationName,
+        }}
+        className="sidebar-content"
+      >
+        <div style={{ width: '512px' }}>
+          {this.getUploadInfo()}
+        </div>
+        <div style={{ display: 'none' }}>
+          <Upload {...this.getUploadProps(organizationId)}>
+            <Button className="c7n-user-upload-hidden" />
+          </Upload>
+        </div>
+      </Content>);
   }
 
 
   renderSideTitle() {
-    if (this.state.edit) {
-      return <FormattedMessage id={`${intlPrefix}.modify`}/>;
-    } else {
-      return <FormattedMessage id={`${intlPrefix}.create`}/>;
+    const { status } = this.state;
+    switch (status) {
+      case 'create':
+        return <FormattedMessage id={`${intlPrefix}.create`} />;
+      case 'modify':
+        return <FormattedMessage id={`${intlPrefix}.modify`} />;
+      case 'upload':
+        return <FormattedMessage id={`${intlPrefix}.upload`} />;
+      default:
+        return '';
     }
   }
 
   renderSideBar() {
-    const { selectedData, edit, visible } = this.state;
+    const { selectedData, status, visible } = this.state;
     return (
       <UserEdit
         id={selectedData}
         visible={visible}
-        edit={edit}
+        edit={status === 'edit'}
         onRef={(node) => {
           this.editUser = node;
         }}
@@ -243,58 +408,58 @@ export default class User extends Component {
   }
 
   render() {
-    const { UserStore, AppState, intl } = this.props;
-    const { filters, pagination, visible, edit, submitting, params } = this.state;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
-    const orgname = menuType.name;
+    const {
+      UserStore: { getUsers, isLoading },
+      AppState: { currentMenuType, getType },
+      intl } = this.props;
+    const { filters, pagination, visible, status, submitting, params } = this.state;
+    const { id: organizationId, name: organizationName, type: menuType } = currentMenuType;
+
     let type;
-    if (AppState.getType) {
-      type = AppState.getType;
+    if (getType) {
+      type = getType;
     } else if (sessionStorage.type) {
       type = sessionStorage.type;
     } else {
-      type = menuType.type;
+      type = menuType;
     }
-    let data = [];
-    if (UserStore.getUsers) {
-      data = UserStore.users.slice();
-    }
+    const data = getUsers.slice() || [];
+
     const columns = [
       {
-        title: <FormattedMessage id={`${intlPrefix}.loginname`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.loginname`} />,
         dataIndex: 'loginName',
         key: 'loginName',
         filters: [],
         filteredValue: filters.loginName || [],
       }, {
-        title: <FormattedMessage id={`${intlPrefix}.realname`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
         filters: [],
         filteredValue: filters.realName || [],
       },
       {
-        title: <FormattedMessage id={`${intlPrefix}.source`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.source`} />,
         key: 'ldap',
         render: (text, record) => (
           record.ldap
-            ? <FormattedMessage id={`${intlPrefix}.ldap`}/>
-            : <FormattedMessage id={`${intlPrefix}.notldap`}/>
+            ? <FormattedMessage id={`${intlPrefix}.ldap`} />
+            : <FormattedMessage id={`${intlPrefix}.notldap`} />
         ),
         filters: [
           {
-            text: intl.formatMessage({id: `${intlPrefix}.ldap`}),
+            text: intl.formatMessage({ id: `${intlPrefix}.ldap` }),
             value: 'true',
           }, {
-            text: intl.formatMessage({id: `${intlPrefix}.notldap`}),
+            text: intl.formatMessage({ id: `${intlPrefix}.notldap` }),
             value: 'false',
           },
         ],
         filteredValue: filters.ldap || [],
       },
       {
-        title: <FormattedMessage id={`${intlPrefix}.language`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.language`} />,
         dataIndex: 'language',
         key: 'language',
         render: (text, record) => (
@@ -312,16 +477,16 @@ export default class User extends Component {
         filteredValue: filters.language || [],
       },
       {
-        title: <FormattedMessage id={`${intlPrefix}.enabled`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.enabled`} />,
         key: 'enabled',
         render: (text, record) => (
           record.enabled
-            ? <FormattedMessage id="enable"/>
-            : <FormattedMessage id="disable"/>
+            ? <FormattedMessage id="enable" />
+            : <FormattedMessage id="disable" />
         ),
         filters: [
           {
-            text: intl.formatMessage({id: 'enable'}),
+            text: intl.formatMessage({ id: 'enable' }),
             value: 'true',
           }, {
             text: intl.formatMessage({id: 'disable'}),
@@ -455,7 +620,7 @@ export default class User extends Component {
             organizationId={organizationId}
           >
             <Button
-              onClick={this.openNewPage}
+              onClick={this.handleCreate}
               icon="playlist_add"
             >
               <FormattedMessage id={`${intlPrefix}.create`}/>
@@ -468,23 +633,22 @@ export default class User extends Component {
             <FormattedMessage id={`${intlPrefix}.download.template`} />
             <a id="c7n-user-download-template" href="" onClick={(event) => { event.stopPropagation(); }} download="userTemplate.xlsx" />
           </Button>
-          {/* <Upload {...this.getUploadProps(organizationId)}>
-            <Button
-              icon="file_upload"
-            >
-              <FormattedMessage id={`${intlPrefix}.upload.file`} />
-            </Button>
-          </Upload> */}
+          <Button
+            icon="file_upload"
+            onClick={this.handleUpload}
+          >
+            <FormattedMessage id={`${intlPrefix}.upload.file`} />
+          </Button>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: orgname}}
+          values={{ name: organizationName }}
         >
           <Table
             size="middle"
@@ -493,16 +657,16 @@ export default class User extends Component {
             dataSource={data}
             rowKey="id"
             onChange={this.handlePageChange.bind(this)}
-            loading={UserStore.isLoading}
+            loading={isLoading}
             filters={params}
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
             title={this.renderSideTitle()}
             visible={visible}
-            okText={<FormattedMessage id={edit ? 'save' : 'create'}/>}
-            cancelText={<FormattedMessage id="cancel"/>}
-            onOk={e => this.editUser.handleSubmit(e)}
+            okText={this.getSidebarText()}
+            cancelText={<FormattedMessage id="cancel" />}
+            onOk={status === 'upload' ? this.upload : this.handleSubmit}
             onCancel={() => {
               this.setState({
                 visible: false,
@@ -511,14 +675,12 @@ export default class User extends Component {
             }}
             confirmLoading={submitting}
           >
-            {
-              this.renderSideBar()
+            {status === 'upload'
+              ? this.renderUpload(organizationId, organizationName)
+              : this.renderSideBar()
             }
           </Sidebar>
         </Content>
-        {
-          this.renderUpload()
-        }
       </Page>
     );
   }

@@ -13,10 +13,18 @@ class UserStore {
   @observable timeZone = [];
   @observable checkEmail;
 
-  @observable users;
+  @observable users = [];
   /* 用户列表 */
   @observable totalSize;
   @observable totalPage;
+
+  /**
+   * 上传状态
+   */
+  @observable uploading = false;
+  @observable uploadInfo = {
+    noData: true,
+  };
 
   constructor(totalPage = 1, totalSize = 0) {
     this.totalPage = totalPage;
@@ -32,7 +40,6 @@ class UserStore {
   get getIsLoading() {
     return this.isLoading;
   }
-
   @action
   setPasswordPolicy(data) {
     this.passwordPolicy = data;
@@ -103,13 +110,46 @@ class UserStore {
     return this.totalPage;
   }
 
+  // upload
+
+  @computed
+  get getUploading() {
+    return this.uploading;
+  }
+
+  @action
+  setUploading(flag) {
+    this.uploading = flag;
+  }
+
+
+  @computed
+  get getUploadInfo() {
+    return this.uploadInfo;
+  }
+
+  @action
+  setUploadInfo(info) {
+    this.uploadInfo = info;
+  }
   /**
    * 下载文件
    */
-  @action
   downloadTemplate(organizationId) {
     return axios.get(`/iam/v1/organizations/${organizationId}/users/download_templates`, {
       responseType: 'arraybuffer',
+    });
+  }
+
+  handleUploadInfo = (userId) => {
+    axios.get(`/iam/v1/upload/history?user_id=${userId}&type=user`).then((data) => {
+      if (!data) {
+        this.setUploadInfo({ noData: true });
+        this.setUploading(false);
+        return;
+      }
+      this.setUploadInfo(data);
+      this.setUploading(!data.endTime);
     });
   }
 

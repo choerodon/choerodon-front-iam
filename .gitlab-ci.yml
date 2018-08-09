@@ -10,6 +10,7 @@ variables:
 node_build:
   stage: node_build
   script:
+    - pip install pymysql
     - node_module iam
     - node_build build
     - cp -r dist /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/dist
@@ -23,6 +24,7 @@ node_build:
 node_build_dev:
   stage: node_build
   script:
+    - pip install pymysql
     - node_module iam
     - node_build build
     - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}

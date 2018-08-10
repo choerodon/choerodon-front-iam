@@ -37,6 +37,15 @@ export default class UserEdit extends Component {
   componentWillMount() {
     this.props.onRef(this);
     this.fetch(this.props);
+    if (this.props.edit) {
+      setTimeout(() => {
+        this.editFocusInput.input.focus();
+      }, 10);
+    } else {
+      setTimeout(() => {
+        this.createFocusInput.input.focus();
+      }, 10);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,6 +54,15 @@ export default class UserEdit extends Component {
       this.setState(this.getInitState());
     } else if (!this.props.visible) {
       this.fetch(nextProps);
+      if (this.props.edit) {
+        setTimeout(() => {
+          this.editFocusInput.input.focus();
+        }, 10);
+      } else {
+        setTimeout(() => {
+          this.createFocusInput.input.focus();
+        }, 10);
+      }
     }
   }
 
@@ -275,6 +293,7 @@ export default class UserEdit extends Component {
                 label={intl.formatMessage({ id: `${intlPrefix}.loginname` })}
                 disabled={edit}
                 style={{ width: inputWidth }}
+                ref={(e) => this.createFocusInput = e}
               />,
             )}
           </FormItem>
@@ -299,6 +318,7 @@ export default class UserEdit extends Component {
                   type="text"
                   rows={1}
                   style={{ width: inputWidth }}
+                  ref={(e) => this.editFocusInput = e}
                 />,
               )
             }
@@ -402,7 +422,7 @@ export default class UserEdit extends Component {
                     style={{ width: inputWidth }}
                   >
                     <Option value="zh_CN">简体中文</Option>
-                    {/*<Option value="en_US">English</Option>*/}
+                    {/* <Option value="en_US">English</Option> */}
                   </Select>,
                 )}
               </FormItem>
@@ -422,7 +442,7 @@ export default class UserEdit extends Component {
                     style={{ width: inputWidth }}
                   >
                     <Option value="CTT">中国</Option>
-                    {/*<Option value="EST">America</Option>*/}
+                    {/* <Option value="EST">America</Option> */}
                   </Select>,
                 )}
               </FormItem>

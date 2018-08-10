@@ -117,6 +117,9 @@ export default class MenuSetting extends Component {
       sidebar: true,
       selectMenuDetail: {},
     });
+    setTimeout(() => {
+      this.addDirFocusInput.input.focus();
+    }, 10);
   };
   //查看细节，弹出sidebar,设置选中的菜单或目录
   detailMenu = (record) => {
@@ -137,6 +140,9 @@ export default class MenuSetting extends Component {
       sidebar: true,
       selectMenuDetail: record,
     });
+    setTimeout(() => {
+      this.changeMenuFocusInput.input.focus();
+    }, 10);
   };
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
@@ -381,6 +387,7 @@ export default class MenuSetting extends Component {
               label={<FormattedMessage id={`${intlPrefix}.directory.code`} />}
               style={{ width: inputWidth }}
               disabled={selectType === 'edit'}
+              ref={(e) => this.addDirFocusInput = e}
             />,
           )}
         </FormItem>
@@ -400,6 +407,7 @@ export default class MenuSetting extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.directory.name`} />}
               style={{ width: inputWidth }}
+              ref={(e) => this.changeMenuFocusInput = e}
             />,
           )}
         </FormItem>

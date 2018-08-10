@@ -17,6 +17,7 @@ node_build:
     - cp -r node_modules/choerodon-front-boot/structure /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/structure
   only:
     - master
+    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
     - tags
@@ -30,6 +31,7 @@ node_build_dev:
     - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
   except:
     - master
+    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
     - tags
@@ -43,6 +45,7 @@ docker_build:
     - chart_build
   only:
     - master
+    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
     - tags

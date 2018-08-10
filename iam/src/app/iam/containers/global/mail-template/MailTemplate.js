@@ -61,7 +61,7 @@ export default class MailTemplate extends Component {
         total: 0,
       },
       sort: {
-        columnKey: 'name',
+        columnKey: 'id',
         order: 'descend',
       },
       filters: {},
@@ -73,11 +73,23 @@ export default class MailTemplate extends Component {
     this.loadTemplate(pagination, sort, filters, params);
   };
 
+  handleModify = (record) => {
+    // TODO 修改
+  };
+
+  createByThis = (record) => {
+    // TODO 基于此创建
+  };
+
+  handleDelete(record) {
+    MailTemplateStore.deleteMailTemplate(record.id);
+  }
+
   initMailTemplate() {
     this.roles = new MailTemplateType(this);
   }
 
-  loadTemplate(paginationIn, sortIn, filtersIn, paramsIn) {
+  loadTemplate(paginationIn, filtersIn, sortIn, paramsIn) {
     const {
       pagination: paginationState,
       sort: sortState,
@@ -88,10 +100,8 @@ export default class MailTemplate extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    console.log(paramsIn);
-    MailTemplateStore.loadMailTemplate(pagination, sort, filters, params)
+    MailTemplateStore.loadMailTemplate(pagination, filters, sort, params)
       .then((data) => {
-        console.log(`data${data}`);
         MailTemplateStore.setLoading(false);
         MailTemplateStore.setMailTemplate(data.content);
         this.setState({
@@ -125,16 +135,25 @@ export default class MailTemplate extends Component {
 
   render() {
     const { intl } = this.props;
-    const { filters, loading, params } = this.state;
+    const {
+      sort: { columnKey, order }, filters, pagination, loading, params,
+    } = this.state;
 
     const mailTemplateData = MailTemplateStore.getMailTemplate();
     const columns = [{
+      dataIndex: 'id',
+      key: 'id',
+      hidden: true,
+      sortOrder: columnKey === 'id' && order,
+    }, {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'realName',
       key: 'realName',
       width: 350,
       filters: [],
-      filteredValue: filters.name || [],
+      sorter: true,
+      sortOrder: columnKey === 'realName' && order,
+      filteredValue: filters.realName || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
       dataIndex: 'enabled',
@@ -146,6 +165,10 @@ export default class MailTemplate extends Component {
       dataIndex: 'email',
       key: 'email',
       width: 475,
+      filters: [],
+      sorter: true,
+      sortOrder: columnKey === 'email' && order,
+      filteredValue: filters.email || [],
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,
@@ -171,6 +194,13 @@ export default class MailTemplate extends Component {
           icon: '',
           text: intl.formatMessage({ id: 'modify' }),
           action: this.handleModify.bind(this, record.realName),
+        },
+        {
+          service: ['manager-service.service.pageManager'],
+          type: 'site',
+          icon: '',
+          text: intl.formatMessage({ id: 'delete' }),
+          action: this.handleDelete.bind(this, record),
         }];
         // 根据来源类型判断
         if (!record.realName) {
@@ -216,6 +246,7 @@ export default class MailTemplate extends Component {
             loading={loading}
             columns={columns}
             dataSource={mailTemplateData}
+            pagination={pagination}
             filters={params}
             onChange={this.handlePageChange}
             rowKey="id"

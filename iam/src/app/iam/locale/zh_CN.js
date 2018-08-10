@@ -239,9 +239,13 @@ const pageDetail = {
   'organization.user.modify.description': '您可以在此修改用户名、邮箱、语言、时区。',
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
+  'organization.user.upload.title': '在组织"{name}"中导入用户',
+  'organization.user.upload.description': '您可以在此将文件中的用户信息导入到组织中。',
+  'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
+
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
-  'organization.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
   'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   'organization.mailtemplate.create.title': '在组织"{name}"中创建邮件模板',
@@ -326,7 +330,6 @@ const zh_CN = {
   'no': '否',
   'save': '保存',
   'close': '关闭',
-  'type': '类型',
   'stop': '停止',
   'restart': '重启',
   'upgrade': '升级',
@@ -336,6 +339,9 @@ const zh_CN = {
   'return': '返回',
   'filtertable': '过滤表',
   'ok': '确定',
+  'upload': '上传',
+  'download': '下载',
+  'uploading': '导入中',
 
   'day': '天',
   'hour': '小时',
@@ -371,6 +377,7 @@ const zh_CN = {
   'enable.success': '启用成功',
   'disable.success': '停用成功',
   'copy.success': '已复制到剪贴板',
+  'upload.success': '上传成功',
 
 // error
   'error': '失败',
@@ -383,6 +390,7 @@ const zh_CN = {
   'remove.error': '移除失败',
   'enabled.error': '启用失败',
   'disable.error': '停用失败',
+  'upload.error': '上传失败',
 
   // 统一字段
   'name': '名称',
@@ -871,6 +879,16 @@ const zh_CN = {
   'organization.user.repassword': '确认密码',
   'organization.user.repassword.require.msg': '请确认密码',
   'organization.user.timezone': '时区',
+  'organization.user.download.template': '下载',
+  'organization.user.upload.file': '上传',
+  'organization.user.upload': '导入用户',
+  'organization.user.upload.lasttime': '上次导入完成时间',
+  'organization.user.upload.norecord': '当前没有导入用户记录',
+  'organization.user.upload.time': '（耗时{time}），共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.uploading.text': '正在导入...',
+  'organization.user.fileloading.text': '正在上传...',
+  'organization.user.fileloading': '上传中',
+  'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
 
   // 邮件模板
   'organization.mailtemplate.header.title': '邮件模板',

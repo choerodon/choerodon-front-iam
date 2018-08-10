@@ -174,9 +174,21 @@
       }
     }
 
-
     .c7n-url-container {
-      margin-top: 24px;
+      margin-top: 30px;
+
+      .c7n-authorize-info {
+        margin-bottom: 20px;
+
+        .info {
+          font-size: 16px;
+          color: #000000;
+        }
+
+        button {
+          margin-left: 50px;
+        }
+      }
 
       .method {
         display: inline-block;
@@ -258,3 +270,46 @@
     }
   }
 }
+
+.c7n-apitest-modal {
+  position: relative;
+  padding-top: 26px;
+  text-align: center;
+
+  .c7n-apitest-modal-icon {
+    height: 30px;
+    width: 172px;
+    margin: 0 auto;
+    background-image: url('./icon/choerodon_logo_color.svg');
+    background-repeat: no-repeat;
+    background-size: auto 31px;
+  }
+
+  .c7n-apitest-modal-title {
+    margin-top: 22px;
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  form {
+    margin-top: 30px;
+    text-align: start;
+    padding: 0 18px;
+  }
+
+  .c7n-apitest-modal-btn-group {
+    position: absolute;
+    top: 300px;
+    left: 18px;
+    display: flex;
+    justify-content: space-between;
+    line-height: 32px;
+    width: 370px;
+    margin: 0 auto;
+
+      button {
+        width: 120px;
+      }
+  }
+}
+

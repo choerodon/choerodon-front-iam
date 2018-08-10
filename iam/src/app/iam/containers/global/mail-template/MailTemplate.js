@@ -69,13 +69,7 @@ export default class MailTemplate extends Component {
     };
   }
 
-
-  handleCreate = () => {
-    this.props.history.push('/iam/mail-template/create');
-  };
-
-
-  handlePageChange = (pagination, sort, filters, params) => {
+  handlePageChange = (pagination, filters, sort, params) => {
     this.loadTemplate(pagination, sort, filters, params);
   };
 
@@ -125,6 +119,19 @@ export default class MailTemplate extends Component {
         Choerodon.handleResponseError(error);
       });
   }
+
+  handleCreate = () => {
+    // TODO 创建
+  };
+
+  handleModify = (record) => {
+    // TODO 修改
+  }
+
+  createByThis = (record) => {
+    // TODO 基于此创建
+  }
+
 
   render() {
     const { intl } = this.props;

@@ -68,6 +68,8 @@ export default class APITest extends Component {
         });
         APITestStore.setService(services);
         if (!APITestStore.detailFlag) {
+          APITestStore.setApiToken(null);
+          APITestStore.setUserInfo(null);
           APITestStore.setCurrentService(services[0]);
         } else {
           APITestStore.setDetailFlag(false);
@@ -203,12 +205,14 @@ export default class APITest extends Component {
       render: (text, record) => {
         if ('method' in record) {
           return (
-            <Button
-              shape="circle"
-              icon="find_in_page"
-              size="small"
-              onClick={this.goDetail.bind(this, record)}
-            />
+            <Permission service={['manager-service.api.queryPathDetail']}>
+              <Button
+                shape="circle"
+                icon="find_in_page"
+                size="small"
+                onClick={this.goDetail.bind(this, record)}
+              />
+            </Permission>
           );
         }
       },

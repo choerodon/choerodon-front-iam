@@ -9,8 +9,6 @@ const edit = asyncRouter(() => import('./MailTemplateModify'));
 const Index = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={index} />
-    <Route path={`${match.url}/create`} component={create} />
-    <Route path={`${match.url}/edit/:id`} component={edit} />
     <Route path="*" component={nomatch} />
   </Switch>
 );

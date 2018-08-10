@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { axios as defaultAxios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Upload, Icon } from 'choerodon-ui';
+import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Icon, Modal } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import classnames from 'classnames';
@@ -11,6 +11,7 @@ import Hjson from 'hjson';
 import './APITest.scss';
 import jsonFormat from '../../../common/json-format';
 import APITestStore from '../../../stores/global/api-test';
+import AuthorizeModal from './AuthorizeModal';
 
 let statusCode;
 let responseHeader;
@@ -36,11 +37,17 @@ instance.interceptors.request.use(
     const newConfig = config;
     newConfig.headers['Content-Type'] = 'application/json';
     newConfig.headers.Accept = 'application/json';
-    const accessToken = Choerodon.getAccessToken();
-    if (accessToken) {
+    let accessToken;
+    if (!APITestStore.getApiToken) {
+      accessToken = Choerodon.getAccessToken();
+      if (accessToken) {
+        newConfig.headers.Authorization = accessToken;
+      }
+    } else {
+      accessToken = APITestStore.getApiToken;
       newConfig.headers.Authorization = accessToken;
-      authorization = accessToken;
     }
+    authorization = accessToken;
     return newConfig;
   },
   (err) => {
@@ -61,6 +68,8 @@ instance.interceptors.response.use((res) => {
 @Form.create()
 @withRouter
 @injectIntl
+@inject('AppState')
+@observer
 export default class APIDetail extends Component {
   state = this.getInitState();
 
@@ -74,7 +83,6 @@ export default class APIDetail extends Component {
       operationId,
       requestUrl: null,
       urlPrefix: '',
-      isShowResult: null,
       isSending: false,
       urlPathValues: {},
       bData: {},
@@ -82,6 +90,7 @@ export default class APIDetail extends Component {
       query: '',
       taArr: {},
       loadFile: null,
+      isShowModal: false,
     };
   }
 
@@ -113,6 +122,15 @@ export default class APIDetail extends Component {
         requestUrl: `${urlPrefix}${basePath}${url}`,
       });
     }
+  }
+
+  componentWillUnmount() {
+    APITestStore.setIsShowResult(null);
+  }
+
+
+  handleEnterKey = () => {
+    console.log(123);
   }
 
   getDetail() {
@@ -476,30 +494,44 @@ export default class APIDetail extends Component {
           </Form>
         </div>
         <div className="c7n-url-container">
-          <span className={classnames('method', method)}>{method}</span>
-          <input type="text" value={this.state.requestUrl} readOnly />
-          {!this.state.isSending ? (
+          <div className="c7n-authorize-info">
+            <span className="info">授权账号：</span>
+            <span className="info">{APITestStore.getUserInfo || this.props.AppState.getUserInfo.loginName}</span>
             <Button
               funcType="raised"
               type="primary"
               htmlType="submit"
-              onClick={this.handleSubmit}
+              onClick={this.openAuthorizeModal}
             >
-              {intl.formatMessage({ id: `${intlPrefix}.send` })}
+              更改授权账号
             </Button>
-          ) : (
-            <Button
-              funcType="raised"
-              type="primary"
-              loading
-            >
-              {intl.formatMessage({ id: `${intlPrefix}.sending` })}
-            </Button>
-          )
-          }
+          </div>
+          <div>
+            <span className={classnames('method', method)}>{method}</span>
+            <input type="text" value={this.state.requestUrl} readOnly />
+            {!this.state.isSending ? (
+              <Button
+                funcType="raised"
+                type="primary"
+                htmlType="submit"
+                onClick={this.handleSubmit}
+              >
+                {intl.formatMessage({ id: `${intlPrefix}.send` })}
+              </Button>
+            ) : (
+              <Button
+                funcType="raised"
+                type="primary"
+                loading
+              >
+                {intl.formatMessage({ id: `${intlPrefix}.sending` })}
+              </Button>
+            )
+            }
+          </div>
         </div>
-        <div style={{ textAlign: 'center', paddingTop: '100px', display: this.state.isShowResult === false ? 'block' : 'none' }}><Spin size="large" /></div>
-        <div className="c7n-response-container" style={{ display: this.state.isShowResult === true ? 'block' : 'none' }}>
+        <div style={{ textAlign: 'center', paddingTop: '100px', display: APITestStore.isShowResult === false ? 'block' : 'none' }}><Spin size="large" /></div>
+        <div className="c7n-response-container" style={{ display: APITestStore.isShowResult === true ? 'block' : 'none' }}>
           <div className="c7n-response-code">
             <h5><FormattedMessage id={`${intlPrefix}.response.code`} /></h5>
             <div className="response-code-container">
@@ -545,7 +577,8 @@ export default class APIDetail extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.setState({ isSending: true, isShowResult: false });
+        this.setState({ isSending: true })
+        APITestStore.setIsShowResult(false);
         this.responseNode.scrollTop = 0;
         this.curlNode.scrollLeft = 0;
         if ('bodyData' in values) {
@@ -553,13 +586,13 @@ export default class APIDetail extends Component {
             jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           }).catch((error) => {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           });
         } else if (this.fileInput) {
           const formData = new FormData();
@@ -568,36 +601,50 @@ export default class APIDetail extends Component {
             .then(function (res) {
               this.setState({
                 isSending: false,
-                isShowResult: true,
               });
+              APITestStore.setIsShowResult(true);
             }).catch((error) => {
               this.setState({
                 isSending: false,
-                isShowResult: true,
               });
+              APITestStore.setIsShowResult(true);
             });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           }).catch((error) => {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           });
         }
       }
     });
   }
 
+  // 开启授权模态框
+  openAuthorizeModal = () => {
+    if (this.AuthorizeModal) {
+      const { resetFields } = this.AuthorizeModal.props.form;
+      resetFields();
+    }
+    APITestStore.setIsShowModal(true);
+  }
+
+
+  // 关闭授权模态框
+  handleCancel = () => {
+    APITestStore.setIsShowModal(false);
+  };
+
   copyToLeft(value, name) {
     const { setFieldsValue } = this.props.form;
     setFieldsValue({ bodyData: value });
   }
-
 
   changeNormalValue = (name, valIn, e) => {
     const { urlPathValues } = this.state;
@@ -629,6 +676,18 @@ export default class APIDetail extends Component {
     this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
   };
 
+  renderModalContent() {
+    const { isShowModal } = this.state;
+    return (
+      <AuthorizeModal
+        isShow={isShowModal}
+        onRef={(node) => {
+          this.AuthorizeModal = node;
+        }}
+      />
+    );
+  }
+
   render() {
     const url = APITestStore && APITestStore.apiDetail.url;
     return (
@@ -657,6 +716,19 @@ export default class APIDetail extends Component {
             </div>
           )
         }
+
+        <Modal
+          bodyStyle={{ height: '356px' }}
+          visible={APITestStore.getIsShowModal}
+          closable={false}
+          footer={null}
+          width={454}
+          maskClosable={!APITestStore.modalSaving}
+          onCancel={this.handleCancel}
+          onOk={e => this.AuthorizeModal.handleSubmit(e)}
+        >
+          {this.renderModalContent()}
+        </Modal>
       </Page>
     );
   }

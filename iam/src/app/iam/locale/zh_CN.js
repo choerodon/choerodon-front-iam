@@ -125,23 +125,26 @@ const pageDetail = {
 
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
-  'global.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'global.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容。',
   'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
-  'global.mailtemplate.detail.title': '平台"{name}"的邮件模板',
-  'global.mailtemplate.detail.description': 'description',
-  'global.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailtemplate.create.title': '在平台"{name}"中创建邮件模板',
+  'global.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'global.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'global.mailtemplate.create.base.title': '在平台"{name}"中创建邮件模板',
+  'global.mailtemplate.create.base.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'global.mailtemplate.create.base.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+
+  'global.mailtemplate.modify.title': '在平台"{name}"中修改邮件模板',
+  'global.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
 
   // 邮箱配置
   'global.mailsetting.title': '平台"{name}"的邮箱配置',
   'global.mailsetting.description': '邮箱配置用于管理发件邮箱的账号信息与邮件服务器信息。',
   'global.mailsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
-  'global.mailsetting.create.title': '在平台"{name}"中创建配置',
-  'global.mailsetting.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
-  'global.mailsetting.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-  'global.mailsetting.create.base.title': '在平台"{name}"中创建配置',
-  'global.mailsetting.create.base.description': '您可自定义您的配置版本。系统将自动生成您的配置ID。',
-  'global.mailsetting.create.base.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
@@ -236,14 +239,26 @@ const pageDetail = {
   'organization.user.modify.description': '您可以在此修改用户名、邮箱、语言、时区。',
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
+  'organization.user.upload.title': '在组织"{name}"中导入用户',
+  'organization.user.upload.description': '您可以在此将文件中的用户信息导入到组织中。',
+  'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
+
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
-  'organization.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容',
+  'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
   'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
-  'organization.mailtemplate.detail.title': '组织"{name}"的邮件模板',
-  'organization.mailtemplate.detail.description': 'description',
-  'organization.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.create.title': '在组织"{name}"中创建邮件模板',
+  'organization.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'organization.mailtemplate.create.base.title': '在组织"{name}"中创建邮件模板',
+  'organization.mailtemplate.create.base.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'organization.mailtemplate.create.base.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+
+  'organization.mailtemplate.modify.title': '在组织"{name}"中修改邮件模板',
+  'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
 
   //项目设置
@@ -315,7 +330,6 @@ const zh_CN = {
   'no': '否',
   'save': '保存',
   'close': '关闭',
-  'type': '类型',
   'stop': '停止',
   'restart': '重启',
   'upgrade': '升级',
@@ -325,6 +339,9 @@ const zh_CN = {
   'return': '返回',
   'filtertable': '过滤表',
   'ok': '确定',
+  'upload': '上传',
+  'download': '下载',
+  'uploading': '导入中',
 
   'day': '天',
   'hour': '小时',
@@ -618,6 +635,15 @@ const zh_CN = {
   'global.apitest.choose.file': '选择文件',
   'global.apitest.copyleft': '点击复制至左侧',
   'global.apitest.sending': '发送中',
+  'global.apitest.authorize.success': '授权成功',
+  'global.apitest.authorize.failed': '授权失败',
+  'global.apitest.authorize.account': '授权账号',
+  'global.apitest.authorize.password': '密码',
+  'global.apitest.account.required': '请输入授权账号',
+  'global.apitest.pwd.required': '请输入密码',
+  'global.apitest.authorize': '授权',
+  'global.apitest.authorize.title': 'API测试权限信息',
+
 
   // 邮件模板
   'global.mailtemplate.header.title': '邮件模板',
@@ -627,6 +653,8 @@ const zh_CN = {
   'global.mailtemplate.table.fromtype': '来源类型',
   'global.mailtemplate.create.template': '创建模板',
   'global.mailtemplate.create.baseon': '基于此创建',
+  'global.mailtemplate.create': '创建模板',
+  'global.mailtemplate.modify': '修改模板',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',
@@ -853,6 +881,14 @@ const zh_CN = {
   'organization.user.timezone': '时区',
   'organization.user.download.template': '下载',
   'organization.user.upload.file': '上传',
+  'organization.user.upload': '导入用户',
+  'organization.user.upload.lasttime': '上次导入完成时间',
+  'organization.user.upload.norecord': '当前没有导入用户记录',
+  'organization.user.upload.time': '（耗时{time}），共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.uploading.text': '正在导入...',
+  'organization.user.fileloading.text': '正在上传...',
+  'organization.user.fileloading': '上传中',
+  'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
 
   // 邮件模板
   'organization.mailtemplate.header.title': '邮件模板',

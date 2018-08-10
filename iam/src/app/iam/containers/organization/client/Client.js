@@ -108,7 +108,7 @@ export default class Client extends Component {
    */
   loadClient = (paginationIn, sortIn, filtersIn, paramsIn) => {
     const { AppState } = this.props;
-    const { pagination: paginationState, sort: sortState, filters: filtersState, params: paramsState, } = this.state;
+    const { pagination: paginationState, sort: sortState, filters: filtersState, params: paramsState } = this.state;
     const { id: organizationId } = AppState.currentMenuType;
     const pagination = paginationIn || paginationState;
     const sort = sortIn || sortState;
@@ -146,17 +146,17 @@ export default class Client extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
-      title: intl.formatMessage({id: `${intlPrefix}.delete.title`}),
-      content: intl.formatMessage({id: `${intlPrefix}.delete.content`}, {name: record.name}),
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
       onOk: () => ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {
         if (status) {
-          Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
+          Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
           this.loadClient();
         } else {
-          Choerodon.prompt(intl.formatMessage({id: 'delete.error'}));
+          Choerodon.prompt(intl.formatMessage({ id: 'delete.error' }));
         }
       }).catch(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'delete.error'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'delete.error' }));
       }),
     });
   };
@@ -173,10 +173,16 @@ export default class Client extends Component {
         .subscribe((data) => {
           ClientStore.setClientById(data);
         });
+      setTimeout(() => {
+        this.editFocusInput.input.focus();
+      }, 100);
     }
+    setTimeout(() => {
+      this.createFocusInput.input.focus();
+    }, 100);
   };
 
-  closeSidebar = ( nochange = '' ) => {
+  closeSidebar = (nochange = '') => {
     const { resetFields } = this.props.form;
     resetFields();
     this.setState({
@@ -203,7 +209,7 @@ export default class Client extends Component {
       name: value,
     }).then((mes) => {
       if (mes.failed) {
-        callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
+        callback(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
       } else {
         callback();
       }
@@ -255,7 +261,7 @@ export default class Client extends Component {
             .then((value) => {
               if (value) {
                 this.closeSidebar();
-                Choerodon.prompt(intl.formatMessage({id: 'add.success'}));
+                Choerodon.prompt(intl.formatMessage({ id: 'add.success' }));
               }
             })
             .catch((error) => {
@@ -263,15 +269,15 @@ export default class Client extends Component {
             });
         } else if (status === 'edit') {
           if (!modify) {
-            Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+            Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
             this.closeSidebar('nochange');
             return;
           }
           if (dataType.scope) {
-            dataType.scope = dataType.scope.join(',')
+            dataType.scope = dataType.scope.join(',');
           }
           if (dataType.autoApprove) {
-            dataType.autoApprove = dataType.autoApprove.join(',')
+            dataType.autoApprove = dataType.autoApprove.join(',');
           }
           const client = ClientStore.getClient;
           this.setState({
@@ -291,7 +297,7 @@ export default class Client extends Component {
             .then((value) => {
               if (value) {
                 this.closeSidebar();
-                Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+                Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
               }
             })
             .catch((error) => {
@@ -335,9 +341,9 @@ export default class Client extends Component {
     const { intl } = this.props;
     const length = value && value.length;
     if (length) {
-      var reg = new RegExp(/^[A-Za-z]+$/);
-      if (!reg.test(value[length-1])) {
-        callback(intl.formatMessage({id: `${intlPrefix}.${name}.pattern.msg`}));
+      const reg = new RegExp(/^[A-Za-z]+$/);
+      if (!reg.test(value[length - 1])) {
+        callback(intl.formatMessage({ id: `${intlPrefix}.${name}.pattern.msg` }));
         return;
       }
     }
@@ -359,7 +365,7 @@ export default class Client extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
+              message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
             }, {
               validator: status === 'create' && this.checkName,
             }],
@@ -368,8 +374,9 @@ export default class Client extends Component {
           })(
             <Input
               autoComplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.name`})}
+              label={intl.formatMessage({ id: `${intlPrefix}.name` })}
               disabled={status === 'edit'}
+              ref={(e) => this.createFocusInput = e}
             />,
           )}
         </FormItem>
@@ -381,12 +388,13 @@ export default class Client extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: intl.formatMessage({id: `${intlPrefix}.secret.require.msg`}),
+              message: intl.formatMessage({ id: `${intlPrefix}.secret.require.msg` }),
             }],
           })(
             <Input
               autoComplete="off"
-              label={intl.formatMessage({id: `${intlPrefix}.secret`})}
+              label={intl.formatMessage({ id: `${intlPrefix}.secret` })}
+              ref={(e) => this.editFocusInput = e}
             />,
           )}
         </FormItem>
@@ -399,14 +407,14 @@ export default class Client extends Component {
               {
                 type: 'array',
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.granttypes.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.granttypes.require.msg` }),
               },
             ],
           })(
             <Select
               mode="multiple"
               getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-              label={intl.formatMessage({id: `${intlPrefix}.granttypes`})}
+              label={intl.formatMessage({ id: `${intlPrefix}.granttypes` })}
               size="default"
             >
               <Option value="password">password</Option>
@@ -428,14 +436,14 @@ export default class Client extends Component {
               })(
                 <InputNumber
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.accesstokenvalidity`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.accesstokenvalidity` })}
                   style={{ width: 300 }}
                   size="default"
                   min={60}
                 />,
               )}
               <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
-                {intl.formatMessage({id: 'second'})}
+                {intl.formatMessage({ id: 'second' })}
               </span>
             </FormItem>
             <FormItem
@@ -447,14 +455,14 @@ export default class Client extends Component {
               })(
                 <InputNumber
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.tokenvalidity`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.tokenvalidity` })}
                   style={{ width: 300 }}
                   size="default"
                   min={60}
                 />,
               )}
               <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
-                {intl.formatMessage({id: 'second'})}
+                {intl.formatMessage({ id: 'second' })}
               </span>
             </FormItem>
             <FormItem
@@ -468,11 +476,11 @@ export default class Client extends Component {
                 initialValue: client.scope ? client.scope.split(',') : [],
               })(
                 <Select
-                  label={intl.formatMessage({id: `${intlPrefix}.scope`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.scope` })}
                   mode="tags"
                   filterOption={false}
                   onInputKeyDown={e => this.handleInputKeyDown(e, 'scope')}
-                  ref={node => {this.saveSelectRef(node, 'scope');}}
+                  ref={(node) => { this.saveSelectRef(node, 'scope'); }}
                   notFoundContent={false}
                   showNotFindSelectedItem={false}
                   showNotFindInputItem={false}
@@ -485,9 +493,9 @@ export default class Client extends Component {
                 overlayStyle={{ maxWidth: '180px' }}
                 placement="right"
                 trigger="hover"
-                content={intl.formatMessage({id: `${intlPrefix}.scope.help.msg`})}
+                content={intl.formatMessage({ id: `${intlPrefix}.scope.help.msg` })}
               >
-                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)'}}/>
+                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)' }} />
               </Popover>
             </FormItem>
             <FormItem
@@ -501,7 +509,7 @@ export default class Client extends Component {
                 initialValue: client.autoApprove ? client.autoApprove.split(',') : [],
               })(
                 <Select
-                  label={intl.formatMessage({id: `${intlPrefix}.autoApprove`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.autoApprove` })}
                   mode="tags"
                   filterOption={false}
                   onInputKeyDown={e => this.handleInputKeyDown(e, 'autoApprove')}
@@ -518,9 +526,9 @@ export default class Client extends Component {
                 overlayStyle={{ maxWidth: '180px' }}
                 placement="right"
                 trigger="hover"
-                content={intl.formatMessage({id: `${intlPrefix}.autoApprove.help.msg`})}
+                content={intl.formatMessage({ id: `${intlPrefix}.autoApprove.help.msg` })}
               >
-                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)'}}/>
+                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)' }} />
               </Popover>
             </FormItem>
             <FormItem
@@ -529,7 +537,7 @@ export default class Client extends Component {
               {getFieldDecorator('webServerRedirectUri', {
                 initialValue: client.webServerRedirectUri || undefined,
               })(
-                <Input autoComplete="off" label={intl.formatMessage({id: `${intlPrefix}.redirect`})} />,
+                <Input autoComplete="off" label={intl.formatMessage({ id: `${intlPrefix}.redirect` })} />,
               )}
             </FormItem>
             <FormItem
@@ -542,7 +550,7 @@ export default class Client extends Component {
                       if (!value || this.isJson(value)) {
                         callback();
                       } else {
-                        callback(intl.formatMessage({id: `${intlPrefix}.additional.pattern.msg`}));
+                        callback(intl.formatMessage({ id: `${intlPrefix}.additional.pattern.msg` }));
                       }
                     },
                   },
@@ -552,7 +560,7 @@ export default class Client extends Component {
               })(
                 <TextArea
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.additional`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.additional` })}
                   rows={3}
                 />,
               )}
@@ -577,7 +585,7 @@ export default class Client extends Component {
     const clientData = ClientStore.getClients;
     const columns = [
       {
-        title: intl.formatMessage({id: 'name'}),
+        title: intl.formatMessage({ id: 'name' }),
         dataIndex: 'name',
         key: 'name',
         filters: [],
@@ -585,7 +593,7 @@ export default class Client extends Component {
         sorter: (a, b) => a.name.localeCompare(b.serviceNamee, 'zh-Hans-CN', { sensitivity: 'accent' }),
       },
       {
-        title: intl.formatMessage({id: `${intlPrefix}.granttypes`}),
+        title: intl.formatMessage({ id: `${intlPrefix}.granttypes` }),
         dataIndex: 'authorizedGrantTypes',
         key: 'authorizedGrantTypes',
         render: (text) => {
@@ -610,7 +618,7 @@ export default class Client extends Component {
               service={['iam-service.client.update']}
             >
               <Tooltip
-                title={<FormattedMessage id="modify"/>}
+                title={<FormattedMessage id="modify" />}
                 placement="bottom"
               >
                 <Button
@@ -627,14 +635,15 @@ export default class Client extends Component {
               service={['iam-service.client.delete']}
             >
               <Tooltip
-                title={<FormattedMessage id="delete"/>}
+                title={<FormattedMessage id="delete" />}
                 placement="bottom"
               >
                 <Button
                   shape="circle"
                   size="small"
                   onClick={this.handleDelete.bind(this, record)}
-                  icon="delete_forever" />
+                  icon="delete_forever"
+                />
               </Tooltip>
             </Permission>
           </div>),
@@ -652,7 +661,7 @@ export default class Client extends Component {
           'iam-service.client.query',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission
             service={['iam-service.client.create']}
           >
@@ -660,20 +669,20 @@ export default class Client extends Component {
               onClick={() => this.openSidebar('create')}
               icon="playlist_add"
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: organizationName}}
-       >
+          values={{ name: organizationName }}
+        >
           <Table
             size="middle"
             pagination={pagination}
@@ -683,15 +692,15 @@ export default class Client extends Component {
             rowKey="id"
             onChange={this.handlePageChange}
             loading={ClientStore.isLoading}
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
-            title={<FormattedMessage id={status === 'create' ? `${intlPrefix}.create` : `${intlPrefix}.modify`}/>}
+            title={<FormattedMessage id={status === 'create' ? `${intlPrefix}.create` : `${intlPrefix}.modify`} />}
             onOk={this.handleSubmit}
             onCancel={this.closeSidebar}
             visible={visible}
-            okText={<FormattedMessage id={status === 'create' ? 'create' : 'save'}/>}
-            cancelText={<FormattedMessage id="cancel"/>}
+            okText={<FormattedMessage id={status === 'create' ? 'create' : 'save'} />}
+            cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={submitting}
           >
             {this.renderSidebarContent()}

@@ -106,6 +106,15 @@ export default class Project extends Component {
       projectDatas: data,
       operation,
     });
+    if(operation === 'edit') {
+      setTimeout(() => {
+        this.editFocusInput.input.focus();
+      }, 10);
+    }else {
+      setTimeout(() => {
+        this.createFocusInput.input.focus();
+      }, 10);
+    }
 
   };
   handleTabClose = () => {
@@ -330,6 +339,7 @@ export default class Project extends Component {
                 autoComplete="off"
                 label={<FormattedMessage id={`${intlPrefix}.code`}/>}
                 style={{ width: inputWidth }}
+                ref={(e) => this.createFocusInput = e}
               />,
             )}
           </FormItem>) : null}
@@ -348,6 +358,7 @@ export default class Project extends Component {
                 autoComplete="off"
                 label={<FormattedMessage id={`${intlPrefix}.name`}/>}
                 style={{ width: inputWidth }}
+                ref={(e) => this.editFocusInput = e}
               />,
             )}
           </FormItem>

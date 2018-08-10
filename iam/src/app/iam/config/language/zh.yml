@@ -6,6 +6,7 @@
 "iam.role": "角色管理"
 "iam.member-role-global": "平台角色分配"
 "iam.root-user": "Root用户设置"
+"iam.dashboard-management": "仪表盘配置"
 
 "microservice": "微服务管理"
 "microservice.micro": "微服务"
@@ -20,6 +21,14 @@
 "global-transaction.saga": "事务定义"
 "global-transaction.saga-instance": "事务实例"
 
+"msg-center": "消息中心"
+"msg-center.mail-template": "邮件模板"
+"msg-center.sms-template": "短信模板"
+"msg-center.mail-setting": "邮箱配置"
+"msg-center.sms-setting": "短信配置"
+"msg-center.msg-record": "消息记录"
+
+
 "rentsetting": 组织设置
 # organization
 "rentsetting.project": "项目管理"
@@ -28,6 +37,7 @@
 "rentsetting.client": "客户端"
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "密码策略"
+"rentsetting.mail-template-organization": "邮件模板"
 
 "prosetting": 项目设置
 # project

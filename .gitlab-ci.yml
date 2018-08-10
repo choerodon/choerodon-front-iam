@@ -10,12 +10,14 @@ variables:
 node_build:
   stage: node_build
   script:
+    - pip install pymysql
     - node_module iam
     - node_build build
     - cp -r dist /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/dist
     - cp -r node_modules/choerodon-front-boot/structure /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/structure
   only:
     - master
+    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
     - tags
@@ -23,11 +25,13 @@ node_build:
 node_build_dev:
   stage: node_build
   script:
+    - pip install pymysql
     - node_module iam
     - node_build build
     - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
   except:
     - master
+    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
     - tags
@@ -41,6 +45,7 @@ docker_build:
     - chart_build
   only:
     - master
+    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
     - tags
@@ -58,6 +63,8 @@ docker_build:
         mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
         python ./${1}/node_modules/choerodon-front-boot/structure/configAuto.py ${1}
         cp -r config.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
+        python ./${1}/node_modules/choerodon-front-boot/structure/dashboard.py -o yml -m ${1}
+        cp -r dashboard.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
         cd ${1}
     }
 

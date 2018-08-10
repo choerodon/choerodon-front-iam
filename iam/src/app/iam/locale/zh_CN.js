@@ -122,6 +122,27 @@ const pageDetail = {
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
   'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+
+  // 邮件模板
+  'global.mailtemplate.title': '平台"{name}"的邮件模板',
+  'global.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
+  'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'global.mailtemplate.detail.title': '平台"{name}"的邮件模板',
+  'global.mailtemplate.detail.description': 'description',
+  'global.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  // 邮箱配置
+  'global.mailsetting.title': '平台"{name}"的邮箱配置',
+  'global.mailsetting.description': '邮箱配置用于管理发件邮箱的账号信息与邮件服务器信息。',
+  'global.mailsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailsetting.create.title': '在平台"{name}"中创建配置',
+  'global.mailsetting.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
+  'global.mailsetting.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.mailsetting.create.base.title': '在平台"{name}"中创建配置',
+  'global.mailsetting.create.base.description': '您可自定义您的配置版本。系统将自动生成您的配置ID。',
+  'global.mailsetting.create.base.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
@@ -137,6 +158,14 @@ const pageDetail = {
   'global.saga-instance.detail.title': '查看事务实例"{name}"的详情',
   'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
   'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  // 仪表盘配置
+  'global.dashboard-setting.title': '仪表盘配置',
+  'global.dashboard-setting.description': '仪表盘为首页所展示的卡片合集，用户可以自定义自己的仪表盘。您可以在此配置仪表盘的卡片。',
+  'global.dashboard-setting.link': '',
+  'global.dashboard-setting.modify.title': '对卡片"{name}"进行修改',
+  'global.dashboard-setting.modify.description': '您可以在此修改仪表盘中卡片的配置。',
+  'global.dashboard-setting.modify.link': '',
 
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
@@ -207,6 +236,20 @@ const pageDetail = {
   'organization.user.modify.description': '您可以在此修改用户名、邮箱、语言、时区。',
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
+  'organization.user.upload.title': '在组织"{name}"中导入用户',
+  'organization.user.upload.description': '您可以在此将文件中的用户信息导入到组织中。',
+  'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
+
+  // 邮件模板
+  'organization.mailtemplate.title': '组织"{name}"的邮件模板',
+  'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
+  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'organization.mailtemplate.detail.title': '组织"{name}"的邮件模板',
+  'organization.mailtemplate.detail.description': 'description',
+  'organization.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+
   //项目设置
   'project.info.title': '对项目"{name}"进行项目设置',
   'project.info.description': '您可以在此修改项目名称、停用项目。',
@@ -276,7 +319,6 @@ const zh_CN = {
   'no': '否',
   'save': '保存',
   'close': '关闭',
-  'type': '类型',
   'stop': '停止',
   'restart': '重启',
   'upgrade': '升级',
@@ -286,6 +328,9 @@ const zh_CN = {
   'return': '返回',
   'filtertable': '过滤表',
   'ok': '确定',
+  'upload': '上传',
+  'download': '下载',
+  'uploading': '导入中',
 
   'day': '天',
   'hour': '小时',
@@ -320,7 +365,8 @@ const zh_CN = {
   'remove.success': '移除成功',
   'enable.success': '启用成功',
   'disable.success': '停用成功',
-  'copy.success': '复制成功',
+  'copy.success': '已复制到剪贴板',
+  'upload.success': '上传成功',
 
 // error
   'error': '失败',
@@ -333,6 +379,7 @@ const zh_CN = {
   'remove.error': '移除失败',
   'enabled.error': '启用失败',
   'disable.error': '停用失败',
+  'upload.error': '上传失败',
 
   // 统一字段
   'name': '名称',
@@ -366,7 +413,7 @@ const zh_CN = {
   'global.organization.codemaxmsg': '组织编码不能超过15个字符',
   'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'global.organization.namerequiredmsg': '请输入组织名称',
-  "global.organization.project.count": "项目数量",
+  'global.organization.project.count': '项目数量',
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',
@@ -573,6 +620,31 @@ const zh_CN = {
   'global.apitest.request.data.type': '请求数据类型',
   'global.apitest.request.data': '请求数据',
   'global.apitest.send': '发送',
+  'global.apitest.required.msg': '请输入{name}',
+  'global.apitest.choose.file': '选择文件',
+  'global.apitest.copyleft': '点击复制至左侧',
+  'global.apitest.sending': '发送中',
+
+  // 邮件模板
+  'global.mailtemplate.header.title': '邮件模板',
+  'global.mailtemplate.table.name': '名称',
+  'global.mailtemplate.table.code': '编码',
+  'global.mailtemplate.table.mailtype': '邮件类型',
+  'global.mailtemplate.table.fromtype': '来源类型',
+  'global.mailtemplate.create.template': '创建模板',
+  'global.mailtemplate.create.baseon': '基于此创建',
+
+  // 邮箱配置
+  'global.mailsetting.header.title': '邮箱配置',
+  'global.mailsetting.code': '配置编码',
+  'global.mailsetting.sending.mail': '发件邮箱账号',
+  'global.mailsetting.sending.password': '发件邮箱密码',
+  'global.mailsetting.server.type': '服务器类型',
+  'global.mailsetting.server.address': '服务器地址',
+  'global.mailsetting.ssl': '是否为SSL协议',
+  'global.mailsetting.port': '端口号',
+  'global.mailsetting.save.test': '保存并测试',
+  'global.mailsetting.test.contact': '测试连接',
 
   // 事务定义
   'global.saga.header.title': '事务定义',
@@ -582,8 +654,8 @@ const zh_CN = {
   'global.saga.detail': '事务定义详情',
   'global.saga.img': '事务定义图',
   'global.saga.json': 'Json',
-  'global.saga.task.run.title': "任务运行情况",
-  'global.saga.task.code': "任务编码",
+  'global.saga.task.run.title': '任务运行情况',
+  'global.saga.task.code': '任务编码',
   'global.saga.task.run.status': '状态',
   'global.saga.task.seq': '序列',
   'global.saga.task.run.service-instance': '运行的微服务实例',
@@ -605,6 +677,9 @@ const zh_CN = {
   'global.saga.json.nodata': '// 暂无数据',
   'global.saga.task.concurrentlimit.policy': '并发限制模式',
   'global.saga.task.concurrentlimit.num': '最大并发数',
+  'global.saga.task.plannedstarttime': '计划执行时间',
+  'global.saga.task.actualstarttime': '实际开始时间',
+  'global.saga.task.actualendtime': '实际完成时间',
 
   // 事务实例
   'global.saga-instance.header.title': '事务实例',
@@ -619,6 +694,21 @@ const zh_CN = {
   'global.saga-instance.saga': '所属事务定义',
   'global.saga-instance.reftype': '关联业务类型',
   'global.saga-instance.refid': '关联业务ID',
+
+  // 仪表盘配置
+  'global.dashboard-setting.header.title': '仪表盘配置',
+  'global.dashboard-setting.sidebar.title': '修改卡片',
+  'global.dashboard-setting.name': '卡片名称',
+  'global.dashboard-setting.name.required': '请输入卡片名称',
+  'global.dashboard-setting.code': '卡片编码',
+  'global.dashboard-setting.icon': '卡片图标',
+  'global.dashboard-setting.level': '卡片层级',
+  'global.dashboard-setting.level.required': '请选择卡片层级',
+  'global.dashboard-setting.level.site': '平台层',
+  'global.dashboard-setting.level.organization': '组织层',
+  'global.dashboard-setting.level.project': '项目层',
+  'global.dashboard-setting.card.title': '卡片标题',
+  'global.dashboard-setting.card.title.required': '请输入卡片标题',
 
   // 组织层
   // 项目管理
@@ -767,6 +857,23 @@ const zh_CN = {
   'organization.user.repassword': '确认密码',
   'organization.user.repassword.require.msg': '请确认密码',
   'organization.user.timezone': '时区',
+  'organization.user.download.template': '下载',
+  'organization.user.upload.file': '上传',
+  'organization.user.upload': '导入用户',
+  'organization.user.upload.lasttime': '上次导入完成时间',
+  'organization.user.upload.norecord': '当前没有导入用户记录',
+  'organization.user.upload.time': '（耗时{time}），共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.uploading.text': '正在导入...',
+  'organization.user.fileloading.text': '正在上传...',
+  'organization.user.fileloading': '上传中',
+  'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
+
+  // 邮件模板
+  'organization.mailtemplate.header.title': '邮件模板',
+  'organization.mailtemplate.table.name': '名称',
+  'organization.mailtemplate.table.code': '编码',
+  'organization.mailtemplate.table.mailtype': '邮件类型',
+  'organization.mailtemplate.table.fromtype': '来源类型',
 
 
   // 项目层
@@ -824,7 +931,6 @@ const zh_CN = {
   'user.proinfo.detail.header.title': '角色权限',
   'user.proinfo.detail.table.permission': '权限',
   'user.proinfo.detail.table.description': '描述',
-
 
 
   // 角色分配

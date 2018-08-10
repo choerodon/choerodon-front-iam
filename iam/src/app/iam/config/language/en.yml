@@ -6,6 +6,7 @@
 "iam.role": "Role"
 "iam.member-role-global": "Role Assignment"
 "iam.root-user": "Root User Setting"
+"iam.dashboard-management": "Dashboard Setting"
 
 "microservice": "Microservice"
 "microservice.micro": "Microservice"
@@ -20,6 +21,13 @@
 "global-transaction.saga": "Saga"
 "global-transaction.saga-instance": "Saga Instance"
 
+"msg-center": "Message Center"
+"msg-center.mail-template": "Mail Template"
+"msg-center.sms-template": "SMS Template"
+"msg-center.mail-setting": "Mail Config"
+"msg-center.sms-setting": "SMS Config"
+"msg-center.msg-record": "Message Record"
+
 "rentsetting": "Organization settings"
 # organization
 "rentsetting.project": "Project"
@@ -28,6 +36,7 @@
 "rentsetting.client": "Client"
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "Password Policy"
+"rentsetting.mail-template-organization": "Mail Template"
 
 "prosetting": "Project Manage"
 # project

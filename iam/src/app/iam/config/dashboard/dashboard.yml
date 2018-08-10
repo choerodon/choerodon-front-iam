@@ -1,0 +1,19 @@
+dashboard:
+  - code: "Guide"
+    icon: APItest
+    title: "快速入门"
+    description: "新手指引"
+    level: site
+    sort: 1
+  - code: "Document"
+    icon: description
+    title: "文档"
+    description: "文档"
+    level: site
+    sort: 2
+  - code: "Announcement"
+    icon: import_contacts
+    title: "公告"
+    description: "公告"
+    level: site
+    sort: 3

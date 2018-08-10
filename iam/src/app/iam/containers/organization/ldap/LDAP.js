@@ -9,7 +9,6 @@ import TestLdap from './TestLdap';
 import LoadingBar from '../../../components/loadingBar/index';
 import './LDAP.scss';
 
-
 const Sidebar = Modal.Sidebar;
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;

@@ -9,8 +9,13 @@ class ApitestStore {
   @observable service = [];
   @observable currentService = {};
   @observable apiData = [];
-  @observable loading = true;
+  @observable isShowModal = false;
   @observable detailFlag = false;
+  @observable apitoken = null;
+  @observable loading = true;
+  @observable modalSaving = false;
+  @observable userInfo = null;
+  @observable isShowResult = null;
   @observable apiDetail = {
     description: '[]',
     responses: [],
@@ -24,6 +29,30 @@ class ApitestStore {
     this.loading = flag;
   }
 
+  @action setModalSaving(flag) {
+    this.modalSaving = flag;
+  }
+
+  @action setIsShowResult(flag) {
+    this.isShowResult = flag;
+  }
+
+  @action setUserInfo(data) {
+    this.userInfo = data;
+  }
+
+  @computed get getUserInfo() {
+    return this.userInfo;
+  }
+
+  @action setIsShowModal(flag) {
+    this.isShowModal = flag;
+  }
+
+  @computed get getIsShowModal() {
+    return this.isShowModal;
+  }
+
   @action setService(data) {
     this.service = data;
   }
@@ -34,6 +63,14 @@ class ApitestStore {
 
   @computed get getCurrentService() {
     return this.currentService;
+  }
+
+  @action setApiToken(data) {
+    this.apitoken = data;
+  }
+
+  @computed get getApiToken() {
+    return this.apitoken;
   }
 
   @action setApiData(data) {

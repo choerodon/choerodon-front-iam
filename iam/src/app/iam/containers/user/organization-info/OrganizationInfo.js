@@ -61,6 +61,8 @@ export default class OrganizationInfo extends Component {
     const pagination = paginationIn || paginationState;
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
+    // 防止标签闪烁
+    this.setState({ filters });
     this.fetch(pagination, filters, params).then((data) => {
       this.setState({
         pagination: {
@@ -134,6 +136,8 @@ export default class OrganizationInfo extends Component {
     const pagination = paginationIn || paginationState;
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
+    // 防止标签闪烁
+    this.setState({ filters });
     this.permissionFetch(pagination, filters, params).then(data => {
       if (this.state.totalCount === false) {
         this.setState({

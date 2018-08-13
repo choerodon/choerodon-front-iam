@@ -72,6 +72,8 @@ export default class User extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters });
     UserStore.loadUsers(
       id,
       pagination,

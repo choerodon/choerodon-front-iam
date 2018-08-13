@@ -63,6 +63,7 @@ export default class RootUser extends Component {
     const params = paramsIn || paramsState;
     this.setState({
       loading: true,
+      filters,
     });
     RootUserStore.loadRootUserData(pagination, filters, sort, params).then(data => {
       if (this.isEmptyFilters(filters) && !params.length) {

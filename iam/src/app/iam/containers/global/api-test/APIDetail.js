@@ -128,11 +128,6 @@ export default class APIDetail extends Component {
     APITestStore.setIsShowResult(null);
   }
 
-
-  handleEnterKey = () => {
-    console.log(123);
-  }
-
   getDetail() {
     const { intl } = this.props;
     const { method, url, remark, consumes, produces } = APITestStore.getApiDetail;
@@ -333,8 +328,13 @@ export default class APIDetail extends Component {
     const { intl } = this.props;
     const handleUrl = encodeURI(this.state.requestUrl);
     const handleMethod = upperMethod[APITestStore.getApiDetail.method];
-    const token = authorization ? authorization.split(' ')[1] : null;
-    curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+    const currentToken = APITestStore.getApiToken || authorization;
+    const token = currentToken ? currentToken.split(' ')[1] : null;
+    if (handleMethod === 'GET') {
+      curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+    } else {
+      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+    }
     const method = APITestStore && APITestStore.apiDetail.method;
     const { getFieldDecorator, getFieldError } = this.props.form;
     const requestColumns = [{
@@ -495,7 +495,7 @@ export default class APIDetail extends Component {
         </div>
         <div className="c7n-url-container">
           <div className="c7n-authorize-info">
-            <span className="info">授权账号：</span>
+            <span className="info">{intl.formatMessage({ id: `${intlPrefix}.authorize.account` })}：</span>
             <span className="info">{APITestStore.getUserInfo || this.props.AppState.getUserInfo.loginName}</span>
             <Button
               funcType="raised"
@@ -503,10 +503,10 @@ export default class APIDetail extends Component {
               htmlType="submit"
               onClick={this.openAuthorizeModal}
             >
-              更改授权账号
+              {intl.formatMessage({ id: `${intlPrefix}.authorize.change` })}
             </Button>
           </div>
-          <div>
+          <div style={{ marginBottom: '30px' }}>
             <span className={classnames('method', method)}>{method}</span>
             <input type="text" value={this.state.requestUrl} readOnly />
             {!this.state.isSending ? (

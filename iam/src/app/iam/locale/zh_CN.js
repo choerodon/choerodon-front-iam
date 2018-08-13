@@ -642,7 +642,8 @@ const zh_CN = {
   'global.apitest.account.required': '请输入授权账号',
   'global.apitest.pwd.required': '请输入密码',
   'global.apitest.authorize': '授权',
-  'global.apitest.authorize.title': 'API测试权限信息',
+  'global.apitest.authorize.title': 'API测试授权认证',
+  'global.apitest.authorize.change': '更改授权账号',
 
 
   // 邮件模板

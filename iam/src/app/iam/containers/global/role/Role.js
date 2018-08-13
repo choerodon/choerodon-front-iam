@@ -65,6 +65,7 @@ export default class Role extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    this.setState({ filters });
     RoleStore.loadRole(pagination, sort, filters, params)
       .then((data) => {
         RoleStore.setIsLoading(false);
@@ -99,12 +100,12 @@ export default class Role extends Component {
     const { intl } = this.props;
     if (record.enabled) {
       RoleStore.disableRole(record.id).then(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'disable.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'disable.success' }));
         this.loadRole();
       });
     } else {
       RoleStore.enableRole(record.id).then(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'enable.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'enable.success' }));
         this.loadRole();
       });
     }
@@ -141,7 +142,7 @@ export default class Role extends Component {
     const { intl } = this.props;
     const levels = Object.values(this.state.selectedRoleIds);
     if (levels.some((level, index) => levels[index + 1] && levels[index + 1] !== level)) {
-      Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.create.byselect.level`}));
+      Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.create.byselect.level` }));
     } else {
       this.createBased();
     }
@@ -164,15 +165,15 @@ export default class Role extends Component {
     if (record.builtIn) {
       return (
         <div>
-          <Icon type="settings" style={{verticalAlign: 'text-bottom'}} />
-          <FormattedMessage id={`${intlPrefix}.builtin.predefined`}/>
+          <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
+          <FormattedMessage id={`${intlPrefix}.builtin.predefined`} />
         </div>
       );
     } else {
       return (
         <div>
-          <Icon type="av_timer" style={{verticalAlign: 'text-bottom'}} />
-          <FormattedMessage id={`${intlPrefix}.builtin.custom`}/>
+          <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
+          <FormattedMessage id={`${intlPrefix}.builtin.custom`} />
         </div>
       );
     }
@@ -180,7 +181,7 @@ export default class Role extends Component {
 
   renderLevel(text) {
     if (text === 'organization') {
-      return  <FormattedMessage id="organization" />;
+      return <FormattedMessage id="organization" />;
     } else if (text === 'project') {
       return <FormattedMessage id="project" />;
     } else {
@@ -219,13 +220,13 @@ export default class Role extends Component {
       key: 'level',
       filters: [
         {
-          text: intl.formatMessage({id: "global"}),
+          text: intl.formatMessage({ id: 'global' }),
           value: 'site',
         }, {
-          text: intl.formatMessage({id: "organization"}),
+          text: intl.formatMessage({ id: 'organization' }),
           value: 'organization',
         }, {
-          text: intl.formatMessage({id: "project"}),
+          text: intl.formatMessage({ id: 'project' }),
           value: 'project',
         }],
       render: text => this.renderLevel(text),
@@ -237,10 +238,10 @@ export default class Role extends Component {
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{
-        text: intl.formatMessage({id: `${intlPrefix}.builtin.predefined`}),
+        text: intl.formatMessage({ id: `${intlPrefix}.builtin.predefined` }),
         value: 'true',
       }, {
-        text: intl.formatMessage({id: `${intlPrefix}.builtin.custom`}),
+        text: intl.formatMessage({ id: `${intlPrefix}.builtin.custom` }),
         value: 'false',
       }],
       render: (text, record) => this.renderBuiltIn(record),
@@ -252,13 +253,13 @@ export default class Role extends Component {
       dataIndex: 'enabled',
       key: 'enabled',
       filters: [{
-        text: intl.formatMessage({id: "enable"}),
+        text: intl.formatMessage({ id: 'enable' }),
         value: 'true',
       }, {
-        text: intl.formatMessage({id: "disable"}),
+        text: intl.formatMessage({ id: 'disable' }),
         value: 'false',
       }],
-      render: text => intl.formatMessage({id: text ? 'enable' : 'disable'}),
+      render: text => intl.formatMessage({ id: text ? 'enable' : 'disable' }),
       sorter: true,
       sortOrder: columnKey === 'enabled' && order,
       filteredValue: filters.enabled || [],
@@ -271,7 +272,7 @@ export default class Role extends Component {
           service: ['iam-service.role.createBaseOnRoles'],
           type: 'site',
           icon: '',
-          text: intl.formatMessage({id: `${intlPrefix}.create.byone`}),
+          text: intl.formatMessage({ id: `${intlPrefix}.create.byone` }),
           action: this.createByThis.bind(this, record),
         }, {
           service: ['iam-service.role.update'],
@@ -285,7 +286,7 @@ export default class Role extends Component {
             service: ['iam-service.role.disableRole'],
             icon: '',
             type: 'site',
-            text: intl.formatMessage({id: 'disable'}),
+            text: intl.formatMessage({ id: 'disable' }),
             action: this.handleEnable.bind(this, record),
           });
         } else {
@@ -293,7 +294,7 @@ export default class Role extends Component {
             service: ['iam-service.role.enableRole'],
             icon: '',
             type: 'site',
-            text: intl.formatMessage({id: 'enable'}),
+            text: intl.formatMessage({ id: 'enable' }),
             action: this.handleEnable.bind(this, record),
           });
         }
@@ -325,7 +326,7 @@ export default class Role extends Component {
         className="choerodon-role"
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Permission
             service={['iam-service.role.create']}
@@ -334,7 +335,7 @@ export default class Role extends Component {
               icon="playlist_add"
               onClick={this.goCreate}
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Permission
@@ -345,14 +346,14 @@ export default class Role extends Component {
               onClick={this.createByMultiple}
               disabled={!selectedRowKeys.length}
             >
-              <FormattedMessage id={`${intlPrefix}.create.byselect`}/>
+              <FormattedMessage id={`${intlPrefix}.create.byselect`} />
             </Button>
           </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id='refresh'/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
@@ -367,7 +368,7 @@ export default class Role extends Component {
             filters={params}
             onChange={this.handlePageChange}
             loading={RoleStore.getIsLoading}
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>
       </Page>

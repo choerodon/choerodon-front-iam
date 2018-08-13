@@ -78,6 +78,8 @@ export default class Project extends Component {
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     ProjectStore.changeLoading(true);
+    // 防止标签闪烁
+    this.setState({ filters });
     ProjectStore.loadProject(organizationId, pagination, sort, filters)
       .then((data) => {
         ProjectStore.changeLoading(false);

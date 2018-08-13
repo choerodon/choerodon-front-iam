@@ -81,6 +81,7 @@ export default class Organization extends Component {
   fetch({ current, pageSize }, { columnKey, order }, { name, code, enabled }, params) {
     this.setState({
       loading: true,
+      filters: { name, code, enabled },
     });
     const queryObj = {
       page: current - 1,

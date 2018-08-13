@@ -70,7 +70,7 @@ export default class MailTemplate extends Component {
   }
 
   handlePageChange = (pagination, filters, sort, params) => {
-    this.loadTemplate(pagination, sort, filters, params);
+    this.loadTemplate(pagination, filters, sort, params);
   };
 
   handleModify = (record) => {
@@ -90,6 +90,7 @@ export default class MailTemplate extends Component {
   }
 
   loadTemplate(paginationIn, filtersIn, sortIn, paramsIn) {
+    MailTemplateStore.setLoading(true);
     const {
       pagination: paginationState,
       sort: sortState,
@@ -100,6 +101,8 @@ export default class MailTemplate extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters });
     MailTemplateStore.loadMailTemplate(pagination, filters, sort, params)
       .then((data) => {
         MailTemplateStore.setLoading(false);
@@ -114,9 +117,11 @@ export default class MailTemplate extends Component {
             total: data.totalElements,
           },
         });
+        MailTemplateStore.setLoading(false);
       })
       .catch((error) => {
         Choerodon.handleResponseError(error);
+        MailTemplateStore.setLoading(false);
       });
   }
 
@@ -243,7 +248,7 @@ export default class MailTemplate extends Component {
         >
 
           <Table
-            loading={loading}
+            loading={MailTemplateStore.loading}
             columns={columns}
             dataSource={mailTemplateData}
             pagination={pagination}

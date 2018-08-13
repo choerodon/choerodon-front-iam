@@ -114,6 +114,8 @@ export default class Client extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters });
     ClientStore.loadClients(organizationId, pagination, sort, filters, params)
       .then((data) => {
         ClientStore.changeLoading(false);

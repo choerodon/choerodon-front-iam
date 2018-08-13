@@ -78,6 +78,8 @@ export default class Instance extends Component {
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
     let service = InstanceStore.getCurrentService.name === 'total' ? '' : InstanceStore.getCurrentService.name;
+    // 防止标签闪烁
+    this.setState({ filters });
     this.fetch(service, pagination, sort, filters, params)
       .then((data) => {
         this.setState({

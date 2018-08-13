@@ -55,6 +55,7 @@ export default class Saga extends Component {
     const params = paramsIn || paramsState;
     this.setState({
       loading: true,
+      filters,
     });
     SagaStore.loadData(pagination, filters, sort, params).then((data) => {
       SagaStore.setData(data.content);

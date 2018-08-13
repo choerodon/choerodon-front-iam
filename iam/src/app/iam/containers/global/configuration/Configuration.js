@@ -85,6 +85,8 @@ export default class Configuration extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters });
     this.fetch(ConfigurationStore.getCurrentService.name, pagination, sort, filters, params)
       .then((data) => {
         this.setState({

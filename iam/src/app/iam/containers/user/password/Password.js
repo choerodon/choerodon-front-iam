@@ -136,6 +136,7 @@ export default class Password extends Component {
                     label={<FormattedMessage id={`${intlPrefix}.oldpassword`}/>}
                     type="password"
                     style={{ width: inputWidth }}
+                    ref={(e) => this.FocusInput = e}
                   />,
                 )}
               </FormItem>
@@ -183,7 +184,11 @@ export default class Password extends Component {
                 )}
               </FormItem>
               <FormItem>
-                <Permission service={['iam-service.user.selfUpdatePassword']} type={'site'}>
+                <Permission service={['iam-service.user.selfUpdatePassword']} type={'site'} onAccess={() => {
+                  setTimeout(() => {
+                    this.FocusInput.input.focus();
+                  }, 10);
+                }}>
                   <Row>
                     <hr className='hrLine' />
                     <Col span={5} style={{ marginRight: 16 }}>

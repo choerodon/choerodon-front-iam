@@ -69,6 +69,9 @@ export default class DashboardSetting extends Component {
     form.resetFields();
     DashboardSettingStore.setEditData(record);
     DashboardSettingStore.showSideBar();
+    setTimeout(() => {
+      this.FocusInput.input.focus();
+    }, 10);
   }
 
   getTableColumns() {
@@ -197,6 +200,7 @@ export default class DashboardSetting extends Component {
                   autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.name`} />}
                   style={{ width: inputWidth }}
+                  ref={(e) => this.FocusInput = e}
                 />,
               )
             }

@@ -249,7 +249,7 @@
           - 'iam-service.password-policy.queryByOrganizationId'
           - 'iam-service.password-policy.update'
     - "mail-template-organization":
-        icon: contact_mail
+        icon: application_model
         Routes: /iam/mail-template
         sort: 7
         permission:

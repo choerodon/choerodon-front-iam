@@ -45,16 +45,25 @@ export default class MailSetting extends Component {
 
   getInitState() {
     return {
-      loading: false,
+      loading: true,
       saving: false,
     };
   }
 
   /* 加载邮件配置 */
   loadMailSetting = () => {
-    const { intl } = this.props;
-    // TODO 加载函数
+    this.setState({ loading: true });
+    MailSettingStore.loadData().then((data) => {
+      if (!data.failed) {
+        MailSettingStore.setSettingData(data);
+        this.setState({ loading: false });
+      } else {
+        Choerodon.prompt(data.message);
+        this.setState({ loading: false });
+      }
+    }).catch(Choerodon.handleResponseError);
   }
+
 
   handleRefresh = () => {
     this.loadMailSetting();
@@ -85,7 +94,7 @@ export default class MailSetting extends Component {
                 rules: [{
                   required: true,
                 }],
-                initialValue: 998,
+                initialValue: '000',
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.code` })} style={{ width: inputWidth }} disabled autoComplete="off" />,
               )}
@@ -95,7 +104,7 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('account', {
                 rules: [],
-                initialValue: 998,
+                initialValue: MailSettingStore.getSettingData.account,
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.sending.mail` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
@@ -105,7 +114,7 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('password', {
                 rules: [],
-                initialValue: 998,
+                initialValue: MailSettingStore.getSettingData.password,
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.sending.password` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
@@ -115,7 +124,7 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('serverType', {
                 rules: [],
-                initialValue: 'POP3',
+                initialValue: MailSettingStore.getSettingData.protocol ? MailSettingStore.getSettingData.protocol.toUpperCase() : 'SMTP',
               })(
                 <Select
                   getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
@@ -134,7 +143,7 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('address', {
                 rules: [],
-                initialValue: 998,
+                initialValue: MailSettingStore.getSettingData.host,
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.server.address` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
@@ -143,7 +152,7 @@ export default class MailSetting extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('SSL', {
-                initialValue: 'Y',
+                initialValue: MailSettingStore.getSettingData.ssl ? 'Y' : 'N',
               })(
                 <RadioGroup
                   className="sslRadioGroup"
@@ -159,7 +168,7 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('port', {
                 rules: [],
-                initialValue: 998,
+                initialValue: MailSettingStore.getSettingData.port,
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.port` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}

@@ -107,6 +107,11 @@ export default class Password extends Component {
         service={[
           'iam-service.user.selfUpdatePassword',
         ]}
+        onAccess={
+          setTimeout(() => {
+            this.FocusInput.input.focus();
+          }, 10)
+        }
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Button onClick={this.reload} icon="refresh">
@@ -136,6 +141,7 @@ export default class Password extends Component {
                     label={<FormattedMessage id={`${intlPrefix}.oldpassword`}/>}
                     type="password"
                     style={{ width: inputWidth }}
+                    ref={(e) => this.FocusInput = e}
                   />,
                 )}
               </FormItem>

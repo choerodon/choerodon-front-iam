@@ -201,6 +201,7 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.name`} />}
               style={{ width: inputWidth }}
+              ref={(e) => this.FocusInput = e}
             />,
           )}
         </FormItem>
@@ -316,14 +317,19 @@ export default class UserInfo extends Component {
     return (
       <Page
         service={[
-          'iam-service.user.query',
-          'iam-service.user.check',
-          'iam-service.user.querySelf',
-          'iam-service.user.queryInfo',
-          'iam-service.user.updateInfo',
-          'iam-service.user.uploadPhoto',
-          'iam-service.user.queryProjects',
-        ]}
+        'iam-service.user.query',
+        'iam-service.user.check',
+        'iam-service.user.querySelf',
+        'iam-service.user.queryInfo',
+        'iam-service.user.updateInfo',
+        'iam-service.user.uploadPhoto',
+        'iam-service.user.queryProjects',
+      ]}
+        onAccess={
+          setTimeout(() => {
+            this.FocusInput.input.focus();
+          }, 10)
+        }
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}

@@ -132,12 +132,12 @@ const pageDetail = {
   'global.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
   'global.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
-  'global.mailtemplate.create.base.title': '在平台"{name}"中创建邮件模板',
-  'global.mailtemplate.create.base.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'global.mailtemplate.create.base.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+  'global.mailtemplate.baseon.title': '在平台"{name}"中创建邮件模板',
+  'global.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
+  'global.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/api-management/a`,
 
   'global.mailtemplate.modify.title': '在平台"{name}"中修改邮件模板',
-  'global.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'global.mailtemplate.modify.description': '修改邮件模板可以让您根据自己的需求，修改发送的主题、内容。',
   'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
 
@@ -252,9 +252,9 @@ const pageDetail = {
   'organization.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
   'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
-  'organization.mailtemplate.create.base.title': '在组织"{name}"中创建邮件模板',
-  'organization.mailtemplate.create.base.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'organization.mailtemplate.create.base.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+  'organization.mailtemplate.baseon.title': '在组织"{name}"中创建邮件模板',
+  'organization.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
+  'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/api-management/a`,
 
   'organization.mailtemplate.modify.title': '在组织"{name}"中修改邮件模板',
   'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
@@ -364,6 +364,7 @@ const zh_CN = {
   'detail': '详情',
   'enable': '启用',
   'disable': '停用',
+  'baseon': '基于此创建',
 
 // status
 // success
@@ -653,10 +654,16 @@ const zh_CN = {
   'global.mailtemplate.table.code': '编码',
   'global.mailtemplate.table.mailtype': '邮件类型',
   'global.mailtemplate.table.fromtype': '来源类型',
-  'global.mailtemplate.create.template': '创建模板',
-  'global.mailtemplate.create.baseon': '基于此创建',
-  'global.mailtemplate.create': '创建模板',
-  'global.mailtemplate.modify': '修改模板',
+  'mailtemplate.create': '创建模板',
+  'mailtemplate.modify': '修改模板',
+  'mailtemplate.code': '模板编码',
+  'mailtemplate.name': '模板名称',
+  'mailtemplate.type': '模板类型',
+  'mailtemplate.title': '邮件标题',
+  'mailtemplate.code.required': '请输入模板编码',
+  'mailtemplate.name.required': '请输入模板名称',
+  'mailtemplate.type.required': '请选择模板类型',
+  'mailtemplate.title.required': '请输入邮件标题',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',

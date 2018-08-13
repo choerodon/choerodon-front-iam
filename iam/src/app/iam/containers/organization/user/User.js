@@ -54,7 +54,7 @@ export default class User extends Component {
   onEdit = (id) => {
     this.setState({
       visible: true,
-      status: 'modify',
+      status: 'edit',
       selectedData: id,
     });
   };

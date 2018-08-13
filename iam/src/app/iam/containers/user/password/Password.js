@@ -107,11 +107,6 @@ export default class Password extends Component {
         service={[
           'iam-service.user.selfUpdatePassword',
         ]}
-        onAccess={
-          setTimeout(() => {
-            this.FocusInput.input.focus();
-          }, 10)
-        }
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
           <Button onClick={this.reload} icon="refresh">
@@ -189,7 +184,11 @@ export default class Password extends Component {
                 )}
               </FormItem>
               <FormItem>
-                <Permission service={['iam-service.user.selfUpdatePassword']} type={'site'}>
+                <Permission service={['iam-service.user.selfUpdatePassword']} type={'site'} onAccess={() => {
+                  setTimeout(() => {
+                    this.FocusInput.input.focus();
+                  }, 10);
+                }}>
                   <Row>
                     <hr className='hrLine' />
                     <Col span={5} style={{ marginRight: 16 }}>

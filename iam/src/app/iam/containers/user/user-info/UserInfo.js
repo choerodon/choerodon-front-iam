@@ -291,6 +291,11 @@ export default class UserInfo extends Component {
         <Permission
           service={['iam-service.user.queryInfo', 'iam-service.user.updateInfo', 'iam-service.user.querySelf']}
           type="site"
+          onAccess={() => {
+            setTimeout(() => {
+              this.FocusInput.input.focus();
+            }, 10);
+          }}
         >
           <FormItem>
             <hr className='user-info-divider' />
@@ -325,11 +330,6 @@ export default class UserInfo extends Component {
         'iam-service.user.uploadPhoto',
         'iam-service.user.queryProjects',
       ]}
-        onAccess={
-          setTimeout(() => {
-            this.FocusInput.input.focus();
-          }, 10)
-        }
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}

@@ -342,6 +342,7 @@ const zh_CN = {
   'upload': '上传',
   'download': '下载',
   'uploading': '导入中',
+  'loading': '加载中',
 
   'day': '天',
   'hour': '小时',

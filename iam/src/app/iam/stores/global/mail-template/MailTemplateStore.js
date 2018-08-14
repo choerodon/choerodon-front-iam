@@ -13,13 +13,6 @@ class MailTemplateStore {
 
   @observable mailTemplate = [];
 
-  @observable detailFlag = false;
-
-  @observable apiDetail = {
-    description: '[]',
-    responses: [],
-  };
-
   // TODO: 这里调用删除的接口
   deleteMailTemplate = id => console.log(`delete${id}`);
 
@@ -36,14 +29,15 @@ class MailTemplateStore {
     return this.mailTemplate;
   }
 
-  loadMailTemplate = ({
-    current,
-    pageSize,
-  }, { realName, email },
-  { columnKey = 'id', order = 'descend' },
-  params) => {
+  loadMailTemplate = (
+    { current, pageSize },
+    { name, type, isPredefined },
+    { columnKey = 'id', order = 'descend' },
+    params, appType, orgId) => {
     const queryObj = {
-      realName: realName && realName[0],
+      name: name && name[0],
+      type: type && type[0],
+      isPredefined: isPredefined && isPredefined[0],
       params,
     };
 
@@ -55,7 +49,13 @@ class MailTemplateStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/iam/v1/users/admin?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
+    if (appType === 'site') {
+      console.log('site');
+      return axios.get(`/notify/v1/notices/emails/templates?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
+    } else {
+      console.log('organization');
+      return axios.get(`/notify/v1/notices/emails/templates/organizations/${orgId}?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
+    }
   }
 }
 

@@ -257,11 +257,13 @@
 
         .curl-container {
           width: 100%;
+          max-height: 228px;
           margin-top: 12px;
           line-height: 65px;
-          text-indent: 16px;
+          padding-left: 16px;
+          padding-right: 16px;
           white-space: nowrap;
-          overflow-x: scroll;
+          overflow: auto;
           background: #F1F9FF;
           color: #444444;
           font-size: 14px;

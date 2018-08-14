@@ -15,6 +15,8 @@ class MailTemplateStore {
 
   @observable templateType = [];
 
+  @observable currentDetail = {};
+
   // TODO: 这里调用删除的接口
   deleteMailTemplate = id => console.log(`delete${id}`);
 
@@ -33,6 +35,14 @@ class MailTemplateStore {
 
   @computed get getTemplateType() {
     return this.templateType;
+  }
+
+  @action setCurrentDetail(data) {
+    this.currentDetail = data;
+  }
+
+  @computed get getCurrentDetail(){
+    return this.currentDetail;
   }
 
   getMailTemplate() {
@@ -71,6 +81,10 @@ class MailTemplateStore {
   loadTemplateType = () => axios.get('/notify/v1/notices/send_settings/names');
 
   createTemplate = data => axios.post('notify/v1/notices/emails/templates', JSON.stringify(data));
+
+  getTemplateDetail = id => axios.get(`notify/v1/notices/emails/templates/${id}`);
+
+  updateTemplateDetail = (id, data) => axios.post(`notify/v1/notices/emails/templates/${id}`, JSON.stringify(data));
 }
 
 const mailTemplateStore = new MailTemplateStore();

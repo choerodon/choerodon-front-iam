@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Button } from 'choerodon-ui';
 import ImageDrop from './ImageDrop';
 import './Editor.scss';
 
 Quill.register('modules/imageDrop', ImageDrop);
+
+const Size = Quill.import('attributors/style/size');
+Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px'];
+Quill.register(Size, true);
 
 class Editor extends Component {
   constructor(props) {
@@ -25,6 +28,7 @@ class Editor extends Component {
       ['link', 'image'],
       [{ 'color': [] }],
       [{ 'font': [] }],
+      [{ 'size': ['10px', '12px', '14px', '16px', '18px', '20px' ]}]
       // ['clean'],
     ],
     imageDrop: true,
@@ -43,6 +47,7 @@ class Editor extends Component {
     'color',
     'background',
     'font',
+    'size',
   ];
 
   defaultStyle = {

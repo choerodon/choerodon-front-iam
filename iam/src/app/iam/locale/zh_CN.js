@@ -660,6 +660,8 @@ const zh_CN = {
   'mailtemplate.name': '模板名称',
   'mailtemplate.type': '模板类型',
   'mailtemplate.title': '邮件标题',
+  'mailtemplate.predefined': '预定义',
+  'mailtemplate.selfdefined': '自定义',
   'mailtemplate.code.required': '请输入模板编码',
   'mailtemplate.name.required': '请输入模板名称',
   'mailtemplate.type.required': '请选择模板类型',

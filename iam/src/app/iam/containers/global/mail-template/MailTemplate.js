@@ -40,6 +40,8 @@ class MailTemplateType {
     }
     this.code = `${codePrefix}.mailtemplate`;
     this.values = { name: name || 'Choerodon' };
+    this.type = type;
+    this.orgId = id;
   }
 }
 
@@ -78,16 +80,13 @@ export default class MailTemplate extends Component {
     };
   }
 
-  handlePageChange = (pagination, filters, sort, params) => {
-    this.loadTemplate(pagination, filters, sort, params);
-  };
 
   formatMessage = (id, values = {}) => {
     const { intl } = this.props;
     return intl.formatMessage({
       id,
     }, values);
-  }
+  };
 
   /**
    * 开启侧边栏
@@ -123,6 +122,10 @@ export default class MailTemplate extends Component {
     this.roles = new MailTemplateType(this);
   }
 
+  handleRefresh = () => {
+    this.loadTemplate();
+  };
+
   loadTemplate(paginationIn, filtersIn, sortIn, paramsIn) {
     MailTemplateStore.setLoading(true);
     const {
@@ -137,7 +140,8 @@ export default class MailTemplate extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters });
-    MailTemplateStore.loadMailTemplate(pagination, filters, sort, params)
+    MailTemplateStore.loadMailTemplate(pagination, filters, sort, params,
+      this.roles.type, this.roles.orgId)
       .then((data) => {
         MailTemplateStore.setLoading(false);
         MailTemplateStore.setMailTemplate(data.content);
@@ -179,6 +183,16 @@ export default class MailTemplate extends Component {
       values,
     };
   }
+
+  handlePageChange = (pagination, filters, sort, params) => {
+    this.loadTemplate(pagination, filters, sort, params);
+  };
+
+  reload = () => {
+    this.setState(this.getInitState(), () => {
+      this.initMailTemplate();
+    });
+  };
 
   renderSidebarContent() {
     const { intl } = this.props;
@@ -300,33 +314,41 @@ export default class MailTemplate extends Component {
       sortOrder: columnKey === 'id' && order,
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
-      dataIndex: 'realName',
-      key: 'realName',
+      dataIndex: 'name',
+      key: 'name',
       width: 350,
       filters: [],
       sorter: true,
-      sortOrder: columnKey === 'realName' && order,
-      filteredValue: filters.realName || [],
+      sortOrder: columnKey === 'name' && order,
+      filteredValue: filters.name || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
-      dataIndex: 'enabled',
-      key: 'enabled',
-      render: enabled => intl.formatMessage({ id: enabled ? 'enable' : 'disable' }),
+      dataIndex: 'code',
+      key: 'code',
       width: 438,
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.mailtype`} />,
-      dataIndex: 'email',
-      key: 'email',
+      dataIndex: 'type',
+      key: 'type',
       width: 475,
       filters: [],
       sorter: true,
-      sortOrder: columnKey === 'email' && order,
-      filteredValue: filters.email || [],
+      sortOrder: columnKey === 'type' && order,
+      filteredValue: filters.type || [],
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,
-      dataIndex: 'locked',
-      key: 'locked',
+      dataIndex: 'isPredefined',
+      key: 'isPredefined',
+      render: isPredefined => intl.formatMessage({ id: isPredefined ? 'mailtemplate.predefined' : 'mailtemplate.selfdefined' }),
+      filteredValue: filters.isPredefined || [],
+      filters: [{
+        text: intl.formatMessage({ id: 'mailtemplate.predefined' }),
+        value: true,
+      }, {
+        text: intl.formatMessage({ id: 'mailtemplate.selfdefined' }),
+        value: false,
+      }],
       width: 475,
     },
     {
@@ -336,33 +358,26 @@ export default class MailTemplate extends Component {
       align: 'right',
       render: (text, record) => {
         const actionsDatas = [{
-          service: ['manager-service.service.pageManager'],
+          service: ['notify-service.email-template.pageSite'],
           type: 'site',
           icon: '',
           text: intl.formatMessage({ id: 'baseon' }),
           action: this.handleOpen.bind(this, 'baseon', record),
         }, {
-          service: ['manager-service.service.pageManager'],
+          service: ['notify-service.email-template.pageSite'],
           type: 'site',
           icon: '',
           text: intl.formatMessage({ id: 'modify' }),
           action: this.handleOpen.bind(this, 'modify', record),
-        },
-        {
-          service: ['manager-service.service.pageManager'],
-          type: 'site',
-          icon: '',
-          text: intl.formatMessage({ id: 'delete' }),
-          action: this.handleDelete.bind(this, record),
         }];
         // 根据来源类型判断
-        if (!record.realName) {
+        if (!record.isPredefined) {
           actionsDatas.push({
-            service: ['manager-service.service.pageManager'],
+            service: ['notify-service.email-template.pageSite'],
             type: 'site',
             icon: '',
             text: intl.formatMessage({ id: 'delete' }),
-            action: '',
+            action: this.handleDelete.bind(this, record),
           });
         }
         return <Action data={actionsDatas} />;
@@ -371,8 +386,7 @@ export default class MailTemplate extends Component {
 
     return (
       <Page
-        className="root-user-setting"
-        service={['manager-service.service.pageManager']}
+        service={['notify-service.email-template.pageSite']}
       >
         <Header
           title={<FormattedMessage id={`${this.roles.code}.header.title`} />}

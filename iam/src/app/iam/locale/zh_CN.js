@@ -650,10 +650,10 @@ const zh_CN = {
 
   // 邮件模板
   'global.mailtemplate.header.title': '邮件模板',
-  'global.mailtemplate.table.name': '名称',
+  'global.mailtemplate.table.name': '模板名称',
   'global.mailtemplate.table.code': '编码',
   'global.mailtemplate.table.mailtype': '邮件类型',
-  'global.mailtemplate.table.fromtype': '来源类型',
+  'global.mailtemplate.table.fromtype': '来源',
   'mailtemplate.create': '创建模板',
   'mailtemplate.modify': '修改模板',
   'mailtemplate.code': '模板编码',
@@ -914,10 +914,10 @@ const zh_CN = {
 
   // 邮件模板
   'organization.mailtemplate.header.title': '邮件模板',
-  'organization.mailtemplate.table.name': '名称',
+  'organization.mailtemplate.table.name': '模板名称',
   'organization.mailtemplate.table.code': '编码',
   'organization.mailtemplate.table.mailtype': '邮件类型',
-  'organization.mailtemplate.table.fromtype': '来源类型',
+  'organization.mailtemplate.table.fromtype': '来源',
 
 
   // 项目层

@@ -204,6 +204,24 @@ export default class MailTemplate extends Component {
     });
   };
 
+  renderBuiltIn = (isPredefined) => {
+    if (isPredefined) {
+      return (
+        <div>
+          <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
+          <FormattedMessage id={'mailtemplate.predefined'} />
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
+          <FormattedMessage id={'mailtemplate.selfdefined'} />
+        </div>
+      );
+    }
+  }
+
   renderSidebarContent() {
     const { intl } = this.props;
     const { selectType } = this.state;
@@ -361,7 +379,7 @@ export default class MailTemplate extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,
       dataIndex: 'isPredefined',
       key: 'isPredefined',
-      render: isPredefined => intl.formatMessage({ id: isPredefined ? 'mailtemplate.predefined' : 'mailtemplate.selfdefined' }),
+      render: isPredefined => this.renderBuiltIn(isPredefined),
       filteredValue: filters.isPredefined || [],
       filters: [{
         text: intl.formatMessage({ id: 'mailtemplate.predefined' }),

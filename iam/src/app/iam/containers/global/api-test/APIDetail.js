@@ -325,15 +325,20 @@ export default class APIDetail extends Component {
       delete: 'DELETE',
       patch: 'PATCH',
     }
-    const { intl } = this.props;
+    const { intl, form: { getFieldValue } } = this.props;
     const handleUrl = encodeURI(this.state.requestUrl);
     const handleMethod = upperMethod[APITestStore.getApiDetail.method];
     const currentToken = APITestStore.getApiToken || authorization;
     const token = currentToken ? currentToken.split(' ')[1] : null;
+    const bodyStr = (getFieldValue('bodyData') || '').replace(/\n/g,"\\\n");
+    let body = '';
+    if(bodyStr){
+      body = `-d '${bodyStr}' `;
+    }
     if (handleMethod === 'GET') {
       curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
     } else {
-      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' ${body}'${handleUrl}'`;
     }
     const method = APITestStore && APITestStore.apiDetail.method;
     const { getFieldDecorator, getFieldError } = this.props.form;
@@ -452,7 +457,7 @@ export default class APIDetail extends Component {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
-              normalBody = Hjson.stringify(value, { bracesSameLine: true, quotes: 'all' });
+              normalBody = Hjson.stringify(value, { bracesSameLine: true, quotes: 'all', separator: true });
               value = jsonFormat(value);
             } else {
               value = null;
@@ -583,7 +588,7 @@ export default class APIDetail extends Component {
         this.curlNode.scrollLeft = 0;
         if ('bodyData' in values) {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl,
-            jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
+            Hjson.parse(values.bodyData || '')).then(function (res) {
             this.setState({
               isSending: false,
             });
@@ -648,31 +653,31 @@ export default class APIDetail extends Component {
 
   changeNormalValue = (name, valIn, e) => {
     const { urlPathValues } = this.state;
+    let query = '';
     let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
     urlPathValues[`{${name}}`] = e.target.value;
     Object.entries(urlPathValues).forEach((items) => {
       requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
     });
-    let query = '';
     if (valIn === 'query' || valIn === 'array') {
       const arr = e.target.value.split('\n');
       this.state.taArr[name] = arr;
       this.setState({
         taArr: this.state.taArr,
       });
-      Object.entries(this.state.taArr).map(a => {
-        const name = a[0];
-        if (Array.isArray(a[1])) {
-          a[1].map(v => { query = `${query}&${name}=${v}`});
-        } else {
-          query = `${query}&${name}=${a[1]}`;
-        }
-      });
-      this.setState({
-        query,
-      });
     }
-    query = _.replace(query, '&', '?');
+    Object.entries(this.state.taArr).map(a => {
+      const name = a[0];
+      if (Array.isArray(a[1])) {
+        a[1].map(v => { query = `${query}&${name}=${v}`});
+      } else {
+        query = `${query}&${name}=${a[1]}`;
+      }
+    });
+    this.setState({
+      query,
+    });
+    query = _.replace(query, '&', '?');
     this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
   };
 

@@ -377,6 +377,7 @@ export default class SagaImg extends Component {
                   {failed.value && (
                     <Icon
                       type="library_books"
+                      className="copy-icon"
                       onClick={this.handleCopy}
                     />)}
                 </div>

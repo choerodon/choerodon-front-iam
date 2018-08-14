@@ -39,12 +39,15 @@ export default class User extends Component {
       selectedData: '',
     };
   }
+
   componentDidMount() {
     this.loadUser();
   }
+
   componentWillUnmount() {
     this.timer = 0;
   }
+
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       this.loadUser();
@@ -54,7 +57,7 @@ export default class User extends Component {
   onEdit = (id) => {
     this.setState({
       visible: true,
-      status: 'edit',
+      status: 'modify',
       selectedData: id,
     });
   };
@@ -230,15 +233,16 @@ export default class User extends Component {
   }
 
   handleUploadInfo = (immediately) => {
-    const { UserStore, AppState } = this.props;
-    const userId = AppState.getUserId;
+    const { UserStore, AppState: { currentMenuType, getUserId: userId } } = this.props;
+    const { id: organizationId } = currentMenuType;
+
     if (immediately) {
-      UserStore.handleUploadInfo(userId);
+      UserStore.handleUploadInfo(organizationId, userId);
       return;
     }
     this.timer = setTimeout(() => {
       this.timer = 0;
-      UserStore.handleUploadInfo(userId);
+      UserStore.handleUploadInfo(organizationId, userId);
     }, 9000);
   }
 
@@ -300,18 +304,27 @@ export default class User extends Component {
     } else if (fileLoading) {
       container.push(this.renderLoading());
     } else if (!uploadInfo.noData) {
-      container.push(<p key={`${intlPrefix}.upload.lasttime`}>
-        <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
-        {uploadInfo.beginTime}</p>);
-      container.push(<p key={`${intlPrefix}.upload.time`}>
-        <FormattedMessage
-          id={`${intlPrefix}.upload.time`}
-          values={{
-            time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime),
-            successCount: uploadInfo.successCount || 0,
-            failedCount: uploadInfo.failedCount || 0,
-          }}
-        /></p>);
+      const failedStatus = uploadInfo.finished ? 'detail' : 'error';
+      container.push(
+        <p key={`${intlPrefix}.upload.lasttime`}>
+          <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
+          {uploadInfo.beginTime}
+        </p>,
+        <p key={`${intlPrefix}.upload.time`}>
+          <FormattedMessage
+            id={`${intlPrefix}.upload.time`}
+            values={{
+              time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime),
+              successCount: <span className="success-count">{uploadInfo.successCount || 0}</span>,
+              failedCount: <span className="failed-count">{uploadInfo.failedCount || 0}</span>,
+            }}
+          />
+          <span className={`download-failed-${failedStatus}`}>
+            <a href={uploadInfo.url}>
+              <FormattedMessage id={`${intlPrefix}.download.failed.${failedStatus}`} />
+            </a>
+          </span>
+        </p>);
     } else {
       container.push(<p key={`${intlPrefix}.upload.norecord`}><FormattedMessage id={`${intlPrefix}.upload.norecord`} /></p>);
     }
@@ -378,7 +391,7 @@ export default class User extends Component {
       <UserEdit
         id={selectedData}
         visible={visible}
-        edit={status === 'edit'}
+        edit={status === 'modify'}
         onRef={(node) => {
           this.editUser = node;
         }}
@@ -667,7 +680,7 @@ export default class User extends Component {
             title={this.renderSideTitle()}
             visible={visible}
             okText={this.getSidebarText()}
-            cancelText={<FormattedMessage id="cancel" />}
+            cancelText={<FormattedMessage id={status === 'upload' ? 'close' : 'cancel' } />}
             onOk={status === 'upload' ? this.upload : this.handleSubmit}
             onCancel={() => {
               this.setState({

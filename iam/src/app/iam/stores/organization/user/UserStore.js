@@ -132,6 +132,7 @@ class UserStore {
   setUploadInfo(info) {
     this.uploadInfo = info;
   }
+
   /**
    * 下载文件
    */
@@ -141,8 +142,8 @@ class UserStore {
     });
   }
 
-  handleUploadInfo = (userId) => {
-    axios.get(`/iam/v1/upload/history?user_id=${userId}&type=user`).then((data) => {
+  handleUploadInfo = (organizationId, userId) => {
+    axios.get(`/iam/v1/organizations/${organizationId}/upload/history?user_id=${userId}&type=user`).then((data) => {
       if (!data) {
         this.setUploadInfo({ noData: true });
         this.setUploading(false);

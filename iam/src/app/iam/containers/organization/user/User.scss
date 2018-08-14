@@ -38,9 +38,38 @@
 .c7n-user-upload {
   &-container {
     font-size: 16px;
+    white-space: nowrap;
 
     span {
       color: rgba(0, 0, 0, 0.65);
+    }
+
+    .download-failed {
+      &-detail,
+      &-error {
+        margin-left: 10px;
+        a {
+          text-decoration: none;
+        }
+        span {
+          color: #3f51b5;
+        }
+      }
+
+      &-error {
+        span {
+          cursor: default;
+          color: #F44336;
+        }
+      }
+    }
+
+    .success-count {
+       color: #00BFA5;
+    }
+
+    .failed-count {
+      color: #F44336;
     }
   }
   &-hidden {
@@ -79,7 +108,6 @@
       font-size: 14px;
     }
   }
-
 
 
 }

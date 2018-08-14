@@ -80,7 +80,7 @@ export default class MailSetting extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+        Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
       }
     }).catch((error) => {
       Choerodon.handleResponseError(error);
@@ -111,7 +111,7 @@ export default class MailSetting extends Component {
           if (data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
+            Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
             MailSettingStore.setSettingData(data);
           }
           this.setState({

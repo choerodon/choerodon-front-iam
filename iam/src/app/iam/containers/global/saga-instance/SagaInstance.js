@@ -70,6 +70,10 @@ export default class SagaInstance extends Component {
   }
 
   tableChange = (pagination, filters, sort, params) => {
+    const { activeTab, filters: { status } } = this.state;
+    if (activeTab === 'failed') {
+      filters.status = status;
+    }
     this.reload(pagination, filters, sort, params);
   }
 
@@ -79,6 +83,7 @@ export default class SagaInstance extends Component {
       return;
     }
     this.setState({
+      ...this.getInitState(),
       activeTab: 'failed',
       filters: { status: ['FAILED'] },
     }, () => {
@@ -168,7 +173,7 @@ export default class SagaInstance extends Component {
         key: 'status',
         dataIndex: 'status',
         render: status => this.renderStatus(status),
-        filters: [{
+        filters: activeTab === 'all' ? [{
           value: 'RUNNING',
           text: '运行中',
         }, {
@@ -177,7 +182,7 @@ export default class SagaInstance extends Component {
         }, {
           value: 'COMPLETED',
           text: '完成',
-        }],
+        }] : null,
         filteredValue: (activeTab === 'all' && filters.status) || [],
       },
       {

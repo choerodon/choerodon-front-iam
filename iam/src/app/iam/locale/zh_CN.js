@@ -670,14 +670,23 @@ const zh_CN = {
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',
   'global.mailsetting.code': '配置编码',
-  'global.mailsetting.sending.mail': '发件邮箱账号',
-  'global.mailsetting.sending.password': '发件邮箱密码',
+  'global.mailsetting.sending.mail': '邮箱账号',
+  'global.mailsetting.sending.password': '密码',
+  'global.mailsetting.sender': '发件人(企业名称)',
   'global.mailsetting.server.type': '服务器类型',
   'global.mailsetting.server.address': '服务器地址',
-  'global.mailsetting.ssl': '是否为SSL协议',
+  'global.mailsetting.ssl': '是否使用SSL',
   'global.mailsetting.port': '端口号',
   'global.mailsetting.save.test': '保存并测试',
   'global.mailsetting.test.contact': '测试连接',
+  'global.mailsetting.account.required': '请输入邮箱账号',
+  'global.mailsetting.account.format': '请输入正确的邮箱格式',
+  'global.mailsetting.password.required': '请输入密码',
+  'global.mailsetting.host.required': '请输入服务器地址',
+  'global.mailsetting.port.required': '请输入端口号',
+  'global.mailsetting.port.pattern': '请输入大于零的整数',
+
+
 
   // 事务定义
   'global.saga.header.title': '事务定义',

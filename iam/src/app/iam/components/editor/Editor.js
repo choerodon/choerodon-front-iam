@@ -71,7 +71,6 @@ class Editor extends Component {
 
   handleChange = (content, delta, source, editor) => {
     const value = editor.getHTML();
-    // window.console.log(value);
     this.props.onChange(value);
     // if (this.props.onChange && value && value.ops) {
     //   window.console.log(value.ops);
@@ -80,7 +79,7 @@ class Editor extends Component {
   };
 
   render() {
-    const { placeholder, value } = this.props;
+    const { value } = this.props;
     const style = { ...this.defaultStyle, ...this.props.style };
     const editHeight = style.height - (this.props.toolbarHeight || 42);
     return (
@@ -91,8 +90,7 @@ class Editor extends Component {
             modules={this.modules}
             formats={this.formats}
             style={{ height: editHeight }}
-            placeholder={placeholder}
-            defaultValue={value}
+            value={value}
             onChange={this.handleChange}
           />
         </div>

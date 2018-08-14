@@ -909,6 +909,8 @@ const zh_CN = {
   'organization.user.fileloading.text': '正在上传...',
   'organization.user.fileloading': '上传中',
   'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
+  'organization.user.download.failed.detail': '点击下载失败详情',
+  'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
 
   // 邮件模板
   'organization.mailtemplate.header.title': '邮件模板',

@@ -34,18 +34,18 @@ function noop() {
 export default class UserEdit extends Component {
   state = this.getInitState();
 
-  componentWillMount() {
-    this.props.onRef(this);
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+    this.createFocusInput = React.createRef();
+  }
+
+  componentDidMount() {
     this.fetch(this.props);
-    if (this.props.edit) {
-      setTimeout(() => {
-        this.editFocusInput.input.focus();
-      }, 10);
-    } else {
-      setTimeout(() => {
-        this.createFocusInput.input.focus();
-      }, 10);
-    }
+    const { edit } = this.props;
+    setTimeout(() => {
+      this[edit ? 'editFocusInput' : 'createFocusInput'].input.focus();
+    }, 10);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,16 +54,11 @@ export default class UserEdit extends Component {
       this.setState(this.getInitState());
     } else if (!this.props.visible) {
       this.fetch(nextProps);
-      if (this.props.edit) {
-        setTimeout(() => {
-          this.editFocusInput.input.focus();
-        }, 10);
-      } else {
-        setTimeout(() => {
-          this.createFocusInput.input.focus();
-        }, 10);
-      }
     }
+    const { edit } = nextProps;
+    setTimeout(() => {
+      this[edit ? 'editFocusInput' : 'createFocusInput'].input.focus();
+    }, 10);
   }
 
   getInitState() {

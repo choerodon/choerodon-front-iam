@@ -21,6 +21,8 @@ class MailSettingStore {
     this.cleanData();
     return axios.get('notify/v1/notices/configs/email');
   }
+
+  updateData = data => axios.put('notify/v1/notices/configs/email', JSON.stringify(data));
 }
 
 const mailSettingStore = new MailSettingStore();

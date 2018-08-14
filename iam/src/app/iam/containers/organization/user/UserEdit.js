@@ -54,11 +54,11 @@ export default class UserEdit extends Component {
       this.setState(this.getInitState());
     } else if (!this.props.visible) {
       this.fetch(nextProps);
+      const { edit } = nextProps;
+      setTimeout(() => {
+        this[edit ? 'editFocusInput' : 'createFocusInput'].input.focus();
+      }, 10);
     }
-    const { edit } = nextProps;
-    setTimeout(() => {
-      this[edit ? 'editFocusInput' : 'createFocusInput'].input.focus();
-    }, 10);
   }
 
   getInitState() {

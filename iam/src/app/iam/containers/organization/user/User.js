@@ -181,7 +181,8 @@ export default class User extends Component {
     e.stopPropagation();
     const { UserStore } = this.props;
     const uploading = UserStore.getUploading;
-    if (uploading) {
+    const { fileLoading } = this.state;
+    if (uploading || fileLoading) {
       return;
     }
     const uploadElement = document.getElementsByClassName('c7n-user-upload-hidden')[0];
@@ -215,7 +216,6 @@ export default class User extends Component {
         const { fileLoading } = this.state;
         if (status === 'done') {
           this.handleUploadInfo(true);
-          Choerodon.prompt(intl.formatMessage({ id: 'upload.success' }));
         } else if (status === 'error') {
           Choerodon.prompt(`${response.message}`);
         }
@@ -314,7 +314,7 @@ export default class User extends Component {
           <FormattedMessage
             id={`${intlPrefix}.upload.time`}
             values={{
-              time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime),
+              time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime) || 0,
               successCount: <span className="success-count">{uploadInfo.successCount || 0}</span>,
               failedCount: <span className="failed-count">{uploadInfo.failedCount || 0}</span>,
             }}

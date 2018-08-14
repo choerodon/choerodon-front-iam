@@ -54,7 +54,6 @@ export default class MailSetting extends Component {
   /* 加载邮件配置 */
   loadMailSetting = () => {
     this.setState({ loading: true });
-    const { setFieldsValue } = this.props.form;
     MailSettingStore.loadData().then((data) => {
       if (!data.failed) {
         MailSettingStore.setSettingData(data);
@@ -76,7 +75,16 @@ export default class MailSetting extends Component {
   }
 
   testContact = () => {
-    // TODO 测试连接
+    const { intl } = this.props;
+    MailSettingStore.testConnection().then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+    });
   }
 
   changeServerType = (value) => {
@@ -103,7 +111,7 @@ export default class MailSetting extends Component {
           if (data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
             MailSettingStore.setSettingData(data);
           }
           this.setState({
@@ -174,7 +182,7 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('protocol', {
                 rules: [],
-                initialValue: MailSettingStore.getSettingData.protocol,
+                initialValue: MailSettingStore.getSettingData.protocol.toUpperCase(),
               })(
                 <Select
                   getPopupContainer={() => document.getElementsByClassName('page-content')[0]}

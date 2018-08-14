@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import {
-  Button, Select, Table, Tooltip, Modal, Form, Input,
+  Button, Select, Table, Tooltip, Modal, Form, Input, Popover, Icon,
 } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
@@ -14,6 +14,7 @@ import {
 } from 'choerodon-front-boot';
 import MailTemplateStore from '../../../stores/global/mail-template';
 import Editor from '../../../components/editor';
+import './MailTemplate.scss';
 
 const intlPrefix = 'global.mailtemplate';
 const { Sidebar } = Modal;
@@ -102,6 +103,15 @@ export default class MailTemplate extends Component {
     if (selectType === 'create') {
       this.setState({
         editorContent: null,
+      });
+    }
+    if (!MailTemplateStore.getTemplateType.length) {
+      MailTemplateStore.loadTemplateType().then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          MailTemplateStore.setTemplateType(data);
+        }
       });
     }
   }
@@ -253,7 +263,7 @@ export default class MailTemplate extends Component {
                 required: true,
                 message: this.formatMessage('mailtemplate.type.required'),
               }],
-              initialValue: '1',
+              initialValue: MailTemplateStore.getTemplateType.length ? MailTemplateStore.getTemplateType[0] : 'false',
             })(
               <Select
                 getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
@@ -261,10 +271,11 @@ export default class MailTemplate extends Component {
                 style={{ width: inputWidth }}
                 disabled={selectType !== 'create'}
               >
-                <Option value="SMTP">1</Option>
-                <Option value="POP3">2</Option>
-                <Option value="IMAP">3</Option>
-
+                {
+                  MailTemplateStore.getTemplateType.length && MailTemplateStore.getTemplateType.map(value => (
+                    <Option value={value} key={value}>{value}</Option>
+                  ))
+                }
               </Select>,
             )}
           </FormItem>
@@ -286,6 +297,16 @@ export default class MailTemplate extends Component {
 
           </FormItem>
           <div style={{ marginBottom: '8px' }}>
+            <div>
+              <span className="c7n-mailcontent-label">邮件内容</span>
+              <Popover
+                placement="right"
+                trigger="hover"
+                content={'123'}
+              >
+                <Icon type="help" className="c7n-mailcontent-icon" />
+              </Popover>
+            </div>
             <Editor
               style={{ height: 320, width: '100%' }}
               value={selectType === 'create' ? '' : this.state.editorContent}

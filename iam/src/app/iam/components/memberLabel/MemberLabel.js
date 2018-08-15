@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { Form, Select } from 'choerodon-ui';
 import { axios } from 'choerodon-front-boot';
@@ -48,17 +48,17 @@ class MemberLabel extends Component {
         } else {
           return new Promise((resolve) => {
             if (!item.trim()) {
-              errorMsg = intl.formatMessage({id: 'memberlabel.member.notexist.msg'});
+              errorMsg = intl.formatMessage({ id: 'memberlabel.member.notexist.msg' });
               resolve(false);
             }
             this.searchMemberId(item)
               .then(({ failed, enabled }) => {
                 let success = true;
                 if (enabled === false) {
-                  errorMsg = intl.formatMessage({id: 'memberlabel.member.disabled.msg'});
+                  errorMsg = intl.formatMessage({ id: 'memberlabel.member.disabled.msg' });
                   success = false;
                 } else if (failed) {
-                  errorMsg = intl.formatMessage({id: 'memberlabel.member.notexist.msg'});
+                  errorMsg = intl.formatMessage({ id: 'memberlabel.member.notexist.msg' });
                   success = false;
                 }
                 resolve(success);
@@ -74,7 +74,7 @@ class MemberLabel extends Component {
         }
       })).then(all => callback(all.every(item => item) ? undefined : errorMsg));
     } else {
-      callback(intl.formatMessage({id: 'memberlabel.member.require.msg'}));
+      callback(intl.formatMessage({ id: 'memberlabel.member.require.msg' }));
     }
   };
 
@@ -84,7 +84,7 @@ class MemberLabel extends Component {
     if (members.indexOf(member) === -1) {
       members.push(member);
       setFieldsValue({
-        'member': members,
+        member: members,
       });
       validateFields(['member']);
     }
@@ -110,17 +110,19 @@ class MemberLabel extends Component {
       }),
     });
   };
+
   handleChoiceRemove = (value) => {
     const { validedMembers } = this.state;
     if (value in validedMembers) {
       delete validedMembers[value];
     }
   };
+
   render() {
     const { style, className, form, value, label } = this.props;
     const { getFieldDecorator } = form;
     setTimeout(() => {
-      this.saveSelectRef.focus();
+      this.rcSelect.focus();
     }, 10);
     return (
       <FormItem

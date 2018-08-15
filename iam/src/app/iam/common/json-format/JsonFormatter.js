@@ -9,15 +9,10 @@ import React, { Component } from 'react';
 const tabSize = 2;
 
 class JsonFormatter extends Component {
-  constructor(props) {
-    super(props);
-  }
   /**
    *  根据count 返回空格数
    */
-  getSpace = (count) => {
-    return ' '.repeat(count);
-  };
+  getSpace = count => ' '.repeat(count);
 
   /**
    * 每一行包 span标签
@@ -57,12 +52,13 @@ class JsonFormatter extends Component {
       });
       html.push(wrapper(']', 'array', count));
     } else {
-      html.push(wrapper('[]', 'array', 1, true));
+      html.push(wrapper('[]', 'array', 1));
     }
     return html;
   };
 
   comments = (obj = {}) => {
+    /*  eslint-disable */
     if (obj.__COMMENTS__) {
       return obj.__COMMENTS__.c || {};
     }
@@ -94,7 +90,7 @@ class JsonFormatter extends Component {
       });
       html.push(wrapper('}', 'object', count));
     } else {
-      html.push(wrapper('{}', 'object', 1, true));
+      html.push(wrapper('{}', 'object', 1));
     }
     return html;
   };
@@ -130,4 +126,3 @@ const defaultProps = {
 const jsonFormat = new JsonFormatter(defaultProps);
 
 export default jsonFormat.process;
-

@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* the encode function is no necessary to lint */
 import React, { Component } from 'react';
 import { axios as authorizeAxios } from 'choerodon-front-boot';
 import { Form, Modal, Button, Input } from 'choerodon-ui';
@@ -42,14 +44,16 @@ getInfoinstance.interceptors.request.use(
   });
 
 instance.interceptors.response.use((res) => {
-  APITestStore.setApiToken(`${res.data.token_type} ${res.data.access_token}`);
-  APITestStore.setIsShowResult(null);
-  getInfoinstance.get('iam/v1/users/self').then((info) => {
-    APITestStore.setUserInfo(info.data.loginName);
-  });
-  Choerodon.prompt('授权成功')
-  APITestStore.setIsShowModal(false);
-  APITestStore.setModalSaving(false);
+  if (res.status === 200) {
+    APITestStore.setApiToken(`${res.data.token_type} ${res.data.access_token}`);
+    Choerodon.prompt('授权成功');
+    APITestStore.setIsShowResult(null);
+    getInfoinstance.get('iam/v1/users/self').then((info) => {
+      APITestStore.setUserInfo(info.data.loginName);
+    });
+    APITestStore.setIsShowModal(false);
+    APITestStore.setModalSaving(false);
+  }
 }, (error) => {
   Choerodon.prompt('授权失败');
   APITestStore.setModalSaving(false);

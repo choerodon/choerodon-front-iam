@@ -114,7 +114,7 @@ export default class User extends Component {
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     UserStore.unLockUser(organizationId, record.id).then(() => {
-      Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.unlock.success`}));
+      Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.unlock.success` }));
       this.loadUser();
     }).catch((error) => {
       window.console.log(error);
@@ -131,17 +131,17 @@ export default class User extends Component {
       // 禁用
       // debugger;
       UserStore.UnenableUser(organizationId, record.id, !record.enabled).then(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'disable.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'disable.success' }));
         this.loadUser();
       }).catch((error) => {
-        Choerodon.prompt(intl.formatMessage({id: 'disable.error'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'disable.error' }));
       });
     } else {
       UserStore.EnableUser(organizationId, record.id, !record.enabled).then(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'enable.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'enable.success' }));
         this.loadUser();
       }).catch((error) => {
-        Choerodon.prompt(intl.formatMessage({id: 'enable.error'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'enable.error' }));
       });
     }
   };
@@ -263,10 +263,10 @@ export default class User extends Component {
   getSpentTime = (startTime, endTime) => {
     const { intl } = this.props;
     const timeUnit = {
-      day: intl.formatMessage({id: 'day'}),
-      hour: intl.formatMessage({id: 'hour'}),
-      minute: intl.formatMessage({id: 'minute'}),
-      second: intl.formatMessage({id: 'second'}),
+      day: intl.formatMessage({ id: 'day' }),
+      hour: intl.formatMessage({ id: 'hour' }),
+      minute: intl.formatMessage({ id: 'minute' }),
+      second: intl.formatMessage({ id: 'second' }),
     };
     const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
     // 天数
@@ -309,7 +309,7 @@ export default class User extends Component {
         <p key={`${intlPrefix}.upload.lasttime`}>
           <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
           {uploadInfo.beginTime}
-          （<FormattedMessage id={`${intlPrefix}.upload.spendtime`}/>
+          （<FormattedMessage id={`${intlPrefix}.upload.spendtime`} />
           {this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime)}）
         </p>,
         <p key={`${intlPrefix}.upload.time`}>
@@ -505,26 +505,26 @@ export default class User extends Component {
             text: intl.formatMessage({ id: 'enable' }),
             value: 'true',
           }, {
-            text: intl.formatMessage({id: 'disable'}),
+            text: intl.formatMessage({ id: 'disable' }),
             value: 'false',
           },
         ],
         filteredValue: filters.enabled || [],
       }, {
-        title: <FormattedMessage id={`${intlPrefix}.locked`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.locked`} />,
         key: 'locked',
         render: (text, record) => (
           record.locked
-            ? <FormattedMessage id={`${intlPrefix}.lock`}/>
-            : <FormattedMessage id={`${intlPrefix}.normal`}/>
+            ? <FormattedMessage id={`${intlPrefix}.lock`} />
+            : <FormattedMessage id={`${intlPrefix}.normal`} />
         ),
         filters: [
           {
-            text: intl.formatMessage({id: `${intlPrefix}.normal`}),
+            text: intl.formatMessage({ id: `${intlPrefix}.normal` }),
             value: 'false',
           },
           {
-            text: intl.formatMessage({id: `${intlPrefix}.lock`}),
+            text: intl.formatMessage({ id: `${intlPrefix}.lock` }),
             value: 'true',
           },
         ],
@@ -542,7 +542,7 @@ export default class User extends Component {
               organizationId={organizationId}
             >
               <Tooltip
-                title={<FormattedMessage id="modify"/>}
+                title={<FormattedMessage id="modify" />}
                 placement="bottom"
               >
                 <Button
@@ -560,7 +560,7 @@ export default class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title={<FormattedMessage id="disable"/>}
+                  title={<FormattedMessage id="disable" />}
                   placement="bottom"
                 >
                   <Button
@@ -578,7 +578,7 @@ export default class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title={<FormattedMessage id="enable"/>}
+                  title={<FormattedMessage id="enable" />}
                   placement="bottom"
                 >
                   <Button
@@ -598,7 +598,7 @@ export default class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title={<FormattedMessage id={`${intlPrefix}.unlock`}/>}
+                  title={<FormattedMessage id={`${intlPrefix}.unlock`} />}
                   placement="bottom"
                 >
                   <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
@@ -629,7 +629,7 @@ export default class User extends Component {
           'iam-service.organization-user.check',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission
             service={['iam-service.organization-user.create']}
             type={type}
@@ -639,7 +639,7 @@ export default class User extends Component {
               onClick={this.handleCreate}
               icon="playlist_add"
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Button
@@ -681,7 +681,7 @@ export default class User extends Component {
             title={this.renderSideTitle()}
             visible={visible}
             okText={this.getSidebarText()}
-            cancelText={<FormattedMessage id={status === 'upload' ? 'close' : 'cancel' } />}
+            cancelText={<FormattedMessage id={status === 'upload' ? 'close' : 'cancel'} />}
             onOk={status === 'upload' ? this.upload : this.handleSubmit}
             onCancel={() => {
               this.setState({

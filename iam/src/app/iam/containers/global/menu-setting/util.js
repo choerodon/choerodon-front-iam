@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 
 function defineProperty(obj, property, value) {
   Object.defineProperty(obj, property, {
@@ -39,6 +39,7 @@ export function findParent(menus, record) {
           return true;
         }
       }
+      return false;
     });
     return result;
   } else {
@@ -73,8 +74,8 @@ export function defineParentName(obj, name) {
 }
 
 export function normalizeMenus(menus, level = -1, parentName) {
-  level++;
-  menus.forEach(menu => {
+  level += 1;
+  menus.forEach((menu) => {
     const { subMenus, name } = menu;
     defineLevel(menu, level);
     if (parentName) {

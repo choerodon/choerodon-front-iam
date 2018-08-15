@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { Button, Col, Form, Input, Row } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -29,6 +29,10 @@ const inputWidth = 512;
 @inject('AppState')
 @observer
 export default class Password extends Component {
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+  }
   state = {
     submitting: false,
     confirmDirty: null,
@@ -45,7 +49,7 @@ export default class Password extends Component {
   compareToFirstPassword = (rule, value, callback) => {
     const { intl, form } = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(intl.formatMessage({id: `${intlPrefix}.twopwd.pattern.msg`}));
+      callback(intl.formatMessage({ id: `${intlPrefix}.twopwd.pattern.msg` }));
     } else {
       callback();
     }
@@ -68,8 +72,8 @@ export default class Password extends Component {
     const { getFieldValue } = this.props.form;
     const user = UserInfoStore.getUserInfo;
     const body = {
-      'originalPassword': getFieldValue('oldpassword'),
-      'password': getFieldValue('confirm'),
+      originalPassword: getFieldValue('oldpassword'),
+      password: getFieldValue('confirm'),
     };
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -108,14 +112,14 @@ export default class Password extends Component {
           'iam-service.user.selfUpdatePassword',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button onClick={this.reload} icon="refresh">
-           <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: user.realName}}
+          values={{ name: user.realName }}
         >
           <div className="ldapContainer">
             <Form onSubmit={this.handleSubmit} layout="vertical">
@@ -125,7 +129,7 @@ export default class Password extends Component {
                 {getFieldDecorator('oldpassword', {
                   rules: [{
                     required: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.oldpassword.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.oldpassword.require.msg` }),
                   }, {
                     validator: this.validateToNextPassword,
                   }],
@@ -133,10 +137,10 @@ export default class Password extends Component {
                 })(
                   <Input
                     autoComplete="off"
-                    label={<FormattedMessage id={`${intlPrefix}.oldpassword`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.oldpassword`} />}
                     type="password"
                     style={{ width: inputWidth }}
-                    ref={(e) => this.FocusInput = e}
+                    ref={(e) => { this.editFocusInput = e; }}
                   />,
                 )}
               </FormItem>
@@ -146,7 +150,7 @@ export default class Password extends Component {
                 {getFieldDecorator('password', {
                   rules: [{
                     required: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.newpassword.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.newpassword.require.msg` }),
                   }, {
                     validator: this.validateToNextPassword,
                   }],
@@ -155,7 +159,7 @@ export default class Password extends Component {
                 })(
                   <Input
                     autoComplete="off"
-                    label={<FormattedMessage id={`${intlPrefix}.newpassword`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.newpassword`} />}
                     type="password"
                     style={{ width: inputWidth }}
                   />,
@@ -167,7 +171,7 @@ export default class Password extends Component {
                 {getFieldDecorator('confirm', {
                   rules: [{
                     required: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.confirmpassword.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.confirmpassword.require.msg` }),
                   }, {
                     validator: this.compareToFirstPassword,
                   }],
@@ -176,7 +180,7 @@ export default class Password extends Component {
                 })(
                   <Input
                     autoComplete="off"
-                    label={<FormattedMessage id={`${intlPrefix}.confirmpassword`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.confirmpassword`} />}
                     type="password"
                     style={{ width: inputWidth }}
                     onBlur={this.handleConfirmBlur}
@@ -184,26 +188,30 @@ export default class Password extends Component {
                 )}
               </FormItem>
               <FormItem>
-                <Permission service={['iam-service.user.selfUpdatePassword']} type={'site'} onAccess={() => {
-                  setTimeout(() => {
-                    this.FocusInput.input.focus();
-                  }, 10);
-                }}>
+                <Permission
+                  service={['iam-service.user.selfUpdatePassword']}
+                  type={'site'}
+                  onAccess={() => {
+                    setTimeout(() => {
+                      this.editFocusInput.input.focus();
+                    }, 10);
+                  }}
+                >
                   <Row>
-                    <hr className='hrLine' />
+                    <hr className="hrLine" />
                     <Col span={5} style={{ marginRight: 16 }}>
                       <Button
                         funcType="raised"
                         type="primary"
                         htmlType="submit"
                         loading={submitting}
-                      ><FormattedMessage id="save"/></Button>
+                      ><FormattedMessage id="save" /></Button>
                       <Button
                         funcType="raised"
                         onClick={this.reload}
                         style={{ marginLeft: 16 }}
                         disabled={submitting}
-                      ><FormattedMessage id="cancel"/></Button>
+                      ><FormattedMessage id="cancel" /></Button>
                     </Col>
                   </Row>
                 </Permission>

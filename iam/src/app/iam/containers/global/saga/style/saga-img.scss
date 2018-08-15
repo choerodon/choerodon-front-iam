@@ -17,14 +17,13 @@
       &.output {
         cursor: default;
       }
-
     }
     &-square {
       padding: 10px;
       width: 102px;
       height: 102px;
       border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.24);
+      border: 1px solid rgba(0, 0, 0, 0.24);
       text-align: center;
       z-index: 2;
       cursor: pointer;
@@ -33,20 +32,20 @@
       justify-content: center;
 
       &.failed {
-        color: #F44336;
-        border: 4px solid #F44336;
+        color: #f44336;
+        border: 4px solid #f44336;
       }
       &.queue {
-        color: #FFB100;
-        border: 4px solid #FFB100;
+        color: #ffb100;
+        border: 4px solid #ffb100;
       }
       &.running {
-        color: #00BFA5;
-        border: 4px solid #00BFA5;
+        color: #00bfa5;
+        border: 4px solid #00bfa5;
       }
       &.completed {
-        color: #4D90FE;
-        border: 4px solid #4D90FE;
+        color: #4d90fe;
+        border: 4px solid #4d90fe;
       }
       > span {
         display: block;
@@ -58,7 +57,7 @@
     }
     &-squares {
       border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.24);
+      border: 1px solid rgba(0, 0, 0, 0.24);
       text-align: center;
       z-index: 2;
       display: inline-block;
@@ -75,13 +74,10 @@
         content: '';
         height: 28px;
         width: 1px;
-        background: transparent;
         border-left: 2px solid transparent;
         background:
           linear-gradient(white, white) padding-box,
-          repeating-linear-gradient(0,
-            rgba(0, 0, 0, 0.78) 0,
-            rgba(0, 0, 0, 0.78) 50%,
+          repeating-linear-gradient(black 0, rgba(0, 0, 0, 0.78) 0, rgba(0, 0, 0, 0.78) 50%,
             white 0,
             white 75%) 0 / .6em .6em;
         opacity: 0.24;
@@ -93,7 +89,7 @@
         opacity: 0.24;
         border-width: 9px 6px 0;
         border-style: solid;
-        border-color: rgba(0,0,0,0.78) transparent transparent;
+        border-color: rgba(0, 0, 0, 0.78) transparent transparent;
         transform: translateX(-5px);
         content: '';
         bottom: 0;
@@ -108,8 +104,8 @@
     margin-left: 24px;
     height: auto;
     width: calc(100% - 536px);
-    background: #FFFFFF;
-    box-shadow: 0 1px 0 0 rgba(0,0,0,0.20), 0 0 0 1px rgba(0,0,0,0.12), 0 2px 2px -1px rgba(0,0,0,0.12);
+    background: #fff;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
     border-radius: 2px;
     padding: 24px;
 
@@ -140,16 +136,16 @@
   }
 
   &-task-detail {
-    color: #000000;
+    color: #000;
     &-title {
       font-family: PingFangSC-Regular;
       font-size: 14px;
-      border-bottom: 1px solid rgba(0,0,0,0.12);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
       padding-bottom: 5px;
       font-weight: 600;
       margin-bottom: 15px; // margin 会合并 相等于marginBottom 5px
     }
-    &-content > div{
+    &-content > div {
       font-family: PingFangSC-Regular;
       font-size: 13px;
       line-height: 20px;
@@ -159,7 +155,7 @@
       &-json {
         position: relative;
         i.icon.copy-icon {
-          color: #3F51B5;
+          color: #3f51b5;
           position: absolute;
           top: 10px;
           right: 20px;
@@ -189,9 +185,9 @@
   &-task-btns {
     font-family: PingFangSC-Medium;
     font-size: 13px;
-    color: #3F51B5;
+    color: #3f51b5;
     line-height: 15px;
-    > span + span{
+    > span + span {
       margin-left: 25px;
     }
     > span {
@@ -210,16 +206,16 @@
     padding: 2px 5px;
     border-radius: 2px;
     &.failed {
-      background: #F44336;
+      background: #f44336;
     }
     &.running {
-      background: #00BFA5;
+      background: #00bfa5;
     }
     &.completed {
-      background: #4D90FE;
+      background: #4d90fe;
     }
     &.queue {
-      background: #FFB100;
+      background: #ffb100;
     }
   }
 }

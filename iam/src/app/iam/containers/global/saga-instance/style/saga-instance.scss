@@ -4,13 +4,13 @@
     padding: 2px 5px;
     border-radius: 2px;
     &.failed {
-      background: #F44336;
+      background: #f44336;
     }
     &.running {
-      background: #4D90FE;
+      background: #4d90fe;
     }
     &.completed {
-      background: #00BFA5;
+      background: #00bfa5;
     }
   }
   &-btns {

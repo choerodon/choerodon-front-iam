@@ -19,6 +19,10 @@ const intlPrefix = 'global.route';
 @inject('AppState')
 @observer
 export default class Route extends Component {
+  constructor(props) {
+    super(props);
+    this.createRouteFocusInput = React.createRef();
+  }
   state = this.getInitState();
 
   componentWillMount() {
@@ -517,8 +521,8 @@ export default class Route extends Component {
     const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
     const customSensitiveHeaders = sidebarData && sidebarData.customSensitiveHeaders ? 'filtered' : 'noFiltered';
     const sensitiveHeaders = sidebarData && sidebarData.sensitiveHeaders ? sidebarData.sensitiveHeaders.split(',') : [];
-    let code, 
-      values;
+    let code;
+    let values;
     if (show === 'create') {
       code = `${intlPrefix}.create`;
       values = {
@@ -565,7 +569,7 @@ export default class Route extends Component {
                 suffix={this.getSuffix(intl.formatMessage({ id: `${intlPrefix}.name.tip` }))}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
-                ref={e => this.createRouteFocusInput = e}
+                ref={(e) => { this.createRouteFocusInput = e; }}
               />,
             )}
           </FormItem>

@@ -109,7 +109,6 @@ export default class SagaInstance extends Component {
         });
       });
     });
-
   }
 
   handleOk = () => {

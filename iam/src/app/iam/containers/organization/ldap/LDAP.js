@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { Button, Form, Icon, Input, Modal, Popover, Radio, Select, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -127,7 +127,7 @@ export default class LDAP extends Component {
             Choerodon.prompt(mess);
             break;
           case 404:
-            Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.notfound.msg`}));
+            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.notfound.msg` }));
             break;
           default:
             break;
@@ -200,30 +200,30 @@ export default class LDAP extends Component {
 
   enableLdap = () => {
     const { LDAPStore, intl } = this.props;
-    const {  organizationId } = this.state;
+    const { organizationId } = this.state;
     const ldapData = LDAPStore.getLDAPData;
     if (ldapData.enabled) {
       Modal.confirm({
-        title: intl.formatMessage({id: `${intlPrefix}.disable.title`}),
-        content: intl.formatMessage({id: `${intlPrefix}.disable.content`}),
+        title: intl.formatMessage({ id: `${intlPrefix}.disable.title` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.disable.content` }),
         onOk: () => LDAPStore.disabledLdap(organizationId, ldapData.id).then((data) => {
           if (data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            Choerodon.prompt(intl.formatMessage({id: `disable.success`}));
+            Choerodon.prompt(intl.formatMessage({ id: 'disable.success' }));
             LDAPStore.setLDAPData(data);
           }
-        })
+        }),
       });
     } else {
       LDAPStore.enabledLdap(organizationId, ldapData.id).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          Choerodon.prompt(intl.formatMessage({id: `enable.success`}));
+          Choerodon.prompt(intl.formatMessage({ id: 'enable.success' }));
           LDAPStore.setLDAPData(data);
         }
-      })
+      });
     }
   }
 
@@ -255,7 +255,7 @@ export default class LDAP extends Component {
           .then((data) => {
             if (data) {
               LDAPStore.setLDAPData(data);
-              Choerodon.prompt(intl.formatMessage({id: `save.success`}));
+              Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
               this.setState({
                 saving: false,
               });
@@ -275,7 +275,7 @@ export default class LDAP extends Component {
                   });
               }
             } else {
-              Choerodon.prompt(intl.formatMessage({id: 'save.error'}));
+              Choerodon.prompt(intl.formatMessage({ id: 'save.error' }));
             }
           })
           .catch((error) => {
@@ -293,9 +293,9 @@ export default class LDAP extends Component {
     const { intl } = this.props;
     const { showWhich } = this.state;
     if (showWhich === 'connect' || showWhich === 'adminConnect') {
-      return intl.formatMessage({id: `${intlPrefix}.connect`});
+      return intl.formatMessage({ id: `${intlPrefix}.connect` });
     } else {
-      return intl.formatMessage({id: `${intlPrefix}.syncuser`});
+      return intl.formatMessage({ id: `${intlPrefix}.syncuser` });
     }
   }
 
@@ -322,11 +322,11 @@ export default class LDAP extends Component {
     const { getFieldDecorator } = form;
     const inputWidth = 512;
     const tips = {
-      hostname: intl.formatMessage({id: `${intlPrefix}.hostname.tip`}),
-      ssl: intl.formatMessage({id: `${intlPrefix}.ssl.tip`}),
-      basedn: intl.formatMessage({id: `${intlPrefix}.basedn.tip`}),
-      loginname: intl.formatMessage({id: `${intlPrefix}.loginname.tip`}),
-      username: intl.formatMessage({id: `${intlPrefix}.username.tip`}),
+      hostname: intl.formatMessage({ id: `${intlPrefix}.hostname.tip` }),
+      ssl: intl.formatMessage({ id: `${intlPrefix}.ssl.tip` }),
+      basedn: intl.formatMessage({ id: `${intlPrefix}.basedn.tip` }),
+      loginname: intl.formatMessage({ id: `${intlPrefix}.loginname.tip` }),
+      username: intl.formatMessage({ id: `${intlPrefix}.username.tip` }),
     };
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
       <div className="serverContainer">
@@ -336,8 +336,9 @@ export default class LDAP extends Component {
           icon={this.state.showServer ? 'expand_more' : 'expand_less'}
           size="small"
           style={{ float: 'left' }}
-          onClick={this.isShowServerSetting} />
-        <FormattedMessage id={`${intlPrefix}.server.setting`}/>
+          onClick={this.isShowServerSetting}
+        />
+        <FormattedMessage id={`${intlPrefix}.server.setting`} />
       </div>
       <Form onSubmit={this.handleSubmit} layout="vertical" className="ldapForm">
         <div style={{ display: this.state.showServer ? 'block' : 'none' }}>
@@ -347,19 +348,19 @@ export default class LDAP extends Component {
             {getFieldDecorator('directoryType', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.directorytype.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.directorytype.require.msg` }),
               }],
               initialValue: ldapData.directoryType ? ldapData.directoryType : undefined,
             })(
               <Select
                 getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-                label={intl.formatMessage({id: `${intlPrefix}.directorytype`})}
+                label={intl.formatMessage({ id: `${intlPrefix}.directorytype` })}
                 style={{ width: inputWidth }}
               >
                 <Option value="Microsoft Active Directory">
                   <Tooltip
                     placement="right"
-                    title={intl.formatMessage({id: `${intlPrefix}.directorytype.mad.tip`})}
+                    title={intl.formatMessage({ id: `${intlPrefix}.directorytype.mad.tip` })}
                     overlayStyle={{ maxWidth: '300px' }}
                   >
                     <span style={{ display: 'inline-block', width: '100%' }}>Microsoft Active Directory</span>
@@ -368,7 +369,7 @@ export default class LDAP extends Component {
                 <Option value="OpenLDAP">
                   <Tooltip
                     placement="right"
-                    title={intl.formatMessage({id: `${intlPrefix}.directorytype.openldap.tip`})}
+                    title={intl.formatMessage({ id: `${intlPrefix}.directorytype.openldap.tip` })}
                     overlayStyle={{ maxWidth: '300px' }}
                   >
                     <span style={{ display: 'inline-block', width: '100%' }}>OpenLDAP</span>
@@ -383,11 +384,11 @@ export default class LDAP extends Component {
             {getFieldDecorator('serverAddress', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.serveraddress.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.serveraddress.require.msg` }),
               }],
               initialValue: ldapData.serverAddress ? ldapData.serverAddress : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.serveraddress`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.serveraddress` })} style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -398,11 +399,11 @@ export default class LDAP extends Component {
             })(
               <RadioGroup
                 className="ldapRadioGroup"
-                label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.usessl.suffix`}), tips.ssl)}
+                label={this.labelSuffix(intl.formatMessage({ id: `${intlPrefix}.usessl.suffix` }), tips.ssl)}
                 onChange={this.changeSsl.bind(this)}
               >
-                <Radio value={'Y'}><FormattedMessage id="yes"/></Radio>
-                <Radio value={'N'}><FormattedMessage id="no"/></Radio>
+                <Radio value={'Y'}><FormattedMessage id="yes" /></Radio>
+                <Radio value={'N'}><FormattedMessage id="no" /></Radio>
               </RadioGroup>,
             )}
           </FormItem>
@@ -412,11 +413,11 @@ export default class LDAP extends Component {
             {getFieldDecorator('port', {
               rules: [{
                 pattern: /^[1-9]\d*$/,
-                message: intl.formatMessage({id: `${intlPrefix}.port.pattern.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.port.pattern.msg` }),
               }],
               initialValue: ldapData.port || (ldapData.useSSL ? '636' : '389'),
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.port`})} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.port` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -425,7 +426,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('baseDn', {
               initialValue: ldapData.baseDn ? ldapData.baseDn : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.basedn`})} suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.basedn` })} suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -434,7 +435,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('account', {
               initialValue: ldapData.account ? ldapData.account : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.loginname`})} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.admin.loginname` })} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -443,7 +444,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('password', {
               initialValue: ldapData.password ? ldapData.password : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.admin.password`})} type="password" style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.admin.password` })} type="password" style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
         </div>
@@ -454,8 +455,9 @@ export default class LDAP extends Component {
             icon={this.state.showUser ? 'expand_more' : 'expand_less'}
             size="small"
             style={{ float: 'left' }}
-            onClick={this.isShowUserSetting} />
-          <FormattedMessage id={`${intlPrefix}.user.setting`}/>
+            onClick={this.isShowUserSetting}
+          />
+          <FormattedMessage id={`${intlPrefix}.user.setting`} />
         </div>
         <div style={{ display: this.state.showUser ? 'block' : 'none' }}>
           <FormItem
@@ -464,11 +466,11 @@ export default class LDAP extends Component {
             {getFieldDecorator('objectClass', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.objectclass.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.objectclass.require.msg` }),
               }],
               initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.objectclass`})} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.objectclass` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -477,11 +479,11 @@ export default class LDAP extends Component {
             {getFieldDecorator('loginNameField', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.loginname.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
               }],
               initialValue: ldapData.loginNameField ? ldapData.loginNameField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.loginname`})} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.loginname` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -490,11 +492,11 @@ export default class LDAP extends Component {
             {getFieldDecorator('emailField', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.email.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.email.require.msg` }),
               }],
               initialValue: ldapData.emailField ? ldapData.emailField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.email`})} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.email` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -503,7 +505,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('realNameField', {
               initialValue: ldapData.realNameField ? ldapData.realNameField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.realname`})} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.realname` })} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -512,7 +514,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('phoneField', {
               initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
             })(
-              <Input label={intl.formatMessage({id: `${intlPrefix}.phone`})} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.phone` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
         </div>
@@ -525,7 +527,7 @@ export default class LDAP extends Component {
               htmlType="submit"
               loading={saving}
             >
-              <FormattedMessage id={ldapData.enabled ? `${intlPrefix}.saveandtest` : 'save'}/>
+              <FormattedMessage id={ldapData.enabled ? `${intlPrefix}.saveandtest` : 'save'} />
             </Button>
             <Button
               funcType="raised"
@@ -536,7 +538,7 @@ export default class LDAP extends Component {
               style={{ color: '#3F51B5' }}
               disabled={saving}
             >
-              <FormattedMessage id="cancel"/>
+              <FormattedMessage id="cancel" />
             </Button>
           </div>
         </Permission>
@@ -552,37 +554,37 @@ export default class LDAP extends Component {
           'iam-service.ldap.delete',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button
             icon={ldapData && ldapData.enabled ? 'remove_circle_outline' : 'finished'}
             onClick={this.enableLdap}
           >
-            <FormattedMessage id={ldapData && ldapData.enabled ? 'disable' : 'enable'}/>
+            <FormattedMessage id={ldapData && ldapData.enabled ? 'disable' : 'enable'} />
           </Button>
           <Button
             icon="low_priority"
             onClick={this.openSidebar.bind(this, 'connect')}
             disabled={!(ldapData && ldapData.enabled)}
           >
-            <FormattedMessage id={`${intlPrefix}.connect`}/>
+            <FormattedMessage id={`${intlPrefix}.connect`} />
           </Button>
           <Button
             icon="sync"
             onClick={this.openSidebar.bind(this, 'sync')}
             disabled={!(ldapData && ldapData.enabled)}
           >
-            <FormattedMessage id={`${intlPrefix}.syncuser`}/>
+            <FormattedMessage id={`${intlPrefix}.syncuser`} />
           </Button>
           <Button
             onClick={this.reload}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: organizationName}}
+          values={{ name: organizationName }}
         >
           <div className="ldapContainer">
             {mainContent}
@@ -591,8 +593,8 @@ export default class LDAP extends Component {
             className="connectContainer"
             title={this.renderSidebarTitle()}
             visible={sidebar}
-            okText={<FormattedMessage id={showWhich === 'sync' ? `${intlPrefix}.sync` : `${intlPrefix}.test`}/>}
-            cancelText={<FormattedMessage id={showWhich === 'sync' ? 'return' : 'cancel'}/>}
+            okText={<FormattedMessage id={showWhich === 'sync' ? `${intlPrefix}.sync` : `${intlPrefix}.test`} />}
+            cancelText={<FormattedMessage id={showWhich === 'sync' ? 'return' : 'cancel'} />}
             onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
             confirmLoading={showWhich === 'sync' ? false : LDAPStore.confirmLoading}

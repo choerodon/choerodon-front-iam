@@ -94,7 +94,7 @@ export default class OrganizationInfo extends Component {
     return axios.get(`/iam/v1/users/${id}/organization_roles?${querystring.stringify(queryObj)}`);
   }
 
-  handlePageChange = (pagination, filters, {}, params) => {
+  handlePageChange = (pagination, filters, sort, params) => {
     this.loadInitData(pagination, filters, params);
   };
 
@@ -138,11 +138,11 @@ export default class OrganizationInfo extends Component {
     const filters = filtersIn || filtersState;
     // 防止标签闪烁
     this.setState({ filters });
-    this.permissionFetch(pagination, filters, params).then(data => {
+    this.permissionFetch(pagination, filters, params).then((data) => {
       if (this.state.totalCount === false) {
         this.setState({
           totalCount: data.totalElements,
-        })
+        });
       }
       this.setState({
         perpagination: {
@@ -174,17 +174,17 @@ export default class OrganizationInfo extends Component {
     return axios.get(`/iam/v1/roles/${id}/permissions?${querystring.stringify(queryObj)}`);
   }
 
-  handlePerPageChange = (pagination, filters, {}, params) => {
+  handlePerPageChange = (pagination, filters, sort, params) => {
     this.loadPermissionData(pagination, filters, params);
   };
 
   renderSidebarContent() {
     const { intl } = this.props;
     const { percontent, perpagination, perloading, perparams, orgName, roleName, totalCount } = this.state;
-    const title = intl.formatMessage({id: `${intlPrefix}.detail.title`}, {
+    const title = intl.formatMessage({ id: `${intlPrefix}.detail.title` }, {
       roleName,
     });
-    const description = intl.formatMessage({id: `${intlPrefix}.detail.description`}, {
+    const description = intl.formatMessage({ id: `${intlPrefix}.detail.description` }, {
       orgName,
       roleName,
     });
@@ -195,14 +195,14 @@ export default class OrganizationInfo extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.detail.table.description`} />,
       dataIndex: 'description',
-      key: 'description'
-    }]
+      key: 'description',
+    }];
     return (
       <Content
         className="sidebar-content"
         title={title}
         description={description}
-        link={intl.formatMessage({id: `${intlPrefix}.detail.link`})}
+        link={intl.formatMessage({ id: `${intlPrefix}.detail.link` })}
       >
         <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
@@ -216,7 +216,7 @@ export default class OrganizationInfo extends Component {
           onChange={this.handlePerPageChange}
         />
       </Content>
-    )
+    );
   }
 
   getRowKey = (record, id) => {
@@ -243,15 +243,15 @@ export default class OrganizationInfo extends Component {
       key: 'name',
       render: (text, record) => {
         let icon = '';
-        if (record.hasOwnProperty('projects')) {
-          icon = 'domain'
+        if ('projects' in record) {
+          icon = 'domain';
         } else {
           icon = 'person';
         }
         return (
           <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>
-        )
-      }
+        );
+      },
     }, {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
@@ -260,41 +260,38 @@ export default class OrganizationInfo extends Component {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',
       key: 'type',
-      render: (text, record) => {
-        return (
-          record.hasOwnProperty('projects') ? '组织' : '角色'
-        )
-      }
+      render: (text, record) => (
+        'projects' in record ? '组织' : '角色'
+      ),
     }, {
       title: '',
       width: 100,
       key: 'action',
       align: 'right',
       render: (text, record) => {
-        if (!record.hasOwnProperty('projects')) {
+        if (!('projects' in record)) {
           return (
-          <Permission service={['iam-service.role.listPermissionById']}>
-            <Tooltip
-              title={<FormattedMessage id="detail" />}
-              placement="bottom"
-            >
-              <Button
-                shape="circle"
-                icon="find_in_page"
-                size="small"
-                onClick={this.openSidebar.bind(this, record)}
-              />
-            </Tooltip>
-          </Permission>
-          )
+            <Permission service={['iam-service.role.listPermissionById']}>
+              <Tooltip
+                title={<FormattedMessage id="detail" />}
+                placement="bottom"
+              >
+                <Button
+                  shape="circle"
+                  icon="find_in_page"
+                  size="small"
+                  onClick={this.openSidebar.bind(this, record)}
+                />
+              </Tooltip>
+            </Permission>
+          );
         }
-      }
+      },
     }];
 
     return (
       <Page>
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
-        >
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

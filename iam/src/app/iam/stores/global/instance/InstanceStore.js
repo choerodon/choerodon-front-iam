@@ -7,7 +7,7 @@ import { axios, store, stores } from 'choerodon-front-boot';
 @store('InstanceStore')
 class InstanceStore {
   @observable service = [];
-  @observable currentService = {name: 'total'};
+  @observable currentService = { name: 'total' };
   @observable loading = true;
   @observable instanceData = [];
   @observable instanceDetail = null;
@@ -46,7 +46,7 @@ class InstanceStore {
 
   loadService = () => axios.get('manager/v1/services');
 
-  loadInstanceInfo = (instanceId) => axios.get(`manager/v1/instances/${instanceId}`)
+  loadInstanceInfo = instanceId => axios.get(`manager/v1/instances/${instanceId}`)
 }
 
 const instanceStore = new InstanceStore();

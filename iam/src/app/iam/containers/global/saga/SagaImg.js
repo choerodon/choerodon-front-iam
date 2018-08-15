@@ -81,7 +81,7 @@ export default class SagaImg extends Component {
       let detailTop = container.scrollTop;
       if (detailTop > top) {
         if (detailHeight > container.clientHeight) {
-          detailTop = Math.min(imgHeight - detailHeight + top, detailTop);
+          detailTop = Math.min((imgHeight - detailHeight) + top, detailTop);
         }
         detail.style.cssText = `top: ${detailTop}px`;
         detail.classList.add('autoscroll');
@@ -104,7 +104,7 @@ export default class SagaImg extends Component {
         Choerodon.prompt(data.message);
       } else {
         const { tasks } = data;
-        this.setState({ data })
+        this.setState({ data });
         this.getLineData(tasks);
       }
     });
@@ -136,7 +136,7 @@ export default class SagaImg extends Component {
     const { instance } = this.props;
     const clsNames = classnames('c7n-saga-img-circle', {
       'c7n-saga-task-active': code.toLowerCase() === activeCode,
-      'output': !instance && code === 'Output',
+      output: !instance && code === 'Output',
     });
     return (
       <div
@@ -174,11 +174,9 @@ export default class SagaImg extends Component {
     );
   }
 
-  line = () => {
-    return (
-      <div className="c7n-saga-img-line" />
-    );
-  };
+  line = () => (
+    <div className="c7n-saga-img-line" />
+  );
 
   showDetail = (code) => {
     const { instance } = this.props;
@@ -368,7 +366,7 @@ export default class SagaImg extends Component {
       <div className="c7n-saga-task-run">
         <div className="c7n-saga-task-detail">
           <div className="c7n-saga-task-detail-content">
-            {list.map(({ key, value }, index) => <div key={`task-run-${index}`}>{key}: {value}</div>)}
+            {list.map(({ key, value }) => <div key={`task-run-${key}`}>{key}: {value}</div>)}
             {status === 'FAILED' && (
               <div>{failed.key}:
                 <div className="c7n-saga-detail-json">
@@ -456,7 +454,7 @@ export default class SagaImg extends Component {
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-content">
-          {list.map(({ key, value }, index) => <div key={`task-detail-${index}`}>{key}: {value}</div>)}
+          {list.map(({ key, value }) => <div key={`task-detail-${key}`}>{key}: {value}</div>)}
           {!instance && (
             <div>{input.key}:
               <div className="c7n-saga-detail-json">

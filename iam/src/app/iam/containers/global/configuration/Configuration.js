@@ -57,12 +57,8 @@ export default class Configuration extends Component {
       } else {
         ConfigurationStore.setService(res || []);
         if (res.length) {
-          let defaultService;
-          if (ConfigurationStore.getRelatedService.name) {
-            defaultService = ConfigurationStore.getRelatedService;
-          } else {
-            defaultService = res[0];
-          }
+          const { name } = ConfigurationStore.getRelatedService;
+          const defaultService = name ? ConfigurationStore.getRelatedService : res[0];
           ConfigurationStore.setCurrentService(defaultService);
           this.loadConfig();
         } else {
@@ -99,7 +95,7 @@ export default class Configuration extends Component {
             total: data.totalElements,
           },
         });
-        ConfigurationStore.setConfigData(data.content.slice()),
+        ConfigurationStore.setConfigData(data.content.slice());
         ConfigurationStore.setLoading(false);
       })
       .catch((error) => {
@@ -107,7 +103,7 @@ export default class Configuration extends Component {
       });
   }
 
-  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, configVersion, isDefault}, params) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, configVersion, isDefault }, params) {
     ConfigurationStore.setLoading(true);
     const queryObj = {
       page: current - 1,
@@ -274,9 +270,7 @@ export default class Configuration extends Component {
         value: 'false',
       }],
       filteredValue: filters.isDefault || [],
-      render: (text) => {
-        return intl.formatMessage({ id: text ? 'yes' : 'no' });
-      },
+      render: text => intl.formatMessage({ id: text ? 'yes' : 'no' }),
     }, {
       title: '',
       width: '100px',

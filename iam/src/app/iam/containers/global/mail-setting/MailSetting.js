@@ -277,7 +277,7 @@ export default class MailSetting extends Component {
           </Form>
         )}
       </div>
-    )
+    );
 
 
     return (

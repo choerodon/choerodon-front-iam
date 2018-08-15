@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { Form, Input, Icon, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -50,16 +50,16 @@ export default class TestConnect extends Component {
         LDAPStore.setSyncData(data);
         LDAPStore.setIsSyncLoading(false);
       }
-    })
+    });
   }
 
   getSpentTime = (startTime, endTime) => {
     const { intl } = this.props;
     const timeUnit = {
-      day: intl.formatMessage({id: 'day'}),
-      hour: intl.formatMessage({id: 'hour'}),
-      minute: intl.formatMessage({id: 'minute'}),
-      second: intl.formatMessage({id: 'second'}),
+      day: intl.formatMessage({ id: 'day' }),
+      hour: intl.formatMessage({ id: 'hour' }),
+      minute: intl.formatMessage({ id: 'minute' }),
+      second: intl.formatMessage({ id: 'second' }),
     };
     const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
     // 天数
@@ -80,12 +80,12 @@ export default class TestConnect extends Component {
     return resultDays + resultHours + resultMinutes + resultSeconds;
   }
 
-  loading () {
+  loading() {
     const { intl } = this.props;
     window.clearInterval(timer);
     timer = window.setInterval(this.getSyncInfoOnce, 9000);
-    const tip = intl.formatMessage({id: `${intlPrefix}.sync.loading`});
-    const syncTip = intl.formatMessage({id: `${intlPrefix}.sync.loading.tip`});
+    const tip = intl.formatMessage({ id: `${intlPrefix}.sync.loading` });
+    const syncTip = intl.formatMessage({ id: `${intlPrefix}.sync.loading.tip` });
     return this.renderLoading(tip, syncTip);
   }
 
@@ -98,52 +98,52 @@ export default class TestConnect extends Component {
     return (
       <div>
         <p className="testTitle">
-          <FormattedMessage id={`${intlPrefix}.test.result`}/>
+          <FormattedMessage id={`${intlPrefix}.test.result`} />
         </p>
         <div className="resultContainer">
           <div className="resultInfo">
             <div>
               <Icon type={testData.canLogin ? 'check_circle' : 'cancel'} className={testData.canLogin ? 'successIcon' : 'failedIcon'} />
-              <FormattedMessage id={`${intlPrefix}.test.login`}/>
-              <FormattedMessage id={testData.canLogin ? 'success' : 'error'}/>
+              <FormattedMessage id={`${intlPrefix}.test.login`} />
+              <FormattedMessage id={testData.canLogin ? 'success' : 'error'} />
             </div>
             <div>
               <Icon type={testData.canConnectServer ? 'check_circle' : 'cancel'} className={testData.canConnectServer ? 'successIcon' : 'failedIcon'} />
-              <FormattedMessage id={`${intlPrefix}.test.connect`}/>
-              <FormattedMessage id={testData.canConnectServer ? 'success' : 'error'}/>
+              <FormattedMessage id={`${intlPrefix}.test.connect`} />
+              <FormattedMessage id={testData.canConnectServer ? 'success' : 'error'} />
             </div>
             <div>
               <Icon type={testData.matchAttribute ? 'check_circle' : 'cancel'} className={testData.matchAttribute ? 'successIcon' : 'failedIcon'} />
-              <FormattedMessage id={`${intlPrefix}.test.user`}/>
-              <FormattedMessage id={testData.matchAttribute ? 'success' : 'error'}/>
+              <FormattedMessage id={`${intlPrefix}.test.user`} />
+              <FormattedMessage id={testData.matchAttribute ? 'success' : 'error'} />
             </div>
             <ul className="info">
               <li
                 style={{ display: ldapData.loginNameField ? 'inline' : 'none' }}
                 className={ldapData.loginNameField === testData.loginNameField ? 'toRed' : ''}
               >
-                <FormattedMessage id={`${intlPrefix}.loginname`}/>
+                <FormattedMessage id={`${intlPrefix}.loginname`} />
                 <span>{ldapData.loginNameField}</span>
               </li>
               <li
                 style={{ display: ldapData.realNameField && adminStatus ? 'inline' : 'none' }}
                 className={ldapData.realNameField === testData.realNameField ? 'toRed' : ''}
               >
-                <FormattedMessage id={`${intlPrefix}.realname`}/>
+                <FormattedMessage id={`${intlPrefix}.realname`} />
                 <span>{ldapData.realNameField}</span>
               </li>
               <li
                 style={{ display: ldapData.phoneField && adminStatus ? 'inline' : 'none' }}
                 className={ldapData.phoneField === testData.phoneField ? 'toRed' : ''}
               >
-                <FormattedMessage id={`${intlPrefix}.phone`}/>
+                <FormattedMessage id={`${intlPrefix}.phone`} />
                 <span>{ldapData.phoneField}</span>
               </li>
               <li
                 style={{ display: ldapData.emailField ? 'inline' : 'none' }}
                 className={ldapData.emailField === testData.emailField ? 'toRed' : ''}
               >
-                <FormattedMessage id={`${intlPrefix}.email`}/>
+                <FormattedMessage id={`${intlPrefix}.email`} />
                 <span>{ldapData.emailField}</span>
               </li>
             </ul>
@@ -157,19 +157,19 @@ export default class TestConnect extends Component {
     const syncData = LDAPStore.getSyncData || {};
     if (timer) {
       window.clearInterval(timer);
-    };
+    }
     if (!Object.getOwnPropertyNames(syncData).length) {
       return (
         <div className="syncContainer">
           <p>
-           <FormattedMessage id={`${intlPrefix}.sync.norecord`}/>
+            <FormattedMessage id={`${intlPrefix}.sync.norecord`} />
           </p>
         </div>
       );
     } else if (syncData && syncData.syncEndTime) {
       return (
         <div className="syncContainer">
-          <p><FormattedMessage id={`${intlPrefix}.sync.lasttime`}/> {syncData.syncEndTime}</p>
+          <p><FormattedMessage id={`${intlPrefix}.sync.lasttime`} /> {syncData.syncEndTime}</p>
           <p>
             <FormattedMessage
               id={`${intlPrefix}.sync.time`}
@@ -203,12 +203,12 @@ export default class TestConnect extends Component {
                 rules: [{
                   required: true,
                   whitespace: true,
-                  message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
+                  message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
                 }],
               })(
                 <Input
                   autoComplete="off"
-                  label={intl.formatMessage({id: `${intlPrefix}.name`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.name` })}
                   style={{ width: inputWidth }}
                 />,
               )}
@@ -220,27 +220,27 @@ export default class TestConnect extends Component {
                 rules: [{
                   required: true,
                   whitespace: true,
-                  message: intl.formatMessage({id: `${intlPrefix}.password.require.msg`}),
+                  message: intl.formatMessage({ id: `${intlPrefix}.password.require.msg` }),
                 }],
               })(
                 <Input
                   autoComplete="off"
                   type="password"
-                  label={intl.formatMessage({id: `${intlPrefix}.password`})}
+                  label={intl.formatMessage({ id: `${intlPrefix}.password` })}
                   style={{ width: inputWidth }}
                 />,
               )}
             </FormItem>
           </Form>
           <div style={{ width: '512px', display: LDAPStore.getIsShowResult ? 'block' : 'none' }}>
-            {LDAPStore.getIsConnectLoading ? this.renderLoading(intl.formatMessage({id: `${intlPrefix}.test.loading`})) : this.getTestResult()}
+            {LDAPStore.getIsConnectLoading ? this.renderLoading(intl.formatMessage({ id: `${intlPrefix}.test.loading` })) : this.getTestResult()}
           </div>
         </div>
       );
     } else if (showWhich === 'adminConnect') {
       return (
         <div style={{ width: '512px' }}>
-          {LDAPStore.getIsConnectLoading ? this.renderLoading(intl.formatMessage({id: `${intlPrefix}.test.loading`})) : this.getTestResult()}
+          {LDAPStore.getIsConnectLoading ? this.renderLoading(intl.formatMessage({ id: `${intlPrefix}.test.loading` })) : this.getTestResult()}
         </div>
 
       );

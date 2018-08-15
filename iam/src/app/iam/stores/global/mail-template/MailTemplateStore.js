@@ -18,7 +18,7 @@ class MailTemplateStore {
   @observable currentDetail = {};
 
   // TODO: 这里调用删除的接口
-  deleteMailTemplate = id => console.log(`delete${id}`);
+  deleteMailTemplate = id => axios.delete(`/notify/v1/notices/template/${id}`);
 
 
   @action setLoading(flag) {
@@ -41,7 +41,7 @@ class MailTemplateStore {
     this.currentDetail = data;
   }
 
-  @computed get getCurrentDetail(){
+  @computed get getCurrentDetail() {
     return this.currentDetail;
   }
 
@@ -70,13 +70,11 @@ class MailTemplateStore {
       queryObj.sort = sorter.join(',');
     }
     if (appType === 'site') {
-      console.log('site');
       return axios.get(`/notify/v1/notices/emails/templates?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
     } else {
-      console.log('organization');
       return axios.get(`/notify/v1/notices/emails/templates/organizations/${orgId}?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
     }
-  }
+  };
 
   loadTemplateType = () => axios.get('/notify/v1/notices/send_settings/names');
 

@@ -42,6 +42,11 @@
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/href-no-hash": "off",
     "jsx-a11y/interactive-supports-focus": "off",
+    "jsx-a11y/label-has-for": [ 2, {
+      "required": {
+        "every": [ "id" ]
+      }
+    }],
     "jsx-a11y/no-static-element-interactions": "off",
     "linebreak-style": "off",
     "max-len": "off",
@@ -64,6 +69,7 @@
       }
     ],
     "react/jsx-one-expression-per-line": "off",
+    "react/no-array-index-key": 0,
     "react/no-unused-prop-types": "off",
     "react/prefer-stateless-function": ["off",
       {

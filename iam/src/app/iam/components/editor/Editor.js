@@ -14,9 +14,9 @@ class Editor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: null,
-      msgSaving: null,
-      chatError: null,
+      // message: null,
+      // msgSaving: null,
+      // chatError: null,
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -26,9 +26,9 @@ class Editor extends Component {
       ['bold', 'italic', 'underline'],
       [{ list: 'ordered' }, { list: 'bullet' }],
       ['link'],
-      [{ 'color': [] }],
-      [{ 'font': [] }],
-      [{ 'size': ['10px', '12px', '14px', '16px', '18px', '20px' ]}]
+      [{ color: [] }],
+      [{ font: [] }],
+      [{ size: ['10px', '12px', '14px', '16px', '18px', '20px'] }],
       // ['clean'],
     ],
     imageDrop: true,

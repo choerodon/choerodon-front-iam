@@ -208,7 +208,7 @@ export default class Saga extends Component {
                 <TabPane tab={<FormattedMessage id={`${intlPrefix}.json`} />} key="json" />
               </Tabs>
               {showJson
-                ? (<div className="c7n-saga-detail-json"><pre><code id="json">{jsonFormat(data)}</code></pre></div>)
+                ? (<div className="c7n-saga-detail-json" style={{ margin: 0 }}><pre><code id="json">{jsonFormat(data)}</code></pre></div>)
                 : (<SagaImg data={data} />)
               }
             </Content>

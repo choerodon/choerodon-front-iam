@@ -76,7 +76,7 @@ export default class CreateRole extends Component {
     axios.post('/iam/v1/roles/check', JSON.stringify(params)).then((mes) => {
       if (mes.failed) {
         const { intl } = this.props;
-        callback(intl.formatMessage({id: `${intlPrefix}.code.exist.msg`}));
+        callback(intl.formatMessage({ id: `${intlPrefix}.code.exist.msg` }));
       } else {
         callback();
       }
@@ -89,7 +89,7 @@ export default class CreateRole extends Component {
       current: 1,
       pageSize: 10,
       total: '',
-    },);
+    });
     this.setState({
       permissionParams: [],
     }, () => {
@@ -101,8 +101,6 @@ export default class CreateRole extends Component {
         visible: true,
       });
     });
-
-
   };
 
   linkToChange = (url) => {
@@ -169,16 +167,16 @@ export default class CreateRole extends Component {
             .then((data) => {
               this.setState({ submitting: false });
               if (data) {
-                Choerodon.prompt(intl.formatMessage({id: 'create.success'}));
+                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
                 this.linkToChange('/iam/role');
               }
             })
             .catch((errors) => {
               this.setState({ submitting: false });
               if (errors.response.data.message === 'error.role.roleNameExist') {
-                Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
+                Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
               } else {
-                Choerodon.prompt(intl.formatMessage({id: 'create.error'}));
+                Choerodon.prompt(intl.formatMessage({ id: 'create.error' }));
               }
             });
         }
@@ -201,26 +199,26 @@ export default class CreateRole extends Component {
 
     if (level && (currentPermission.length || code || label.length)) {
       confirm({
-        title: intl.formatMessage({id: `${intlPrefix}.modify.level.title`}),
-        content: intl.formatMessage({id: `${intlPrefix}.modify.level.content`}),
+        title: intl.formatMessage({ id: `${intlPrefix}.modify.level.title` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.modify.level.content` }),
         onOk() {
           RoleStore.setChosenLevel(value);
           RoleStore.setSelectedRolesPermission([]);
           RoleStore.loadRoleLabel(value);
-          setFieldsValue({code: '', label: []});
+          setFieldsValue({ code: '', label: [] });
           that.setState({
             currentPermission: [],
           });
         },
         onCancel() {
-          setFieldsValue({level});
+          setFieldsValue({ level });
         },
       });
     } else {
       RoleStore.setChosenLevel(value);
       RoleStore.setSelectedRolesPermission([]);
       RoleStore.loadRoleLabel(value);
-      setFieldsValue({code: '', label: []});
+      setFieldsValue({ code: '', label: [] });
       this.setState({
         currentPermission: [],
       });
@@ -234,7 +232,7 @@ export default class CreateRole extends Component {
     };
     this.setState({
       permissionParams: params,
-    })
+    });
     RoleStore.getWholePermission(level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(level, data);
     });
@@ -270,7 +268,7 @@ export default class CreateRole extends Component {
     return (
       <Page className="choerodon-roleCreate">
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.create`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.create`} />}
           backPath="/iam/role"
         />
         <Content
@@ -284,12 +282,12 @@ export default class CreateRole extends Component {
                 {getFieldDecorator('level', {
                   rules: [{
                     required: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.level.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.level.require.msg` }),
                   }],
                   initialValue: level !== '' ? level : undefined,
                 })(
                   <Select
-                    label={<FormattedMessage id={`${intlPrefix}.level`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.level`} />}
                     ref={this.saveSelectRef}
                     size="default"
                     style={{
@@ -299,9 +297,9 @@ export default class CreateRole extends Component {
                     onChange={this.handleModal}
                     disabled={initLevel}
                   >
-                    <Option value="site">{intl.formatMessage({id: 'global'})}</Option>
-                    <Option value="organization">{intl.formatMessage({id: 'organization'})}</Option>
-                    <Option value="project">{intl.formatMessage({id: 'project'})}</Option>
+                    <Option value="site">{intl.formatMessage({ id: 'global' })}</Option>
+                    <Option value="organization">{intl.formatMessage({ id: 'organization' })}</Option>
+                    <Option value="project">{intl.formatMessage({ id: 'project' })}</Option>
                   </Select>,
                 )}
               </FormItem>
@@ -312,10 +310,10 @@ export default class CreateRole extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.code.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.code.require.msg` }),
                   }, {
                     pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
-                    message: intl.formatMessage({id: `${intlPrefix}.code.pattern.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.code.pattern.msg` }),
                   }, {
                     validator: this.checkCode,
                   }],
@@ -324,7 +322,7 @@ export default class CreateRole extends Component {
                 })(
                   <Input
                     autoComplete="off"
-                    label={<FormattedMessage id={`${intlPrefix}.code`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.code`} />}
                     prefix={codePrefix}
                     size="default"
                     style={{
@@ -341,13 +339,13 @@ export default class CreateRole extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
                   }],
                   initialValue: this.state.name,
                 })(
                   <Input
                     autoComplete="off"
-                    label={<FormattedMessage id={`${intlPrefix}.name`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.name`} />}
                     type="textarea"
                     rows={1}
                     style={{
@@ -362,7 +360,7 @@ export default class CreateRole extends Component {
                 {getFieldDecorator('label')(
                   <Select
                     mode="multiple"
-                    label={<FormattedMessage id={`${intlPrefix}.label`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.label`} />}
                     size="default"
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     style={{
@@ -379,7 +377,7 @@ export default class CreateRole extends Component {
               >
                 <Tooltip
                   placement="top"
-                  title={<FormattedMessage id={RoleStore.getChosenLevel ? `${intlPrefix}.add.permission` : `${intlPrefix}.level.nothing.msg`}/>}
+                  title={<FormattedMessage id={RoleStore.getChosenLevel ? `${intlPrefix}.add.permission` : `${intlPrefix}.level.nothing.msg`} />}
                 >
                   <Button
                     funcType="raised"
@@ -388,18 +386,18 @@ export default class CreateRole extends Component {
                     className="addPermission"
                     icon="add"
                   >
-                    <FormattedMessage id={`${intlPrefix}.add.permission`}/>
+                    <FormattedMessage id={`${intlPrefix}.add.permission`} />
                   </Button>
                 </Tooltip>
               </FormItem>
               <FormItem>
                 {currentPermission.length > 0 ? (
                   <p className="alreadyDes">
-                    <FormattedMessage id={`${intlPrefix}.permission.count.msg`} values={{count: currentPermission.length}}/>
+                    <FormattedMessage id={`${intlPrefix}.permission.count.msg`} values={{ count: currentPermission.length }} />
                   </p>
                 ) : (
                   <p className="alreadyDes">
-                    <FormattedMessage id={`${intlPrefix}.permission.nothing.msg`}/>
+                    <FormattedMessage id={`${intlPrefix}.permission.nothing.msg`} />
                   </p>
                 )}
               </FormItem>
@@ -411,16 +409,16 @@ export default class CreateRole extends Component {
                     width: '512px',
                   }}
                   columns={[{
-                    title: <FormattedMessage id={`${intlPrefix}.permission.code`}/>,
+                    title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',
                     key: 'code',
                   }, {
-                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`}/>,
+                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
                     dataIndex: 'description',
                     key: 'description',
                   }]}
                   dataSource={selectedPermission || []}
-                  filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+                  filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
                   rowSelection={{
                     selectedRowKeys: currentPermission,
                     onChange: (selectedRowKeys, selectedRows) => {
@@ -433,7 +431,7 @@ export default class CreateRole extends Component {
                 />
                 {!firstLoad && !currentPermission.length ? (
                   <div style={{ color: '#d50000' }} className="ant-form-explain">
-                    <FormattedMessage id={`${intlPrefix}.permission.require.msg`}/>
+                    <FormattedMessage id={`${intlPrefix}.permission.require.msg`} />
                   </div>
                 ) : null}
               </FormItem>
@@ -446,7 +444,7 @@ export default class CreateRole extends Component {
                       onClick={this.handleCreate}
                       loading={submitting}
                     >
-                      <FormattedMessage id="create"/>
+                      <FormattedMessage id="create" />
                     </Button>
                   </Col>
                   <Col span={5}>
@@ -456,19 +454,19 @@ export default class CreateRole extends Component {
                       disabled={submitting}
                       style={{ color: '#3F51B5' }}
                     >
-                      <FormattedMessage id="cancel"/>
+                      <FormattedMessage id="cancel" />
                     </Button>
                   </Col>
                 </Row>
               </FormItem>
             </Form>
             <Sidebar
-              title={<FormattedMessage id={`${intlPrefix}.add.permission`}/>}
+              title={<FormattedMessage id={`${intlPrefix}.add.permission`} />}
               visible={this.state.visible}
               onOk={this.handleOk.bind(this)}
               onCancel={this.handleCancel.bind(this)}
-              okText={intl.formatMessage({id: 'ok'})}
-              cancelText={intl.formatMessage({id: 'cancel'})}
+              okText={intl.formatMessage({ id: 'ok' })}
+              cancelText={intl.formatMessage({ id: 'cancel' })}
             >
               <Content
                 className="sidebar-content"
@@ -479,11 +477,11 @@ export default class CreateRole extends Component {
                     width: '512px',
                   }}
                   columns={[{
-                    title: <FormattedMessage id={`${intlPrefix}.permission.code`}/>,
+                    title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',
                     key: 'code',
                   }, {
-                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`}/>,
+                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
                     dataIndex: 'description',
                     key: 'description',
                   }]}
@@ -492,7 +490,7 @@ export default class CreateRole extends Component {
                   pagination={pagination}
                   onChange={this.handlePageChange}
                   filters={this.state.permissionParams}
-                  filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+                  filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
                   rowSelection={{
                     selectedRowKeys: (changePermission
                       && changePermission.map(item => item.id)) || [],

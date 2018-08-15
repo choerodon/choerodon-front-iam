@@ -481,7 +481,7 @@ class CreateConfig extends Component {
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col>
-            <Col span={21}>{ service + '.' + version }</Col>
+            <Col span={21}>{ `${service}.${version}` }</Col>
           </Row>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{version}</Col>
@@ -526,8 +526,8 @@ class CreateConfig extends Component {
       serviceName: service,
       version,
       yaml: yamlData,
-      name: service + '.' + version,
-    }
+      name: `${service}.${version}`,
+    };
     ConfigurationStore.createConfig(data).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);

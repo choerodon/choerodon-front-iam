@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 const docServer = 'http://choerodon.io/zh/docs';
 const pageDetail = {
   // menusetting
@@ -46,7 +46,7 @@ const pageDetail = {
   'global.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
   'global.memberrole.modify.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  //角色管理
+  // 角色管理
   'global.role.title': '平台"{name}"的角色管理',
   'global.role.description': '角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。',
   'global.role.link': `${docServer}/user-guide/system-configuration/platform/role/`,
@@ -125,7 +125,7 @@ const pageDetail = {
 
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
-  'global.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板同意了用户接受的邮件内容。',
+  'global.mailtemplate.description': '由特定的事件出发后，系统自动发送邮件给用户，邮件模板统一了用户接受的邮件内容。',
   'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   'global.mailtemplate.create.title': '在平台"{name}"中创建邮件模板',
@@ -240,7 +240,7 @@ const pageDetail = {
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'organization.user.upload.title': '在组织"{name}"中导入用户',
-  'organization.user.upload.description': '您可以在此将文件中的用户信息导入到组织中。',
+  'organization.user.upload.description': '您可以在此将文件中的信息导入到组织中去。注：您必须使用用户上传模板，请在用户管理界面，点击“下载”下载模板。',
   'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   // 邮件模板
@@ -261,7 +261,7 @@ const pageDetail = {
   'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
 
-  //项目设置
+  // 项目设置
   'project.info.title': '对项目"{name}"进行项目设置',
   'project.info.description': '您可以在此修改项目名称、停用项目。',
   'project.info.link': `${docServer}/user-guide/system-configuration/project/pro_info/`,
@@ -324,51 +324,52 @@ const pageDetail = {
   'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
 
 };
+/* eslint-disable-next-line */
 const zh_CN = {
 
-  'yes': '是',
-  'no': '否',
-  'save': '保存',
-  'close': '关闭',
-  'stop': '停止',
-  'restart': '重启',
-  'upgrade': '升级',
-  'learnmore': '了解更多',
-  'signout': '安全退出',
-  'select': '选择',
-  'return': '返回',
-  'filtertable': '过滤表',
-  'ok': '确定',
-  'upload': '上传',
-  'download': '下载',
-  'uploading': '导入中',
-  'loading': '加载中',
+  yes: '是',
+  no: '否',
+  save: '保存',
+  close: '关闭',
+  stop: '停止',
+  restart: '重启',
+  upgrade: '升级',
+  learnmore: '了解更多',
+  signout: '安全退出',
+  select: '选择',
+  return: '返回',
+  filtertable: '过滤表',
+  ok: '确定',
+  upload: '上传',
+  download: '下载',
+  uploading: '导入中',
+  loading: '加载中',
 
-  'day': '天',
-  'hour': '小时',
-  'minute': '分钟',
-  'second': '秒',
+  day: '天',
+  hour: '小时',
+  minute: '分钟',
+  second: '秒',
 
-// operation
-  'operation': '操作',
-  'add': '添加',
-  'addnew': '新增',
-  'create': '创建',
-  'edit': '编辑',
-  'modify': '修改',
-  'delete': '删除',
-  'remove': '移除',
+  // operation
+  operation: '操作',
+  add: '添加',
+  addnew: '新增',
+  create: '创建',
+  edit: '编辑',
+  modify: '修改',
+  delete: '删除',
+  remove: '移除',
   'confirm.delete': '确认删除',
-  'cancel': '取消',
-  'refresh': '刷新',
-  'detail': '详情',
-  'enable': '启用',
-  'disable': '停用',
-  'baseon': '基于此创建',
+  cancel: '取消',
+  refresh: '刷新',
+  detail: '详情',
+  enable: '启用',
+  disable: '停用',
+  baseon: '基于此创建',
 
-// status
-// success
-  'success': '成功',
+  // status
+  // success
+  success: '成功',
   'operation.success': '操作成功',
   'add.success': '添加成功',
   'create.success': '创建成功',
@@ -381,8 +382,8 @@ const zh_CN = {
   'copy.success': '已复制到剪贴板',
   'upload.success': '上传成功',
 
-// error
-  'error': '失败',
+  // error
+  error: '失败',
   'operation.error': '操作失败',
   'add.error': '添加失败',
   'create.error': '创建失败',
@@ -395,20 +396,20 @@ const zh_CN = {
   'upload.error': '上传失败',
 
   // 统一字段
-  'name': '名称',
-  'code': '编码',
-  'status': '状态',
-  'level': '层级',
-  'source': '来源',
-  'type': '类型',
+  name: '名称',
+  code: '编码',
+  status: '状态',
+  level: '层级',
+  source: '来源',
+  type: '类型',
 
-  //type
-  'global': '全局',
-  'site': '平台',
-  'project': '项目',
-  'organization': '组织',
+  // type
+  global: '全局',
+  site: '平台',
+  project: '项目',
+  organization: '组织',
 
-  //组织管理
+  // 组织管理
   'global.organization.header.title': '组织管理',
   'global.organization.create': '创建组织',
   'global.organization.title': '平台"{name}"的组织管理',
@@ -1002,7 +1003,7 @@ const zh_CN = {
   'memberrole.rolemember': '角色/成员',
   'memberrole.view': '查看方式',
 
-  //MemberLabel
+  // MemberLabel
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
@@ -1011,4 +1012,5 @@ const zh_CN = {
   ...pageDetail,
 
 };
+/* eslint-disable-next-line */
 export default zh_CN;

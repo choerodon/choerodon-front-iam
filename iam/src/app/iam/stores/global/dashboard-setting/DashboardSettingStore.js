@@ -46,7 +46,7 @@ class DashboardSettingStore {
         this.sidebarVisible = false;
         return data;
       }))
-      .catch(action(error => {
+      .catch(action((error) => {
         Choerodon.handleResponseError(error);
         this.loading = false;
       }));

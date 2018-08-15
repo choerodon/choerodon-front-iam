@@ -45,6 +45,12 @@ const formItemNumLayout = {
 @inject('AppState')
 @observer
 export default class Client extends Component {
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+    this.createFocusInput = React.createRef();
+  }
+
   state = this.getInitState();
   getInitState() {
     return {
@@ -378,7 +384,7 @@ export default class Client extends Component {
               autoComplete="off"
               label={intl.formatMessage({ id: `${intlPrefix}.name` })}
               disabled={status === 'edit'}
-              ref={(e) => this.createFocusInput = e}
+              ref={this.createFocusInput}
             />,
           )}
         </FormItem>
@@ -396,7 +402,7 @@ export default class Client extends Component {
             <Input
               autoComplete="off"
               label={intl.formatMessage({ id: `${intlPrefix}.secret` })}
-              ref={(e) => this.editFocusInput = e}
+              ref={this.editFocusInput}
             />,
           )}
         </FormItem>

@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -62,7 +62,7 @@ export default class Organization extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    this.fetch(pagination, sort, filters, params).then(data => {
+    this.fetch(pagination, sort, filters, params).then((data) => {
       this.setState({
         pagination: {
           current: data.number + 1,
@@ -102,7 +102,7 @@ export default class Organization extends Component {
     return axios.get(`/iam/v1/organizations?${querystring.stringify(queryObj)}`);
   }
 
-  //创建组织侧边
+  // 创建组织侧边
   createOrg = () => {
     this.props.form.resetFields();
     this.setState({
@@ -164,7 +164,7 @@ export default class Organization extends Component {
         }
         this.setState({ submitting: true });
         axios[method](url, JSON.stringify(body))
-          .then(data => {
+          .then((data) => {
             this.setState({
               submitting: false,
               visible: false,
@@ -182,7 +182,7 @@ export default class Organization extends Component {
               }
             }
           })
-          .catch(error => {
+          .catch((error) => {
             this.setState({ submitting: false });
             Choerodon.handleResponseError(error);
           });
@@ -212,7 +212,7 @@ export default class Organization extends Component {
    */
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
-    axios.post(`/iam/v1/organizations/check`, JSON.stringify({ code: value }))
+    axios.post('/iam/v1/organizations/check', JSON.stringify({ code: value }))
       .then((mes) => {
         if (mes.failed) {
           callback(intl.formatMessage({ id: 'global.organization.onlymsg' }));
@@ -266,7 +266,7 @@ export default class Organization extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input ref={(e) => this.creatOrgFocusInput = e} label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
+                  <Input ref={e => this.creatOrgFocusInput = e} label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -279,7 +279,7 @@ export default class Organization extends Component {
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input ref={(e) => this.editOrgFocusInput = e} label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
+              <Input ref={e => this.editOrgFocusInput = e} label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>
@@ -407,7 +407,7 @@ export default class Organization extends Component {
             filters={params}
             loading={loading}
             rowKey="id"
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
             title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'} />}

@@ -1,7 +1,7 @@
 /**
  * Created by YANG on 2017/6/27.
  */
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Input, Select } from 'choerodon-ui';
@@ -31,6 +31,10 @@ const formItemLayout = {
 @inject('AppState')
 @observer
 export default class UserInfo extends Component {
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+  }
   state = {
     submitting: false,
     visible: false,
@@ -201,7 +205,7 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.name`} />}
               style={{ width: inputWidth }}
-              ref={(e) => this.FocusInput = e}
+              ref={this.editFocusInput}
             />,
           )}
         </FormItem>
@@ -264,7 +268,8 @@ export default class UserInfo extends Component {
           })(
             <Select
               label={<FormattedMessage id={`${intlPrefix}.language`} />}
-              style={{ width: inputWidth }}>
+              style={{ width: inputWidth }}
+            >
               {this.getLanguageOptions()}
             </Select>,
           )}
@@ -283,7 +288,8 @@ export default class UserInfo extends Component {
           })(
             <Select
               label={<FormattedMessage id={`${intlPrefix}.timezone`} />}
-              style={{ width: inputWidth }}>
+              style={{ width: inputWidth }}
+            >
               {this.getTimeZoneOptions()}
             </Select>,
           )}
@@ -293,12 +299,12 @@ export default class UserInfo extends Component {
           type="site"
           onAccess={() => {
             setTimeout(() => {
-              this.FocusInput.input.focus();
+              this.editFocusInput.input.focus();
             }, 10);
           }}
         >
           <FormItem>
-            <hr className='user-info-divider' />
+            <hr className="user-info-divider" />
             <Button
               htmlType="submit"
               funcType="raised"
@@ -322,14 +328,14 @@ export default class UserInfo extends Component {
     return (
       <Page
         service={[
-        'iam-service.user.query',
-        'iam-service.user.check',
-        'iam-service.user.querySelf',
-        'iam-service.user.queryInfo',
-        'iam-service.user.updateInfo',
-        'iam-service.user.uploadPhoto',
-        'iam-service.user.queryProjects',
-      ]}
+          'iam-service.user.query',
+          'iam-service.user.check',
+          'iam-service.user.querySelf',
+          'iam-service.user.queryInfo',
+          'iam-service.user.updateInfo',
+          'iam-service.user.uploadPhoto',
+          'iam-service.user.queryProjects',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}

@@ -41,6 +41,7 @@ export default class UserEdit extends Component {
   }
 
   componentDidMount() {
+    this.props.onRef(this);
     this.fetch(this.props);
     const { edit } = this.props;
     setTimeout(() => {
@@ -288,7 +289,7 @@ export default class UserEdit extends Component {
                 label={intl.formatMessage({ id: `${intlPrefix}.loginname` })}
                 disabled={edit}
                 style={{ width: inputWidth }}
-                ref={(e) => this.createFocusInput = e}
+                ref={this.createFocusInput}
               />,
             )}
           </FormItem>
@@ -313,7 +314,7 @@ export default class UserEdit extends Component {
                   type="text"
                   rows={1}
                   style={{ width: inputWidth }}
-                  ref={(e) => this.editFocusInput = e}
+                  ref={this.editFocusInput}
                 />,
               )
             }

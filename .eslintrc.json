@@ -64,6 +64,7 @@
       }
     ],
     "react/jsx-one-expression-per-line": "off",
+    "react/no-array-index-key": 0,
     "react/no-unused-prop-types": "off",
     "react/prefer-stateless-function": ["off",
       {

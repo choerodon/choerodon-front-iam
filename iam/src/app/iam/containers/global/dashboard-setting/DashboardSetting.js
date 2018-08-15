@@ -27,7 +27,6 @@ const inputWidth = 512;
 @inject('AppState')
 @observer
 class DashboardSetting extends Component {
-
   componentWillMount() {
     this.fetchData();
   }
@@ -102,7 +101,7 @@ class DashboardSetting extends Component {
         title: <FormattedMessage id={`${intlPrefix}.icon`} />,
         dataIndex: 'icon',
         key: 'icon',
-        render: (text) => (
+        render: text => (
           <Icon type={text} style={{ fontSize: 20 }} />
         ),
       },
@@ -125,7 +124,7 @@ class DashboardSetting extends Component {
         filteredValue: filters.level || [],
         sorter: true,
         sortOrder: columnKey === 'level' && order,
-        render: (text) => (
+        render: text => (
           <FormattedMessage id={`${intlPrefix}.level.${text}`} />
         ),
       },
@@ -202,7 +201,7 @@ class DashboardSetting extends Component {
                   autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.name`} />}
                   style={{ width: inputWidth }}
-                  ref={(e) => this.FocusInput = e}
+                  ref={e => this.FocusInput = e}
                 />,
               )
             }

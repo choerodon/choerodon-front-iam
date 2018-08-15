@@ -122,9 +122,9 @@ export default class MailTemplate extends Component {
             editorContent: data.content,
             isShowSidebar: true,
             selectType,
-          })
+          });
         }
-      })
+      });
     }
   }
 
@@ -241,11 +241,11 @@ export default class MailTemplate extends Component {
     const header = this.getHeader();
     const inputWidth = 512;
     let type;
-    if (selectType === "create") {
+    if (selectType === 'create') {
       type = MailTemplateStore.getTemplateType[0];
     } else {
       type = MailTemplateStore.getCurrentDetail.type;
-    };
+    }
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -271,7 +271,7 @@ export default class MailTemplate extends Component {
                 whitespace: true,
                 message: this.formatMessage('mailtemplate.code.required'),
               }],
-              initialValue: selectType === 'modify' ? MailTemplateStore.getCurrentDetail.code: undefined,
+              initialValue: selectType === 'modify' ? MailTemplateStore.getCurrentDetail.code : undefined,
             })(
               <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} disabled={selectType === 'modify'} />,
             )
@@ -370,28 +370,28 @@ export default class MailTemplate extends Component {
             ...values,
             content: this.state.editorContent,
             isPredefined: true,
-          }
-            MailTemplateStore.createTemplate(body).then((data) => {
-              if (data.failed) {
-                Choerodon.prompt(data.message);
-              } else {
-                Choerodon.prompt("创建成功");
-                this.loadTemplate();
-                this.setState({
-                  isShowSidebar: false,
-                });
-              };
+          };
+          MailTemplateStore.createTemplate(body).then((data) => {
+            if (data.failed) {
+              Choerodon.prompt(data.message);
+            } else {
+              Choerodon.prompt('创建成功');
+              this.loadTemplate();
               this.setState({
-                isSubmitting: false,
+                isShowSidebar: false,
               });
-            }).catch((error) => {
-              Choerodon.handleResponseError(error);
-              this.setState({
-                isSubmitting: false,
-              });
+            }
+            this.setState({
+              isSubmitting: false,
             });
+          }).catch((error) => {
+            Choerodon.handleResponseError(error);
+            this.setState({
+              isSubmitting: false,
+            });
+          });
         } else {
-            body = {
+          body = {
             ...values,
             content: this.state.editorContent,
             id: MailTemplateStore.getCurrentDetail.id,
@@ -402,25 +402,25 @@ export default class MailTemplate extends Component {
             if (data.failed) {
               Choerodon.prompt(data.message);
             } else {
-              Choerodon.prompt("修改成功");
+              Choerodon.prompt('修改成功');
               MailTemplateStore.setCurrentDetail(data);
               this.setState({
                 isShowSidebar: false,
               });
-            };
+            }
             this.setState({
               isSubmitting: false,
-            })
+            });
           }).catch((error) => {
             Choerodon.handleResponseError(error);
             this.setState({
               isSubmitting: false,
             });
           });
-          }
         }
       }
-    )
+    },
+    );
   }
 
   render() {

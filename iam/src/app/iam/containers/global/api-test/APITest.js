@@ -60,12 +60,10 @@ export default class APITest extends Component {
         Choerodon.prompt(res.message);
         APITestStore.setLoading(false);
       } else if (res.length) {
-        const services = res.map(({ location, name }) => {
-          return {
-            name: name.split(':')[1],
-            value: `${name.split(':')[0]}/${location.split('=')[1]}`,
-          };
-        });
+        const services = res.map(({ location, name }) => ({
+          name: name.split(':')[1],
+          value: `${name.split(':')[0]}/${location.split('=')[1]}`,
+        }));
         APITestStore.setService(services);
         if (!APITestStore.detailFlag) {
           APITestStore.setApiToken(null);
@@ -256,7 +254,7 @@ export default class APITest extends Component {
             childrenColumnName="paths"
             filters={params}
             onChange={this.handlePageChange}
-            rowKey={(record) => 'paths' in record ? record.name : record.operationId}
+            rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>

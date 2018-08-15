@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
@@ -25,7 +25,7 @@ const FormItemNumLayout = {
   },
 };
 
-//公用方法类
+// 公用方法类
 class MemberRoleType {
   constructor(context) {
     this.context = context;
@@ -46,7 +46,7 @@ class MemberRoleType {
         break;
     }
     this.code = `${codePrefix}.memberrole`;
-    this.values = {name: name || 'Choerodon'};
+    this.values = { name: name || 'Choerodon' };
     this.urlUsers = `${apiGetway}/role_members/users`;
     this.urlRoles = `${apiGetway}/role_members/users/roles`;
     this.urlRoleMember = `${apiGetway}/role_members`;
@@ -55,23 +55,23 @@ class MemberRoleType {
     this.roleId = id || 0;
   }
 
-  //fetch分配角色（post）
+  // fetch分配角色（post）
   fetchRoleMember(memberIds, body, isEdit) {
     let str = `member_ids=${memberIds.join(',')}`;
     if (isEdit === true) {
-      str += `&is_edit=true`;
+      str += '&is_edit=true';
     }
     return axios.post(`${this.urlRoleMember}?${str}`, JSON.stringify(body));
   }
 
-  //delete分配角色（delete)
+  // delete分配角色（delete)
   deleteRoleMember(body) {
     const { id } = this.data;
-    body['sourceId'] = id || 0;
+    body.sourceId = id || 0;
     return axios.post(this.urlDeleteMember, JSON.stringify(body));
   }
 
-  //根据用户名查询memberId
+  // 根据用户名查询memberId
   searchMemberId(loginName) {
     if (loginName) {
       return axios.get(`/iam/v1/users?login_name=${loginName}`);
@@ -79,9 +79,7 @@ class MemberRoleType {
   }
 
   searchMemberIds(loginNames) {
-    const promises = loginNames.map((index, value) => {
-      return this.searchMemberId(index);
-    });
+    const promises = loginNames.map((index, value) => this.searchMemberId(index));
     return axios.all(promises);
   }
 
@@ -92,12 +90,12 @@ class MemberRoleType {
       realName: realName && realName[0],
       param: params,
     };
-    const queryObj = { 'role_id': roleId, size: pageSize, page: current - 1 };
+    const queryObj = { role_id: roleId, size: pageSize, page: current - 1 };
     roleData.loading = true;
     return axios.post(`${this.urlUsers}?${querystring.stringify(queryObj)}`,
       JSON.stringify(body))
       .then(({ content }) => {
-        roleData.users = users.concat(content.map(member => {
+        roleData.users = users.concat(content.map((member) => {
           member.roleId = roleId;
           member.roleName = name;
           return member;
@@ -127,7 +125,7 @@ class MemberRoleType {
     return axios.post(this.urlUserCount, JSON.stringify(body));
   }
 
-  //多路请求
+  // 多路请求
   fetch() {
     const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params, roleMemberParams } = this.context.state;
     this.context.setState({
@@ -140,7 +138,7 @@ class MemberRoleType {
       this.context.setState({
         memberDatas: content,
         expandedKeys,
-        roleMemberDatas: roleData.filter(role => {
+        roleMemberDatas: roleData.filter((role) => {
           role.users = role.users || [];
           if (role.userCount > 0) {
             if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
@@ -179,11 +177,11 @@ export default class MemberRole extends Component {
   getInitState() {
     return {
       submitting: false,
-      memberDatas: [], //成员下的角色集合
+      memberDatas: [], // 成员下的角色集合
       sidebar: false,
       roleData: [], // 当前情况下的所有角色
       selectType: 'create',
-      currentMemberData: [],//当前成员的角色分配信息
+      currentMemberData: [], // 当前成员的角色分配信息
       loading: true,
       showMember: true,
       selectMemberRoles: {},
@@ -226,10 +224,10 @@ export default class MemberRole extends Component {
     const { intl } = this.props;
     return intl.formatMessage({
       id,
-    },values);
+    }, values);
   }
 
-  //创建编辑角色 状态
+  // 创建编辑角色 状态
   getOption = (current) => {
     const { roleData = [], roleIds } = this.state;
     return roleData.reduce((options, { id, name, enabled, code }) => {
@@ -284,7 +282,7 @@ export default class MemberRole extends Component {
       style.display = 'none';
     }
     return (
-      <MemberLabel label={<FormattedMessage id="memberrole.member"/>} style={style} value={member} form={this.props.form} />
+      <MemberLabel label={<FormattedMessage id="memberrole.member" />} style={style} value={member} form={this.props.form} />
     );
   }
 
@@ -308,7 +306,7 @@ export default class MemberRole extends Component {
         })(
           <Select
             style={{ width: 300 }}
-            label={<FormattedMessage id="memberrole.role.label"/>}
+            label={<FormattedMessage id="memberrole.role.label" />}
             getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
             filterOption={(input, option) => {
               const childNode = option.props.children;
@@ -317,7 +315,7 @@ export default class MemberRole extends Component {
               }
               return false;
             }}
-            onChange={(value) => roleIds[index] = value}
+            onChange={value => roleIds[index] = value}
             filter
           >
             {this.getOption(id)}
@@ -374,7 +372,7 @@ export default class MemberRole extends Component {
   deleteRoleByRole = (record) => {
     Modal.confirm({
       title: this.formatMessage('memberrole.remove.title'),
-      content: this.formatMessage('memberrole.remove.content',{
+      content: this.formatMessage('memberrole.remove.content', {
         member: record.loginName,
         role: record.roleName,
       }),
@@ -420,9 +418,9 @@ export default class MemberRole extends Component {
   getSidebarTitle() {
     const { selectType } = this.state;
     if (selectType === 'create') {
-      return <FormattedMessage id="memberrole.add"/>;
+      return <FormattedMessage id="memberrole.add" />;
     } else if (selectType === 'edit') {
-      return <FormattedMessage id="memberrole.modify"/>;
+      return <FormattedMessage id="memberrole.modify" />;
     }
   }
 
@@ -432,14 +430,14 @@ export default class MemberRole extends Component {
     const modify = selectType === 'edit';
     return {
       code: modify ? `${code}.modify` : `${code}.add`,
-      values: modify ? {name: currentMemberData.loginName} : values,
+      values: modify ? { name: currentMemberData.loginName } : values,
     };
   }
 
   getAddOtherBtn(disabled) {
     return (
       <Button type="primary" disabled={disabled} className="add-other-role" icon="add" onClick={this.addRoleList}>
-        <FormattedMessage id="memberrole.add.other"/>
+        <FormattedMessage id="memberrole.add.other" />
       </Button>
     );
   }
@@ -468,7 +466,7 @@ export default class MemberRole extends Component {
     if (roles.length !== roleIds.length) {
       return true;
     }
-    for (let i = 0; i < roles.length; i ++) {
+    for (let i = 0; i < roles.length; i++) {
       if (!roleIds.includes(roles[i].id)) {
         return true;
       }
@@ -483,21 +481,17 @@ export default class MemberRole extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
-        const body = roleIds.filter(roleId => roleId).map((roleId, index) => {
-          return {
-            memberType: 'user',
-            roleId,
-            sourceId: sessionStorage.selectData.id || 0,
-            sourceType: sessionStorage.type,
-          };
-        });
+        const body = roleIds.filter(roleId => roleId).map((roleId, index) => ({
+          memberType: 'user',
+          roleId,
+          sourceId: sessionStorage.selectData.id || 0,
+          sourceType: sessionStorage.type,
+        }));
         this.setState({ submitting: true });
         if (selectType === 'create') {
           this.roles.searchMemberIds(memberNames).then((data) => {
             if (data) {
-              const memberIds = data.map((info) => {
-                return info.id;
-              });
+              const memberIds = data.map(info => info.id);
               this.roles.fetchRoleMember(memberIds, body)
                 .then(({ failed, message }) => {
                   this.setState({ submitting: false });
@@ -509,7 +503,7 @@ export default class MemberRole extends Component {
                     this.roles.fetch();
                   }
                 })
-                .catch(error => {
+                .catch((error) => {
                   this.setState({ submitting: false });
                   Choerodon.handleResponseError(error);
                 });
@@ -535,7 +529,7 @@ export default class MemberRole extends Component {
                 this.roles.fetch();
               }
             })
-            .catch(error => {
+            .catch((error) => {
               this.setState({ submitting: false });
               Choerodon.handleResponseError(error);
             });
@@ -564,7 +558,7 @@ export default class MemberRole extends Component {
   handleDelete = (record) => {
     Modal.confirm({
       title: this.formatMessage('memberrole.remove.title'),
-      content: this.formatMessage('memberrole.remove.all.content', {name: record.loginName}),
+      content: this.formatMessage('memberrole.remove.all.content', { name: record.loginName }),
       onOk: () => this.deleteRolesByIds({
         [record.id]: record.roles.map(({ id }) => id),
       }),
@@ -579,7 +573,7 @@ export default class MemberRole extends Component {
       }, {
         loginName: [loginName],
       }).then(({ content }) => {
-        this.editRole(content.find((memberData) => memberData.loginName === loginName));
+        this.editRole(content.find(memberData => memberData.loginName === loginName));
       });
     } else {
       this.editRole(member);
@@ -623,25 +617,25 @@ export default class MemberRole extends Component {
     };
     newState.loading = true;
     const { expandedKeys } = this.state;
-    this.roles.loadRoleMemberDatas({name, ...roleMemberFilters})
+    this.roles.loadRoleMemberDatas({ name, ...roleMemberFilters })
       .then((roleData) => {
-        const roleMemberDatas = roleData.filter(role => {
-            role.users = role.users || [];
-            if (role.userCount > 0) {
-              if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-                this.roles.loadRoleMemberData(role, {
-                  current: 1,
-                  pageSize,
-                }, roleMemberFilters, params);
-              }
-              return true;
+        const roleMemberDatas = roleData.filter((role) => {
+          role.users = role.users || [];
+          if (role.userCount > 0) {
+            if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
+              this.roles.loadRoleMemberData(role, {
+                current: 1,
+                pageSize,
+              }, roleMemberFilters, params);
             }
-            return false;
-          });
+            return true;
+          }
+          return false;
+        });
         this.setState({
           loading: false,
           expandedKeys,
-          roleMemberDatas: roleMemberDatas,
+          roleMemberDatas,
         });
       });
     this.setState(newState);
@@ -656,7 +650,7 @@ export default class MemberRole extends Component {
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     const columns = [
       {
-        title: <FormattedMessage id="memberrole.member"/>,
+        title: <FormattedMessage id="memberrole.member" />,
         dataIndex: 'loginName',
         key: 'loginName',
         filters: [],
@@ -664,7 +658,7 @@ export default class MemberRole extends Component {
         render: (text, { enabled }) => {
           if (enabled === false) {
             return (
-              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip"/>}>
+              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip" />}>
                 <span className="text-disabled">
                   {text}
                 </span>
@@ -675,7 +669,7 @@ export default class MemberRole extends Component {
         },
       },
       {
-        title: <FormattedMessage id="memberrole.name"/>,
+        title: <FormattedMessage id="memberrole.name" />,
         dataIndex: 'realName',
         key: 'realName',
         filters: [],
@@ -683,7 +677,7 @@ export default class MemberRole extends Component {
         render: (text, { enabled }) => {
           if (enabled === false) {
             return (
-              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip"/>}>
+              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip" />}>
                 <span className="text-disabled">
                   {text}
                 </span>
@@ -694,79 +688,78 @@ export default class MemberRole extends Component {
         },
       },
       {
-        title: <FormattedMessage id="memberrole.member.type"/>,
+        title: <FormattedMessage id="memberrole.member.type" />,
         dataIndex: 'organizationId',
         key: 'organizationId',
-        render: (record, text) => {
-          return <div><Icon type="person" style={{ verticalAlign: 'text-bottom', marginRight: '4px' }} /><span>用户</span></div>;
-        },
+        render: (record, text) => <div><Icon type="person" style={{ verticalAlign: 'text-bottom', marginRight: '4px' }} /><span>用户</span></div>,
       },
       {
-        title: <FormattedMessage id="memberrole.role"/>,
+        title: <FormattedMessage id="memberrole.role" />,
         dataIndex: 'roles',
         key: 'roles',
         filters: filtersRole,
         filteredValue: memberRoleFilters.roles || [],
         className: 'memberrole-roles',
-        render: (text) => {
-          return text.map(({ id, name, enabled }) => {
-            const wrapclass = ['role-table'];
-            let item = <span className={'role-table-list'}>{name}</span>;
-            if (enabled === false) {
-              wrapclass.push('text-disabled');
-              item = (
-                <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip"/>}>
-                  {item}
-                </Tooltip>
-              );
-            }
-            return (
-              <div key={id} className={wrapclass.join(' ')}>
+        render: text => text.map(({ id, name, enabled }) => {
+          const wrapclass = ['role-table'];
+          let item = <span className={'role-table-list'}>{name}</span>;
+          if (enabled === false) {
+            wrapclass.push('text-disabled');
+            item = (
+              <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
                 {item}
-              </div>
+              </Tooltip>
             );
-          });
-        },
+          }
+          return (
+            <div key={id} className={wrapclass.join(' ')}>
+              {item}
+            </div>
+          );
+        }),
       },
       {
         title: '',
         width: 100,
-        align:'right',
-        render: (text, record) => {
-          return (
-            <div>
-              <Permission
-                service={createService}
+        align: 'right',
+        render: (text, record) => (
+          <div>
+            <Permission
+              service={createService}
+            >
+              <Tooltip
+                title={<FormattedMessage id="modify" />}
+                placement="bottom"
               >
-                <Tooltip
-                  title={<FormattedMessage id="modify"/>}
-                  placement="bottom"
-                >
-                  <Button onClick={() => {
+                <Button
+                  onClick={() => {
                     this.editRole(record);
-                  }} size="small" shape="circle" icon="mode_edit" />
-                </Tooltip>
-              </Permission>
-              <Permission
-                service={deleteService}
-                type={type}
-                organizationId={organizationId}
-                projectId={projectId}
+                  }}
+                  size="small"
+                  shape="circle"
+                  icon="mode_edit"
+                />
+              </Tooltip>
+            </Permission>
+            <Permission
+              service={deleteService}
+              type={type}
+              organizationId={organizationId}
+              projectId={projectId}
+            >
+              <Tooltip
+                title={<FormattedMessage id="remove" />}
+                placement="bottom"
               >
-                <Tooltip
-                  title={<FormattedMessage id="remove"/>}
-                  placement="bottom"
-                >
-                  <Button size="small" shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
-                </Tooltip>
-              </Permission>
-            </div>
-          );
-        },
+                <Button size="small" shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
+              </Tooltip>
+            </Permission>
+          </div>
+        ),
       },
     ];
     const rowSelection = {
-      selectedRowKeys: Object.keys(selectMemberRoles).map((key) => Number(key)),
+      selectedRowKeys: Object.keys(selectMemberRoles).map(key => Number(key)),
       onChange: (selectedRowkeys, selectedRecords) => {
         this.setState({
           selectMemberRoles: selectedRowkeys.reduce((data, key, index) => {
@@ -787,7 +780,7 @@ export default class MemberRole extends Component {
         filters={this.state.params}
         onChange={this.memberRoleTableChange}
         dataSource={memberDatas}
-        filterBarPlaceholder={this.formatMessage("filtertable")}
+        filterBarPlaceholder={this.formatMessage('filtertable')}
         rowKey={({ id }) => id}
       />
     );
@@ -806,15 +799,15 @@ export default class MemberRole extends Component {
     }
     const columns = [
       {
-        title: <FormattedMessage id="memberrole.member"/>,
+        title: <FormattedMessage id="memberrole.member" />,
         key: 'loginName',
         hidden: true,
         filters: [],
         filteredValue: roleMemberFilters.loginName || [],
       },
       {
-        title: <FormattedMessage id="memberrole.rolemember"/>,
-        filterTitle: <FormattedMessage id="memberrole.role"/>,
+        title: <FormattedMessage id="memberrole.rolemember" />,
+        filterTitle: <FormattedMessage id="memberrole.role" />,
         key: 'name',
         dataIndex: 'name',
         filters: filtersData,
@@ -834,12 +827,13 @@ export default class MemberRole extends Component {
                   pageSize,
                 }, roleMemberFilters);
                 this.forceUpdate();
-              }}>更多</a>
+              }}
+              >更多</a>
             ));
             const item = <span className={classnames({ 'text-disabled': !enabled })}>{name} ({userCount}) {more}</span>;
             if (enabled === false) {
               return (
-                <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip"/>}>
+                <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
                   {item}
                 </Tooltip>
               );
@@ -850,7 +844,7 @@ export default class MemberRole extends Component {
         },
       },
       {
-        title: <FormattedMessage id="memberrole.name"/>,
+        title: <FormattedMessage id="memberrole.name" />,
         key: 'realName',
         dataIndex: 'realName',
         filteredValue: roleMemberFilters.realName || [],
@@ -859,7 +853,7 @@ export default class MemberRole extends Component {
       {
         title: '',
         width: 100,
-        align:'right',
+        align: 'right',
         render: (text, record) => {
           if ('roleId' in record) {
             return (
@@ -867,17 +861,22 @@ export default class MemberRole extends Component {
                 <Permission
                   service={createService}
                 >
-                  <Tooltip title={<FormattedMessage id="modify"/>}>
-                    <Button onClick={() => {
-                      this.handleEditRole(record);
-                    }} size="small" shape="circle" icon="mode_edit" />
+                  <Tooltip title={<FormattedMessage id="modify" />}>
+                    <Button
+                      onClick={() => {
+                        this.handleEditRole(record);
+                      }}
+                      size="small"
+                      shape="circle"
+                      icon="mode_edit"
+                    />
                   </Tooltip>
                 </Permission>
                 <Permission
                   service={deleteService}
                 >
-                  <Tooltip title={<FormattedMessage id="remove"/>}>
-                     <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
+                  <Tooltip title={<FormattedMessage id="remove" />}>
+                    <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
                   </Tooltip>
                 </Permission>
               </div>
@@ -996,7 +995,7 @@ export default class MemberRole extends Component {
           'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles',
         ]}
       >
-        <Header title={<FormattedMessage id={`${this.roles.code}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${this.roles.code}.header.title`} />}>
           <Permission
             service={createService}
           >
@@ -1004,7 +1003,7 @@ export default class MemberRole extends Component {
               onClick={this.createRole}
               icon="playlist_add"
             >
-              <FormattedMessage id="add"/>
+              <FormattedMessage id="add" />
             </Button>
           </Permission>
           <Permission
@@ -1015,14 +1014,14 @@ export default class MemberRole extends Component {
               icon="delete"
               disabled={!(showMember ? Object.keys(selectMemberRoles) : selectRoleMemberKeys).length}
             >
-              <FormattedMessage id="remove"/>
+              <FormattedMessage id="remove" />
             </Button>
           </Permission>
           <Button
             onClick={this.reload}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
@@ -1031,20 +1030,22 @@ export default class MemberRole extends Component {
         >
           <div className="member-role-btns">
             <span className="text">
-              <FormattedMessage id="memberrole.view"/>：
+              <FormattedMessage id="memberrole.view" />：
             </span>
             <Button
               className={this.getMemberRoleClass('member')}
               onClick={() => {
                 this.showMemberTable(true);
               }}
-              type="primary"><FormattedMessage id="memberrole.member" /></Button>
+              type="primary"
+            ><FormattedMessage id="memberrole.member" /></Button>
             <Button
               className={this.getMemberRoleClass('role')}
               onClick={() => {
                 this.showMemberTable(false);
               }}
-              type="primary"><FormattedMessage id="memberrole.role" /></Button>
+              type="primary"
+            ><FormattedMessage id="memberrole.role" /></Button>
           </div>
           {showMember ? this.renderMemberTable() : this.renderRoleTable()}
           <Sidebar

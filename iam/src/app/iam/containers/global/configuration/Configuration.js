@@ -107,7 +107,7 @@ export default class Configuration extends Component {
       });
   }
 
-  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, configVersion, isDefault}, params) {
+  fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, configVersion, isDefault }, params) {
     ConfigurationStore.setLoading(true);
     const queryObj = {
       page: current - 1,
@@ -274,9 +274,7 @@ export default class Configuration extends Component {
         value: 'false',
       }],
       filteredValue: filters.isDefault || [],
-      render: (text) => {
-        return intl.formatMessage({ id: text ? 'yes' : 'no' });
-      },
+      render: text => intl.formatMessage({ id: text ? 'yes' : 'no' }),
     }, {
       title: '',
       width: '100px',

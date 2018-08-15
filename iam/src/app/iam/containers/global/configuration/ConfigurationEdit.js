@@ -48,7 +48,7 @@ class EditConfig extends Component {
       } else {
         ConfigurationStore.setEditConfig(data);
       }
-    })
+    });
     this.loadCurrentServiceConfig(this.state.service);
   }
 
@@ -80,7 +80,7 @@ class EditConfig extends Component {
           currentServiceConfig: data.content,
         });
       }
-    })
+    });
   }
 
   /* 渲染配置模板下拉框 */
@@ -285,7 +285,7 @@ class EditConfig extends Component {
           </Permission>
         </section>
       </div>
-    )
+    );
   }
 
   /* 渲染第二步 */
@@ -294,9 +294,9 @@ class EditConfig extends Component {
     return (
       <div>
         <p>
-          <FormattedMessage id={`${intlPrefix}.step2.description`}/>
+          <FormattedMessage id={`${intlPrefix}.step2.description`} />
         </p>
-        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`}/></span>
+        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`} /></span>
         <AceEditor
           onChange={this.handleChangeValue}
           showPrintMargin={false}
@@ -311,14 +311,14 @@ class EditConfig extends Component {
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
           >
-            <FormattedMessage id={`${intlPrefix}.step.next`}/>
+            <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 1)}>
-            <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+            <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
         </section>
       </div>
-    )
+    );
   }
 
   /* 渲染第三步 */
@@ -329,16 +329,17 @@ class EditConfig extends Component {
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col><Col
-            span={21}>{ConfigurationStore.getEditConfig.name}</Col>
+              span={21}
+            >{ConfigurationStore.getEditConfig.name}</Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`}/>：</Col><Col span={21}>{ConfigurationStore.getEditConfig.configVersion}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{ConfigurationStore.getEditConfig.configVersion}</Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`}/>：</Col><Col span={13}>{service}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`} />：</Col><Col span={13}>{service}</Col>
           </Row>
         </div>
-        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`}/>：</span>
+        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
         <AceEditor
           readOnly
           showPrintMargin={false}
@@ -356,7 +357,7 @@ class EditConfig extends Component {
             <FormattedMessage id="save" />
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>
-            <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+            <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
           <Button funcType="raised" onClick={this.cancelAll}>
             <FormattedMessage id="cancel" />
@@ -397,16 +398,19 @@ class EditConfig extends Component {
               />
               <Step
                 title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}><FormattedMessage
-                  id={`${intlPrefix}.step2.title`} /></span>}
+                  id={`${intlPrefix}.step2.title`}
+                /></span>}
                 status={this.getStatus(2)}
               />
               <Step
                 title={<span style={{
                   color: current === 3 ? '#3F51B5' : '',
-                  fontSize: 14
-                }}>
+                  fontSize: 14,
+                }}
+                >
                   <FormattedMessage
-                    id={`${intlPrefix}.step3.modify.title`} />
+                    id={`${intlPrefix}.step3.modify.title`}
+                  />
                 </span>}
                 status={this.getStatus(3)}
               />

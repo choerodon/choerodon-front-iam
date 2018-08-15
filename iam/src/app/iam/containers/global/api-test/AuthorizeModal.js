@@ -47,7 +47,7 @@ instance.interceptors.response.use((res) => {
   getInfoinstance.get('iam/v1/users/self').then((info) => {
     APITestStore.setUserInfo(info.data.loginName);
   });
-  Choerodon.prompt('授权成功')
+  Choerodon.prompt('授权成功');
   APITestStore.setIsShowModal(false);
   APITestStore.setModalSaving(false);
 }, (error) => {
@@ -89,10 +89,15 @@ export default class AuthorizeModal extends Component {
    * @returns {string|string}
    */
   encode = (password) => {
-    let output = "";
-    var chr1, chr2, chr3 = "";
-    var enc1, enc2, enc3, enc4 = "";
-    var i = 0;
+    let output = '';
+    let chr1, 
+      chr2, 
+      chr3 = '';
+    let enc1, 
+      enc2, 
+      enc3, 
+      enc4 = '';
+    let i = 0;
     do {
       chr1 = password.charCodeAt(i++);
       chr2 = password.charCodeAt(i++);
@@ -108,8 +113,8 @@ export default class AuthorizeModal extends Component {
       }
       output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2)
         + keyStr.charAt(enc3) + keyStr.charAt(enc4);
-      chr1 = chr2 = chr3 = "";
-      enc1 = enc2 = enc3 = enc4 = "";
+      chr1 = chr2 = chr3 = '';
+      enc1 = enc2 = enc3 = enc4 = '';
     } while (i < password.length);
     return output;
   }

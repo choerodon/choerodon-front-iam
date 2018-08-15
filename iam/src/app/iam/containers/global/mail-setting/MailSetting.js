@@ -82,7 +82,7 @@ export default class MailSetting extends Component {
       } else {
         Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
       }
-    }).catch(error => {
+    }).catch((error) => {
       Choerodon.prompt(error.response.data.message);
       // Choerodon.handleResponseError(error);
     });
@@ -276,7 +276,7 @@ export default class MailSetting extends Component {
           </Form>
         )}
       </div>
-    )
+    );
 
 
     return (

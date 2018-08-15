@@ -515,7 +515,7 @@ export default class PasswordPolicy extends Component {
           </Button>
         </div>
       </Form>
-    </div>)
+    </div>);
     return (
       <Page
         className="PasswordPolicy"

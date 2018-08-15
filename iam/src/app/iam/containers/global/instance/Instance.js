@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button,  Form, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Select, Table, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -35,8 +35,8 @@ export default class Instance extends Component {
       },
       filters: {},
       params: [],
-      defaultService: 'total'
-    }
+      defaultService: 'total',
+    };
   }
 
   componentDidMount() {
@@ -55,14 +55,14 @@ export default class Instance extends Component {
       } else {
         InstanceStore.setService(res || []);
         if (res.length) {
-          let defaultService = {name: 'total'}
+          const defaultService = { name: 'total' };
           InstanceStore.setCurrentService(defaultService);
           this.loadInstanceData();
         } else {
           InstanceStore.setLoading(false);
         }
       }
-    })
+    });
   }
 
   loadInstanceData(paginationIn, sortIn, filtersIn, paramsIn) {
@@ -77,7 +77,7 @@ export default class Instance extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    let service = InstanceStore.getCurrentService.name === 'total' ? '' : InstanceStore.getCurrentService.name;
+    const service = InstanceStore.getCurrentService.name === 'total' ? '' : InstanceStore.getCurrentService.name;
     // 防止标签闪烁
     this.setState({ filters });
     this.fetch(service, pagination, sort, filters, params)
@@ -127,7 +127,7 @@ export default class Instance extends Component {
 
   /* 刷新 */
   handleRefresh = () => {
-    let defaultService = {name: 'total'}
+    const defaultService = { name: 'total' };
     InstanceStore.setCurrentService(defaultService);
     this.setState(this.getInitState(), () => {
       this.loadInitData();
@@ -144,7 +144,7 @@ export default class Instance extends Component {
     if (serviceName !== 'total') {
       currentService = InstanceStore.service.find(service => service.name === serviceName);
     } else {
-      currentService = {name: 'total'};
+      currentService = { name: 'total' };
     }
     InstanceStore.setCurrentService(currentService);
     this.setState(this.getInitState(), () => {
@@ -171,23 +171,23 @@ export default class Instance extends Component {
     const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const { intl } = this.props;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.id`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.id`} />,
       dataIndex: 'instanceId',
       key: 'instanceId',
       filters: [],
       filteredValue: filters.instanceId || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.version`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.version`} />,
       dataIndex: 'version',
       key: 'version',
       filters: [],
       filteredValue: filters.version || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.port`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.port`} />,
       dataIndex: 'pod',
       key: 'pod',
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.registertime`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.registertime`} />,
       dataIndex: 'registrationTime',
       key: 'registrationTime',
     }, {
@@ -198,7 +198,7 @@ export default class Instance extends Component {
       render: (text, record) => (
         <Permission service={['manager-service.instance.query']}>
           <Tooltip
-            title={<FormattedMessage id="detail"/>}
+            title={<FormattedMessage id="detail" />}
             placement="bottom"
           >
             <Button
@@ -209,7 +209,7 @@ export default class Instance extends Component {
             />
           </Tooltip>
         </Permission>
-      )
+      ),
     }];
     return (
       <Page
@@ -219,7 +219,7 @@ export default class Instance extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
             onClick={this.handleRefresh}
@@ -252,11 +252,11 @@ export default class Instance extends Component {
             filters={params}
             onChange={this.handlePageChange}
             rowKey="instanceId"
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>
       </Page>
-    )
+    );
   }
 }
 

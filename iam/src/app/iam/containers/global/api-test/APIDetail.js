@@ -58,11 +58,11 @@ instance.interceptors.request.use(
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
   responseHeader = jsonFormat(res.headers);
-  response = res.data instanceof Object ? jsonFormat(res.data) : '' + res.data; // 响应主体
+  response = res.data instanceof Object ? jsonFormat(res.data) : `${res.data}`; // 响应主体
 }, (error) => {
   statusCode = error.response.status; // 响应码
   responseHeader = jsonFormat(error.response.headers);
-  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : '' + error.response.data; // 响应主体
+  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : `${error.response.data}`; // 响应主体
 });
 
 @Form.create()
@@ -132,11 +132,9 @@ export default class APIDetail extends Component {
     const { intl } = this.props;
     const { method, url, remark, consumes, produces } = APITestStore.getApiDetail;
     const keyArr = ['请求方式', '路径', '描述', 'Action', '权限层级', '是否为登录可访问', '是否为公开权限', '请求格式', '响应格式'];
-    const tableValue = keyArr.map((item) => {
-      return {
-        name: item,
-      };
-    })
+    const tableValue = keyArr.map(item => ({
+      name: item,
+    }));
     const desc = APITestStore.getApiDetail.description || '[]';
     const responseDataExample = APITestStore.getApiDetail &&
       APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
@@ -144,12 +142,10 @@ export default class APIDetail extends Component {
     handledDescWithComment = jsonFormat(handledDescWithComment);
     const handledDesc = Hjson.parse(desc);
     const { permission = { roles: [] } } = handledDesc;
-    const roles = permission.roles.length && permission.roles.map((item) => {
-      return {
-        name: '默认角色',
-        value: item,
-      };
-    })
+    const roles = permission.roles.length && permission.roles.map(item => ({
+      name: '默认角色',
+      value: item,
+    }));
     tableValue[0].value = method;
     tableValue[1].value = url;
     tableValue[2].value = remark;
@@ -236,7 +232,7 @@ export default class APIDetail extends Component {
           return text;
         }
       },
-    }]
+    }];
 
     return (
       <div className="c7n-interface-detail">
@@ -247,9 +243,7 @@ export default class APIDetail extends Component {
             dataSource={tableValue}
             pagination={false}
             filterBar={false}
-            rowKey={(record) => {
-              return `${record.name}-${record.value}`;
-            }}
+            rowKey={record => `${record.name}-${record.value}`}
           />
         </div>
         <div className="c7n-request-params">
@@ -277,13 +271,13 @@ export default class APIDetail extends Component {
   }
 
   handleSelectChange = (name, select) => {
-    const a = {target: {value: select}};
+    const a = { target: { value: select } };
     this.changeNormalValue(name, 'query', a);
   };
 
 
   changeTextareaValue = (name, type, e) => {
-    if(type !== 'array') {
+    if (type !== 'array') {
       this.setState({
         bData: e.target.value,
       });
@@ -324,21 +318,21 @@ export default class APIDetail extends Component {
       put: 'PUT',
       delete: 'DELETE',
       patch: 'PATCH',
-    }
+    };
     const { intl, form: { getFieldValue } } = this.props;
     const handleUrl = encodeURI(this.state.requestUrl);
     const handleMethod = upperMethod[APITestStore.getApiDetail.method];
     const currentToken = APITestStore.getApiToken || authorization;
     const token = currentToken ? currentToken.split(' ')[1] : null;
-    const bodyStr = (getFieldValue('bodyData') || '').replace(/\n/g,"\\\n");
+    const bodyStr = (getFieldValue('bodyData') || '');
     let body = '';
-    if(bodyStr){
+    if (bodyStr) {
       body = `-d '${bodyStr}' `;
     }
     if (handleMethod === 'GET') {
-      curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+      curlContent = `curl -X ${handleMethod} \\\n --url '${handleUrl}' \\\n --header 'Accept: application/json' \\\n --header 'Authorization: Bearer ${token}'`;
     } else {
-      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' ${body}'${handleUrl}'`;
+      curlContent = `curl -X ${handleMethod} \\\n --url '${handleUrl}' \\\n --header 'Content-Type: application/json' \\\n --header 'Accept: application/json' \\\n --header 'Authorization: Bearer ${token}' \\\n ${body}`;
     }
     const method = APITestStore && APITestStore.apiDetail.method;
     const { getFieldDecorator, getFieldError } = this.props.form;
@@ -372,7 +366,7 @@ export default class APIDetail extends Component {
               <FormItem>
                 {getFieldDecorator('bodyData', {
                   rules: [{
-                    required: !record.type ? true : false,
+                    required: !record.type,
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
@@ -391,7 +385,7 @@ export default class APIDetail extends Component {
                   defaultValue=""
                   onChange={this.handleSelectChange.bind(this, record.name)}
                 >
-                  <Option value="" style={{ height: '22px' }}> </Option>
+                  <Option value="" style={{ height: '22px' }} />
                   <Option value="true">true</Option>
                   <Option value="false">false</Option>
                 </Select>
@@ -482,7 +476,7 @@ export default class APIDetail extends Component {
           return text;
         }
       },
-    }]
+    }];
 
     return (
       <div className="c7n-interface-test">
@@ -582,7 +576,7 @@ export default class APIDetail extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.setState({ isSending: true })
+        this.setState({ isSending: true });
         APITestStore.setIsShowResult(false);
         this.responseNode.scrollTop = 0;
         this.curlNode.scrollLeft = 0;
@@ -601,7 +595,7 @@ export default class APIDetail extends Component {
           });
         } else if (this.fileInput) {
           const formData = new FormData();
-          formData.append('file',  this.fileInput.files[0]);
+          formData.append('file', this.fileInput.files[0]);
           instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData)
             .then(function (res) {
               this.setState({
@@ -666,10 +660,10 @@ export default class APIDetail extends Component {
         taArr: this.state.taArr,
       });
     }
-    Object.entries(this.state.taArr).map(a => {
+    Object.entries(this.state.taArr).map((a) => {
       const name = a[0];
       if (Array.isArray(a[1])) {
-        a[1].map(v => { query = `${query}&${name}=${v}`});
+        a[1].map((v) => { query = `${query}&${name}=${v}`; });
       } else {
         query = `${query}&${name}=${a[1]}`;
       }

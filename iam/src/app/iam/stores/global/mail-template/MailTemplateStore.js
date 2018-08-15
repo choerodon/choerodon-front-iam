@@ -84,7 +84,7 @@ class MailTemplateStore {
 
   getTemplateDetail = id => axios.get(`notify/v1/notices/emails/templates/${id}`);
 
-  updateTemplateDetail = (id, data) => axios.post(`notify/v1/notices/emails/templates/${id}`, JSON.stringify(data));
+  updateTemplateDetail = (id, data) => axios.put(`notify/v1/notices/emails/templates/${id}`, JSON.stringify(data));
 }
 
 const mailTemplateStore = new MailTemplateStore();

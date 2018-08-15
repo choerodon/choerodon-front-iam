@@ -140,7 +140,7 @@ export default class Password extends Component {
                     label={<FormattedMessage id={`${intlPrefix}.oldpassword`} />}
                     type="password"
                     style={{ width: inputWidth }}
-                    ref={this.editFocusInput}
+                    ref={(e) => { this.editFocusInput = e; }}
                   />,
                 )}
               </FormItem>

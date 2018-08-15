@@ -289,7 +289,7 @@ export default class UserEdit extends Component {
                 label={intl.formatMessage({ id: `${intlPrefix}.loginname` })}
                 disabled={edit}
                 style={{ width: inputWidth }}
-                ref={this.createFocusInput}
+                ref={(e) => { this.createFocusInput = e; }}
               />,
             )}
           </FormItem>
@@ -314,7 +314,7 @@ export default class UserEdit extends Component {
                   type="text"
                   rows={1}
                   style={{ width: inputWidth }}
-                  ref={this.editFocusInput}
+                  ref={(e) => { this.editFocusInput = e; }}
                 />,
               )
             }

@@ -205,7 +205,7 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.name`} />}
               style={{ width: inputWidth }}
-              ref={this.editFocusInput}
+              ref={(e) => { this.editFocusInput = e; }}
             />,
           )}
         </FormItem>

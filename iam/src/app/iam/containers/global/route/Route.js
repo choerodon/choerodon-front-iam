@@ -569,7 +569,7 @@ export default class Route extends Component {
                 suffix={this.getSuffix(intl.formatMessage({ id: `${intlPrefix}.name.tip` }))}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
-                ref={this.createRouteFocusInput}
+                ref={(e) => { this.createRouteFocusInput = e; }}
               />,
             )}
           </FormItem>

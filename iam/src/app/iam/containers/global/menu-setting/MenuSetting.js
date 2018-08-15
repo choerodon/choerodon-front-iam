@@ -398,7 +398,7 @@ export default class MenuSetting extends Component {
               label={<FormattedMessage id={`${intlPrefix}.directory.code`} />}
               style={{ width: inputWidth }}
               disabled={selectType === 'edit'}
-              ref={this.addDirFocusInput}
+              ref={(e) => { this.addDirFocusInput = e; }}
             />,
           )}
         </FormItem>
@@ -418,7 +418,7 @@ export default class MenuSetting extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.directory.name`} />}
               style={{ width: inputWidth }}
-              ref={this.changeMenuFocusInput}
+              ref={(e) => { this.changeMenuFocusInput = e; }}
             />,
           )}
         </FormItem>

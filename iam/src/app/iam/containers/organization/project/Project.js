@@ -344,7 +344,7 @@ export default class Project extends Component {
                 autoComplete="off"
                 label={<FormattedMessage id={`${intlPrefix}.code`} />}
                 style={{ width: inputWidth }}
-                ref={this.createFocusInput}
+                ref={(e) => { this.createFocusInput = e; }}
               />,
             )}
           </FormItem>) : null}
@@ -363,7 +363,7 @@ export default class Project extends Component {
                 autoComplete="off"
                 label={<FormattedMessage id={`${intlPrefix}.name`} />}
                 style={{ width: inputWidth }}
-                ref={this.editFocusInput}
+                ref={(e) => { this.editFocusInput = e; }}
               />,
             )}
           </FormItem>

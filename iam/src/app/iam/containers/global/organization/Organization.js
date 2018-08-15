@@ -272,7 +272,7 @@ export default class Organization extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input ref={this.creatOrgFocusInput} label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
+                  <Input ref={(e) => { this.creatOrgFocusInput = e; }} label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -285,7 +285,7 @@ export default class Organization extends Component {
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input ref={this.editOrgFocusInput} label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
+              <Input ref={(e) => { this.editOrgFocusInput = e; }} label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>

@@ -122,7 +122,7 @@ class MemberLabel extends Component {
     const { style, className, form, value, label } = this.props;
     const { getFieldDecorator } = form;
     setTimeout(() => {
-      this.saveSelectRef.focus();
+      this.rcSelect.focus();
     }, 10);
     return (
       <FormItem

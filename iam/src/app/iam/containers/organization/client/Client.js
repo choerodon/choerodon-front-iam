@@ -384,7 +384,7 @@ export default class Client extends Component {
               autoComplete="off"
               label={intl.formatMessage({ id: `${intlPrefix}.name` })}
               disabled={status === 'edit'}
-              ref={this.createFocusInput}
+              ref={(e) => { this.createFocusInput = e; }}
             />,
           )}
         </FormItem>
@@ -402,7 +402,7 @@ export default class Client extends Component {
             <Input
               autoComplete="off"
               label={intl.formatMessage({ id: `${intlPrefix}.secret` })}
-              ref={this.editFocusInput}
+              ref={(e) => { this.editFocusInput = e; }}
             />,
           )}
         </FormItem>

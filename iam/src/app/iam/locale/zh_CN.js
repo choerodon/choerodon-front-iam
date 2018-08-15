@@ -1,5 +1,5 @@
 /*eslint-disable*/
-const docServer = 'http://v0-8.choerodon.io/zh/docs';
+const docServer = 'http://choerodon.io/zh/docs';
 const pageDetail = {
   // menusetting
   // home
@@ -165,7 +165,7 @@ const pageDetail = {
   // 仪表盘配置
   'global.dashboard-setting.title': '仪表盘配置',
   'global.dashboard-setting.description': '仪表盘为首页所展示的卡片合集，用户可以自定义自己的仪表盘。您可以在此配置仪表盘的卡片。',
-  'global.dashboard-setting.link': '',
+  'global.dashboard-setting.link': `${docServer}/user-guide/system-configuration/platform/dashboard-config/`,
   'global.dashboard-setting.modify.title': '对卡片"{name}"进行修改',
   'global.dashboard-setting.modify.description': '您可以在此修改仪表盘中卡片的配置。',
   'global.dashboard-setting.modify.link': '',

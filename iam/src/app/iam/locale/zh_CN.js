@@ -22,7 +22,7 @@ const pageDetail = {
   // 角色标签
   'global.rolelabel.title': '平台"{name}"的角色标签',
   'global.rolelabel.description': '角色标签是在角色管理中可以与角色相关联，用于定义角色的特定逻辑的功能，需与代码开发结合。',
-  'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/rootuser/`,
+  'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/role-label/`,
 
   // rootuser
   'global.rootuser.title': '平台"{name}"的Root用户设置',
@@ -149,18 +149,18 @@ const pageDetail = {
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
-  'global.saga.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga.link': `${docServer}/user-guide/system-configuration/global-transaction/saga/`,
   'global.saga.detail.title': '查看事务定义"{name}"的详情',
   'global.saga.detail.description': '您可以在此查看事务定义图、事务定义Json。',
-  'global.saga.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga/`,
 
   // 事务实例
   'global.saga-instance.title': '平台"{name}"的事务实例',
   'global.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
-  'global.saga-instance.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga-instance.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
   'global.saga-instance.detail.title': '查看事务实例"{name}"的详情',
   'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
-  'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
 
   // 仪表盘配置
   'global.dashboard-setting.title': '仪表盘配置',
@@ -904,7 +904,8 @@ const zh_CN = {
   'organization.user.upload': '导入用户',
   'organization.user.upload.lasttime': '上次导入完成时间',
   'organization.user.upload.norecord': '当前没有导入用户记录',
-  'organization.user.upload.time': '（耗时{time}），共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.upload.time': '共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.upload.spendtime': '耗时',
   'organization.user.uploading.text': '正在导入...',
   'organization.user.fileloading.text': '正在上传...',
   'organization.user.fileloading': '上传中',

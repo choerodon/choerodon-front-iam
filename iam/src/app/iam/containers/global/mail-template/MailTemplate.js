@@ -112,6 +112,9 @@ export default class MailTemplate extends Component {
         isShowSidebar: true,
         selectType,
       });
+      setTimeout(() => {
+        this.creatTemplateFocusInput.input.focus();
+      }, 10);
     } else {
       MailTemplateStore.getTemplateDetail(record.id).then((data) => {
         if (data.failed) {
@@ -123,6 +126,11 @@ export default class MailTemplate extends Component {
             isShowSidebar: true,
             selectType,
           })
+          if (selectType === 'baseon') {
+            setTimeout(() => {
+              this.creatTemplateFocusInput.input.focus();
+            }, 10);
+          }
         }
       })
     }
@@ -273,7 +281,7 @@ export default class MailTemplate extends Component {
               }],
               initialValue: selectType === 'modify' ? MailTemplateStore.getCurrentDetail.code: undefined,
             })(
-              <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} disabled={selectType === 'modify'} />,
+              <Input ref={(e) => this.creatTemplateFocusInput = e} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} disabled={selectType === 'modify'} />,
             )
             }
           </FormItem>
@@ -299,7 +307,7 @@ export default class MailTemplate extends Component {
                 required: true,
                 message: this.formatMessage('mailtemplate.type.required'),
               }],
-              initialValue: type,
+              initialValue: selectType !== 'create' ? MailTemplateStore.getCurrentDetail.type : undefined,
             })(
               <Select
                 getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
@@ -308,9 +316,9 @@ export default class MailTemplate extends Component {
                 disabled={selectType !== 'create'}
               >
                 {
-                  MailTemplateStore.getTemplateType.length && MailTemplateStore.getTemplateType.map(value => (
-                    <Option value={value} key={value}>{value}</Option>
-                  ))
+                  MailTemplateStore.getTemplateType && MailTemplateStore.getTemplateType.map(({name, id, code}) => (
+                  <Option key={id} value={code}>{name}</Option>
+                ))
                 }
               </Select>,
             )}
@@ -335,13 +343,6 @@ export default class MailTemplate extends Component {
           <div style={{ marginBottom: '8px' }}>
             <div>
               <span className="c7n-mailcontent-label">邮件内容</span>
-              <Popover
-                placement="right"
-                trigger="hover"
-                content={'123'}
-              >
-                <Icon type="help" className="c7n-mailcontent-icon" />
-              </Popover>
             </div>
             <Editor
               style={{ height: 320, width: '100%' }}
@@ -356,10 +357,20 @@ export default class MailTemplate extends Component {
     );
   }
 
+
+  // getImageInHtml = () => {
+  //   const imgBase = [];
+  //   const formData = new FormData();
+  //   this.state.editorContent.fin
+
+  // }
+
   handleSubmit = (e) => {
     e.preventDefault();
+    const { intl } = this.props;
     const { selectType } = this.state;
     this.props.form.validateFieldsAndScroll((err, values) => {
+      window.console.log(this.state.content);
       if (!err) {
         this.setState({
           isSubmitting: true,
@@ -375,8 +386,8 @@ export default class MailTemplate extends Component {
               if (data.failed) {
                 Choerodon.prompt(data.message);
               } else {
-                Choerodon.prompt("创建成功");
-                this.loadTemplate();
+                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+                this.reload();
                 this.setState({
                   isShowSidebar: false,
                 });
@@ -396,14 +407,15 @@ export default class MailTemplate extends Component {
             content: this.state.editorContent,
             id: MailTemplateStore.getCurrentDetail.id,
             isPredefined: MailTemplateStore.getCurrentDetail.isPredefined,
-            // "objectVersionNumber": 0,
+            objectVersionNumber: MailTemplateStore.getCurrentDetail.objectVersionNumber,
           };
           MailTemplateStore.updateTemplateDetail(MailTemplateStore.getCurrentDetail.id, body).then((data) => {
             if (data.failed) {
               Choerodon.prompt(data.message);
             } else {
-              Choerodon.prompt("修改成功");
+              Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
               MailTemplateStore.setCurrentDetail(data);
+              this.loadTemplate();
               this.setState({
                 isShowSidebar: false,
               });

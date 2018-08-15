@@ -83,8 +83,7 @@ export default class MailSetting extends Component {
         Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
       }
     }).catch(error => {
-      Choerodon.prompt(error.response.data.message);
-      // Choerodon.handleResponseError(error);
+      Choerodon.handleResponseError(error);
     });
   }
 

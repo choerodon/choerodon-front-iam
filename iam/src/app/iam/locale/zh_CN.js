@@ -667,6 +667,7 @@ const zh_CN = {
   'mailtemplate.name.required': '请输入模板名称',
   'mailtemplate.type.required': '请选择模板类型',
   'mailtemplate.title.required': '请输入邮件标题',
+  'mailtemplate.mail.content': '邮件内容',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',

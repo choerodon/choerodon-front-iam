@@ -182,19 +182,9 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('protocol', {
                 rules: [],
-                initialValue: MailSettingStore.getSettingData.protocol.toUpperCase(),
+                initialValue: 'SMTP'
               })(
-                <Select
-                  getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-                  label={intl.formatMessage({ id: `${intlPrefix}.server.type` })}
-                  style={{ width: inputWidth }}
-                  onChange={this.changeServerType}
-                >
-                  <Option value="SMTP">SMTP</Option>
-                  <Option value="POP3">POP3</Option>
-                  <Option value="IMAP">IMAP</Option>
-                  <Option value="EXCHANGE">EXCHANGE</Option>
-                </Select>,
+                <Input label={intl.formatMessage({ id: `${intlPrefix}.server.type` })} style={{ width: inputWidth }} disabled />
               )}
             </FormItem>
             <FormItem

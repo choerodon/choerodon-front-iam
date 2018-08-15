@@ -24,9 +24,9 @@ const inputWidth = 512;
 
 @Form.create({})
 @injectIntl
-@inject('AppState', 'DashboardStore')
+@inject('AppState')
 @observer
-export default class DashboardSetting extends Component {
+class DashboardSetting extends Component {
 
   componentWillMount() {
     this.fetchData();
@@ -42,7 +42,9 @@ export default class DashboardSetting extends Component {
       if (!error) {
         if (modify) {
           DashboardSettingStore.updateData(values).then((data) => {
-            DashboardStore.updateCachedData(data);
+            if (DashboardStore) {
+              DashboardStore.updateCachedData(data);
+            }
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
           });
         } else {
@@ -248,6 +250,7 @@ export default class DashboardSetting extends Component {
     return (
       <Page
         service={[
+          'iam-service.dashboard.list',
           'iam-service.dashboard.query',
           'iam-service.dashboard.update',
         ]}
@@ -286,3 +289,5 @@ export default class DashboardSetting extends Component {
     );
   }
 }
+
+export default Choerodon.dashboard ? inject('DashboardStore')(DashboardSetting) : DashboardSetting;

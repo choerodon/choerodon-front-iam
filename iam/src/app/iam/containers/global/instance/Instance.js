@@ -11,7 +11,7 @@ import querystring from 'query-string';
 import InstanceStore from '../../../stores/global/instance';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option } = Select;
 const intlPrefix = 'global.instance';
 
 @Form.create({})
@@ -92,7 +92,7 @@ export default class Instance extends Component {
             total: data.totalElements,
           },
         });
-        InstanceStore.setInstanceData(data.content.slice()),
+        InstanceStore.setInstanceData(data.content.slice());
         InstanceStore.setLoading(false);
       })
       .catch((error) => {
@@ -154,9 +154,9 @@ export default class Instance extends Component {
 
   /* 微服务下拉框 */
   getOptionList() {
-    const service = InstanceStore.service;
+    const { service } = InstanceStore;
     return service && service.length > 0 ? [<Option key="total" value="total">所有微服务</Option>].concat(
-      InstanceStore.service.map(({ name }) => (
+      service.map(({ name }) => (
         <Option key={name} value={name}>{name}</Option>
       )),
     ) : <Option value="total">无服务</Option>;
@@ -237,8 +237,7 @@ export default class Instance extends Component {
             getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             value={InstanceStore.currentService.name}
             label={<FormattedMessage id={`${intlPrefix}.service`} />}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={this.handleChange.bind(this)}
           >
@@ -259,4 +258,3 @@ export default class Instance extends Component {
     );
   }
 }
-

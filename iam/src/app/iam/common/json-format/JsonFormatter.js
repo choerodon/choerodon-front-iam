@@ -9,9 +9,6 @@ import React, { Component } from 'react';
 const tabSize = 2;
 
 class JsonFormatter extends Component {
-  constructor(props) {
-    super(props);
-  }
   /**
    *  根据count 返回空格数
    */
@@ -61,6 +58,7 @@ class JsonFormatter extends Component {
   };
 
   comments = (obj = {}) => {
+    /*  eslint-disable */
     if (obj.__COMMENTS__) {
       return obj.__COMMENTS__.c || {};
     }
@@ -128,4 +126,3 @@ const defaultProps = {
 const jsonFormat = new JsonFormatter(defaultProps);
 
 export default jsonFormat.process;
-

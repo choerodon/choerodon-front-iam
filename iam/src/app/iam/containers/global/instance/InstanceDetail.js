@@ -19,7 +19,9 @@ const intlPrefix = 'global.instance';
 @injectIntl
 export default class InstanceDetail extends Component {
   state = this.getInitState();
+
   instanceId = null;
+
   getInitState() {
     return {
       info: null,
@@ -32,6 +34,7 @@ export default class InstanceDetail extends Component {
     super(props);
     this.instanceId = props.match.params.id;
   }
+
   componentWillMount() {
     this.setState({
       loading: true,
@@ -160,9 +163,7 @@ export default class InstanceDetail extends Component {
     return (
       <Page>
         <Header
-          title={<FormattedMessage
-            id={`${intlPrefix}.detail`}
-          />}
+          title={<FormattedMessage id={`${intlPrefix}.detail`} />}
           backPath="/iam/instance"
         />
         <Content
@@ -178,4 +179,3 @@ export default class InstanceDetail extends Component {
     );
   }
 }
-

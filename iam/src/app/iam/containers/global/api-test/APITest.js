@@ -14,7 +14,7 @@ import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
 
 const intlPrefix = 'global.apitest';
-const Option = Select.Option;
+const { Option } = Select;
 
 @withRouter
 @injectIntl
@@ -45,7 +45,7 @@ export default class APITest extends Component {
 
   /* 微服务下拉框 */
   getOptionList() {
-    const service = APITestStore.service;
+    const { service } = APITestStore;
     return service && service.length > 0 ? (
       APITestStore.service.map(({ name, value }) => (
         <Option key={value}>{name}</Option>
@@ -177,11 +177,15 @@ export default class APITest extends Component {
       dataIndex: 'url',
       key: 'url',
       width: 438,
-      render: (text, record) => (<Tooltip
-        title={text}
-        placement="bottomLeft"
-        overlayStyle={{ wordBreak: 'break-all' }}
-      ><div className="urlContainer">{text}</div></Tooltip>),
+      render: (text, record) => (
+        <Tooltip
+          title={text}
+          placement="bottomLeft"
+          overlayStyle={{ wordBreak: 'break-all' }}
+        >
+          <div className="urlContainer">{text}</div>
+        </Tooltip>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
@@ -239,8 +243,7 @@ export default class APITest extends Component {
             getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             onChange={this.handleChange.bind(this)}
             label={<FormattedMessage id={`${intlPrefix}.service`} />}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
             {this.getOptionList()}
@@ -262,4 +265,3 @@ export default class APITest extends Component {
     );
   }
 }
-

@@ -14,9 +14,9 @@ class Editor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: null,
-      msgSaving: null,
-      chatError: null,
+      // message: null,
+      // msgSaving: null,
+      // chatError: null,
     };
     this.handleChange = this.handleChange.bind(this);
   }

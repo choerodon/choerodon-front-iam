@@ -27,6 +27,11 @@ const inputWidth = 512;
 @inject('AppState')
 @observer
 class DashboardSetting extends Component {
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+  }
+
   componentWillMount() {
     this.fetchData();
   }
@@ -71,7 +76,7 @@ class DashboardSetting extends Component {
     DashboardSettingStore.setEditData(record);
     DashboardSettingStore.showSideBar();
     setTimeout(() => {
-      this.FocusInput.input.focus();
+      this.editFocusInput.input.focus();
     }, 10);
   }
 
@@ -201,7 +206,7 @@ class DashboardSetting extends Component {
                   autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.name`} />}
                   style={{ width: inputWidth }}
-                  ref={e => this.FocusInput = e}
+                  ref={this.editFocusInput}
                 />,
               )
             }

@@ -110,12 +110,14 @@ class MemberLabel extends Component {
       }),
     });
   };
+
   handleChoiceRemove = (value) => {
     const { validedMembers } = this.state;
     if (value in validedMembers) {
       delete validedMembers[value];
     }
   };
+
   render() {
     const { style, className, form, value, label } = this.props;
     const { getFieldDecorator } = form;

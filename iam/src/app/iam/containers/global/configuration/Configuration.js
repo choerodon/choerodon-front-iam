@@ -57,12 +57,8 @@ export default class Configuration extends Component {
       } else {
         ConfigurationStore.setService(res || []);
         if (res.length) {
-          let defaultService;
-          if (ConfigurationStore.getRelatedService.name) {
-            defaultService = ConfigurationStore.getRelatedService;
-          } else {
-            defaultService = res[0];
-          }
+          const { name } = ConfigurationStore.getRelatedService;
+          const defaultService = name ? ConfigurationStore.getRelatedService : res[0];
           ConfigurationStore.setCurrentService(defaultService);
           this.loadConfig();
         } else {
@@ -99,7 +95,7 @@ export default class Configuration extends Component {
             total: data.totalElements,
           },
         });
-        ConfigurationStore.setConfigData(data.content.slice()),
+        ConfigurationStore.setConfigData(data.content.slice());
         ConfigurationStore.setLoading(false);
       })
       .catch((error) => {

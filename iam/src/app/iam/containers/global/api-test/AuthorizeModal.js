@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* the encode function is no necessary to lint */
 import React, { Component } from 'react';
 import { axios as authorizeAxios } from 'choerodon-front-boot';
 import { Form, Modal, Button, Input } from 'choerodon-ui';
@@ -13,7 +15,8 @@ const FormItem = Form.Item;
 const instance = authorizeAxios.create();
 const getInfoinstance = authorizeAxios.create();
 
-const keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+const keyStr = 'ABCDEFGHIJKLMNOP' + 'QRSTUVWXYZabcdef' + 'ghijklmnopqrstuv'
+  + 'wxyz0123456789+/' + '=';
 
 const formItemLayout = {
   labelCol: {
@@ -41,14 +44,16 @@ getInfoinstance.interceptors.request.use(
   });
 
 instance.interceptors.response.use((res) => {
-  APITestStore.setApiToken(`${res.data.token_type} ${res.data.access_token}`);
-  APITestStore.setIsShowResult(null);
-  getInfoinstance.get('iam/v1/users/self').then((info) => {
-    APITestStore.setUserInfo(info.data.loginName);
-  });
-  Choerodon.prompt('授权成功');
-  APITestStore.setIsShowModal(false);
-  APITestStore.setModalSaving(false);
+  if (res.status === 200) {
+    APITestStore.setApiToken(`${res.data.token_type} ${res.data.access_token}`);
+    Choerodon.prompt('授权成功');
+    APITestStore.setIsShowResult(null);
+    getInfoinstance.get('iam/v1/users/self').then((info) => {
+      APITestStore.setUserInfo(info.data.loginName);
+    });
+    APITestStore.setIsShowModal(false);
+    APITestStore.setModalSaving(false);
+  }
 }, (error) => {
   Choerodon.prompt('授权失败');
   APITestStore.setModalSaving(false);
@@ -88,44 +93,30 @@ export default class AuthorizeModal extends Component {
    * @returns {string|string}
    */
   encode = (password) => {
-    let output = '';
-    let chr1;
-    let chr2;
-    let chr3 = '';
-    let enc1;
-    let enc2;
-    let enc3;
-    let enc4 = '';
-    let i = 0;
+    let output = "";
+    var chr1, chr2, chr3 = "";
+    var enc1, enc2, enc3, enc4 = "";
+    var i = 0;
     do {
-      chr1 = password.charCodeAt(i += 1);
-      chr2 = password.charCodeAt(i += 1);
-      chr3 = password.charCodeAt(i += 1);
-      enc1 = chr1 * 4;
-      /* eslint-disable-next-line */
+      chr1 = password.charCodeAt(i++);
+      chr2 = password.charCodeAt(i++);
+      chr3 = password.charCodeAt(i++);
+      enc1 = chr1 >> 2;
       enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-      /* eslint-disable-next-line */
       enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-      /* eslint-disable-next-line */
       enc4 = chr3 & 63;
       if (isNaN(chr2)) {
-        enc4 = 64;
-        enc3 = enc4;
+        enc3 = enc4 = 64;
       } else if (isNaN(chr3)) {
         enc4 = 64;
       }
       output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2)
         + keyStr.charAt(enc3) + keyStr.charAt(enc4);
-      chr1 = '';
-      chr2 = '';
-      chr3 = '';
-      enc1 = '';
-      enc2 = '';
-      enc3 = '';
-      enc4 = '';
+      chr1 = chr2 = chr3 = "";
+      enc1 = enc2 = enc3 = enc4 = "";
     } while (i < password.length);
     return output;
-  };
+  }
 
   handleCancel = () => {
     APITestStore.setIsShowModal(false);

@@ -30,7 +30,8 @@ class MemberRoleType {
   constructor(context) {
     this.context = context;
     const { AppState } = this.context.props;
-    const { type, id, name } = this.data = AppState.currentMenuType;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
     let apiGetway = `/iam/v1/${type}s/${id}`;
     let codePrefix;
     switch (type) {
@@ -43,6 +44,8 @@ class MemberRoleType {
       case 'site':
         codePrefix = 'global';
         apiGetway = `/iam/v1/${type}`;
+        break;
+      default:
         break;
     }
     this.code = `${codePrefix}.memberrole`;
@@ -315,7 +318,7 @@ export default class MemberRole extends Component {
               }
               return false;
             }}
-            onChange={value => roleIds[index] = value}
+            onChange={(value) => { roleIds[index] = value; }}
             filter
           >
             {this.getOption(id)}
@@ -466,7 +469,7 @@ export default class MemberRole extends Component {
     if (roles.length !== roleIds.length) {
       return true;
     }
-    for (let i = 0; i < roles.length; i++) {
+    for (let i = 0; i < roles.length; i += 1) {
       if (!roleIds.includes(roles[i].id)) {
         return true;
       }
@@ -817,13 +820,13 @@ export default class MemberRole extends Component {
           if (loginName) {
             return loginName;
           } else if (name) {
-            const { userCount, users: { length }, loading, enabled } = data;
-            const more = loading ? (
+            const { userCount, users: { length }, loading: isLoading, enabled } = data;
+            const more = isLoading ? (
               <Progress type="loading" width={12} />
             ) : (length > 0 && userCount > length && (
               <a onClick={() => {
                 this.roles.loadRoleMemberData(data, {
-                  current: length / pageSize + 1,
+                  current: (length / pageSize) + 1,
                   pageSize,
                 }, roleMemberFilters);
                 this.forceUpdate();
@@ -891,10 +894,10 @@ export default class MemberRole extends Component {
       getCheckboxProps: ({ loginName }) => ({
         disabled: !loginName,
       }),
-      onChange: (selectRoleMemberKeys, selectRoleMembers) => {
+      onChange: (newSelectRoleMemberKeys, newSelectRoleMembers) => {
         this.setState({
-          selectRoleMemberKeys,
-          selectRoleMembers,
+          newSelectRoleMemberKeys,
+          newSelectRoleMembers,
         });
       },
     };

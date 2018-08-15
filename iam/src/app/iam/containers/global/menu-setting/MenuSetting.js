@@ -1,12 +1,11 @@
-
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Icon, IconSelect, Input, Modal, Table, Tabs, Tooltip } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import _ from 'lodash';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
-import { FormattedMessage, injectIntl } from 'react-intl';
 import './MenuSetting.scss';
 
 const { MenuStore } = stores;
@@ -15,6 +14,10 @@ const intlPrefix = 'global.menusetting';
 let currentDropOverItem;
 let currentDropSide;
 let dropItem;
+
+function dropSideClassName(side) {
+  return `drop-row-${side}`;
+}
 
 function addDragClass(currentTarget, dropSide) {
   if (dropSide) {
@@ -28,10 +31,6 @@ function removeDragClass() {
   if (currentDropOverItem && currentDropSide) {
     currentDropOverItem.classList.remove(dropSideClassName(currentDropSide));
   }
-}
-
-function dropSideClassName(side) {
-  return `drop-row-${side}`;
 }
 
 const { Sidebar } = Modal;
@@ -68,6 +67,8 @@ export default class MenuSetting extends Component {
       dragData: null,
       tempDirs: [],
     };
+    this.changeMenuFocusInput = React.createRef();
+    this.addDirFocusInput = React.createRef();
   }
 
   componentWillMount() {
@@ -215,9 +216,10 @@ export default class MenuSetting extends Component {
     this.props.form.validateFields((err, { code, name, icon }) => {
       if (!err) {
         const { selectType, menuGroup, selectMenuDetail, type, tempDirs } = this.state;
+        let menu = {};
         switch (selectType) {
           case 'create':
-            const menu = {
+            menu = {
               code,
               icon,
               name,
@@ -236,6 +238,8 @@ export default class MenuSetting extends Component {
             selectMenuDetail.name = name;
             selectMenuDetail.icon = icon;
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.modify.success` }));
+            break;
+          default:
             break;
         }
         this.setState({
@@ -257,15 +261,16 @@ export default class MenuSetting extends Component {
         return <FormattedMessage id={`${intlPrefix}.modify.org`} />;
       case 'detail':
         return <FormattedMessage id={`${intlPrefix}.detail`} />;
+      default:
     }
   };
 
   // 创建3个状态的sidebar渲染
   getSidebarContent(selectType) {
     const { selectMenuDetail: { name } } = this.state;
-    let formDom, 
-      code, 
-      values;
+    let formDom;
+    let code;
+    let values;
     switch (selectType) {
       case 'create':
         code = `${intlPrefix}.create`;
@@ -282,6 +287,8 @@ export default class MenuSetting extends Component {
         values = { name };
         formDom = this.getDetailDom();
         break;
+      default:
+        break;
     }
     return (
       <div>
@@ -297,6 +304,7 @@ export default class MenuSetting extends Component {
 
   // 查看详情
   getDetailDom() {
+    /* eslint-disable-next-line */
     const { name, code, level, permissions, __parent_name__ } = this.state.selectMenuDetail;
     return (
       <div>
@@ -338,6 +346,7 @@ export default class MenuSetting extends Component {
             {...formItemLayout}
           >
             <Input
+              /* eslint-disable-next-line */
               value={__parent_name__}
               label={<FormattedMessage id={`${intlPrefix}.belong.root`} />}
               disabled
@@ -350,7 +359,7 @@ export default class MenuSetting extends Component {
           <p><FormattedMessage id={`${intlPrefix}.menu.permission`} /></p>
           {
             permissions && permissions.length > 0 ? permissions.map(
-              ({ code }) => <div key={code}><span>{code}</span></div>,
+              ({ code: permissionCode }) => <div key={permissionCode}><span>{permissionCode}</span></div>,
             ) : <FormattedMessage id={`${intlPrefix}.menu.withoutpermission`} />
           }
         </div>
@@ -389,7 +398,7 @@ export default class MenuSetting extends Component {
               label={<FormattedMessage id={`${intlPrefix}.directory.code`} />}
               style={{ width: inputWidth }}
               disabled={selectType === 'edit'}
-              ref={e => this.addDirFocusInput = e}
+              ref={this.addDirFocusInput}
             />,
           )}
         </FormItem>
@@ -409,7 +418,7 @@ export default class MenuSetting extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.directory.name`} />}
               style={{ width: inputWidth }}
-              ref={e => this.changeMenuFocusInput = e}
+              ref={this.changeMenuFocusInput}
             />,
           )}
         </FormItem>
@@ -453,6 +462,7 @@ export default class MenuSetting extends Component {
   checkDropIn(record) {
     const { dragData } = this.state;
     return dragData && record.type !== 'menu' && dragData.type !== 'root' && !hasDirChild(dragData) &&
+      /* eslint-disable-next-line */
       record.__level__ < (dragData.type === 'dir' ? 1 : 2);
   }
 
@@ -460,6 +470,7 @@ export default class MenuSetting extends Component {
   checkDropBesides(record) {
     const { dragData } = this.state;
     return dragData && (
+      /* eslint-disable-next-line */
       record.__level__ === 0 ? dragData.type !== 'menu' :
         (dragData.type !== 'root' && !hasDirChild(dragData))
     );
@@ -538,6 +549,7 @@ export default class MenuSetting extends Component {
         dragData.parentId = record.id;
         record.subMenus = record.subMenus || [];
         record.subMenus.unshift(dragData);
+        /* eslint-disable-next-line */
         normalizeMenus([dragData], record.__level__, record.name);
       } else {
         const { parent, index, parentData: { id = 0, __level__, name } = {} } = findParent(menuData, record);

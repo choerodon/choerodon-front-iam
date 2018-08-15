@@ -13,8 +13,7 @@ const FormItem = Form.Item;
 const instance = authorizeAxios.create();
 const getInfoinstance = authorizeAxios.create();
 
-const keyStr = 'ABCDEFGHIJKLMNOP' + 'QRSTUVWXYZabcdef' + 'ghijklmnopqrstuv'
-  + 'wxyz0123456789+/' + '=';
+const keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
 const formItemLayout = {
   labelCol: {
@@ -90,34 +89,43 @@ export default class AuthorizeModal extends Component {
    */
   encode = (password) => {
     let output = '';
-    let chr1, 
-      chr2, 
-      chr3 = '';
-    let enc1, 
-      enc2, 
-      enc3, 
-      enc4 = '';
+    let chr1;
+    let chr2;
+    let chr3 = '';
+    let enc1;
+    let enc2;
+    let enc3;
+    let enc4 = '';
     let i = 0;
     do {
-      chr1 = password.charCodeAt(i++);
-      chr2 = password.charCodeAt(i++);
-      chr3 = password.charCodeAt(i++);
-      enc1 = chr1 >> 2;
+      chr1 = password.charCodeAt(i += 1);
+      chr2 = password.charCodeAt(i += 1);
+      chr3 = password.charCodeAt(i += 1);
+      enc1 = chr1 * 4;
+      /* eslint-disable-next-line */
       enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+      /* eslint-disable-next-line */
       enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+      /* eslint-disable-next-line */
       enc4 = chr3 & 63;
       if (isNaN(chr2)) {
-        enc3 = enc4 = 64;
+        enc4 = 64;
+        enc3 = enc4;
       } else if (isNaN(chr3)) {
         enc4 = 64;
       }
       output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2)
         + keyStr.charAt(enc3) + keyStr.charAt(enc4);
-      chr1 = chr2 = chr3 = '';
-      enc1 = enc2 = enc3 = enc4 = '';
+      chr1 = '';
+      chr2 = '';
+      chr3 = '';
+      enc1 = '';
+      enc2 = '';
+      enc3 = '';
+      enc4 = '';
     } while (i < password.length);
     return output;
-  }
+  };
 
   handleCancel = () => {
     APITestStore.setIsShowModal(false);

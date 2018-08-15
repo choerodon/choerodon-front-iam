@@ -39,6 +39,7 @@ export function findParent(menus, record) {
           return true;
         }
       }
+      return false;
     });
     return result;
   } else {
@@ -73,7 +74,7 @@ export function defineParentName(obj, name) {
 }
 
 export function normalizeMenus(menus, level = -1, parentName) {
-  level++;
+  level += 1;
   menus.forEach((menu) => {
     const { subMenus, name } = menu;
     defineLevel(menu, level);

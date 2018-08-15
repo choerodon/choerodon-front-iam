@@ -117,17 +117,17 @@ export default class EditRole extends Component {
     if (currents.length !== permissions.length) {
       return true;
     }
-    for (let i = 0; i < permissions.length; i++) {
+    for (let i = 0; i < permissions.length; i += 1) {
       if (!currents.includes(permissions[i].id)) {
         return true;
       }
     }
     return false;
-  }
+  };
 
   handleEdit = () => {
     const { intl } = this.props;
-    this.props.form.validateFieldsAndScroll((err, {}, modify) => {
+    this.props.form.validateFieldsAndScroll((err, values, modify) => {
       if (!err) {
         if (!modify && !this.isModify()) {
           Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));

@@ -103,7 +103,7 @@ export default class APIDetail extends Component {
         operation_id: operationId,
       };
       defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/${service}/controllers/${controller}/paths?${querystring.stringify(queryObj)}`).then((data) => {
-        for (const item of data.paths) {
+        data.paths.some((item) => {
           if (item.operationId === operationId) {
             const { basePath, url } = item;
             APITestStore.setApiDetail(item);
@@ -111,9 +111,10 @@ export default class APIDetail extends Component {
               loading: false,
               requestUrl: `${urlPrefix}${basePath}${url}`,
             });
-            return;
+            return true;
           }
-        }
+          return false;
+        });
       });
     } else {
       const { basePath, url } = APITestStore.getApiDetail;
@@ -660,12 +661,12 @@ export default class APIDetail extends Component {
         taArr: this.state.taArr,
       });
     }
-    Object.entries(this.state.taArr).map((a) => {
-      const name = a[0];
+    Object.entries(this.state.taArr).forEach((a) => {
+      const entrieName = a[0];
       if (Array.isArray(a[1])) {
-        a[1].map((v) => { query = `${query}&${name}=${v}`; });
+        a[1].forEach((v) => { query = `${query}&${entrieName}=${v}`; });
       } else {
-        query = `${query}&${name}=${a[1]}`;
+        query = `${query}&${entrieName}=${a[1]}`;
       }
     });
     this.setState({

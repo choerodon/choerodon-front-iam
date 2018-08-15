@@ -251,27 +251,29 @@ export default class MailSetting extends Component {
               ) : ''
             }
             <hr className="divider" />
-            <div className="btnGroup">
-              <Button
-                funcType="raised"
-                type="primary"
-                htmlType="submit"
-                loading={saving}
-              >
-                <FormattedMessage id="save" />
-              </Button>
-              <Button
-                funcType="raised"
-                onClick={() => {
-                  const { resetFields } = this.props.form;
-                  resetFields();
-                }}
-                style={{ color: '#3F51B5' }}
-                disabled={saving}
-              >
-                <FormattedMessage id="cancel" />
-              </Button>
-            </div>
+            <Permission service={['notify-service.config.updateEmail']} >
+              <div className="btnGroup">
+                <Button
+                  funcType="raised"
+                  type="primary"
+                  htmlType="submit"
+                  loading={saving}
+                >
+                  <FormattedMessage id="save" />
+                </Button>
+                <Button
+                  funcType="raised"
+                  onClick={() => {
+                    const { resetFields } = this.props.form;
+                    resetFields();
+                  }}
+                  style={{ color: '#3F51B5' }}
+                  disabled={saving}
+                >
+                  <FormattedMessage id="cancel" />
+                </Button>
+              </div>
+            </Permission>
           </Form>
         )}
       </div>
@@ -280,17 +282,23 @@ export default class MailSetting extends Component {
 
     return (
       <Page
-        service={['manager-service.service.pageManager']}
+        service={[
+          'notify-service.config.selectEmail',
+          'notify-service.config.testEmailConnect',
+          'notify-service.config.updateEmail',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
-          <Button
-            onClick={this.testContact}
-            icon="low_priority"
-          >
-            <FormattedMessage id={`${intlPrefix}.test.contact`} />
-          </Button>
+          <Permission service={['notify-service.config.testEmailConnect']}>
+            <Button
+              onClick={this.testContact}
+              icon="low_priority"
+            >
+              <FormattedMessage id={`${intlPrefix}.test.contact`} />
+            </Button>
+          </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

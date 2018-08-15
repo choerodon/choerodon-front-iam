@@ -134,6 +134,8 @@
       sort: 1
       permission:
       - 'notify-service.email-template.pageSite'
+      - 'notify-service.email-template.create'
+      - 'notify-service.email-template.update'
   - "sms-template":
       icon: test
       Routes: /iam/sms-template
@@ -145,7 +147,9 @@
       Routes: /iam/mail-setting
       sort: 3
       permission:
-      - 'notify-service.email-template.pageSite'
+      - 'notify-service.config.selectEmail'
+      - 'notify-service.config.testEmailConnect'
+      - 'notify-service.config.updateEmail'
   - "sms-setting":
       icon: textsms
       Routes: /iam/sms-setting

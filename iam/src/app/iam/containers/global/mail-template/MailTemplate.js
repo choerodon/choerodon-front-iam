@@ -494,13 +494,13 @@ export default class MailTemplate extends Component {
       align: 'right',
       render: (text, record) => {
         const actionsDatas = [{
-          service: ['notify-service.email-template.pageSite'],
+          service: ['notify-service.email-template.create'],
           type: 'site',
           icon: '',
           text: intl.formatMessage({ id: 'baseon' }),
           action: this.handleOpen.bind(this, 'baseon', record),
         }, {
-          service: ['notify-service.email-template.pageSite'],
+          service: ['notify-service.email-template.update'],
           type: 'site',
           icon: '',
           text: intl.formatMessage({ id: 'modify' }),
@@ -522,17 +522,23 @@ export default class MailTemplate extends Component {
 
     return (
       <Page
-        service={['notify-service.email-template.pageSite']}
+        service={[
+          'notify-service.email-template.pageSite',
+          'notify-service.email-template.create',
+          'notify-service.email-template.update'
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${this.roles.code}.header.title`} />}
         >
-          <Button
-            icon="playlist_add"
-            onClick={this.handleOpen.bind(this, 'create')}
-          >
-            <FormattedMessage id="mailtemplate.create" />
-          </Button>
+          <Permission service={['notify-service.email-template.create']}>
+            <Button
+              icon="playlist_add"
+              onClick={this.handleOpen.bind(this, 'create')}
+            >
+              <FormattedMessage id="mailtemplate.create" />
+            </Button>
+          </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

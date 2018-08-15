@@ -25,7 +25,7 @@ class Editor extends Component {
     toolbar: [
       ['bold', 'italic', 'underline'],
       [{ list: 'ordered' }, { list: 'bullet' }],
-      ['link', 'image'],
+      ['link'],
       [{ color: [] }],
       [{ font: [] }],
       [{ size: ['10px', '12px', '14px', '16px', '18px', '20px'] }],
@@ -43,7 +43,6 @@ class Editor extends Component {
     'list',
     'bullet',
     'link',
-    'image',
     'color',
     'background',
     'font',

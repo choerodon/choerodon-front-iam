@@ -53,7 +53,8 @@ instance.interceptors.request.use(
   (err) => {
     const error = err;
     return Promise.reject(error);
-  });
+  },
+);
 
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
@@ -137,8 +138,8 @@ export default class APIDetail extends Component {
       name: item,
     }));
     const desc = APITestStore.getApiDetail.description || '[]';
-    const responseDataExample = APITestStore.getApiDetail &&
-      APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
+    const responseDataExample = APITestStore.getApiDetail
+    && APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
     handledDescWithComment = jsonFormat(handledDescWithComment);
     const handledDesc = Hjson.parse(desc);
@@ -310,6 +311,15 @@ export default class APIDetail extends Component {
     this.fileInput.click();
   }
 
+  handleCopyCURL(culContent) {
+    const { intl: { formatMessage } } = this.props;
+    const curlRootEle = document.getElementById('curlContent');
+    curlRootEle.value = culContent;
+    curlRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
   getTest = () => {
     let curlContent;
     const upperMethod = {
@@ -325,15 +335,15 @@ export default class APIDetail extends Component {
     const handleMethod = upperMethod[APITestStore.getApiDetail.method];
     const currentToken = APITestStore.getApiToken || authorization;
     const token = currentToken ? currentToken.split(' ')[1] : null;
-    const bodyStr = (getFieldValue('bodyData') || '');
+    const bodyStr = (getFieldValue('bodyData') || '').replace(/\n/g, '\\\n');
     let body = '';
     if (bodyStr) {
       body = `-d '${bodyStr}' `;
     }
     if (handleMethod === 'GET') {
-      curlContent = `curl -X ${handleMethod} \\\n --url '${handleUrl}' \\\n --header 'Accept: application/json' \\\n --header 'Authorization: Bearer ${token}'`;
+      curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
     } else {
-      curlContent = `curl -X ${handleMethod} \\\n --url '${handleUrl}' \\\n --header 'Content-Type: application/json' \\\n --header 'Accept: application/json' \\\n --header 'Authorization: Bearer ${token}' \\\n ${body}`;
+      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' ${body}'${handleUrl}'`;
     }
     const method = APITestStore && APITestStore.apiDetail.method;
     const { getFieldDecorator, getFieldError } = this.props.form;
@@ -376,23 +386,25 @@ export default class APIDetail extends Component {
               </FormItem>
             </div>);
         } else if (record.type === 'boolean') {
-          editableNode = (<FormItem>
-            {getFieldDecorator(`${record.name}`, {
-              rules: [],
-            })(
-              <div style={{ width: '55px' }}>
-                <Select
-                  dropdownStyle={{ width: '55px' }}
-                  defaultValue=""
-                  onChange={this.handleSelectChange.bind(this, record.name)}
-                >
-                  <Option value="" style={{ height: '22px' }} />
-                  <Option value="true">true</Option>
-                  <Option value="false">false</Option>
-                </Select>
-              </div>,
-            )}
-          </FormItem>);
+          editableNode = (
+            <FormItem>
+              {getFieldDecorator(`${record.name}`, {
+                rules: [],
+              })(
+                <div style={{ width: '55px' }}>
+                  <Select
+                    dropdownStyle={{ width: '55px' }}
+                    defaultValue=""
+                    onChange={this.handleSelectChange.bind(this, record.name)}
+                  >
+                    <Option value="" style={{ height: '22px' }} />
+                    <Option value="true">true</Option>
+                    <Option value="false">false</Option>
+                  </Select>
+                </div>,
+              )}
+            </FormItem>
+          );
         } else if (record.type === 'array') {
           editableNode = (
             <div style={{ width: '50%' }}>
@@ -418,19 +430,21 @@ export default class APIDetail extends Component {
             </div>
           );
         } else {
-          editableNode = (<FormItem>
-            {getFieldDecorator(`${record.name}`, {
-              rules: [{
-                required: record.required,
-                whitespace: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
-              }],
-            })(
-              <div style={{ width: '50%' }}>
-                <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
-              </div>,
-            )}
-          </FormItem>);
+          editableNode = (
+            <FormItem>
+              {getFieldDecorator(`${record.name}`, {
+                rules: [{
+                  required: record.required,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
+                }],
+              })(
+                <div style={{ width: '50%' }}>
+                  <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                </div>,
+              )}
+            </FormItem>
+          );
         }
         return editableNode;
       },
@@ -563,9 +577,14 @@ export default class APIDetail extends Component {
             <div className="curl-container" ref={this.curlNode}>
               <pre>
                 <code>
-                  {curlContent}
+                  { curlContent }
                 </code>
               </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyCURL.bind(this, curlContent)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="curlContent" />
             </div>
           </div>
         </div>
@@ -604,11 +623,11 @@ export default class APIDetail extends Component {
               });
               APITestStore.setIsShowResult(true);
             }).catch((error) => {
-              this.setState({
-                isSending: false,
-              });
-              APITestStore.setIsShowResult(true);
+            this.setState({
+              isSending: false,
             });
+            APITestStore.setIsShowResult(true);
+          });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({
@@ -696,8 +715,8 @@ export default class APIDetail extends Component {
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
           backPath="/iam/api-test"
         />
-        {this.state.loading ? <div style={{ textAlign: 'center', paddingTop: '250px' }}><Spin size="large" /></div> :
-          (
+        {this.state.loading ? <div style={{ textAlign: 'center', paddingTop: '250px' }}><Spin size="large" /></div>
+          : (
             <div>
               <Content
                 className="c7n-api-test"

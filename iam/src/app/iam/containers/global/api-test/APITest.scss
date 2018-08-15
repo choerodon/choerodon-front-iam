@@ -254,20 +254,38 @@
 
       .c7n-curl {
         margin-top: 24px;
+        position: relative;
 
         .curl-container {
           width: 100%;
           max-height: 228px;
           margin-top: 12px;
-          line-height: 65px;
-          padding-left: 16px;
-          padding-right: 16px;
+          line-height: 1.5;
+          padding: 16px;
           white-space: nowrap;
           overflow: auto;
           background: #f1f9ff;
           color: #444;
           font-size: 14px;
+
+          &:hover {
+            i.icon.icon-library_books {
+              display: inline-block;
+            }
+          }
         }
+
+        i.icon.icon-library_books {
+          position: absolute;
+          top: 50px;
+          right: 16px;
+          color: #3F51B5;
+          cursor: pointer;
+          font-size: 25px;
+          background: white;
+          display: none;
+        }
+
       }
     }
   }
@@ -309,9 +327,9 @@
     width: 370px;
     margin: 0 auto;
 
-      button {
-        width: 120px;
-      }
+    button {
+      width: 120px;
+    }
   }
 }
 

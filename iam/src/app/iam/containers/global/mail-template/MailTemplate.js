@@ -60,6 +60,10 @@ export default class MailTemplate extends Component {
     this.loadTemplate();
   }
 
+  componentWillUnmount() {
+    MailTemplateStore.setTemplateType([]);
+  }
+
   getInitState() {
     return {
       editorContent: '',
@@ -97,13 +101,7 @@ export default class MailTemplate extends Component {
   handleOpen = (selectType, record = {}) => {
     this.props.form.resetFields();
     if (!MailTemplateStore.getTemplateType.length) {
-      MailTemplateStore.loadTemplateType().then((data) => {
-        if (data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          MailTemplateStore.setTemplateType(data);
-        }
-      });
+      this.loadTemplateType(this.roles.type, this.roles.orgId);
     }
 
     if (selectType === 'create') {
@@ -116,7 +114,7 @@ export default class MailTemplate extends Component {
         this.creatTemplateFocusInput.input.focus();
       }, 10);
     } else {
-      MailTemplateStore.getTemplateDetail(record.id).then((data) => {
+      MailTemplateStore.getTemplateDetail(record.id, this.roles.type, this.roles.orgId).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -134,6 +132,16 @@ export default class MailTemplate extends Component {
         }
       });
     }
+  }
+
+  loadTemplateType = (type, orgId) => {
+    MailTemplateStore.loadTemplateType(type, orgId).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        MailTemplateStore.setTemplateType(data);
+      }
+    });
   }
 
   // 关闭侧边栏
@@ -220,7 +228,7 @@ export default class MailTemplate extends Component {
 
   reload = () => {
     this.setState(this.getInitState(), () => {
-      this.initMailTemplate();
+      this.loadTemplate();
     });
   };
 
@@ -342,7 +350,7 @@ export default class MailTemplate extends Component {
           </FormItem>
           <div style={{ marginBottom: '8px' }}>
             <div>
-              <span className="c7n-mailcontent-label">邮件内容</span>
+              <span className="c7n-mailcontent-label">{intl.formatMessage({ id: 'mailtemplate.mail.content' })}</span>
             </div>
             <Editor
               style={{ height: 320, width: '100%' }}
@@ -357,20 +365,27 @@ export default class MailTemplate extends Component {
     );
   }
 
-
-  // getImageInHtml = () => {
-  //   const imgBase = [];
-  //   const formData = new FormData();
-  //   this.state.editorContent.fin
-
-  // }
+  getPermission() {
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    let createService = ['notify-service.email-template.create'];
+    let modifyService = ['notify-service.email-template.update'];
+    if (type === 'organization') {
+      createService = ['notify-service.email-template-org.create'];
+      modifyService = ['notify-service.email-template-org.update']
+    }
+    return {
+      createService,
+      modifyService,
+    }
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
     const { intl } = this.props;
     const { selectType } = this.state;
+    const { type, orgId } = this.roles;
     this.props.form.validateFieldsAndScroll((err, values) => {
-      window.console.log(this.state.content);
       if (!err) {
         this.setState({
           isSubmitting: true,
@@ -382,25 +397,25 @@ export default class MailTemplate extends Component {
             content: this.state.editorContent,
             isPredefined: true,
           };
-          MailTemplateStore.createTemplate(body).then((data) => {
-            if (data.failed) {
-              Choerodon.prompt(data.message);
-            } else {
-              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-              this.reload();
+            MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
+              if (data.failed) {
+                Choerodon.prompt(data.message);
+              } else {
+                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+                this.setState({
+                  isShowSidebar: false,
+                });
+                this.reload();
+              };
               this.setState({
-                isShowSidebar: false,
+                isSubmitting: false,
               });
-            }
-            this.setState({
-              isSubmitting: false,
+            }).catch((error) => {
+              Choerodon.handleResponseError(error);
+              this.setState({
+                isSubmitting: false,
+              });
             });
-          }).catch((error) => {
-            Choerodon.handleResponseError(error);
-            this.setState({
-              isSubmitting: false,
-            });
-          });
         } else {
           body = {
             ...values,
@@ -409,7 +424,7 @@ export default class MailTemplate extends Component {
             isPredefined: MailTemplateStore.getCurrentDetail.isPredefined,
             objectVersionNumber: MailTemplateStore.getCurrentDetail.objectVersionNumber,
           };
-          MailTemplateStore.updateTemplateDetail(MailTemplateStore.getCurrentDetail.id, body).then((data) => {
+          MailTemplateStore.updateTemplateDetail(MailTemplateStore.getCurrentDetail.id, body, type, orgId).then((data) => {
             if (data.failed) {
               Choerodon.prompt(data.message);
             } else {
@@ -437,6 +452,9 @@ export default class MailTemplate extends Component {
 
   render() {
     const { intl } = this.props;
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    const { createService, modifyService } = this.getPermission();
     const {
       sort: { columnKey, order }, filters, pagination, loading,
       params, isShowSidebar, isSubmitting, selectType,
@@ -494,14 +512,14 @@ export default class MailTemplate extends Component {
       align: 'right',
       render: (text, record) => {
         const actionsDatas = [{
-          service: ['notify-service.email-template.create'],
-          type: 'site',
+          service: createService,
+          type,
           icon: '',
           text: intl.formatMessage({ id: 'baseon' }),
           action: this.handleOpen.bind(this, 'baseon', record),
         }, {
-          service: ['notify-service.email-template.update'],
-          type: 'site',
+          service: modifyService,
+          type,
           icon: '',
           text: intl.formatMessage({ id: 'modify' }),
           action: this.handleOpen.bind(this, 'modify', record),
@@ -510,7 +528,7 @@ export default class MailTemplate extends Component {
         if (!record.isPredefined) {
           actionsDatas.push({
             service: ['notify-service.email-template.pageSite'],
-            type: 'site',
+            type: 'type',
             icon: '',
             text: intl.formatMessage({ id: 'delete' }),
             action: this.handleDelete.bind(this, record),
@@ -524,14 +542,17 @@ export default class MailTemplate extends Component {
       <Page
         service={[
           'notify-service.email-template.pageSite',
+          'notify-service.email-template.pageOrganization',
           'notify-service.email-template.create',
+          'notify-service.email-template-org.create',
           'notify-service.email-template.update',
+          'notify-service.email-template-org.update',
         ]}
       >
         <Header
           title={<FormattedMessage id={`${this.roles.code}.header.title`} />}
         >
-          <Permission service={['notify-service.email-template.create']}>
+          <Permission service={createService}>
             <Button
               icon="playlist_add"
               onClick={this.handleOpen.bind(this, 'create')}

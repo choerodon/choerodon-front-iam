@@ -76,13 +76,26 @@ class MailTemplateStore {
     }
   };
 
-  loadTemplateType = () => axios.get('/notify/v1/notices/send_settings/names');
+  loadTemplateType = (appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.get(`/notify/v1/notices/send_settings/names${path}`);
+  }
 
-  createTemplate = data => axios.post('notify/v1/notices/emails/templates', JSON.stringify(data));
+  createTemplate = (data, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.post(`notify/v1/notices/emails/templates${path}`, JSON.stringify(data));
+  }
 
-  getTemplateDetail = id => axios.get(`notify/v1/notices/emails/templates/${id}`);
+  getTemplateDetail = (id, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.get(`notify/v1/notices/emails/templates/${id}${path}`);
+  }
 
-  updateTemplateDetail = (id, data) => axios.put(`notify/v1/notices/emails/templates/${id}`, JSON.stringify(data));
+
+  updateTemplateDetail = (id, data, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.put(`notify/v1/notices/emails/templates/${id}${path}`, JSON.stringify(data));
+  }
 }
 
 const mailTemplateStore = new MailTemplateStore();

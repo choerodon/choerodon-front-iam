@@ -258,7 +258,9 @@
         Routes: /iam/mail-template
         sort: 7
         permission:
-        - 'notify-service.email-template.pageOrganization'
+          - 'notify-service.email-template.pageOrganization'
+          - 'notify-service.email-template-org.create'
+          - 'notify-service.email-template-org.update'
 
 # 项目设置
 "prosetting":

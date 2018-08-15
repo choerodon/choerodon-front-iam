@@ -120,8 +120,7 @@ class MemberLabel extends Component {
     const { style, className, form, value, label } = this.props;
     const { getFieldDecorator } = form;
     setTimeout(() => {
-      console.log(this.createRoleFocusInput);
-      this.createRoleFocusInput.focus();
+      this.saveSelectRef.focus();
     }, 10);
     return (
       <FormItem
@@ -150,7 +149,6 @@ class MemberLabel extends Component {
             showNotFindInputItem={false}
             choiceRender={this.handleChoiceRender}
             allowClear
-            ref={(e) => this.createRoleFocusInput = e}
           />,
         )}
       </FormItem>);

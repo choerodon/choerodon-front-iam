@@ -309,12 +309,13 @@ export default class User extends Component {
         <p key={`${intlPrefix}.upload.lasttime`}>
           <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
           {uploadInfo.beginTime}
+          （<FormattedMessage id={`${intlPrefix}.upload.spendtime`}/>
+          {this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime)}）
         </p>,
         <p key={`${intlPrefix}.upload.time`}>
           <FormattedMessage
             id={`${intlPrefix}.upload.time`}
             values={{
-              time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime) || 0,
               successCount: <span className="success-count">{uploadInfo.successCount || 0}</span>,
               failedCount: <span className="failed-count">{uploadInfo.failedCount || 0}</span>,
             }}

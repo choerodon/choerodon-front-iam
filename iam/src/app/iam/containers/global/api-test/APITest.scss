@@ -17,27 +17,27 @@
 }
 
 .get {
-  background: #4D90FE;
+  background: #4d90fe;
 }
 
 .post {
-  background: #00BFA5;
+  background: #00bfa5;
 }
 
 .put {
-  background: #FFB100;
+  background: #ffb100;
 }
 
 .delete {
-  background: #F44336;
+  background: #f44336;
 }
 
 .options {
-  background: #743BE7;
+  background: #743be7;
 }
 
 .patch {
-  background: #FF7043;
+  background: #ff7043;
 }
 
 .c7n-api-test {
@@ -48,7 +48,7 @@
   .boolean,
   .undefined,
   .null {
-    color: #00BFA5;
+    color: #00bfa5;
   }
   .comment {
     color: rgba(0, 0, 0, 0.56);
@@ -81,7 +81,7 @@
 
       .response-data-container {
         padding: 5px;
-        background: #F1F9FF;
+        background: #f1f9ff;
       }
     }
   }
@@ -116,7 +116,7 @@
           z-index: 2;
           width: 109px;
           height: 31px;
-          top: 0px;
+          top: 0;
           background: white;
         }
       }
@@ -182,7 +182,7 @@
 
         .info {
           font-size: 16px;
-          color: #000000;
+          color: #000;
         }
 
         button {
@@ -197,7 +197,7 @@
         text-transform: uppercase;
         border-radius: 2px 0 0 2px;
         font-size: 13px;
-        color: #FFFFFF;
+        color: #fff;
       }
 
       input {
@@ -230,9 +230,9 @@
         .response-code-container {
           height: 60px;
           margin-top: 12px;
-          background: #F1F9FF;
+          background: #f1f9ff;
           line-height: 60px;
-          color: #444444;
+          color: #444;
           font-size: 14px;
           text-indent: 16px;
         }
@@ -246,7 +246,7 @@
           max-height: 228px;
           padding: 16px;
           overflow: auto;
-          background: #F1F9FF;
+          background: #f1f9ff;
           white-space: nowrap;
           font-size: 14px;
         }
@@ -264,8 +264,8 @@
           padding-right: 16px;
           white-space: nowrap;
           overflow: auto;
-          background: #F1F9FF;
-          color: #444444;
+          background: #f1f9ff;
+          color: #444;
           font-size: 14px;
         }
       }

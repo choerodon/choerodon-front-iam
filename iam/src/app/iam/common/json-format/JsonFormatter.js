@@ -52,7 +52,7 @@ class JsonFormatter extends Component {
       });
       html.push(wrapper(']', 'array', count));
     } else {
-      html.push(wrapper('[]', 'array', 1, true));
+      html.push(wrapper('[]', 'array', 1));
     }
     return html;
   };
@@ -90,7 +90,7 @@ class JsonFormatter extends Component {
       });
       html.push(wrapper('}', 'object', count));
     } else {
-      html.push(wrapper('{}', 'object', 1, true));
+      html.push(wrapper('{}', 'object', 1));
     }
     return html;
   };

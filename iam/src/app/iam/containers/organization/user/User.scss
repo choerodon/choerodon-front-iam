@@ -59,17 +59,17 @@
       &-error {
         span {
           cursor: default;
-          color: #F44336;
+          color: #f44336;
         }
       }
     }
 
     .success-count {
-       color: #00BFA5;
+       color: #00bfa5;
     }
 
     .failed-count {
-      color: #F44336;
+      color: #f44336;
     }
   }
   &-hidden {
@@ -82,7 +82,7 @@
     margin: 0 0 32px 2px;
     padding: 24px 0;
     border-radius: 4px;
-    box-shadow: 0 3px 1px -2px rgba(0,0,0,0.20), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12);
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.20), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
     > .loading {
       position: relative;
@@ -108,6 +108,4 @@
       font-size: 14px;
     }
   }
-
-
 }

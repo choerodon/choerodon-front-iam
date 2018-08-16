@@ -18,6 +18,7 @@ const intlPrefix = 'organization.user';
 @observer
 export default class User extends Component {
   state = this.getInitState();
+
   getInitState() {
     return {
       submitting: false,
@@ -120,6 +121,7 @@ export default class User extends Component {
       window.console.log(error);
     });
   };
+
   /*
   * 启用停用
   * */
@@ -145,6 +147,7 @@ export default class User extends Component {
       });
     }
   };
+
   changeLanguage = (code) => {
     if (code === 'zh_CN') {
       return '简体中文';
@@ -196,6 +199,7 @@ export default class User extends Component {
       status: 'upload',
     });
   };
+
   /**
    *  application/vnd.ms-excel 2003-2007
    *  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 2010
@@ -316,16 +320,19 @@ export default class User extends Component {
           <FormattedMessage
             id={`${intlPrefix}.upload.time`}
             values={{
-              successCount: <span className="success-count">{uploadInfo.successCount || 0}</span>,
+              successCount: <span className="success-count">{uploadInfo.successfulCount || 0}</span>,
               failedCount: <span className="failed-count">{uploadInfo.failedCount || 0}</span>,
             }}
           />
-          <span className={`download-failed-${failedStatus}`}>
-            <a href={uploadInfo.url}>
-              <FormattedMessage id={`${intlPrefix}.download.failed.${failedStatus}`} />
-            </a>
-          </span>
-        </p>);
+          {uploadInfo.url && (
+            <span className={`download-failed-${failedStatus}`}>
+              <a href={uploadInfo.url}>
+                <FormattedMessage id={`${intlPrefix}.download.failed.${failedStatus}`} />
+              </a>
+            </span>
+          )}
+        </p>,
+      );
     } else {
       container.push(<p key={`${intlPrefix}.upload.norecord`}><FormattedMessage id={`${intlPrefix}.upload.norecord`} /></p>);
     }
@@ -345,7 +352,8 @@ export default class User extends Component {
           <Spin size="large" />
         </div>
         <p className="text">{formatMessage({
-          id: `${intlPrefix}.${fileLoading ? 'fileloading' : 'uploading'}.text` })}</p>
+          id: `${intlPrefix}.${fileLoading ? 'fileloading' : 'uploading'}.text` })}
+        </p>
         {!fileLoading && (<p className="tip">{formatMessage({ id: `${intlPrefix}.uploading.tip` })}</p>)}
       </div>
     );
@@ -591,26 +599,30 @@ export default class User extends Component {
               </Permission>
             )
             }
-            {record.locked ?
-              <Permission
-                service={['iam-service.organization-user.unlock']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip
-                  title={<FormattedMessage id={`${intlPrefix}.unlock`} />}
-                  placement="bottom"
+            {record.locked
+              ? (
+                <Permission
+                  service={['iam-service.organization-user.unlock']}
+                  type={type}
+                  organizationId={organizationId}
                 >
-                  <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
-                </Tooltip>
-              </Permission> :
-              <Permission
-                service={['iam-service.organization-user.unlock']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Button size="small" icon="lock_open" shape="circle" disabled />
-              </Permission>
+                  <Tooltip
+                    title={<FormattedMessage id={`${intlPrefix}.unlock`} />}
+                    placement="bottom"
+                  >
+                    <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
+                  </Tooltip>
+                </Permission>
+              )
+              : (
+                <Permission
+                  service={['iam-service.organization-user.unlock']}
+                  type={type}
+                  organizationId={organizationId}
+                >
+                  <Button size="small" icon="lock_open" shape="circle" disabled />
+                </Permission>
+              )
             }
           </div>
         ),

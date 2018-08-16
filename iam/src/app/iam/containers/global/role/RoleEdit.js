@@ -353,13 +353,13 @@ export default class EditRole extends Component {
               </FormItem>
               <FormItem>
                 {currentPermission.length > 0 ? (
-                  <p className="alreadyDes">
+                  <span className="alreadyDes">
                     <FormattedMessage id={`${intlPrefix}.permission.count.msg`} values={{ count: currentPermission.length }} />
-                  </p>
+                  </span>
                 ) : (
-                  <p className="alreadyDes">
+                  <span className="alreadyDes">
                     <FormattedMessage id={`${intlPrefix}.permission.nothing.msg`} />
-                  </p>
+                  </span>
                 )}
               </FormItem>
               <FormItem

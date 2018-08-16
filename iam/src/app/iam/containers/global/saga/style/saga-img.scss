@@ -40,12 +40,12 @@
         border: 4px solid #ffb100;
       }
       &.running {
-        color: #00bfa5;
-        border: 4px solid #00bfa5;
-      }
-      &.completed {
         color: #4d90fe;
         border: 4px solid #4d90fe;
+      }
+      &.completed {
+        color: #00bfa5;
+        border: 4px solid #00bfa5;
       }
       > span {
         display: block;
@@ -128,10 +128,10 @@
       background: rgba(255, 177, 0, 0.08);
     }
     &.running {
-      background: rgba(0, 191, 165, 0.08);
+      background: rgba(77, 144, 254, 0.08);
     }
     &.completed {
-      background: rgba(77, 144, 254, 0.08);
+      background: rgba(0, 191, 165, 0.08);
     }
   }
 
@@ -209,10 +209,10 @@
       background: #f44336;
     }
     &.running {
-      background: #00bfa5;
+      background: #4d90fe;
     }
     &.completed {
-      background: #4d90fe;
+      background: #00bfa5;
     }
     &.queue {
       background: #ffb100;

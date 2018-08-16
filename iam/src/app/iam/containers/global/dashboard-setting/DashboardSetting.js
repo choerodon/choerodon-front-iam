@@ -239,6 +239,7 @@ class DashboardSetting extends Component {
                 <IconSelect
                   label={<FormattedMessage id={`${intlPrefix}.icon`} />}
                   style={{ width: inputWidth }}
+                  showArrow
                 />,
               )
             }

@@ -34,11 +34,12 @@
       height: calc(100% - 121px);
     }
   }
+  &-refid {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+    overflow: hidden;
+  }
 }
 
-.c7n-saga-instance&-refid {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 150px;
-  overflow: hidden;
-}
+

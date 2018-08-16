@@ -153,8 +153,17 @@ export default class MailTemplate extends Component {
 
   // 删除
   handleDelete(record) {
-    MailTemplateStore.deleteMailTemplate(record.id);
-    this.reload();
+    MailTemplateStore.deleteMailTemplate(record.id, this.mail.type, this.mail.orgId).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.reload();
+      }
+    }).catch((error) => {
+      if (error) {
+        Choerodon.prompt('接口错误');
+      }
+    });
   }
 
   initMailTemplate() {

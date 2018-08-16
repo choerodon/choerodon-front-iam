@@ -17,10 +17,6 @@ class MailTemplateStore {
 
   @observable currentDetail = {};
 
-  // TODO: 这里调用删除的接口
-  deleteMailTemplate = id => axios.delete(`/notify/v1/notices/template/${id}`);
-
-
   @action setLoading(flag) {
     this.loading = flag;
   }
@@ -84,6 +80,11 @@ class MailTemplateStore {
   createTemplate = (data, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
     return axios.post(`notify/v1/notices/emails/templates${path}`, JSON.stringify(data));
+  }
+
+  deleteMailTemplate = (id, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.delete(`/notify/v1/notices/emails/templates/${id}${path}`);
   }
 
   getTemplateDetail = (id, appType, orgId) => {

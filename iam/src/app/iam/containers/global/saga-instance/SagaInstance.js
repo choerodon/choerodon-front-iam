@@ -164,8 +164,6 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id={`${intlPrefix}.id`} />,
         key: 'id',
         dataIndex: 'id',
-        filters: [],
-        filteredValue: filters.id || [],
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.status`} />,

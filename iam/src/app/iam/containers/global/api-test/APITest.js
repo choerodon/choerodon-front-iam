@@ -161,14 +161,14 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: 350,
+      className: 'c7n-apitest-name',
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
           return <span>{name}</span>;
         } else {
           return (
-            <span className={classnames('methodTag', method)}>{method}</span>
+            <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>
           );
         }
       },
@@ -176,7 +176,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
       key: 'url',
-      width: 438,
+      className: 'c7n-apitest-url',
       render: (text, record) => (
         <Tooltip
           title={text}
@@ -190,7 +190,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
       key: 'remark',
-      width: 475,
+      // width: 475,
       render: (text, data) => {
         const { description, remark } = data;
         if (remark) {
@@ -201,7 +201,7 @@ export default class APITest extends Component {
       },
     }, {
       title: '',
-      width: '100px',
+      width: 100,
       key: 'action',
       align: 'right',
       render: (text, record) => {
@@ -249,6 +249,7 @@ export default class APITest extends Component {
             {this.getOptionList()}
           </Select>
           <Table
+            className="c7n-api-table"
             loading={APITestStore.loading}
             indentSize={0}
             columns={columns}

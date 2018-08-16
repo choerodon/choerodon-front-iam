@@ -238,6 +238,7 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
+      width: 250,
       render: (text, record) => {
         let icon = '';
         if ('organizationId' in record) {
@@ -253,10 +254,12 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
+      width: 300,
     }, {
       title: <FormattedMessage id={`${intlPrefix}.belongorg`} />,
       dataIndex: 'organizationName',
       key: 'organizationName',
+      width: 300,
     }, {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',

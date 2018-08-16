@@ -15,7 +15,7 @@ import './Configuration.scss';
 import ConfigurationStore from '../../../stores/global/configuration';
 
 const { confirm } = Modal;
-const { Step } = Steps.Step;
+const { Step } = Steps;
 const FormItem = Form.Item;
 const { Option } = Select;
 const intlPrefix = 'global.configuration';
@@ -161,7 +161,10 @@ class CreateConfig extends Component {
           disabled={templateDisable}
           style={{ width: '512px' }}
           label={<FormattedMessage id={`${intlPrefix}.template`} />}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filterOption={
+            (input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
           filter
           onChange={this.generateVersion.bind(this)}
         >
@@ -181,7 +184,9 @@ class CreateConfig extends Component {
             disabled={templateDisable}
             style={{ width: '512px' }}
             label={<FormattedMessage id={`${intlPrefix}.template`} />}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            filterOption={
+              (input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             filter
           />
@@ -192,7 +197,10 @@ class CreateConfig extends Component {
             disabled={templateDisable}
             style={{ width: '512px' }}
             label={<FormattedMessage id={`${intlPrefix}.template`} />}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={
+              (input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
             filter
             onChange={this.generateVersion.bind(this)}
           >
@@ -335,7 +343,10 @@ class CreateConfig extends Component {
                 disabled={ConfigurationStore.getStatus === 'baseon'}
                 style={{ width: inputWidth }}
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                filterOption={
+                  (input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
                 filter
                 onChange={this.handleChange.bind(this)}
               >
@@ -471,7 +482,7 @@ class CreateConfig extends Component {
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col>
-            <Col span={21}>{ `${service}.${version}` }</Col>
+            <Col span={21}>{`${service}.${version}`}</Col>
           </Row>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{version}</Col>
@@ -522,7 +533,8 @@ class CreateConfig extends Component {
       if (failed) {
         Choerodon.prompt(message);
       } else {
-        const currentService = ConfigurationStore.service.find(({ name }) => name === data.serviceName);
+        const currentService =
+          ConfigurationStore.service.find(item => item.name === data.serviceName);
         ConfigurationStore.setRelatedService(currentService);
         Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
         this.props.history.push('/iam/configuration');
@@ -553,7 +565,9 @@ class CreateConfig extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.create`} />}
+          title={<FormattedMessage
+            id={`${intlPrefix}.create`}
+          />}
           backPath="/iam/configuration"
         />
         <Content
@@ -563,35 +577,29 @@ class CreateConfig extends Component {
           <div className="createConfigContainer">
             <Steps current={current}>
               <Step
-                title={(
+                title={
                   <span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>
                     <FormattedMessage id={`${intlPrefix}.step1.title`} />
-                  </span>
-                )}
+                  </span>}
                 status={this.getStatus(1)}
               />
               <Step
-                title={(
-                  <span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>
-                    <FormattedMessage
-                      id={`${intlPrefix}.step2.title`}
-                    />
-                  </span>
-                )}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>
+                  <FormattedMessage
+                    id={`${intlPrefix}.step2.title`}
+                  /></span>}
                 status={this.getStatus(2)}
               />
               <Step
-                title={(
-                  <span style={{
-                    color: current === 3 ? '#3F51B5' : '',
-                    fontSize: 14,
-                  }}
-                  >
-                    <FormattedMessage
-                      id={`${intlPrefix}.step3.create.title`}
-                    />
-                  </span>
-                )}
+                title={<span style={{
+                  color: current === 3 ? '#3F51B5' : '',
+                  fontSize: 14,
+                }}
+                >
+                  <FormattedMessage
+                    id={`${intlPrefix}.step3.create.title`}
+                  />
+                </span>}
                 status={this.getStatus(3)}
               />
             </Steps>

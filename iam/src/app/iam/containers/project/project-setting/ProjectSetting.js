@@ -159,9 +159,9 @@ export default class ProjectSetting extends Component {
                   <Input autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.code`} />} disabled style={{ width: 512 }} />,
                 )}
               </FormItem>
+              <div className="divider" />
               <Permission service={['iam-service.project.update']}>
                 <div className="btnGroup">
-                  <hr className="divider" />
                   <Button
                     funcType="raised"
                     htmlType="submit"

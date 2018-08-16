@@ -241,6 +241,7 @@ export default class OrganizationInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
+      width: 300,
       render: (text, record) => {
         let icon = '';
         if ('projects' in record) {
@@ -256,6 +257,7 @@ export default class OrganizationInfo extends Component {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
+      width: 400,
     }, {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',

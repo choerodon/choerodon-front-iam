@@ -232,6 +232,24 @@ export default class MailTemplate extends Component {
     };
   }
 
+  /**
+   * 模板编码校验
+   * @param rule 表单校验规则
+   * @param value 模板编码
+   * @param callback 回调函数
+   */
+  checkCode = (rule, value, callback) => {
+    const { intl } = this.props;
+    const path = this.roles.type === 'site' ? '' : `/organizations/${this.roles.orgId}`;
+    axios.get(`notify/v1/notices/emails/templates/check${path}?code=${value}`).then((mes) => {
+      if (mes.failed) {
+        callback(intl.formatMessage({ id: 'mailtemplate.code.exist' }));
+      } else {
+        callback();
+      }
+    });
+  };
+
   handlePageChange = (pagination, filters, sort, params) => {
     this.loadTemplate(pagination, filters, sort, params);
   };
@@ -296,7 +314,11 @@ export default class MailTemplate extends Component {
                 required: true,
                 whitespace: true,
                 message: this.formatMessage('mailtemplate.code.required'),
+              }, {
+                validator: this.checkCode,
               }],
+              validateTrigger: 'onBlur',
+              validateFirst: true,
               initialValue: selectType === 'modify' ? MailTemplateStore.getCurrentDetail.code : undefined,
             })(
               <Input ref={(e) => { this.creatTemplateFocusInput = e; }} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} disabled={selectType === 'modify'} />,

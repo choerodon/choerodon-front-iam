@@ -668,6 +668,7 @@ const zh_CN = {
   'mailtemplate.type.required': '请选择模板类型',
   'mailtemplate.title.required': '请输入邮件标题',
   'mailtemplate.mail.content': '邮件内容',
+  'mailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',
@@ -687,7 +688,7 @@ const zh_CN = {
   'global.mailsetting.host.required': '请输入服务器地址',
   'global.mailsetting.port.required': '请输入端口号',
   'global.mailsetting.port.pattern': '请输入大于零的整数',
-  'global.mailsetting.connect.success': '邮件服务器连接成功',
+  'global.mailsetting.connect.success': '连接成功',
 
 
   // 事务定义

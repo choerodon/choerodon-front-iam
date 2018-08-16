@@ -126,25 +126,25 @@ const pageDetail = {
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
   'global.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接受的邮件内容。',
-  'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
   'global.mailtemplate.create.title': '在平台"{name}"中创建邮件模板',
   'global.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'global.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
   'global.mailtemplate.baseon.title': '在平台"{name}"中创建邮件模板',
   'global.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
-  'global.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+  'global.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
   'global.mailtemplate.modify.title': '在平台"{name}"中修改邮件模板',
   'global.mailtemplate.modify.description': '修改邮件模板可以让您根据自己的需求，修改发送的主题、内容。',
-  'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
 
   // 邮箱配置
   'global.mailsetting.title': '平台"{name}"的邮箱配置',
   'global.mailsetting.description': '邮箱配置用于管理发件邮箱的账号信息与邮件服务器信息。',
-  'global.mailsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailsetting.link': `${docServer}/user-guide/system-configuration/message/email-config/`,
 
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',

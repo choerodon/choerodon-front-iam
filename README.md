@@ -19,6 +19,7 @@ The basic module has 3 levels, which have the following functions:
     * LDAP settings
     * Password Policy Management
     * Role Assignments function at organization level
+    * Mail Template at organization level
  * Global layout:
     * User Info
     * Change Password
@@ -34,6 +35,13 @@ The basic module has 3 levels, which have the following functions:
     * Config Management
     * Route Management
     * Role Assignments function at global level
+    * Mail Template at organization level
+    * Saga Instance
+    * Saga Define
+    * Role Tag
+    * Mailbox Setting
+    * API Test
+    * Dashboard Setting
 
 ## Development build
 

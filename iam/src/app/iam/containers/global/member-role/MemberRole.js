@@ -896,8 +896,8 @@ export default class MemberRole extends Component {
       }),
       onChange: (newSelectRoleMemberKeys, newSelectRoleMembers) => {
         this.setState({
-          newSelectRoleMemberKeys,
-          newSelectRoleMembers,
+          selectRoleMemberKeys: newSelectRoleMemberKeys,
+          selectRoleMembers: newSelectRoleMembers,
         });
       },
     };

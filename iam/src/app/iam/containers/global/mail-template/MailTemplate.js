@@ -77,7 +77,7 @@ export default class MailTemplate extends Component {
         total: 0,
       },
       sort: {
-        columnKey: 'id',
+        columnKey: 'isPredefined',
         order: 'descend',
       },
       filters: {},
@@ -372,12 +372,12 @@ export default class MailTemplate extends Component {
     let modifyService = ['notify-service.email-template.update'];
     if (type === 'organization') {
       createService = ['notify-service.email-template-org.create'];
-      modifyService = ['notify-service.email-template-org.update']
+      modifyService = ['notify-service.email-template-org.update'];
     }
     return {
       createService,
       modifyService,
-    }
+    };
   }
 
   handleSubmit = (e) => {
@@ -397,25 +397,25 @@ export default class MailTemplate extends Component {
             content: this.state.editorContent,
             isPredefined: true,
           };
-            MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
-              if (data.failed) {
-                Choerodon.prompt(data.message);
-              } else {
-                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-                this.setState({
-                  isShowSidebar: false,
-                });
-                this.reload();
-              };
+          MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
+            if (data.failed) {
+              Choerodon.prompt(data.message);
+            } else {
+              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
               this.setState({
-                isSubmitting: false,
+                isShowSidebar: false,
               });
-            }).catch((error) => {
-              Choerodon.handleResponseError(error);
-              this.setState({
-                isSubmitting: false,
-              });
+              this.reload();
+            }
+            this.setState({
+              isSubmitting: false,
             });
+          }).catch((error) => {
+            Choerodon.handleResponseError(error);
+            this.setState({
+              isSubmitting: false,
+            });
+          });
         } else {
           body = {
             ...values,

@@ -623,11 +623,11 @@ export default class APIDetail extends Component {
               });
               APITestStore.setIsShowResult(true);
             }).catch((error) => {
-            this.setState({
-              isSending: false,
+              this.setState({
+                isSending: false,
+              });
+              APITestStore.setIsShowResult(true);
             });
-            APITestStore.setIsShowResult(true);
-          });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({

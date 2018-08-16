@@ -1,42 +1,56 @@
-.methodTag {
-  display: inline-block;
-  height: 20px;
-  padding: 1px 4px;
-  text-align: center;
-  font-size: 13px;
-  color: #fff;
-  text-transform: uppercase;
-  border-radius: 2px;
+.c7n-api-table {
+  .c7n-apitest-name {
+    max-width: 300px;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .c7n-apitest-url {
+    width: 438px;
+    max-width: 438px;
+  }
+
+  .urlContainer {
+    max-width: 380px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .methodTag {
+    display: inline-block;
+    height: 20px;
+    padding: 1px 4px;
+    text-align: center;
+    font-size: 13px;
+    color: #fff;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
 }
 
-.urlContainer {
-  max-width: 380px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.get {
+.c7n-apitest-get {
   background: #4d90fe;
 }
 
-.post {
+.c7n-apitest-post {
   background: #00bfa5;
 }
 
-.put {
+.c7n-apitest-put {
   background: #ffb100;
 }
 
-.delete {
+.c7n-apitest-delete {
   background: #f44336;
 }
 
-.options {
+.c7n-apitest-options {
   background: #743be7;
 }
 
-.patch {
+.c7n-apitest-patch {
   background: #ff7043;
 }
 
@@ -205,7 +219,7 @@
         display: inline-block;
         margin-left: 0;
         margin-right: 24px;
-        width: 74%;
+        width: 64%;
         padding: 7px 0 7px 14px;
         border-top: 1px solid rgba(0, 0, 0, 0.12);
         border-right: 1px solid rgba(0, 0, 0, 0.12);

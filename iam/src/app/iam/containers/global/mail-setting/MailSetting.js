@@ -75,8 +75,16 @@ export default class MailSetting extends Component {
   }
 
   testContact = () => {
-    const { intl } = this.props;
-    MailSettingStore.testConnection().then((data) => {
+    const { intl, form } = this.props;
+    const { getFieldsValue } = form;
+    const values = getFieldsValue();
+    const setting = {
+      ...values,
+      ssl: values.ssl === 'Y',
+      port: Number(values.port),
+      objectVersionNumber: MailSettingStore.getSettingData.objectVersionNumber,
+    };
+    MailSettingStore.testConnection(setting).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -84,12 +92,6 @@ export default class MailSetting extends Component {
       }
     }).catch((error) => {
       Choerodon.handleResponseError(error);
-    });
-  }
-
-  changeServerType = (value) => {
-    this.setState({
-      isExchange: value === 'EXCHANGE',
     });
   }
 
@@ -103,8 +105,8 @@ export default class MailSetting extends Component {
         });
         const setting = {
           ...values,
-          ssl: values.protocol === 'EXCHANGE' ? false : values.ssl === 'Y',
-          port: values.protocol === 'EXCHANGE' ? 691 : Number(values.port),
+          ssl: values.ssl === 'Y',
+          port: Number(values.port),
           objectVersionNumber: MailSettingStore.getSettingData.objectVersionNumber,
         };
         MailSettingStore.updateData(setting).then((data) => {

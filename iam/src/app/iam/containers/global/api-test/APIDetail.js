@@ -521,7 +521,7 @@ export default class APIDetail extends Component {
             </Button>
           </div>
           <div style={{ marginBottom: '30px' }}>
-            <span className={classnames('method', method)}>{method}</span>
+            <span className={classnames('method', `c7n-apitest-${method}`)}>{method}</span>
             <input type="text" value={this.state.requestUrl} readOnly />
             {!this.state.isSending ? (
               <Button

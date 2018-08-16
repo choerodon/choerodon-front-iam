@@ -117,7 +117,7 @@
   sort: 3
   site:
   - "api-test":
-      icon: APItest
+      icon:
       Routes: /iam/api-test
       sort: 1
       permission:

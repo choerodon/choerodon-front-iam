@@ -490,8 +490,8 @@ export default class PasswordPolicy extends Component {
             </div>
           ) : ''}
         </div>
+        <div className="divider" />
         <div className="btnGroup">
-          <hr className="divider" />
           <Permission service={['iam-service.password-policy.update']}>
             <Button
               funcType="raised"

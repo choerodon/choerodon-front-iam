@@ -24,7 +24,7 @@ class MailSettingStore {
 
   updateData = data => axios.put('notify/v1/notices/configs/email', JSON.stringify(data));
 
-  testConnection = () => axios.get('notify/v1/notices/configs/email/test');
+  testConnection = data => axios.post('notify/v1/notices/configs/email/test', JSON.stringify(data));
 }
 
 const mailSettingStore = new MailSettingStore();

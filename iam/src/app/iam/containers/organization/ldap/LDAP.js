@@ -518,9 +518,9 @@ export default class LDAP extends Component {
             )}
           </FormItem>
         </div>
+        <div className="divider" />
         <Permission service={['iam-service.ldap.update']}>
           <div className="btnGroup">
-            <hr className="divider" />
             <Button
               funcType="raised"
               type="primary"

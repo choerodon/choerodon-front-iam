@@ -252,6 +252,19 @@ export default class SagaImg extends Component {
     Choerodon.prompt(formatMessage({ id: 'copy.success' }));
   }
 
+  handleTransObj = (str) => {
+    let obj = null;
+    if (!str) {
+      return obj;
+    }
+    obj = JSON.parse(str);
+    if (typeof obj === 'string') {
+      /* eslint-disable-next-line */
+      obj =  eval(obj);
+    }
+    return obj;
+  }
+
   renderContent = () => {
     const { data: { tasks } } = this.state;
     const line = this.line();
@@ -358,9 +371,11 @@ export default class SagaImg extends Component {
       key: formatMessage({ id: `${intlPrefix}.task.run.exception.msg` }),
       value: exceptionMessage,
     };
+
+    const obj = this.handleTransObj(output);
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
-      value: output ? jsonFormat(JSON.parse(output)) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
+      value: obj ? jsonFormat(obj) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
     };
     return (
       <div className="c7n-saga-task-run">
@@ -478,7 +493,7 @@ export default class SagaImg extends Component {
           <div className="c7n-saga-detail-json">
             <pre style={{ maxHeight: '350px' }}>
               <code id="json">
-                {json ? jsonFormat(JSON.parse(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
+                {json ? jsonFormat(this.handleTransObj(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
               </code>
             </pre>
           </div>

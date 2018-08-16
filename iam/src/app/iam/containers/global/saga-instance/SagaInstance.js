@@ -211,7 +211,9 @@ export default class SagaInstance extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.refid`} />,
         key: 'refId',
+        width: 150,
         dataIndex: 'refId',
+        className: 'c7n-saga-instance-refid',
         filters: [],
         filteredValue: filters.refId || [],
       },

@@ -101,7 +101,7 @@ export default class MailTemplate extends Component {
   handleOpen = (selectType, record = {}) => {
     this.props.form.resetFields();
     if (!MailTemplateStore.getTemplateType.length) {
-      this.loadTemplateType(this.roles.type, this.roles.orgId);
+      this.loadTemplateType(this.mail.type, this.mail.orgId);
     }
 
     if (selectType === 'create') {
@@ -114,7 +114,7 @@ export default class MailTemplate extends Component {
         this.creatTemplateFocusInput.input.focus();
       }, 10);
     } else {
-      MailTemplateStore.getTemplateDetail(record.id, this.roles.type, this.roles.orgId).then((data) => {
+      MailTemplateStore.getTemplateDetail(record.id, this.mail.type, this.mail.orgId).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -154,10 +154,11 @@ export default class MailTemplate extends Component {
   // 删除
   handleDelete(record) {
     MailTemplateStore.deleteMailTemplate(record.id);
+    this.reload();
   }
 
   initMailTemplate() {
-    this.roles = new MailTemplateType(this);
+    this.mail = new MailTemplateType(this);
   }
 
   handleRefresh = () => {
@@ -179,7 +180,7 @@ export default class MailTemplate extends Component {
     // 防止标签闪烁
     this.setState({ filters });
     MailTemplateStore.loadMailTemplate(pagination, filters, sort, params,
-      this.roles.type, this.roles.orgId)
+      this.mail.type, this.mail.orgId)
       .then((data) => {
         MailTemplateStore.setLoading(false);
         MailTemplateStore.setMailTemplate(data.content);
@@ -214,7 +215,7 @@ export default class MailTemplate extends Component {
   // 侧边栏描述
   getHeader() {
     const { selectType } = this.state;
-    const { code, values } = this.roles;
+    const { code, values } = this.mail;
     const selectCode = `${code}.${selectType}`;
     return {
       code: selectCode,
@@ -384,7 +385,7 @@ export default class MailTemplate extends Component {
     e.preventDefault();
     const { intl } = this.props;
     const { selectType } = this.state;
-    const { type, orgId } = this.roles;
+    const { type, orgId } = this.mail;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({
@@ -550,7 +551,7 @@ export default class MailTemplate extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${this.roles.code}.header.title`} />}
+          title={<FormattedMessage id={`${this.mail.code}.header.title`} />}
         >
           <Permission service={createService}>
             <Button
@@ -568,8 +569,8 @@ export default class MailTemplate extends Component {
           </Button>
         </Header>
         <Content
-          code={this.roles.code}
-          values={{ name: `${this.roles.values.name || 'Choerodon'}` }}
+          code={this.mail.code}
+          values={{ name: `${this.mail.values.name || 'Choerodon'}` }}
         >
 
           <Table

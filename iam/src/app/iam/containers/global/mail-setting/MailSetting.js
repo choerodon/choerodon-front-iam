@@ -82,7 +82,7 @@ export default class MailSetting extends Component {
       } else {
         Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
       }
-    }).catch(error => {
+    }).catch((error) => {
       Choerodon.handleResponseError(error);
     });
   }
@@ -182,9 +182,9 @@ export default class MailSetting extends Component {
             >
               {getFieldDecorator('protocol', {
                 rules: [],
-                initialValue: 'SMTP'
+                initialValue: 'SMTP',
               })(
-                <Input label={intl.formatMessage({ id: `${intlPrefix}.server.type` })} style={{ width: inputWidth }} disabled />
+                <Input label={intl.formatMessage({ id: `${intlPrefix}.server.type` })} style={{ width: inputWidth }} disabled />,
               )}
             </FormItem>
             <FormItem

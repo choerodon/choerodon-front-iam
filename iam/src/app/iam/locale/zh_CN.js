@@ -1,5 +1,4 @@
-
-const docServer = 'http://v0-9.choerodon.io/zh';
+const docServer = 'http://v0-9.choerodon.io/zh/docs';
 const pageDetail = {
   // menusetting
   // home

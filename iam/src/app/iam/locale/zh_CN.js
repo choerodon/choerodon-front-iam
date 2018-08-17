@@ -246,19 +246,19 @@ const pageDetail = {
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
   'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
-  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.create.title': '在组织"{name}"中创建邮件模板',
   'organization.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.baseon.title': '在组织"{name}"中创建邮件模板',
   'organization.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
-  'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+  'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.modify.title': '在组织"{name}"中修改邮件模板',
   'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
 
   // 项目设置

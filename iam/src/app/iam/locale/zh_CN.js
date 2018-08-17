@@ -73,7 +73,7 @@ const pageDetail = {
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
   'global.configuration.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
-  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/config/`,
 
   'global.configuration.create.title': '在平台"{name}"中创建配置',
   'global.configuration.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',

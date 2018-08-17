@@ -544,7 +544,8 @@ export default class SagaImg extends Component {
             </Tabs>
             )}
             {instance && activeTab === 'run' ? this.renderTaskRunDetail() : ''}
-            {instance ? this.renderTaskDetail() : this.renderWithoutInstance()}
+            {instance && activeTab !== 'run' ? this.renderTaskDetail() : ''}
+            {instance ? '' : this.renderWithoutInstance()}
           </div>
         )}
         {jsonTitle && (

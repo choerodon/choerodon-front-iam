@@ -23,6 +23,7 @@ export default class Route extends Component {
     super(props);
     this.createRouteFocusInput = React.createRef();
   }
+
   state = this.getInitState();
 
   componentWillMount() {
@@ -59,11 +60,9 @@ export default class Route extends Component {
   /* 获取sidebar中对应微服务 */
   getOption() {
     const { serviceArr = [] } = this.state;
-    const services = serviceArr.map(({ name }) =>
-      (
-        <Option value={name} key={name}>{name}</Option>
-      ),
-    );
+    const services = serviceArr.map(({ name }) => (
+      <Option value={name} key={name}>{name}</Option>
+    ));
     return services;
   }
 
@@ -328,7 +327,7 @@ export default class Route extends Component {
             objectVersionNumber,
             helperService,
             serviceId,
-            preffix: preffix === 'stripPrefix',
+            stripPrefix: preffix === 'stripPrefix',
             retryable: retryable === 'retry',
             customSensitiveHeaders: isFiltered,
             sensitiveHeaders: info,
@@ -613,8 +612,7 @@ export default class Route extends Component {
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
                 getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
                 filterOption={
-                  (input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 filter
               >
@@ -635,8 +633,8 @@ export default class Route extends Component {
                   className="radioGroup"
                   disabled={detailValidate}
                 >
-                  <Radio value={'stripPrefix'}>{intl.formatMessage({ id: 'yes' })}</Radio>
-                  <Radio value={'withPrefix'}>{intl.formatMessage({ id: 'no' })}</Radio>
+                  <Radio value="stripPrefix">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="withPrefix">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -654,8 +652,8 @@ export default class Route extends Component {
                   className="radioGroup"
                   disabled={detailValidate}
                 >
-                  <Radio value={'retry'}>{intl.formatMessage({ id: 'yes' })}</Radio>
-                  <Radio value={'noRetry'}>{intl.formatMessage({ id: 'no' })}</Radio>
+                  <Radio value="retry">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="noRetry">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -674,8 +672,8 @@ export default class Route extends Component {
                   disabled={detailValidate}
                   onChange={this.changeSensetive.bind(this)}
                 >
-                  <Radio value={'filtered'}>{intl.formatMessage({ id: 'yes' })}</Radio>
-                  <Radio value={'noFiltered'}>{intl.formatMessage({ id: 'no' })}</Radio>
+                  <Radio value="filtered">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="noFiltered">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>

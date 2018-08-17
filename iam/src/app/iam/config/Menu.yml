@@ -133,9 +133,11 @@
       Routes: /iam/mail-template
       sort: 1
       permission:
-      - 'notify-service.email-template.pageSite'
-      - 'notify-service.email-template.create'
-      - 'notify-service.email-template.update'
+      - 'notify-service.email-template-site.pageSite'
+      - 'notify-service.email-template-site.create'
+      - 'notify-service.email-template-site.update'
+      - 'notify-service.email-template-site.query'
+      - 'notify-service.send-setting-site.listNames'
   - "mail-setting":
       icon: contact_mail
       Routes: /iam/mail-setting
@@ -240,9 +242,12 @@
         Routes: /iam/mail-template
         sort: 7
         permission:
-          - 'notify-service.email-template.pageOrganization'
+          - 'notify-service.email-template-org.pageOrganization'
           - 'notify-service.email-template-org.create'
           - 'notify-service.email-template-org.update'
+          - 'notify-service.email-template-org.delete'
+          - 'notify-service.email-template-org.query'
+          - 'notify-service.send-setting-org.listNames'
 
 # 项目设置
 "prosetting":

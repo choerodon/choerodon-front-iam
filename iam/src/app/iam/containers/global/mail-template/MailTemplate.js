@@ -416,15 +416,18 @@ export default class MailTemplate extends Component {
   getPermission() {
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    let createService = ['notify-service.email-template.create'];
-    let modifyService = ['notify-service.email-template.update'];
+    let createService = ['notify-service.email-template-site.create'];
+    let modifyService = ['notify-service.email-template-site.update'];
+    let deleteService = ['notify-service.email-template-site.delete'];
     if (type === 'organization') {
       createService = ['notify-service.email-template-org.create'];
       modifyService = ['notify-service.email-template-org.update'];
+      deleteService = ['notify-service.email-template-org.delete'];
     }
     return {
       createService,
       modifyService,
+      deleteService,
     };
   }
 
@@ -501,7 +504,7 @@ export default class MailTemplate extends Component {
     const { intl } = this.props;
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    const { createService, modifyService } = this.getPermission();
+    const { createService, modifyService, deleteService } = this.getPermission();
     const {
       sort: { columnKey, order }, filters, pagination, loading,
       params, isShowSidebar, isSubmitting, selectType,
@@ -577,8 +580,8 @@ export default class MailTemplate extends Component {
           // 根据来源类型判断
         if (!record.isPredefined) {
           actionsDatas.push({
-            service: ['notify-service.email-template.pageSite'],
-            type: 'type',
+            service: deleteService,
+            type,
             icon: '',
             text: intl.formatMessage({ id: 'delete' }),
             action: this.handleDelete.bind(this, record),
@@ -591,12 +594,14 @@ export default class MailTemplate extends Component {
     return (
       <Page
         service={[
-          'notify-service.email-template.pageSite',
-          'notify-service.email-template.pageOrganization',
-          'notify-service.email-template.create',
+          'notify-service.email-template-site.pageSite',
+          'notify-service.email-template-org.pageOrganization',
+          'notify-service.email-template-site.create',
           'notify-service.email-template-org.create',
-          'notify-service.email-template.update',
+          'notify-service.email-template-site.update',
           'notify-service.email-template-org.update',
+          'notify-service.email-template-site.delete',
+          'notify-service.email-template-org.delete',
         ]}
       >
         <Header

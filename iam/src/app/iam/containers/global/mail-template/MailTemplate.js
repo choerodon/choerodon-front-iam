@@ -160,6 +160,7 @@ export default class MailTemplate extends Component {
         id: record.subMenus && record.subMenus.length
           ? `${intlPrefix}.delete.owncontent.hassub`
           : `${intlPrefix}.delete.owncontent`,
+        name: record.name,
       }, {
         name: record.name,
       }),

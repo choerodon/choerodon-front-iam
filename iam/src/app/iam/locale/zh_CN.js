@@ -714,6 +714,7 @@ const zh_CN = {
   'global.saga.task.timeout.policy': '超时策略',
   'global.saga.task.service': '所属微服务',
   'global.saga.task.input.title': '输入数据',
+  'global.saga.task.input.demo': '输入数据示例',
   'global.saga.task.output.title': '输出数据',
   'global.saga.task.unlock': '解锁',
   'global.saga.task.retry': '重试',

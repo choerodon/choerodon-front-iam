@@ -176,6 +176,7 @@ export default class MailTemplate extends Component {
 
   loadTemplate(paginationIn, filtersIn, sortIn, paramsIn) {
     MailTemplateStore.setLoading(true);
+    this.loadTemplateType(this.mail.type, this.mail.orgId);
     const {
       pagination: paginationState,
       sort: sortState,
@@ -265,14 +266,14 @@ export default class MailTemplate extends Component {
       return (
         <div>
           <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id={'mailtemplate.predefined'} />
+          <FormattedMessage id="mailtemplate.predefined" />
         </div>
       );
     } else {
       return (
         <div>
           <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id={'mailtemplate.selfdefined'} />
+          <FormattedMessage id="mailtemplate.selfdefined" />
         </div>
       );
     }
@@ -478,8 +479,7 @@ export default class MailTemplate extends Component {
           });
         }
       }
-    },
-    );
+    });
   }
 
   render() {
@@ -512,15 +512,18 @@ export default class MailTemplate extends Component {
       dataIndex: 'code',
       key: 'code',
       width: 438,
+      filters: [],
+      filteredValue: filters.code || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.mailtype`} />,
       dataIndex: 'type',
       key: 'type',
       width: 475,
-      filters: [],
-      sorter: true,
-      sortOrder: columnKey === 'type' && order,
-      filteredValue: filters.type || [],
+      /* TODO: 这里后端查询type值没返回结果 GET /v1/notices/emails/templates */
+      // filters: MailTemplateStore.getTemplateType.map(({ name }) => ({ text: name, value: name })),
+      // sorter: true,
+      // sortOrder: columnKey === 'type' && order,
+      // filteredValue: filters.type || [],
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,

@@ -48,7 +48,7 @@ class MailTemplateStore {
   loadMailTemplate = (
     { current, pageSize },
     { name, code, type, isPredefined },
-    { columnKey = 'isPredefined', order = 'asc' },
+    { columnKey = 'id', order = 'descend' },
     params, appType, orgId,
   ) => {
     const queryObj = {

@@ -77,7 +77,7 @@ export default class MailTemplate extends Component {
         total: 0,
       },
       sort: {
-        columnKey: 'isPredefined',
+        columnKey: 'id',
         order: 'descend',
       },
       filters: {},
@@ -153,16 +153,30 @@ export default class MailTemplate extends Component {
 
   // 删除
   handleDelete(record) {
-    MailTemplateStore.deleteMailTemplate(record.id, this.mail.type, this.mail.orgId).then((data) => {
-      if (data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        this.reload();
-      }
-    }).catch((error) => {
-      if (error) {
-        Choerodon.prompt('接口错误');
-      }
+    const { intl } = this.props;
+    Modal.confirm({
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
+      content: intl.formatMessage({
+        id: record.subMenus && record.subMenus.length
+          ? `${intlPrefix}.delete.owncontent.hassub`
+          : `${intlPrefix}.delete.owncontent`,
+      }, {
+        name: record.name,
+      }),
+      onOk: () => {
+        MailTemplateStore.deleteMailTemplate(record.id, this.mail.type, this.mail.orgId).then((data) => {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.delete.success` }));
+            this.reload();
+          }
+        }).catch((error) => {
+          if (error) {
+            Choerodon.prompt('接口错误');
+          }
+        });
+      },
     });
   }
 
@@ -497,6 +511,7 @@ export default class MailTemplate extends Component {
       dataIndex: 'id',
       key: 'id',
       hidden: true,
+      sorter: true,
       sortOrder: columnKey === 'id' && order,
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
@@ -504,7 +519,6 @@ export default class MailTemplate extends Component {
       key: 'name',
       width: 350,
       filters: [],
-      sorter: true,
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {

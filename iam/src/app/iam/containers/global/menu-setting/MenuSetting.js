@@ -622,7 +622,7 @@ export default class MenuSetting extends Component {
       case 'create':
         return <FormattedMessage id="add" />;
       case 'detail':
-        return <FormattedMessage id="return" />;
+        return <FormattedMessage id="close" />;
       default:
         return <FormattedMessage id="save" />;
     }

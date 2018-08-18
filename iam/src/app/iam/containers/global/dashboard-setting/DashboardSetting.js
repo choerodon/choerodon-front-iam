@@ -103,6 +103,15 @@ class DashboardSetting extends Component {
         render: (text, { namespace }) => `${namespace}-${text}`,
       },
       {
+        title: <FormattedMessage id={`${intlPrefix}.card.title`} />,
+        dataIndex: 'title',
+        key: 'title',
+        filters: [],
+        filteredValue: filters.title || [],
+        sorter: true,
+        sortOrder: columnKey === 'title' && order,
+      },
+      {
         title: <FormattedMessage id={`${intlPrefix}.icon`} />,
         dataIndex: 'icon',
         key: 'icon',
@@ -206,7 +215,9 @@ class DashboardSetting extends Component {
                   autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.name`} />}
                   style={{ width: inputWidth }}
-                  ref={(e) => { this.editFocusInput = e; }}
+                  ref={(e) => {
+                    this.editFocusInput = e;
+                  }}
                 />,
               )
             }

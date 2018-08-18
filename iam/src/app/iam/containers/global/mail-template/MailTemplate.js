@@ -77,7 +77,7 @@ export default class MailTemplate extends Component {
         total: 0,
       },
       sort: {
-        columnKey: 'isPredefined',
+        columnKey: 'id',
         order: 'descend',
       },
       filters: {},
@@ -153,16 +153,31 @@ export default class MailTemplate extends Component {
 
   // 删除
   handleDelete(record) {
-    MailTemplateStore.deleteMailTemplate(record.id, this.mail.type, this.mail.orgId).then((data) => {
-      if (data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        this.reload();
-      }
-    }).catch((error) => {
-      if (error) {
-        Choerodon.prompt('接口错误');
-      }
+    const { intl } = this.props;
+    Modal.confirm({
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
+      content: intl.formatMessage({
+        id: record.subMenus && record.subMenus.length
+          ? `${intlPrefix}.delete.owncontent.hassub`
+          : `${intlPrefix}.delete.owncontent`,
+        name: record.name,
+      }, {
+        name: record.name,
+      }),
+      onOk: () => {
+        MailTemplateStore.deleteMailTemplate(record.id, this.mail.type, this.mail.orgId).then((data) => {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.delete.success` }));
+            this.reload();
+          }
+        }).catch((error) => {
+          if (error) {
+            Choerodon.prompt('接口错误');
+          }
+        });
+      },
     });
   }
 
@@ -176,6 +191,7 @@ export default class MailTemplate extends Component {
 
   loadTemplate(paginationIn, filtersIn, sortIn, paramsIn) {
     MailTemplateStore.setLoading(true);
+    this.loadTemplateType(this.mail.type, this.mail.orgId);
     const {
       pagination: paginationState,
       sort: sortState,
@@ -265,14 +281,14 @@ export default class MailTemplate extends Component {
       return (
         <div>
           <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id={'mailtemplate.predefined'} />
+          <FormattedMessage id="mailtemplate.predefined" />
         </div>
       );
     } else {
       return (
         <div>
           <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id={'mailtemplate.selfdefined'} />
+          <FormattedMessage id="mailtemplate.selfdefined" />
         </div>
       );
     }
@@ -400,15 +416,18 @@ export default class MailTemplate extends Component {
   getPermission() {
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    let createService = ['notify-service.email-template.create'];
-    let modifyService = ['notify-service.email-template.update'];
+    let createService = ['notify-service.email-template-site.create'];
+    let modifyService = ['notify-service.email-template-site.update'];
+    let deleteService = ['notify-service.email-template-site.delete'];
     if (type === 'organization') {
       createService = ['notify-service.email-template-org.create'];
       modifyService = ['notify-service.email-template-org.update'];
+      deleteService = ['notify-service.email-template-org.delete'];
     }
     return {
       createService,
       modifyService,
+      deleteService,
     };
   }
 
@@ -478,15 +497,14 @@ export default class MailTemplate extends Component {
           });
         }
       }
-    },
-    );
+    });
   }
 
   render() {
     const { intl } = this.props;
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    const { createService, modifyService } = this.getPermission();
+    const { createService, modifyService, deleteService } = this.getPermission();
     const {
       sort: { columnKey, order }, filters, pagination, loading,
       params, isShowSidebar, isSubmitting, selectType,
@@ -497,6 +515,7 @@ export default class MailTemplate extends Component {
       dataIndex: 'id',
       key: 'id',
       hidden: true,
+      sorter: true,
       sortOrder: columnKey === 'id' && order,
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
@@ -504,7 +523,6 @@ export default class MailTemplate extends Component {
       key: 'name',
       width: 350,
       filters: [],
-      sorter: true,
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
@@ -512,15 +530,18 @@ export default class MailTemplate extends Component {
       dataIndex: 'code',
       key: 'code',
       width: 438,
+      filters: [],
+      filteredValue: filters.code || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.mailtype`} />,
       dataIndex: 'type',
       key: 'type',
       width: 475,
-      filters: [],
-      sorter: true,
-      sortOrder: columnKey === 'type' && order,
-      filteredValue: filters.type || [],
+      /* TODO: 这里后端查询type值没返回结果 GET /v1/notices/emails/templates */
+      // filters: MailTemplateStore.getTemplateType.map(({ name }) => ({ text: name, value: name })),
+      // sorter: true,
+      // sortOrder: columnKey === 'type' && order,
+      // filteredValue: filters.type || [],
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,
@@ -559,8 +580,8 @@ export default class MailTemplate extends Component {
           // 根据来源类型判断
         if (!record.isPredefined) {
           actionsDatas.push({
-            service: ['notify-service.email-template.pageSite'],
-            type: 'type',
+            service: deleteService,
+            type,
             icon: '',
             text: intl.formatMessage({ id: 'delete' }),
             action: this.handleDelete.bind(this, record),
@@ -573,12 +594,14 @@ export default class MailTemplate extends Component {
     return (
       <Page
         service={[
-          'notify-service.email-template.pageSite',
-          'notify-service.email-template.pageOrganization',
-          'notify-service.email-template.create',
+          'notify-service.email-template-site.pageSite',
+          'notify-service.email-template-org.pageOrganization',
+          'notify-service.email-template-site.create',
           'notify-service.email-template-org.create',
-          'notify-service.email-template.update',
+          'notify-service.email-template-site.update',
           'notify-service.email-template-org.update',
+          'notify-service.email-template-site.delete',
+          'notify-service.email-template-org.delete',
         ]}
       >
         <Header

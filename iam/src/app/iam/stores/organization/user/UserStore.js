@@ -7,21 +7,29 @@ class UserStore {
 
   /* 密码策略用于修改密码时校验 */
   @observable passwordPolicy;
+
   @observable userInfo;
+
   @observable language;
+
   @observable organization;
+
   @observable timeZone = [];
+
   @observable checkEmail;
 
   @observable users = [];
+
   /* 用户列表 */
   @observable totalSize;
+
   @observable totalPage;
 
   /**
    * 上传状态
    */
   @observable uploading = false;
+
   @observable uploadInfo = {
     noData: true,
   };
@@ -40,6 +48,7 @@ class UserStore {
   get getIsLoading() {
     return this.isLoading;
   }
+
   @action
   setPasswordPolicy(data) {
     this.passwordPolicy = data;
@@ -143,7 +152,7 @@ class UserStore {
   }
 
   handleUploadInfo = (organizationId, userId) => {
-    axios.get(`/iam/v1/organizations/${organizationId}/upload/history?user_id=${userId}&type=user`).then((data) => {
+    axios.get(`/iam/v1/organizations/${organizationId}/upload/history?user_id=${userId}`).then((data) => {
       if (!data) {
         this.setUploadInfo({ noData: true });
         this.setUploading(false);
@@ -158,15 +167,13 @@ class UserStore {
     return axios.get(`/iam/v1/organizations/${orgId}/users/${UserId}/unlock`);
   }
 
-  loadPasswordPolicy = () =>
-    axios.get('/iam/v1/passwordPolicies/querySelf').then((data) => {
-      if (data) {
-        this.setPasswordPolicy(data);
-      }
-    });
+  loadPasswordPolicy = () => axios.get('/iam/v1/passwordPolicies/querySelf').then((data) => {
+    if (data) {
+      this.setPasswordPolicy(data);
+    }
+  });
 
-  updatePassword = (originPassword, hashedPassword) =>
-    axios.put(`/iam/v1/password/updateSelf?originPassword=${originPassword}&password=${hashedPassword}`);
+  updatePassword = (originPassword, hashedPassword) => axios.put(`/iam/v1/password/updateSelf?originPassword=${originPassword}&password=${hashedPassword}`);
 
   // 用户信息维护
   loadUserInfo = () => {
@@ -184,6 +191,7 @@ class UserStore {
   updateUserInfo = user => axios.put(`/iam/v1/users/${this.userInfo.id}/updateSelf`, JSON.stringify(user));
 
   EnableUser = (orgId, userId, data) => axios.put(`/iam/v1/organizations/${orgId}/users/${userId}/enable`);
+
   UnenableUser = (orgId, userId, data) => axios.put(`/iam/v1/organizations/${orgId}/users/${userId}/disable`);
 
 

@@ -1,5 +1,4 @@
-
-const docServer = 'http://choerodon.io/zh/docs';
+const docServer = 'http://v0-9.choerodon.io/zh/docs';
 const pageDetail = {
   // menusetting
   // home
@@ -73,7 +72,7 @@ const pageDetail = {
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
   'global.configuration.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
-  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/config/`,
 
   'global.configuration.create.title': '在平台"{name}"中创建配置',
   'global.configuration.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
@@ -246,19 +245,19 @@ const pageDetail = {
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
   'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
-  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.create.title': '在组织"{name}"中创建邮件模板',
   'organization.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.baseon.title': '在组织"{name}"中创建邮件模板',
   'organization.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
-  'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/api-management/a`,
+  'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.modify.title': '在组织"{name}"中修改邮件模板',
   'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
-  'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
 
   // 项目设置
@@ -655,6 +654,9 @@ const zh_CN = {
   'global.mailtemplate.table.code': '编码',
   'global.mailtemplate.table.mailtype': '邮件类型',
   'global.mailtemplate.table.fromtype': '来源',
+  'global.mailtemplate.delete.owntitle': '删除邮件模板',
+  'global.mailtemplate.delete.owncontent': '确定要删除邮件模板"{name}"吗？',
+  'global.mailtemplate.delete.success': '成功删除该邮件模板',
   'mailtemplate.create': '创建模板',
   'mailtemplate.modify': '修改模板',
   'mailtemplate.code': '模板编码',
@@ -714,6 +716,7 @@ const zh_CN = {
   'global.saga.task.timeout.policy': '超时策略',
   'global.saga.task.service': '所属微服务',
   'global.saga.task.input.title': '输入数据',
+  'global.saga.task.input.demo': '输入数据示例',
   'global.saga.task.output.title': '输出数据',
   'global.saga.task.unlock': '解锁',
   'global.saga.task.retry': '重试',

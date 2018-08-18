@@ -88,6 +88,7 @@ export default class Saga extends Component {
       });
     });
   }
+
   handleOk = () => {
     this.setState({
       visible: false,
@@ -97,11 +98,13 @@ export default class Saga extends Component {
       });
     });
   }
+
   handleTabChange = (showJson) => {
     this.setState({
       showJson: showJson === 'json',
     });
   }
+
   renderTable() {
     const { intl } = this.props;
     const { filters } = this.state;

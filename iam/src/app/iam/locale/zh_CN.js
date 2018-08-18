@@ -1,5 +1,4 @@
-/*eslint-disable*/
-const docServer = 'http://v0-8.choerodon.io/zh/docs';
+const docServer = 'http://v0-9.choerodon.io/zh/docs';
 const pageDetail = {
   // menusetting
   // home
@@ -22,7 +21,7 @@ const pageDetail = {
   // 角色标签
   'global.rolelabel.title': '平台"{name}"的角色标签',
   'global.rolelabel.description': '角色标签是在角色管理中可以与角色相关联，用于定义角色的特定逻辑的功能，需与代码开发结合。',
-  'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/rootuser/`,
+  'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/role-label/`,
 
   // rootuser
   'global.rootuser.title': '平台"{name}"的Root用户设置',
@@ -46,7 +45,7 @@ const pageDetail = {
   'global.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
   'global.memberrole.modify.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  //角色管理
+  // 角色管理
   'global.role.title': '平台"{name}"的角色管理',
   'global.role.description': '角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。',
   'global.role.link': `${docServer}/user-guide/system-configuration/platform/role/`,
@@ -73,7 +72,7 @@ const pageDetail = {
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
   'global.configuration.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
-  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/config/`,
 
   'global.configuration.create.title': '在平台"{name}"中创建配置',
   'global.configuration.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
@@ -125,44 +124,47 @@ const pageDetail = {
 
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
-  'global.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
-  'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接受的邮件内容。',
+  'global.mailtemplate.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
-  'global.mailtemplate.detail.title': '平台"{name}"的邮件模板',
-  'global.mailtemplate.detail.description': 'description',
-  'global.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.mailtemplate.create.title': '在平台"{name}"中创建邮件模板',
+  'global.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'global.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
+
+  'global.mailtemplate.baseon.title': '在平台"{name}"中创建邮件模板',
+  'global.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
+  'global.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
+
+  'global.mailtemplate.modify.title': '在平台"{name}"中修改邮件模板',
+  'global.mailtemplate.modify.description': '修改邮件模板可以让您根据自己的需求，修改发送的主题、内容。',
+  'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
+
 
   // 邮箱配置
   'global.mailsetting.title': '平台"{name}"的邮箱配置',
   'global.mailsetting.description': '邮箱配置用于管理发件邮箱的账号信息与邮件服务器信息。',
-  'global.mailsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
-  'global.mailsetting.create.title': '在平台"{name}"中创建配置',
-  'global.mailsetting.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
-  'global.mailsetting.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
-  'global.mailsetting.create.base.title': '在平台"{name}"中创建配置',
-  'global.mailsetting.create.base.description': '您可自定义您的配置版本。系统将自动生成您的配置ID。',
-  'global.mailsetting.create.base.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.mailsetting.link': `${docServer}/user-guide/system-configuration/message/email-config/`,
 
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
-  'global.saga.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga.link': `${docServer}/user-guide/system-configuration/global-transaction/saga/`,
   'global.saga.detail.title': '查看事务定义"{name}"的详情',
   'global.saga.detail.description': '您可以在此查看事务定义图、事务定义Json。',
-  'global.saga.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga/`,
 
   // 事务实例
   'global.saga-instance.title': '平台"{name}"的事务实例',
   'global.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
-  'global.saga-instance.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga-instance.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
   'global.saga-instance.detail.title': '查看事务实例"{name}"的详情',
   'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
-  'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
 
   // 仪表盘配置
   'global.dashboard-setting.title': '仪表盘配置',
   'global.dashboard-setting.description': '仪表盘为首页所展示的卡片合集，用户可以自定义自己的仪表盘。您可以在此配置仪表盘的卡片。',
-  'global.dashboard-setting.link': '',
+  'global.dashboard-setting.link': `${docServer}/user-guide/system-configuration/platform/dashboard-config/`,
   'global.dashboard-setting.modify.title': '对卡片"{name}"进行修改',
   'global.dashboard-setting.modify.description': '您可以在此修改仪表盘中卡片的配置。',
   'global.dashboard-setting.modify.link': '',
@@ -237,20 +239,28 @@ const pageDetail = {
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'organization.user.upload.title': '在组织"{name}"中导入用户',
-  'organization.user.upload.description': '您可以在此将文件中的用户信息导入到组织中。',
+  'organization.user.upload.description': '您可以在此将文件中的信息导入到组织中去。注：您必须使用用户上传模板，请在用户管理界面，点击“下载”下载模板。',
   'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
   'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
-  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
-  'organization.mailtemplate.detail.title': '组织"{name}"的邮件模板',
-  'organization.mailtemplate.detail.description': 'description',
-  'organization.apitmailtemplateest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'organization.mailtemplate.create.title': '在组织"{name}"中创建邮件模板',
+  'organization.mailtemplate.create.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'organization.mailtemplate.create.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
+  'organization.mailtemplate.baseon.title': '在组织"{name}"中创建邮件模板',
+  'organization.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
+  'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
+  'organization.mailtemplate.modify.title': '在组织"{name}"中修改邮件模板',
+  'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
+  'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
 
-  //项目设置
+  // 项目设置
   'project.info.title': '对项目"{name}"进行项目设置',
   'project.info.description': '您可以在此修改项目名称、停用项目。',
   'project.info.link': `${docServer}/user-guide/system-configuration/project/pro_info/`,
@@ -313,49 +323,52 @@ const pageDetail = {
   'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
 
 };
+/* eslint-disable-next-line */
 const zh_CN = {
 
-  'yes': '是',
-  'no': '否',
-  'save': '保存',
-  'close': '关闭',
-  'stop': '停止',
-  'restart': '重启',
-  'upgrade': '升级',
-  'learnmore': '了解更多',
-  'signout': '安全退出',
-  'select': '选择',
-  'return': '返回',
-  'filtertable': '过滤表',
-  'ok': '确定',
-  'upload': '上传',
-  'download': '下载',
-  'uploading': '导入中',
+  yes: '是',
+  no: '否',
+  save: '保存',
+  close: '关闭',
+  stop: '停止',
+  restart: '重启',
+  upgrade: '升级',
+  learnmore: '了解更多',
+  signout: '安全退出',
+  select: '选择',
+  return: '返回',
+  filtertable: '过滤表',
+  ok: '确定',
+  upload: '上传',
+  download: '下载',
+  uploading: '导入中',
+  loading: '加载中',
 
-  'day': '天',
-  'hour': '小时',
-  'minute': '分钟',
-  'second': '秒',
+  day: '天',
+  hour: '小时',
+  minute: '分钟',
+  second: '秒',
 
-// operation
-  'operation': '操作',
-  'add': '添加',
-  'addnew': '新增',
-  'create': '创建',
-  'edit': '编辑',
-  'modify': '修改',
-  'delete': '删除',
-  'remove': '移除',
+  // operation
+  operation: '操作',
+  add: '添加',
+  addnew: '新增',
+  create: '创建',
+  edit: '编辑',
+  modify: '修改',
+  delete: '删除',
+  remove: '移除',
   'confirm.delete': '确认删除',
-  'cancel': '取消',
-  'refresh': '刷新',
-  'detail': '详情',
-  'enable': '启用',
-  'disable': '停用',
+  cancel: '取消',
+  refresh: '刷新',
+  detail: '详情',
+  enable: '启用',
+  disable: '停用',
+  baseon: '基于此创建',
 
-// status
-// success
-  'success': '成功',
+  // status
+  // success
+  success: '成功',
   'operation.success': '操作成功',
   'add.success': '添加成功',
   'create.success': '创建成功',
@@ -368,8 +381,8 @@ const zh_CN = {
   'copy.success': '已复制到剪贴板',
   'upload.success': '上传成功',
 
-// error
-  'error': '失败',
+  // error
+  error: '失败',
   'operation.error': '操作失败',
   'add.error': '添加失败',
   'create.error': '创建失败',
@@ -382,20 +395,20 @@ const zh_CN = {
   'upload.error': '上传失败',
 
   // 统一字段
-  'name': '名称',
-  'code': '编码',
-  'status': '状态',
-  'level': '层级',
-  'source': '来源',
-  'type': '类型',
+  name: '名称',
+  code: '编码',
+  status: '状态',
+  level: '层级',
+  source: '来源',
+  type: '类型',
 
-  //type
-  'global': '全局',
-  'site': '平台',
-  'project': '项目',
-  'organization': '组织',
+  // type
+  global: '全局',
+  site: '平台',
+  project: '项目',
+  organization: '组织',
 
-  //组织管理
+  // 组织管理
   'global.organization.header.title': '组织管理',
   'global.organization.create': '创建组织',
   'global.organization.title': '平台"{name}"的组织管理',
@@ -624,27 +637,61 @@ const zh_CN = {
   'global.apitest.choose.file': '选择文件',
   'global.apitest.copyleft': '点击复制至左侧',
   'global.apitest.sending': '发送中',
+  'global.apitest.authorize.success': '授权成功',
+  'global.apitest.authorize.failed': '授权失败',
+  'global.apitest.authorize.account': '授权账号',
+  'global.apitest.authorize.password': '密码',
+  'global.apitest.account.required': '请输入授权账号',
+  'global.apitest.pwd.required': '请输入密码',
+  'global.apitest.authorize': '授权',
+  'global.apitest.authorize.title': 'API测试授权认证',
+  'global.apitest.authorize.change': '更改授权账号',
+
 
   // 邮件模板
   'global.mailtemplate.header.title': '邮件模板',
-  'global.mailtemplate.table.name': '名称',
+  'global.mailtemplate.table.name': '模板名称',
   'global.mailtemplate.table.code': '编码',
   'global.mailtemplate.table.mailtype': '邮件类型',
-  'global.mailtemplate.table.fromtype': '来源类型',
-  'global.mailtemplate.create.template': '创建模板',
-  'global.mailtemplate.create.baseon': '基于此创建',
+  'global.mailtemplate.table.fromtype': '来源',
+  'global.mailtemplate.delete.owntitle': '删除邮件模板',
+  'global.mailtemplate.delete.owncontent': '确定要删除邮件模板"{name}"吗？',
+  'global.mailtemplate.delete.success': '成功删除该邮件模板',
+  'mailtemplate.create': '创建模板',
+  'mailtemplate.modify': '修改模板',
+  'mailtemplate.code': '模板编码',
+  'mailtemplate.name': '模板名称',
+  'mailtemplate.type': '邮件类型',
+  'mailtemplate.title': '邮件标题',
+  'mailtemplate.predefined': '预定义',
+  'mailtemplate.selfdefined': '自定义',
+  'mailtemplate.code.required': '请输入模板编码',
+  'mailtemplate.name.required': '请输入模板名称',
+  'mailtemplate.type.required': '请选择模板类型',
+  'mailtemplate.title.required': '请输入邮件标题',
+  'mailtemplate.mail.content': '邮件内容',
+  'mailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',
   'global.mailsetting.code': '配置编码',
-  'global.mailsetting.sending.mail': '发件邮箱账号',
-  'global.mailsetting.sending.password': '发件邮箱密码',
+  'global.mailsetting.sending.mail': '邮箱账号',
+  'global.mailsetting.sending.password': '密码',
+  'global.mailsetting.sender': '发件人(企业名称)',
   'global.mailsetting.server.type': '服务器类型',
   'global.mailsetting.server.address': '服务器地址',
-  'global.mailsetting.ssl': '是否为SSL协议',
+  'global.mailsetting.ssl': '是否使用SSL',
   'global.mailsetting.port': '端口号',
   'global.mailsetting.save.test': '保存并测试',
   'global.mailsetting.test.contact': '测试连接',
+  'global.mailsetting.account.required': '请输入邮箱账号',
+  'global.mailsetting.account.format': '请输入正确的邮箱格式',
+  'global.mailsetting.password.required': '请输入密码',
+  'global.mailsetting.host.required': '请输入服务器地址',
+  'global.mailsetting.port.required': '请输入端口号',
+  'global.mailsetting.port.pattern': '请输入大于零的整数',
+  'global.mailsetting.connect.success': '连接成功',
+
 
   // 事务定义
   'global.saga.header.title': '事务定义',
@@ -669,6 +716,7 @@ const zh_CN = {
   'global.saga.task.timeout.policy': '超时策略',
   'global.saga.task.service': '所属微服务',
   'global.saga.task.input.title': '输入数据',
+  'global.saga.task.input.demo': '输入数据示例',
   'global.saga.task.output.title': '输出数据',
   'global.saga.task.unlock': '解锁',
   'global.saga.task.retry': '重试',
@@ -862,18 +910,21 @@ const zh_CN = {
   'organization.user.upload': '导入用户',
   'organization.user.upload.lasttime': '上次导入完成时间',
   'organization.user.upload.norecord': '当前没有导入用户记录',
-  'organization.user.upload.time': '（耗时{time}），共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.upload.time': '共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'organization.user.upload.spendtime': '耗时',
   'organization.user.uploading.text': '正在导入...',
   'organization.user.fileloading.text': '正在上传...',
   'organization.user.fileloading': '上传中',
   'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
+  'organization.user.download.failed.detail': '点击下载失败详情',
+  'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
 
   // 邮件模板
   'organization.mailtemplate.header.title': '邮件模板',
-  'organization.mailtemplate.table.name': '名称',
+  'organization.mailtemplate.table.name': '模板名称',
   'organization.mailtemplate.table.code': '编码',
   'organization.mailtemplate.table.mailtype': '邮件类型',
-  'organization.mailtemplate.table.fromtype': '来源类型',
+  'organization.mailtemplate.table.fromtype': '来源',
 
 
   // 项目层
@@ -957,7 +1008,7 @@ const zh_CN = {
   'memberrole.rolemember': '角色/成员',
   'memberrole.view': '查看方式',
 
-  //MemberLabel
+  // MemberLabel
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
@@ -966,4 +1017,5 @@ const zh_CN = {
   ...pageDetail,
 
 };
+/* eslint-disable-next-line */
 export default zh_CN;

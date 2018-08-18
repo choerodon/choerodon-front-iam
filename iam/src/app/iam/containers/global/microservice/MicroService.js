@@ -51,7 +51,9 @@ export default class MicroService extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    this.fetch(pagination, sort, filters, params).then(data => {
+    // 防止标签闪烁
+    this.setState({ filters });
+    this.fetch(pagination, sort, filters, params).then((data) => {
       this.setState({
         pagination: {
           current: data.number + 1,
@@ -102,35 +104,35 @@ export default class MicroService extends Component {
     const { loading, content, sort: { columnKey, order }, filters, pagination, params } = this.state;
     const { intl } = this.props;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.name`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'serviceName',
       key: 'serviceName',
       filters: [],
       filteredValue: filters.serviceName || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.instancenum`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.instancenum`} />,
       dataIndex: 'instanceNum',
       key: 'instanceNum',
     }];
     return (
       <Page
         service={[
-          'manager-service.service.pageManager'
+          'manager-service.service.pageManager',
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}`}}
+          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Table
             loading={loading}

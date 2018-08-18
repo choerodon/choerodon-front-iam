@@ -44,10 +44,9 @@ export default class EditRole extends Component {
       RoleStore.setChosenLevel(data.level);
       RoleStore.loadRoleLabel(data.level);
     }).catch((error) => {
-      const message = this.props.intl.formatMessage({id: `${intlPrefix}.getinfo.error.msg`});
+      const message = this.props.intl.formatMessage({ id: `${intlPrefix}.getinfo.error.msg` });
       Choerodon.prompt(`${message}: ${error}`);
     });
-
   }
 
   componentWillUnmount() {
@@ -109,30 +108,29 @@ export default class EditRole extends Component {
         visible: true,
       });
     });
-
   };
 
   isModify = () => {
     const { currentPermission, roleData } = this.state;
     const permissions = roleData.permissions.map(item => item.id);
-    const currents= currentPermission.map(item => item.id);
+    const currents = currentPermission.map(item => item.id);
     if (currents.length !== permissions.length) {
       return true;
     }
-    for (let i = 0; i < permissions.length; i ++) {
+    for (let i = 0; i < permissions.length; i += 1) {
       if (!currents.includes(permissions[i].id)) {
         return true;
       }
     }
     return false;
-  }
+  };
 
   handleEdit = () => {
     const { intl } = this.props;
-    this.props.form.validateFieldsAndScroll((err, {}, modify) => {
+    this.props.form.validateFieldsAndScroll((err, values, modify) => {
       if (!err) {
         if (!modify && !this.isModify()) {
-          Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
           this.linkToChange('/iam/role');
           return;
         }
@@ -158,13 +156,13 @@ export default class EditRole extends Component {
             .then((data) => {
               this.setState({ submitting: false });
               if (data) {
-                Choerodon.prompt(intl.formatMessage({id: 'modify.success'}));
+                Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
                 this.linkToChange('/iam/role');
               }
             })
             .catch((errors) => {
               this.setState({ submitting: false });
-              Choerodon.prompt(intl.formatMessage({id: 'modify.error'}));
+              Choerodon.prompt(intl.formatMessage({ id: 'modify.error' }));
             });
         }
       }
@@ -211,11 +209,11 @@ export default class EditRole extends Component {
   renderLevel() {
     const { intl } = this.props;
     if (this.state.roleData.level === 'site') {
-      return intl.formatMessage({id: 'global'});
+      return intl.formatMessage({ id: 'global' });
     } else if (this.state.roleData.level === 'organization') {
-      return intl.formatMessage({id: 'organization'});
+      return intl.formatMessage({ id: 'organization' });
     } else {
-      return intl.formatMessage({id: 'project'});
+      return intl.formatMessage({ id: 'project' });
     }
   }
 
@@ -249,12 +247,12 @@ export default class EditRole extends Component {
       <div>
         <Page>
           <Header
-            title={<FormattedMessage id={`${intlPrefix}.modify`}/>}
+            title={<FormattedMessage id={`${intlPrefix}.modify`} />}
             backPath="/iam/role"
           />
           <Content
             code={`${intlPrefix}.modify`}
-            value={{name}}
+            value={{ name }}
           >
             <Form layout="vertical">
               <FormItem
@@ -265,7 +263,7 @@ export default class EditRole extends Component {
                 })(
                   <Input
                     size="default"
-                    label={<FormattedMessage id={`${intlPrefix}.level`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.level`} />}
                     autoComplete="off"
                     style={{
                       width: '512px',
@@ -286,7 +284,7 @@ export default class EditRole extends Component {
                 })(
                   <Input
                     size="default"
-                    label={<FormattedMessage id={`${intlPrefix}.code`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.code`} />}
                     autoComplete="off"
                     style={{
                       width: '512px',
@@ -301,14 +299,14 @@ export default class EditRole extends Component {
                 {getFieldDecorator('name', {
                   rules: [{
                     required: true,
-                    message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
                     whitespace: true,
                   }],
                   initialValue: name,
                 })(
                   <Input
                     rows={1}
-                    label={<FormattedMessage id={`${intlPrefix}.name`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.name`} />}
                     autoComplete="off"
                     style={{
                       width: '512px',
@@ -329,7 +327,7 @@ export default class EditRole extends Component {
                       mode="multiple"
                       size="default"
                       disabled={!RoleStore.getLabel.length}
-                      label={<FormattedMessage id={`${intlPrefix}.label`}/>}
+                      label={<FormattedMessage id={`${intlPrefix}.label`} />}
                       getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                       style={{
                         width: '512px',
@@ -350,18 +348,18 @@ export default class EditRole extends Component {
                   className="addPermission"
                   icon="add"
                 >
-                  <FormattedMessage id={`${intlPrefix}.add.permission`}/>
+                  <FormattedMessage id={`${intlPrefix}.add.permission`} />
                 </Button>
               </FormItem>
               <FormItem>
                 {currentPermission.length > 0 ? (
-                  <p className="alreadyDes">
-                    <FormattedMessage id={`${intlPrefix}.permission.count.msg`} values={{count: currentPermission.length}}/>
-                  </p>
+                  <span className="alreadyDes">
+                    <FormattedMessage id={`${intlPrefix}.permission.count.msg`} values={{ count: currentPermission.length }} />
+                  </span>
                 ) : (
-                  <p className="alreadyDes">
-                    <FormattedMessage id={`${intlPrefix}.permission.nothing.msg`}/>
-                  </p>
+                  <span className="alreadyDes">
+                    <FormattedMessage id={`${intlPrefix}.permission.nothing.msg`} />
+                  </span>
                 )}
               </FormItem>
               <FormItem
@@ -372,17 +370,17 @@ export default class EditRole extends Component {
                     width: '512px',
                   }}
                   columns={[{
-                    title: <FormattedMessage id={`${intlPrefix}.permission.code`}/>,
+                    title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',
                     key: 'code',
                   }, {
-                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`}/>,
+                    title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
                     dataIndex: 'description',
                     key: 'description',
                   }]}
                   rowKey="id"
                   dataSource={selectedPermission || []}
-                  filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+                  filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
                   rowSelection={{
                     selectedRowKeys: currentPermission,
                     onChange: (selectedRowKeys, selectedRows) => {
@@ -395,7 +393,7 @@ export default class EditRole extends Component {
                 />
                 {currentPermission.length === 0 ? (
                   <div style={{ color: '#d50000' }} className="ant-form-explain">
-                    <FormattedMessage id={`${intlPrefix}.permission.require.msg`}/>
+                    <FormattedMessage id={`${intlPrefix}.permission.require.msg`} />
                   </div>
                 ) : ''}
               </FormItem>
@@ -408,7 +406,7 @@ export default class EditRole extends Component {
                       onClick={this.handleEdit}
                       loading={submitting}
                     >
-                      <FormattedMessage id="save"/>
+                      <FormattedMessage id="save" />
                     </Button>
                   </Col>
                   <Col span={5}>
@@ -418,7 +416,7 @@ export default class EditRole extends Component {
                       disabled={submitting}
                       style={{ color: '#3F51B5' }}
                     >
-                      <FormattedMessage id="cancel"/>
+                      <FormattedMessage id="cancel" />
                     </Button>
                   </Col>
                 </Row>
@@ -427,28 +425,28 @@ export default class EditRole extends Component {
           </Content>
         </Page>
         <Sidebar
-          title={<FormattedMessage id={`${intlPrefix}.add.permission`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.add.permission`} />}
           visible={visible}
           onOk={this.handleOk.bind(this)}
           onCancel={this.handleCancel.bind(this)}
-          okText={intl.formatMessage({id: 'ok'})}
-          cancelText={intl.formatMessage({id: 'cancel'})}
+          okText={intl.formatMessage({ id: 'ok' })}
+          cancelText={intl.formatMessage({ id: 'cancel' })}
         >
           <Content
             className="sidebar-content"
             code={`${intlPrefix}.modify.addpermission`}
-            values={{name}}
+            values={{ name }}
           >
             <Table
               style={{
                 width: '512px',
               }}
               columns={[{
-                title: <FormattedMessage id={`${intlPrefix}.permission.code`}/>,
+                title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                 dataIndex: 'code',
                 key: 'code',
               }, {
-                title: <FormattedMessage id={`${intlPrefix}.permission.desc`}/>,
+                title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
                 dataIndex: 'description',
                 key: 'description',
               }]}
@@ -457,7 +455,7 @@ export default class EditRole extends Component {
               pagination={pagination}
               onChange={this.handlePageChange}
               filters={this.state.permissionParams}
-              filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+              filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
               rowSelection={{
                 selectedRowKeys: (changePermission
                   && changePermission.map(item => item.id)) || [],

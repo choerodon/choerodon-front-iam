@@ -1,0 +1,21 @@
+.react-quill-editor {
+  img {
+    max-width: 400px;
+  }
+}
+
+@mixin ql-picker-size($size) {
+  &[data-value='#{$size}']::before {
+    content: quote($size);
+    font-size: $size;
+  }
+}
+
+@for $i from 10 to 21 {
+  .ql-snow .ql-picker.ql-size .ql-picker-label,
+  .ql-snow .ql-picker.ql-size .ql-picker-item {
+    @include ql-picker-size(#{$i}px);
+  }
+  $i: $i + 1;
+}
+

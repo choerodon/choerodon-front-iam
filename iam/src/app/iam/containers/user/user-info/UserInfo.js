@@ -1,7 +1,7 @@
 /**
  * Created by YANG on 2017/6/27.
  */
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Input, Select } from 'choerodon-ui';
@@ -31,6 +31,10 @@ const formItemLayout = {
 @inject('AppState')
 @observer
 export default class UserInfo extends Component {
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+  }
   state = {
     submitting: false,
     visible: false,
@@ -201,6 +205,7 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.name`} />}
               style={{ width: inputWidth }}
+              ref={(e) => { this.editFocusInput = e; }}
             />,
           )}
         </FormItem>
@@ -263,7 +268,8 @@ export default class UserInfo extends Component {
           })(
             <Select
               label={<FormattedMessage id={`${intlPrefix}.language`} />}
-              style={{ width: inputWidth }}>
+              style={{ width: inputWidth }}
+            >
               {this.getLanguageOptions()}
             </Select>,
           )}
@@ -282,7 +288,8 @@ export default class UserInfo extends Component {
           })(
             <Select
               label={<FormattedMessage id={`${intlPrefix}.timezone`} />}
-              style={{ width: inputWidth }}>
+              style={{ width: inputWidth }}
+            >
               {this.getTimeZoneOptions()}
             </Select>,
           )}
@@ -290,9 +297,14 @@ export default class UserInfo extends Component {
         <Permission
           service={['iam-service.user.queryInfo', 'iam-service.user.updateInfo', 'iam-service.user.querySelf']}
           type="site"
+          onAccess={() => {
+            setTimeout(() => {
+              this.editFocusInput.input.focus();
+            }, 10);
+          }}
         >
           <FormItem>
-            <hr className='user-info-divider' />
+            <hr className="user-info-divider" />
             <Button
               htmlType="submit"
               funcType="raised"

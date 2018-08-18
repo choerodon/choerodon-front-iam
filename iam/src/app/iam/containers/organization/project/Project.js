@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
@@ -47,6 +47,8 @@ export default class Project extends Component {
       },
       submitting: false,
     };
+    this.editFocusInput = React.createRef();
+    this.createFocusInput = React.createRef();
   }
 
 
@@ -78,6 +80,8 @@ export default class Project extends Component {
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     ProjectStore.changeLoading(true);
+    // 防止标签闪烁
+    this.setState({ filters });
     ProjectStore.loadProject(organizationId, pagination, sort, filters)
       .then((data) => {
         ProjectStore.changeLoading(false);
@@ -106,7 +110,15 @@ export default class Project extends Component {
       projectDatas: data,
       operation,
     });
-
+    if (operation === 'edit') {
+      setTimeout(() => {
+        this.editFocusInput.input.focus();
+      }, 10);
+    } else {
+      setTimeout(() => {
+        this.createFocusInput.input.focus();
+      }, 10);
+    }
   };
   handleTabClose = () => {
     this.setState({
@@ -137,19 +149,19 @@ export default class Project extends Component {
             .then((value) => {
               this.setState({ submitting: false });
               if (value) {
-                Choerodon.prompt(this.props.intl.formatMessage({id: 'create.success'}));
+                Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 this.handleTabClose();
                 this.loadProjects();
                 value.type = 'project';
                 HeaderStore.addProject(value);
               }
             }).catch((error) => {
-            Choerodon.handleResponseError(error);
-            this.setState({
-              submitting: false,
-              visibleCreate: false,
+              Choerodon.handleResponseError(error);
+              this.setState({
+                submitting: false,
+                visibleCreate: false,
+              });
             });
-          });
         }
       });
     } else {
@@ -157,7 +169,7 @@ export default class Project extends Component {
       validateFields((err, { name }, modify) => {
         if (!err) {
           if (!modify) {
-            Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+            Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
             this.handleTabClose();
             return;
           }
@@ -174,7 +186,7 @@ export default class Project extends Component {
             this.state.projectDatas.id).then((value) => {
             this.setState({ submitting: false, buttonClicked: false });
             if (value) {
-              Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+              Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
               this.handleTabClose();
               this.loadProjects();
               value.type = 'project';
@@ -190,25 +202,25 @@ export default class Project extends Component {
 
   /* 停用启用 */
   handleEnable = (record) => {
-    const { ProjectStore, AppState,intl } = this.props;
+    const { ProjectStore, AppState, intl } = this.props;
     const userId = AppState.getUserId;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
     ProjectStore.enableProject(orgId, record.id, record.enabled).then((value) => {
-      Choerodon.prompt(intl.formatMessage({id: record.enabled ? 'disable.success' : 'enable.success'}));
+      Choerodon.prompt(intl.formatMessage({ id: record.enabled ? 'disable.success' : 'enable.success' }));
       this.loadProjects();
       HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId).then((org) => {
-        org[0].map(value => {
-          value.type = ORGANIZATION_TYPE;
+        org[0].forEach((item) => {
+          item.type = ORGANIZATION_TYPE;
         });
-        org[1].map(value => {
-          value.type = PROJECT_TYPE;
+        org[1].forEach((item) => {
+          item.type = PROJECT_TYPE;
         });
         HeaderStore.setProData(org[0]);
         HeaderStore.setProData(org[1]);
       });
     }).catch((error) => {
-      Choerodon.prompt(intl.formatMessage({id: 'operation.error'}));
+      Choerodon.prompt(intl.formatMessage({ id: 'operation.error' }));
     });
   };
 
@@ -231,7 +243,7 @@ export default class Project extends Component {
     ProjectStore.checkProjectCode(organizationId, params)
       .then((mes) => {
         if (mes.failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.code.exist.msg`}));
+          callback(intl.formatMessage({ id: `${intlPrefix}.code.exist.msg` }));
         } else {
           callback();
         }
@@ -248,7 +260,7 @@ export default class Project extends Component {
   checkcode(rule, value, callback) {
     const { intl } = this.props;
     if (!value) {
-      callback(intl.formatMessage({id: `${intlPrefix}.code.require.msg`}));
+      callback(intl.formatMessage({ id: `${intlPrefix}.code.require.msg` }));
       return;
     }
     if (value.length <= 14) {
@@ -257,10 +269,10 @@ export default class Project extends Component {
       if (pa.test(value)) {
         this.checkCodeOnly(value, callback);
       } else {
-        callback(intl.formatMessage({id: `${intlPrefix}.code.pattern.msg`}));
+        callback(intl.formatMessage({ id: `${intlPrefix}.code.pattern.msg` }));
       }
     } else {
-      callback(intl.formatMessage({id: `${intlPrefix}.code.length.msg`}));
+      callback(intl.formatMessage({ id: `${intlPrefix}.code.length.msg` }));
     }
   }
 
@@ -291,6 +303,8 @@ export default class Project extends Component {
             name: this.state.projectDatas.code,
           },
         };
+      default :
+        return {};
     }
   }
 
@@ -328,8 +342,9 @@ export default class Project extends Component {
             })(
               <Input
                 autoComplete="off"
-                label={<FormattedMessage id={`${intlPrefix}.code`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.code`} />}
                 style={{ width: inputWidth }}
+                ref={(e) => { this.createFocusInput = e; }}
               />,
             )}
           </FormItem>) : null}
@@ -340,14 +355,15 @@ export default class Project extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
               }],
               initialValue: operation === 'create' ? undefined : projectDatas.name,
             })(
               <Input
                 autoComplete="off"
-                label={<FormattedMessage id={`${intlPrefix}.name`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.name`} />}
                 style={{ width: inputWidth }}
+                ref={(e) => { this.editFocusInput = e; }}
               />,
             )}
           </FormItem>
@@ -366,7 +382,7 @@ export default class Project extends Component {
 
     const type = menuType.type;
     const columns = [{
-      title: <FormattedMessage id="name"/>,
+      title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
@@ -374,25 +390,25 @@ export default class Project extends Component {
       sorter: (a, b) => (a.name > b.name ? 1 : 0),
       render: (text, record) => <span>{text}</span>,
     }, {
-      title: <FormattedMessage id="code"/>,
+      title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
       sorter: (a, b) => (a.code > b.code ? 1 : 0),
     }, {
-      title: <FormattedMessage id="status"/>,
+      title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
       filters: [{
-        text: intl.formatMessage({id: 'enable'}),
+        text: intl.formatMessage({ id: 'enable' }),
         value: 'true',
       }, {
-        text: intl.formatMessage({id: 'disable'}),
+        text: intl.formatMessage({ id: 'disable' }),
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
       key: 'enabled',
-      render: text => <span className="titleNameStyle">{intl.formatMessage({id: text ? 'enable' : 'disable'})}</span>,
+      render: text => <span className="titleNameStyle">{intl.formatMessage({ id: text ? 'enable' : 'disable' })}</span>,
     }, {
       title: '',
       key: 'action',
@@ -402,7 +418,7 @@ export default class Project extends Component {
         <div>
           <Permission service={['iam-service.organization-project.update']} type={type} organizationId={orgId}>
             <Tooltip
-              title={<FormattedMessage id="modify"/>}
+              title={<FormattedMessage id="modify" />}
               placement="bottom"
             >
               <Button
@@ -415,9 +431,11 @@ export default class Project extends Component {
           </Permission>
           <Permission
             service={['iam-service.organization-project.disableProject', 'iam-service.organization-project.enableProject']}
-            type={type} organizationId={orgId}>
+            type={type}
+            organizationId={orgId}
+          >
             <Tooltip
-              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'}/>}
+              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'} />}
               placement="bottom"
             >
               <Button
@@ -444,13 +462,13 @@ export default class Project extends Component {
           'iam-service.organization-project.enableProject',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission service={['iam-service.organization-project.create']} type={type} organizationId={orgId}>
             <Button
               onClick={this.handleopenTab.bind(this, null, 'create')}
               icon="playlist_add"
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Button
@@ -475,7 +493,7 @@ export default class Project extends Component {
               });
             }}
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
@@ -489,15 +507,15 @@ export default class Project extends Component {
             filters={this.state.filters.params}
             onChange={this.handlePageChange.bind(this)}
             loading={ProjectStore.isLoading}
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
             title={this.renderSideTitle()}
             visible={this.state.sidebar}
             onCancel={this.handleTabClose.bind(this)}
             onOk={this.handleSubmit.bind(this)}
-            okText={<FormattedMessage id={operation === 'create' ? 'create' : 'save'}/>}
-            cancelText={<FormattedMessage id="cancel"/>}
+            okText={<FormattedMessage id={operation === 'create' ? 'create' : 'save'} />}
+            cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={this.state.submitting}
           >
             {operation && this.renderSidebarContent()}

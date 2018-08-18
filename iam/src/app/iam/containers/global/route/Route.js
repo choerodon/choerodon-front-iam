@@ -19,6 +19,11 @@ const intlPrefix = 'global.route';
 @inject('AppState')
 @observer
 export default class Route extends Component {
+  constructor(props) {
+    super(props);
+    this.createRouteFocusInput = React.createRef();
+  }
+
   state = this.getInitState();
 
   componentWillMount() {
@@ -55,11 +60,9 @@ export default class Route extends Component {
   /* 获取sidebar中对应微服务 */
   getOption() {
     const { serviceArr = [] } = this.state;
-    const services = serviceArr.map(({ name }) =>
-      (
-        <Option value={name} key={name}>{name}</Option>
-      ),
-    );
+    const services = serviceArr.map(({ name }) => (
+      <Option value={name} key={name}>{name}</Option>
+    ));
     return services;
   }
 
@@ -118,6 +121,8 @@ export default class Route extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters });
     this.fetch(pagination, sort, filters, params)
       .then((data) => {
         this.setState({
@@ -173,7 +178,10 @@ export default class Route extends Component {
       visible: true,
       show: 'create',
     });
-  }
+    setTimeout(() => {
+      this.createRouteFocusInput.focus();
+    }, 10);
+  };
 
   editOrDetail = (record, status) => {
     this.props.form.resetFields();
@@ -204,18 +212,16 @@ export default class Route extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
-      title: intl.formatMessage({id: `${intlPrefix}.delete.title`}),
-      content: intl.formatMessage({id: `${intlPrefix}.delete.content`},{name: record.name}),
-      onOk: () => {
-        return axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
-          if (failed) {
-            Choerodon.prompt(message);
-          } else {
-            Choerodon.prompt(intl.formatMessage({id: 'delete.success'}));
-            this.loadRouteList();
-          }
-        });
-      },
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
+      onOk: () => axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
+          this.loadRouteList();
+        }
+      }),
     });
   }
 
@@ -291,7 +297,7 @@ export default class Route extends Component {
             if (failed) {
               Choerodon.prompt(message);
             } else {
-              Choerodon.prompt(this.props.intl.formatMessage({id: 'create.success'}));
+              Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
               this.loadRouteList();
               this.setState({
                 submitting: false,
@@ -303,7 +309,7 @@ export default class Route extends Component {
           this.handleCancel();
         } else {
           if (!modify) {
-            Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+            Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
             this.loadRouteList();
             this.setState({
               visible: false,
@@ -321,7 +327,7 @@ export default class Route extends Component {
             objectVersionNumber,
             helperService,
             serviceId,
-            preffix: preffix === 'stripPrefix',
+            stripPrefix: preffix === 'stripPrefix',
             retryable: retryable === 'retry',
             customSensitiveHeaders: isFiltered,
             sensitiveHeaders: info,
@@ -330,7 +336,7 @@ export default class Route extends Component {
             if (failed) {
               Choerodon.prompt(message);
             } else {
-              Choerodon.prompt(this.props.intl.formatMessage({id: 'modify.success'}));
+              Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
               this.loadRouteList();
               this.setState({
                 submitting: false,
@@ -354,7 +360,7 @@ export default class Route extends Component {
     axios.post('/manager/v1/routes/check', JSON.stringify({ name: value }))
       .then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.name.exist.msg`}));
+          callback(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
         } else {
           callback();
         }
@@ -366,7 +372,7 @@ export default class Route extends Component {
     const patternEmpty = /^\S+$/;
     const patterNum = /^\d+$/;
     if (!patternEmpty.test(value) || patterNum.test(value)) {
-      callback(intl.formatMessage({id: `${intlPrefix}.name.number.msg`}));
+      callback(intl.formatMessage({ id: `${intlPrefix}.name.number.msg` }));
     } else {
       callback();
     }
@@ -383,7 +389,7 @@ export default class Route extends Component {
     axios.post('/manager/v1/routes/check', JSON.stringify({ path: value }))
       .then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({id: `${intlPrefix}.path.exist.msg`}));
+          callback(intl.formatMessage({ id: `${intlPrefix}.path.exist.msg` }));
         } else {
           callback();
         }
@@ -439,7 +445,7 @@ export default class Route extends Component {
         <div>
           <Permission service={['manager-service.route.update']}>
             <Tooltip
-              title={ <FormattedMessage id="modify"/>}
+              title={<FormattedMessage id="modify" />}
               placement="bottom"
             >
               <Button
@@ -452,7 +458,7 @@ export default class Route extends Component {
           </Permission>
           <Permission service={['manager-service.route.delete']}>
             <Tooltip
-              title={ <FormattedMessage id="delete"/>}
+              title={<FormattedMessage id="delete" />}
               placement="bottom"
             >
               <Button
@@ -472,11 +478,11 @@ export default class Route extends Component {
   renderSidebarTitle() {
     const { show } = this.state;
     if (show === 'create') {
-      return  <FormattedMessage id={`${intlPrefix}.create`}/>;
+      return <FormattedMessage id={`${intlPrefix}.create`} />;
     } else if (show === 'edit') {
-      return <FormattedMessage id={`${intlPrefix}.modify`}/>;
+      return <FormattedMessage id={`${intlPrefix}.modify`} />;
     } else {
-      return <FormattedMessage id={`${intlPrefix}.detail`}/>;
+      return <FormattedMessage id={`${intlPrefix}.detail`} />;
     }
   }
 
@@ -484,11 +490,11 @@ export default class Route extends Component {
   renderSidebarOkText() {
     const { show } = this.state;
     if (show === 'create') {
-      return <FormattedMessage id="create"/>;
+      return <FormattedMessage id="create" />;
     } else if (show === 'edit') {
-      return <FormattedMessage id="save"/>;
+      return <FormattedMessage id="save" />;
     } else {
-      return <FormattedMessage id="return"/>;
+      return <FormattedMessage id="return" />;
     }
   }
 
@@ -514,7 +520,8 @@ export default class Route extends Component {
     const retryable = sidebarData && sidebarData.retryable ? 'retry' : 'noRetry';
     const customSensitiveHeaders = sidebarData && sidebarData.customSensitiveHeaders ? 'filtered' : 'noFiltered';
     const sensitiveHeaders = sidebarData && sidebarData.sensitiveHeaders ? sidebarData.sensitiveHeaders.split(',') : [];
-    let code, values;
+    let code;
+    let values;
     if (show === 'create') {
       code = `${intlPrefix}.create`;
       values = {
@@ -545,7 +552,7 @@ export default class Route extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({id: `${intlPrefix}.name.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
               }, {
                 validator: createValidate && this.checkName,
               }, {
@@ -556,11 +563,12 @@ export default class Route extends Component {
               validateFirst: true,
             })(
               <Input
-                label={<FormattedMessage id={`${intlPrefix}.name`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.name`} />}
                 autoComplete="off"
-                suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.name.tip`}))}
+                suffix={this.getSuffix(intl.formatMessage({ id: `${intlPrefix}.name.tip` }))}
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
+                ref={(e) => { this.createRouteFocusInput = e; }}
               />,
             )}
           </FormItem>
@@ -571,7 +579,7 @@ export default class Route extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({id: `${intlPrefix}.path.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.path.require.msg` }),
               }, {
                 validator: createValidate && this.checkPath,
               }],
@@ -580,10 +588,10 @@ export default class Route extends Component {
               validateFirst: true,
             })(
               <Input
-                label={<FormattedMessage id={`${intlPrefix}.path`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.path`} />}
                 autoComplete="off"
                 style={{ width: inputWidth }}
-                suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.path.tip`}))}
+                suffix={this.getSuffix(intl.formatMessage({ id: `${intlPrefix}.path.tip` }))}
                 disabled={!createValidate}
               />,
             )}
@@ -594,18 +602,17 @@ export default class Route extends Component {
             {getFieldDecorator('serviceId', {
               rules: [{
                 required: true,
-                message: intl.formatMessage({id: `${intlPrefix}.service.require.msg`}),
+                message: intl.formatMessage({ id: `${intlPrefix}.service.require.msg` }),
               }],
               initialValue: createValidate ? undefined : sidebarData.serviceId,
             })(
               <Select
                 disabled={detailValidate}
                 style={{ width: 300 }}
-                label={<FormattedMessage id={`${intlPrefix}.service`}/>}
+                label={<FormattedMessage id={`${intlPrefix}.service`} />}
                 getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
                 filterOption={
-                  (input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 filter
               >
@@ -620,10 +627,14 @@ export default class Route extends Component {
               {getFieldDecorator('preffix', {
                 initialValue: stripPrefix,
               })(
-                <RadioGroup label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.stripprefix`}),
-                  intl.formatMessage({id: `${intlPrefix}.stripprefix.tip`}))} className="radioGroup" disabled={detailValidate}>
-                  <Radio value={'stripPrefix'}>{intl.formatMessage({id: 'yes'})}</Radio>
-                  <Radio value={'withPrefix'}>{intl.formatMessage({id: 'no'})}</Radio>
+                <RadioGroup
+                  label={this.labelSuffix(intl.formatMessage({ id: `${intlPrefix}.stripprefix` }),
+                    intl.formatMessage({ id: `${intlPrefix}.stripprefix.tip` }))}
+                  className="radioGroup"
+                  disabled={detailValidate}
+                >
+                  <Radio value="stripPrefix">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="withPrefix">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -635,10 +646,14 @@ export default class Route extends Component {
               {getFieldDecorator('retryable', {
                 initialValue: retryable,
               })(
-                <RadioGroup label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.retryable`}),
-                  intl.formatMessage({id: `${intlPrefix}.retryable.tip`}))} className="radioGroup" disabled={detailValidate}>
-                  <Radio value={'retry'}>{intl.formatMessage({id: 'yes'})}</Radio>
-                  <Radio value={'noRetry'}>{intl.formatMessage({id: 'no'})}</Radio>
+                <RadioGroup
+                  label={this.labelSuffix(intl.formatMessage({ id: `${intlPrefix}.retryable` }),
+                    intl.formatMessage({ id: `${intlPrefix}.retryable.tip` }))}
+                  className="radioGroup"
+                  disabled={detailValidate}
+                >
+                  <Radio value="retry">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="noRetry">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -650,10 +665,15 @@ export default class Route extends Component {
               {getFieldDecorator('customSensitiveHeaders', {
                 initialValue: customSensitiveHeaders,
               })(
-                <RadioGroup label={this.labelSuffix(intl.formatMessage({id: `${intlPrefix}.customsensitiveheaders`}),
-                  intl.formatMessage({id: `${intlPrefix}.customsensitiveheaders.tip`}))} className="radioGroup" disabled={detailValidate} onChange={this.changeSensetive.bind(this)}>
-                  <Radio value={'filtered'}>{intl.formatMessage({id: 'yes'})}</Radio>
-                  <Radio value={'noFiltered'}>{intl.formatMessage({id: 'no'})}</Radio>
+                <RadioGroup
+                  label={this.labelSuffix(intl.formatMessage({ id: `${intlPrefix}.customsensitiveheaders` }),
+                    intl.formatMessage({ id: `${intlPrefix}.customsensitiveheaders.tip` }))}
+                  className="radioGroup"
+                  disabled={detailValidate}
+                  onChange={this.changeSensetive.bind(this)}
+                >
+                  <Radio value="filtered">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="noFiltered">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )}
             </FormItem>
@@ -666,13 +686,13 @@ export default class Route extends Component {
                 {getFieldDecorator('sensitiveHeaders', {
                   rules: [{
                     required: this.state.filterSensitive === 'filtered' && show === 'edit',
-                    message: intl.formatMessage({id: `${intlPrefix}.sensitiveheaders.require.msg`}),
+                    message: intl.formatMessage({ id: `${intlPrefix}.sensitiveheaders.require.msg` }),
                   }],
                   initialValue: this.state.filterSensitive === 'filtered' ? sensitiveHeaders : [],
                 })(
                   <Select
                     disabled={show === 'detail'}
-                    label={<FormattedMessage id={`${intlPrefix}.sensitiveheaders`}/>}
+                    label={<FormattedMessage id={`${intlPrefix}.sensitiveheaders`} />}
                     mode="tags"
                     filterOption={false}
                     onInputKeyDown={this.handleInputKeyDown}
@@ -694,16 +714,16 @@ export default class Route extends Component {
               {getFieldDecorator('helperService', {
                 rules: [{
                   whitespace: show === 'edit',
-                  message: intl.formatMessage({id: `${intlPrefix}.helperservice.require.msg`}),
+                  message: intl.formatMessage({ id: `${intlPrefix}.helperservice.require.msg` }),
                 }],
                 initialValue: sidebarData.helperService || undefined,
               })(
                 <Input
                   disabled={detailValidate}
                   autoComplete="off"
-                  label={<FormattedMessage id={`${intlPrefix}.helperservice`}/>}
+                  label={<FormattedMessage id={`${intlPrefix}.helperservice`} />}
                   style={{ width: inputWidth }}
-                  suffix={this.getSuffix(intl.formatMessage({id: `${intlPrefix}.helperservice.tip`}))}
+                  suffix={this.getSuffix(intl.formatMessage({ id: `${intlPrefix}.helperservice.tip` }))}
                 />,
               )}
             </FormItem>
@@ -724,32 +744,32 @@ export default class Route extends Component {
       text: name,
     }));
     const columns = [{
-      title: <FormattedMessage id="name"/>,
+      title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.path`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.path`} />,
       dataIndex: 'path',
       key: 'path',
       filters: [],
       filteredValue: filters.path || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.service`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.service`} />,
       dataIndex: 'serviceId',
       key: 'serviceId',
       filters: filtersService,
       filteredValue: filters.serviceId || [],
     }, {
-      title: <FormattedMessage id="source"/>,
+      title: <FormattedMessage id="source" />,
       dataIndex: 'builtIn',
       key: 'builtIn',
       filters: [{
-        text: intl.formatMessage({id: `${intlPrefix}.builtin.predefined`}),
+        text: intl.formatMessage({ id: `${intlPrefix}.builtin.predefined` }),
         value: 'true',
       }, {
-        text: intl.formatMessage({id: `${intlPrefix}.builtin.custom`}),
+        text: intl.formatMessage({ id: `${intlPrefix}.builtin.custom` }),
         value: 'false',
       }],
       filteredValue: filters.builtIn || [],
@@ -773,21 +793,21 @@ export default class Route extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Permission service={['manager-service.route.create']}>
             <Button
               icon="playlist_add"
               onClick={this.createRoute}
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Button
             icon="refresh"
             onClick={this.handleRefresh}
           >
-            <FormattedMessage id='refresh'/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
@@ -801,7 +821,7 @@ export default class Route extends Component {
             onChange={this.handlePageChange}
             filters={params}
             rowKey="id"
-            filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
             title={this.renderSidebarTitle()}

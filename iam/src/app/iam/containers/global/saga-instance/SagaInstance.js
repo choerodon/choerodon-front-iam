@@ -51,6 +51,7 @@ export default class SagaInstance extends Component {
     const params = paramsIn || paramsState;
     this.setState({
       loading: true,
+      filters,
     });
     SagaInstanceStore.loadData(pagination, filters, sort, params).then((data) => {
       SagaInstanceStore.setData(data.content);
@@ -69,6 +70,10 @@ export default class SagaInstance extends Component {
   }
 
   tableChange = (pagination, filters, sort, params) => {
+    const { activeTab, filters: { status } } = this.state;
+    if (activeTab === 'failed') {
+      filters.status = status;
+    }
     this.reload(pagination, filters, sort, params);
   }
 
@@ -78,6 +83,7 @@ export default class SagaInstance extends Component {
       return;
     }
     this.setState({
+      ...this.getInitState(),
       activeTab: 'failed',
       filters: { status: ['FAILED'] },
     }, () => {
@@ -103,7 +109,6 @@ export default class SagaInstance extends Component {
         });
       });
     });
-
   }
 
   handleOk = () => {
@@ -159,15 +164,13 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id={`${intlPrefix}.id`} />,
         key: 'id',
         dataIndex: 'id',
-        filters: [],
-        filteredValue: filters.id || [],
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.status`} />,
         key: 'status',
         dataIndex: 'status',
         render: status => this.renderStatus(status),
-        filters: [{
+        filters: activeTab === 'all' ? [{
           value: 'RUNNING',
           text: '运行中',
         }, {
@@ -176,7 +179,7 @@ export default class SagaInstance extends Component {
         }, {
           value: 'COMPLETED',
           text: '完成',
-        }],
+        }] : null,
         filteredValue: (activeTab === 'all' && filters.status) || [],
       },
       {
@@ -206,7 +209,9 @@ export default class SagaInstance extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.refid`} />,
         key: 'refId',
+        width: 150,
         dataIndex: 'refId',
+        className: 'c7n-saga-instance-refid',
         filters: [],
         filteredValue: filters.refId || [],
       },

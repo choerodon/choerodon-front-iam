@@ -19,7 +19,9 @@ const intlPrefix = 'global.instance';
 @injectIntl
 export default class InstanceDetail extends Component {
   state = this.getInitState();
+
   instanceId = null;
+
   getInitState() {
     return {
       info: null,
@@ -32,6 +34,7 @@ export default class InstanceDetail extends Component {
     super(props);
     this.instanceId = props.match.params.id;
   }
+
   componentWillMount() {
     this.setState({
       loading: true,
@@ -44,30 +47,28 @@ export default class InstanceDetail extends Component {
         Choerodon.prompt(data.message);
       } else {
         let metadata = Object.assign({}, data.metadata);
-        metadata = Object.entries(metadata).map((item) => {
-          return {
-            name: item[0],
-            value: item[1],
-          }
-        })
+        metadata = Object.entries(metadata).map(item => ({
+          name: item[0],
+          value: item[1],
+        }));
         this.setState({
           info: data,
-          metadata: metadata,
+          metadata,
           loading: false,
-        })
+        });
       }
-    })
+    });
   }
 
   getInstanceInfo = () => {
     const { info, loading, metadata } = this.state;
     const { intl } = this.props;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.name`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.value`}/>,
+      title: <FormattedMessage id={`${intlPrefix}.value`} />,
       dataIndex: 'value',
       key: 'value',
     }];
@@ -112,10 +113,10 @@ export default class InstanceDetail extends Component {
           dataSource={metadata}
           rowkey="name"
           pagination={false}
-          filterBarPlaceholder={intl.formatMessage({id: 'filtertable'})}
+          filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
         />
       </div>
-    )
+    );
   }
 
   getConfigInfo = () => {
@@ -134,11 +135,11 @@ export default class InstanceDetail extends Component {
         <div>
           <p><FormattedMessage id={`${intlPrefix}.configinfo`} /></p>
           <AceEditor
-            readOnly={true}
+            readOnly
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
-            defaultValue=''
+            defaultValue=""
             value={configInfo}
             style={{ height: '650px', width: '100%' }}
           />
@@ -146,7 +147,7 @@ export default class InstanceDetail extends Component {
         <div>
           <p><FormattedMessage id={`${intlPrefix}.envinfo`} /></p>
           <AceEditor
-            readOnly={true}
+            readOnly
             showPrintMargin={false}
             mode="yaml"
             theme="dawn"
@@ -155,15 +156,14 @@ export default class InstanceDetail extends Component {
           />
         </div>
       </div>
-    )
+    );
   }
 
   render() {
     return (
       <Page>
         <Header
-          title={<FormattedMessage
-          id={`${intlPrefix}.detail`} />}
+          title={<FormattedMessage id={`${intlPrefix}.detail`} />}
           backPath="/iam/instance"
         />
         <Content
@@ -171,14 +171,11 @@ export default class InstanceDetail extends Component {
           values={{ name: this.instanceId }}
         >
           <Tabs>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.instanceinfo`}/>} key="instanceinfo">{this.getInstanceInfo()}</TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.configenvInfo`}/>} key="configenvInfo">{this.getConfigInfo()}</TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.instanceinfo`} />} key="instanceinfo">{this.getInstanceInfo()}</TabPane>
+            <TabPane tab={<FormattedMessage id={`${intlPrefix}.configenvInfo`} />} key="configenvInfo">{this.getConfigInfo()}</TabPane>
           </Tabs>
         </Content>
       </Page>
-    )
+    );
   }
 }
-
-
-

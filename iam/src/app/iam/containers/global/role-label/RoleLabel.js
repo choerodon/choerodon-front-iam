@@ -42,6 +42,8 @@ export default class RoleLabel extends Component {
     this.setState({
       loading: true,
     });
+    // 防止标签闪烁
+    this.setState({ filters });
     RoleLabelStore.loadData(filters, sort, params).then((data) => {
       RoleLabelStore.setData(data);
       this.setState({

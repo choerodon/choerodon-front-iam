@@ -45,28 +45,88 @@ export default class MailSetting extends Component {
 
   getInitState() {
     return {
-      loading: false,
+      loading: true,
       saving: false,
+      isExchange: false, // 下拉框选中EXCHANGE时，控制SSL和端口号的显示
     };
   }
 
   /* 加载邮件配置 */
   loadMailSetting = () => {
-    const { intl } = this.props;
-    // TODO 加载函数
+    this.setState({ loading: true });
+    MailSettingStore.loadData().then((data) => {
+      if (!data.failed) {
+        MailSettingStore.setSettingData(data);
+        if (data.protocol === 'EXCHANGE') {
+          this.setState({
+            isExchange: true,
+          });
+        }
+      } else {
+        Choerodon.prompt(data.message);
+      }
+      this.setState({ loading: false });
+    }).catch(Choerodon.handleResponseError);
   }
+
 
   handleRefresh = () => {
     this.loadMailSetting();
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    // TODO 提交函数
+  testContact = () => {
+    const { intl, form } = this.props;
+    const { getFieldsValue } = form;
+    const values = getFieldsValue();
+    const setting = {
+      ...values,
+      ssl: values.ssl === 'Y',
+      port: Number(values.port),
+      objectVersionNumber: MailSettingStore.getSettingData.objectVersionNumber,
+    };
+    MailSettingStore.testConnection(setting).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.connect.success` }));
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+    });
   }
 
-  testContact = () => {
-    // TODO 测试连接
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { intl } = this.props;
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        this.setState({
+          saving: true,
+        });
+        const setting = {
+          ...values,
+          ssl: values.ssl === 'Y',
+          port: Number(values.port),
+          objectVersionNumber: MailSettingStore.getSettingData.objectVersionNumber,
+        };
+        MailSettingStore.updateData(setting).then((data) => {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+            MailSettingStore.setSettingData(data);
+          }
+          this.setState({
+            saving: false,
+          });
+        }).catch((error) => {
+          Choerodon.handleResponseError(error);
+          this.setState({
+            saving: false,
+          });
+        });
+      }
+    });
   }
 
   render() {
@@ -81,21 +141,16 @@ export default class MailSetting extends Component {
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('code', {
+              {getFieldDecorator('account', {
                 rules: [{
                   required: true,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.account.required` }),
+                }, {
+                  type: 'email',
+                  message: intl.formatMessage({ id: `${intlPrefix}.account.format` }),
                 }],
-                initialValue: 998,
-              })(
-                <Input label={intl.formatMessage({ id: `${intlPrefix}.code` })} style={{ width: inputWidth }} disabled autoComplete="off" />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('account', {
-                rules: [],
-                initialValue: 998,
+                initialValue: MailSettingStore.getSettingData.account,
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.sending.mail` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
@@ -104,107 +159,138 @@ export default class MailSetting extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('password', {
-                rules: [],
-                initialValue: 998,
+                rules: [{
+                  required: true,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.password.required` }),
+                }],
+                initialValue: MailSettingStore.getSettingData.password,
               })(
-                <Input label={intl.formatMessage({ id: `${intlPrefix}.sending.password` })} style={{ width: inputWidth }} autoComplete="off" />,
+                <Input type="password" label={intl.formatMessage({ id: `${intlPrefix}.sending.password` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
             </FormItem>
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('serverType', {
+              {getFieldDecorator('sendName', {
                 rules: [],
-                initialValue: 'POP3',
+                initialValue: MailSettingStore.getSettingData.sendName,
               })(
-                <Select
-                  getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-                  label={intl.formatMessage({ id: `${intlPrefix}.server.type` })}
-                  style={{ width: inputWidth }}
-                >
-                  <Option value="SMTP">SMTP</Option>
-                  <Option value="POP3">POP3</Option>
-                  <Option value="IMAP">IMAP</Option>
-
-                </Select>,
+                <Input label={intl.formatMessage({ id: `${intlPrefix}.sender` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
             </FormItem>
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('address', {
+              {getFieldDecorator('protocol', {
                 rules: [],
-                initialValue: 998,
+                initialValue: 'SMTP',
+              })(
+                <Input label={intl.formatMessage({ id: `${intlPrefix}.server.type` })} style={{ width: inputWidth }} disabled />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('host', {
+                rules: [{
+                  required: true,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.host.required` }),
+                }],
+                initialValue: MailSettingStore.getSettingData.host,
               })(
                 <Input label={intl.formatMessage({ id: `${intlPrefix}.server.address` })} style={{ width: inputWidth }} autoComplete="off" />,
               )}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('SSL', {
-                initialValue: 'Y',
-              })(
-                <RadioGroup
-                  className="sslRadioGroup"
-                  label={intl.formatMessage({ id: `${intlPrefix}.ssl` })}
-                >
-                  <Radio value={'Y'}><FormattedMessage id="yes" /></Radio>
-                  <Radio value={'N'}><FormattedMessage id="no" /></Radio>
-                </RadioGroup>,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('port', {
-                rules: [],
-                initialValue: 998,
-              })(
-                <Input label={intl.formatMessage({ id: `${intlPrefix}.port` })} style={{ width: inputWidth }} autoComplete="off" />,
-              )}
-            </FormItem>
+            {
+              !this.state.isExchange ? (
+                <div>
+                  <FormItem
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('ssl', {
+                      initialValue: MailSettingStore.getSettingData.ssl ? 'Y' : 'N',
+                    })(
+                      <RadioGroup
+                        className="sslRadioGroup"
+                        label={intl.formatMessage({ id: `${intlPrefix}.ssl` })}
+                      >
+                        <Radio value={'Y'}><FormattedMessage id="yes" /></Radio>
+                        <Radio value={'N'}><FormattedMessage id="no" /></Radio>
+                      </RadioGroup>,
+                    )}
+                  </FormItem>
+                  <FormItem
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('port', {
+                      rules: [{
+                        required: true,
+                        whitespace: true,
+                        message: intl.formatMessage({ id: `${intlPrefix}.port.required` }),
+                      }, {
+                        pattern: /^[1-9]\d*$/,
+                        message: intl.formatMessage({ id: `${intlPrefix}.port.pattern` }),
+                      }],
+                      initialValue: String(MailSettingStore.getSettingData.port),
+                    })(
+                      <Input label={intl.formatMessage({ id: `${intlPrefix}.port` })} style={{ width: inputWidth }} autoComplete="off" />,
+                    )}
+                  </FormItem>
+
+                </div>
+              ) : ''
+            }
             <hr className="divider" />
-            <div className="btnGroup">
-              <Button
-                funcType="raised"
-                type="primary"
-                htmlType="submit"
-                loading={saving}
-              >
-                <FormattedMessage id={`${intlPrefix}.save.test`} />
-              </Button>
-              <Button
-                funcType="raised"
-                onClick={() => {
-                  const { resetFields } = this.props.form;
-                  resetFields();
-                }}
-                style={{ color: '#3F51B5' }}
-                disabled={saving}
-              >
-                <FormattedMessage id="cancel" />
-              </Button>
-            </div>
+            <Permission service={['notify-service.config.updateEmail']} >
+              <div className="btnGroup">
+                <Button
+                  funcType="raised"
+                  type="primary"
+                  htmlType="submit"
+                  loading={saving}
+                >
+                  <FormattedMessage id="save" />
+                </Button>
+                <Button
+                  funcType="raised"
+                  onClick={() => {
+                    const { resetFields } = this.props.form;
+                    resetFields();
+                  }}
+                  style={{ color: '#3F51B5' }}
+                  disabled={saving}
+                >
+                  <FormattedMessage id="cancel" />
+                </Button>
+              </div>
+            </Permission>
           </Form>
         )}
       </div>
-    )
+    );
 
 
     return (
       <Page
-        service={['manager-service.service.pageManager']}
+        service={[
+          'notify-service.config.selectEmail',
+          'notify-service.config.testEmailConnect',
+          'notify-service.config.updateEmail',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
-          <Button
-            onClick={this.testContact}
-            icon="low_priority"
-          >
-            <FormattedMessage id={`${intlPrefix}.test.contact`} />
-          </Button>
+          <Permission service={['notify-service.config.testEmailConnect']}>
+            <Button
+              onClick={this.testContact}
+              icon="low_priority"
+            >
+              <FormattedMessage id={`${intlPrefix}.test.contact`} />
+            </Button>
+          </Permission>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

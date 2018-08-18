@@ -68,6 +68,7 @@
         Routes: /iam/dashboard-setting
         sort: 7
         permission:
+          - 'iam-service.dashboard.list'
           - 'iam-service.dashboard.query'
           - 'iam-service.dashboard.update'
 
@@ -132,31 +133,19 @@
       Routes: /iam/mail-template
       sort: 1
       permission:
-      - 'manager-service.service.pageManager'
-  - "sms-template":
-      icon: test
-      Routes: /iam/sms-template
-      sort: 2
-      permission:
-      - 'manager-service.service.pageManager'
+      - 'notify-service.email-template-site.pageSite'
+      - 'notify-service.email-template-site.create'
+      - 'notify-service.email-template-site.update'
+      - 'notify-service.email-template-site.query'
+      - 'notify-service.send-setting-site.listNames'
   - "mail-setting":
       icon: contact_mail
       Routes: /iam/mail-setting
-      sort: 3
+      sort: 2
       permission:
-      - 'manager-service.service.pageManager'
-  - "sms-setting":
-      icon: textsms
-      Routes: /iam/sms-setting
-      sort: 4
-      permission:
-      - 'manager-service.service.pageManager'
-  - "msg-record":
-      icon: textsms
-      Routes: /iam/msg-record
-      sort: 5
-      permission:
-      - 'manager-service.service.pageManager'
+      - 'notify-service.config.selectEmail'
+      - 'notify-service.config.testEmailConnect'
+      - 'notify-service.config.updateEmail'
 
 # 事务管理
 "global-transaction":
@@ -249,11 +238,16 @@
           - 'iam-service.password-policy.queryByOrganizationId'
           - 'iam-service.password-policy.update'
     - "mail-template-organization":
-        icon: contact_mail
+        icon: application_model
         Routes: /iam/mail-template
         sort: 7
         permission:
-        - 'iam-service.organization-project.list'
+          - 'notify-service.email-template-org.pageOrganization'
+          - 'notify-service.email-template-org.create'
+          - 'notify-service.email-template-org.update'
+          - 'notify-service.email-template-org.delete'
+          - 'notify-service.email-template-org.query'
+          - 'notify-service.send-setting-org.listNames'
 
 # 项目设置
 "prosetting":

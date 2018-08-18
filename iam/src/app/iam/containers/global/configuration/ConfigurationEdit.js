@@ -14,10 +14,10 @@ import 'brace/theme/dawn';
 import ConfigurationStore from '../../../stores/global/configuration';
 import './Configuration.scss';
 
-const confirm = Modal.confirm;
-const Step = Steps.Step;
+const { confirm } = Modal;
+const { Step } = Steps;
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option } = Select;
 const intlPrefix = 'global.configuration';
 
 @inject('AppState')
@@ -48,7 +48,7 @@ class EditConfig extends Component {
       } else {
         ConfigurationStore.setEditConfig(data);
       }
-    })
+    });
     this.loadCurrentServiceConfig(this.state.service);
   }
 
@@ -80,7 +80,7 @@ class EditConfig extends Component {
           currentServiceConfig: data.content,
         });
       }
-    })
+    });
   }
 
   /* 渲染配置模板下拉框 */
@@ -91,10 +91,7 @@ class EditConfig extends Component {
         disabled
         style={{ width: '512px' }}
         label={<FormattedMessage id={`${intlPrefix}.template`} />}
-        filterOption={
-          (input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
+        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         filter
       >
         {
@@ -173,8 +170,7 @@ class EditConfig extends Component {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        const currentService =
-          ConfigurationStore.service.find(service => service.name === this.state.service);
+        const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
         ConfigurationStore.setRelatedService(currentService);
         ConfigurationStore.setStatus('');
         Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
@@ -185,8 +181,7 @@ class EditConfig extends Component {
 
   /* 取消 */
   cancelAll = () => {
-    const currentService =
-      ConfigurationStore.service.find(service => service.name === this.state.service);
+    const currentService = ConfigurationStore.service.find(service => service.name === this.state.service);
     ConfigurationStore.setRelatedService(currentService);
     ConfigurationStore.setStatus('');
     this.props.history.push('/iam/configuration');
@@ -228,10 +223,7 @@ class EditConfig extends Component {
                 disabled
                 style={{ width: inputWidth }}
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
-                filterOption={
-                  (input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 filter
               >
                 {
@@ -285,7 +277,7 @@ class EditConfig extends Component {
           </Permission>
         </section>
       </div>
-    )
+    );
   }
 
   /* 渲染第二步 */
@@ -294,9 +286,9 @@ class EditConfig extends Component {
     return (
       <div>
         <p>
-          <FormattedMessage id={`${intlPrefix}.step2.description`}/>
+          <FormattedMessage id={`${intlPrefix}.step2.description`} />
         </p>
-        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`}/></span>
+        <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`} /></span>
         <AceEditor
           onChange={this.handleChangeValue}
           showPrintMargin={false}
@@ -311,14 +303,14 @@ class EditConfig extends Component {
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
           >
-            <FormattedMessage id={`${intlPrefix}.step.next`}/>
+            <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 1)}>
-            <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+            <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
         </section>
       </div>
-    )
+    );
   }
 
   /* 渲染第三步 */
@@ -328,17 +320,21 @@ class EditConfig extends Component {
       <div className="confirmContainer">
         <div>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col><Col
-            span={21}>{ConfigurationStore.getEditConfig.name}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col>
+            <Col
+              span={21}
+            >
+              {ConfigurationStore.getEditConfig.name}
+            </Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`}/>：</Col><Col span={21}>{ConfigurationStore.getEditConfig.configVersion}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{ConfigurationStore.getEditConfig.configVersion}</Col>
           </Row>
           <Row>
-            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`}/>：</Col><Col span={13}>{service}</Col>
+            <Col span={3}><FormattedMessage id={`${intlPrefix}.service`} />：</Col><Col span={13}>{service}</Col>
           </Row>
         </div>
-        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`}/>：</span>
+        <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
         <AceEditor
           readOnly
           showPrintMargin={false}
@@ -356,7 +352,7 @@ class EditConfig extends Component {
             <FormattedMessage id="save" />
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>
-            <FormattedMessage id={`${intlPrefix}.step.prev`}/>
+            <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
           <Button funcType="raised" onClick={this.cancelAll}>
             <FormattedMessage id="cancel" />
@@ -389,25 +385,33 @@ class EditConfig extends Component {
           <div className="createConfigContainer">
             <Steps current={current}>
               <Step
-                title={
+                title={(
                   <span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>
                     <FormattedMessage id={`${intlPrefix}.step1.title`} />
-                  </span>}
+                  </span>
+                )}
                 status={this.getStatus(1)}
               />
               <Step
-                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}><FormattedMessage
-                  id={`${intlPrefix}.step2.title`} /></span>}
+                title={(
+                  <span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>
+                    <FormattedMessage
+                      id={`${intlPrefix}.step2.title`}
+                    />
+                  </span>
+                )}
                 status={this.getStatus(2)}
               />
               <Step
-                title={<span style={{
-                  color: current === 3 ? '#3F51B5' : '',
-                  fontSize: 14
-                }}>
-                  <FormattedMessage
-                    id={`${intlPrefix}.step3.modify.title`} />
-                </span>}
+                title={(
+                  <span style={{
+                    color: current === 3 ? '#3F51B5' : '',
+                    fontSize: 14,
+                  }}
+                  >
+                    <FormattedMessage id={`${intlPrefix}.step3.modify.title`} />
+                  </span>
+                )}
                 status={this.getStatus(3)}
               />
             </Steps>

@@ -3,8 +3,9 @@
  */
 import { action, computed, observable } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
-const { AppState } = stores;
 import querystring from 'query-string';
+
+const { AppState } = stores;
 
 @store('ConfigurationStore')
 class ConfigurationStore {
@@ -13,17 +14,17 @@ class ConfigurationStore {
   @observable configData = [];
   @observable loading = true;
   @observable currentServiceConfig = {};
-  @observable currentConfigId = null;  // 当前配置id
+  @observable currentConfigId = null; // 当前配置id
   @observable status = '';
   @observable editConfig = null;
   @observable relatedService = {}; // 联动service
-  @observable lastPath = 'configuration';  // 记录上次路径
+  @observable lastPath = 'configuration'; // 记录上次路径
 
   @action setStatus(data) {
     this.status = data;
   }
 
-  @computed get getStatus(){
+  @computed get getStatus() {
     return this.status;
   }
 
@@ -31,7 +32,7 @@ class ConfigurationStore {
     this.relatedService = data;
   }
 
-  @computed get getRelatedService(){
+  @computed get getRelatedService() {
     return this.relatedService;
   }
 
@@ -79,7 +80,7 @@ class ConfigurationStore {
     this.editConfig = data;
   }
 
-  @computed get getEditConfig(){
+  @computed get getEditConfig() {
     return this.editConfig;
   }
 
@@ -106,16 +107,15 @@ class ConfigurationStore {
     return axios.put(`manager/v1/configs/${configId}?type=${type}`, data);
   }
 
-  deleteConfig = (configId) => axios.delete(`manager/v1/configs/${configId}`);
+  deleteConfig = configId => axios.delete(`manager/v1/configs/${configId}`);
 
-  setDefaultConfig = (configId) => axios.put(`manager/v1/configs/${configId}/default`);
+  setDefaultConfig = configId => axios.put(`manager/v1/configs/${configId}/default`);
 
-  createConfig = (data) => axios.post(`manager/v1/configs`, JSON.stringify(data));
+  createConfig = data => axios.post('manager/v1/configs', JSON.stringify(data));
 
-  getEditConfigData = (id) => axios.get(`manager/v1/configs/${id}`);
+  getEditConfigData = id => axios.get(`manager/v1/configs/${id}`);
 
-  versionCheck = (data) => axios.post(`manager/v1/configs/check`, JSON.stringify(data));
-
+  versionCheck = data => axios.post('manager/v1/configs/check', JSON.stringify(data));
 }
 const configurationStore = new ConfigurationStore();
 export default configurationStore;

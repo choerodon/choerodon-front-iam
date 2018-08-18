@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Modal, Table, Tooltip } from 'choerodon-ui';
@@ -40,7 +40,7 @@ export default class RootUser extends Component {
     this.reload();
   }
 
-  isEmptyFilters = ({ loginName, realName, enabled, locked}) => {
+  isEmptyFilters = ({ loginName, realName, enabled, locked }) => {
     if ((loginName && loginName.length) ||
       (realName && realName.length) ||
       (enabled && enabled.length) ||
@@ -63,8 +63,9 @@ export default class RootUser extends Component {
     const params = paramsIn || paramsState;
     this.setState({
       loading: true,
+      filters,
     });
-    RootUserStore.loadRootUserData(pagination, filters, sort, params).then(data => {
+    RootUserStore.loadRootUserData(pagination, filters, sort, params).then((data) => {
       if (this.isEmptyFilters(filters) && !params.length) {
         this.setState({
           onlyRootUser: data.totalElements <= 1,
@@ -105,20 +106,18 @@ export default class RootUser extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
-      title: intl.formatMessage({id: `${intlPrefix}.remove.title`}),
-      content: intl.formatMessage({id: `${intlPrefix}.remove.content`},{
+      title: intl.formatMessage({ id: `${intlPrefix}.remove.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.remove.content` }, {
         name: record.realName,
       }),
-      onOk: () => {
-        return RootUserStore.deleteRootUser(record.id).then(({ failed, message }) => {
-          if (failed) {
-            Choerodon.prompt(message);
-          } else {
-            Choerodon.prompt(intl.formatMessage({id: 'remove.success'}));
-            this.reload();
-          }
-        });
-      }
+      onOk: () => RootUserStore.deleteRootUser(record.id).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'remove.success' }));
+          this.reload();
+        }
+      }),
     });
   }
 
@@ -134,14 +133,12 @@ export default class RootUser extends Component {
         });
         RootUserStore.searchMemberIds(memberNames).then((data) => {
           if (data) {
-            const memberIds = data.map((info) => {
-              return info.id;
-            });
+            const memberIds = data.map(info => info.id);
             RootUserStore.addRootUser(memberIds).then(({ failed, message }) => {
               if (failed) {
                 Choerodon.prompt(message);
               } else {
-                Choerodon.prompt(intl.formatMessage({id: 'add.success'}));
+                Choerodon.prompt(intl.formatMessage({ id: 'add.success' }));
                 this.closeSidebar();
                 this.reload();
               }
@@ -155,11 +152,11 @@ export default class RootUser extends Component {
   renderTable() {
     const { AppState, intl } = this.props;
     const { type } = AppState.currentMenuType;
-    const { filters, sort: { columnKey, order }, } = this.state;
+    const { filters, sort: { columnKey, order } } = this.state;
     const rootUserData = RootUserStore.getRootUserData.slice();
     const columns = [
       {
-        title: <FormattedMessage id={`${intlPrefix}.loginname`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.loginname`} />,
         key: 'loginName',
         dataIndex: 'loginName',
         filters: [],
@@ -168,39 +165,39 @@ export default class RootUser extends Component {
         sortOrder: columnKey === 'loginName' && order,
       },
       {
-        title: <FormattedMessage id={`${intlPrefix}.realname`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
         filters: [],
         filteredValue: filters.realName || [],
       },
       {
-        title: <FormattedMessage id={`${intlPrefix}.status.enabled`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.status.enabled`} />,
         key: 'enabled',
         dataIndex: 'enabled',
-        render: enabled => intl.formatMessage({id: enabled ? 'enable' : 'disable'}),
+        render: enabled => intl.formatMessage({ id: enabled ? 'enable' : 'disable' }),
         filters: [{
-          text: intl.formatMessage({id: 'enable'}),
+          text: intl.formatMessage({ id: 'enable' }),
           value: 'true',
         }, {
-          text: intl.formatMessage({id: 'disable'}),
+          text: intl.formatMessage({ id: 'disable' }),
           value: 'false',
         }],
         filteredValue: filters.enabled || [],
       },
       {
-        title: <FormattedMessage id={`${intlPrefix}.status.locked`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.status.locked`} />,
         key: 'locked',
         dataIndex: 'locked',
         filters: [{
-          text: intl.formatMessage({id: `${intlPrefix}.normal`}),
+          text: intl.formatMessage({ id: `${intlPrefix}.normal` }),
           value: 'false',
         }, {
-          text: intl.formatMessage({id: `${intlPrefix}.locked`}),
+          text: intl.formatMessage({ id: `${intlPrefix}.locked` }),
           value: 'true',
         }],
         filteredValue: filters.locked || [],
-        render: lock => intl.formatMessage({id: lock ? `${intlPrefix}.locked` : `${intlPrefix}.normal`}),
+        render: lock => intl.formatMessage({ id: lock ? `${intlPrefix}.locked` : `${intlPrefix}.normal` }),
       },
       {
         title: '',
@@ -215,9 +212,9 @@ export default class RootUser extends Component {
                 type={type}
               >
                 <Tooltip
-                  title={onlyRootUser ? <FormattedMessage id={`${intlPrefix}.remove.disable.tooltip`}/> : <FormattedMessage id="remove"/>}
+                  title={onlyRootUser ? <FormattedMessage id={`${intlPrefix}.remove.disable.tooltip`} /> : <FormattedMessage id="remove" />}
                   placement={onlyRootUser ? 'bottomRight' : 'bottom'}
-                  overlayStyle={{ maxWidth: '300px'}}
+                  overlayStyle={{ maxWidth: '300px' }}
                 >
                   <Button
                     size="small"
@@ -243,7 +240,7 @@ export default class RootUser extends Component {
         filters={this.state.params}
         rowKey="id"
         onChange={this.tableChange}
-        filterBarPlaceholder={intl.formatMessage({id: "filtertable"})}
+        filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
       />
     );
   }
@@ -259,7 +256,7 @@ export default class RootUser extends Component {
           'iam-service.user.deleteDefaultUser',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission
             service={['iam-service.user.addDefaultUsers']}
             type={type}
@@ -268,7 +265,7 @@ export default class RootUser extends Component {
               onClick={this.openSidebar}
               icon="playlist_add"
             >
-              <FormattedMessage id="add"/>
+              <FormattedMessage id="add" />
             </Button>
           </Permission>
           <Button
@@ -279,7 +276,7 @@ export default class RootUser extends Component {
               });
             }}
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
@@ -287,10 +284,10 @@ export default class RootUser extends Component {
         >
           {this.renderTable()}
           <Sidebar
-            title={<FormattedMessage id={`${intlPrefix}.add`}/>}
+            title={<FormattedMessage id={`${intlPrefix}.add`} />}
             onOk={this.handleOk}
-            okText={<FormattedMessage id="add"/>}
-            cancelText={<FormattedMessage id="cancel"/>}
+            okText={<FormattedMessage id="add" />}
+            cancelText={<FormattedMessage id="cancel" />}
             onCancel={this.closeSidebar}
             visible={this.state.visible}
             confirmLoading={this.state.submitting}
@@ -300,7 +297,7 @@ export default class RootUser extends Component {
               code={`${intlPrefix}.add`}
             >
               <Form layout="vertical">
-                <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`}/>} style={{ marginTop: '-15px'}} form={form} />
+                <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`} />} style={{ marginTop: '-15px' }} form={form} />
               </Form>
             </Content>
           </Sidebar>

@@ -14,10 +14,10 @@ import 'brace/theme/dawn';
 import './Configuration.scss';
 import ConfigurationStore from '../../../stores/global/configuration';
 
-const confirm = Modal.confirm;
-const Step = Steps.Step;
+const { confirm } = Modal;
+const { Step } = Steps;
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option } = Select;
 const intlPrefix = 'global.configuration';
 
 @inject('AppState')
@@ -380,6 +380,7 @@ class CreateConfig extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.version.require.msg` }),
               }, {
+                /*  eslint-disable-next-line */
                 pattern: /^[a-z0-9\.-]*$/g,
                 message: intl.formatMessage({ id: `${intlPrefix}.version.pattern.msg` }),
               }, {
@@ -481,7 +482,7 @@ class CreateConfig extends Component {
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col>
-            <Col span={21}>{ service + '.' + version }</Col>
+            <Col span={21}>{`${service}.${version}`}</Col>
           </Row>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configversion`} />：</Col><Col span={21}>{version}</Col>
@@ -526,14 +527,14 @@ class CreateConfig extends Component {
       serviceName: service,
       version,
       yaml: yamlData,
-      name: service + '.' + version,
-    }
+      name: `${service}.${version}`,
+    };
     ConfigurationStore.createConfig(data).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
       } else {
         const currentService =
-          ConfigurationStore.service.find(service => service.name === data.serviceName);
+          ConfigurationStore.service.find(item => item.name === data.serviceName);
         ConfigurationStore.setRelatedService(currentService);
         Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
         this.props.history.push('/iam/configuration');

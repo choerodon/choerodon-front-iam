@@ -29,7 +29,6 @@ function rotateFlag(rotate) {
 @inject('AppState')
 @injectIntl
 export default class AvatarUploader extends Component {
-
   state = {
     submitting: false,
     img: null,
@@ -45,8 +44,8 @@ export default class AvatarUploader extends Component {
     const { x, y, size, rotate, file, imageStyle: { width, height }, img: { naturalWidth, naturalHeight } } = this.state;
     const flag = rotateFlag(rotate);
     const scale = naturalWidth / width;
-    const startX = flag ? x - (width - height) / 2 : x;
-    const startY = flag ? y + (width - height) / 2 : y;
+    const startX = flag ? x - ((width - height) / 2) : x;
+    const startY = flag ? y + ((width - height) / 2) : y;
     const qs = querystring.stringify({
       rotate,
       startX: round(startX * scale),
@@ -62,11 +61,11 @@ export default class AvatarUploader extends Component {
         if (res.failed) {
           Choerodon.prompt(res.message);
         } else {
-          AppState.loadUserInfo().then(data => {
-            UserInfoStore.setUserInfo(data);
+          AppState.loadUserInfo().then((info) => {
+            UserInfoStore.setUserInfo(info);
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
             this.close();
-            AppState.setUserInfo(data);
+            AppState.setUserInfo(info);
           });
         }
         this.setState({ submitting: false });
@@ -140,25 +139,25 @@ export default class AvatarUploader extends Component {
       const relative = Math.min(newX - resizeX, newY - resizeY);
       x += relative;
       y += relative;
-      size = resizeSize - x + resizeX;
+      size = (resizeSize - x) + resizeX;
     } else if (resizeMode === 'rt') {
       const relative = Math.min(resizeX - newX, newY - resizeY);
       y += relative;
-      size = resizeSize - y + resizeY;
+      size = (resizeSize - y) + resizeY;
     } else if (resizeMode === 'lb') {
       const relative = Math.min(newX - resizeX, resizeY - newY);
       x += relative;
-      size = resizeSize - x + resizeX;
+      size = (resizeSize - x) + resizeX;
     } else {
       const relative = Math.min(resizeX - newX, resizeY - newY);
       size = resizeSize - relative;
     }
     const minX = flag ? (width - height) / 2 : 0;
     const minY = flag ? (height - width) / 2 : 0;
-    const maxWidth = flag ? (width - height) / 2 + height : width;
-    const maxHeight = flag ? (height - width ) / 2 + width : height;
-    x = Math.min(Math.max(minX, x), resizeSize - minRectSize + resizeX);
-    y = Math.min(Math.max(minY, y), resizeSize - minRectSize + resizeY);
+    const maxWidth = flag ? ((width - height) / 2) + height : width;
+    const maxHeight = flag ? ((height - width) / 2) + width : height;
+    x = Math.min(Math.max(minX, x), (resizeSize - minRectSize) + resizeX);
+    y = Math.min(Math.max(minY, y), (resizeSize - minRectSize) + resizeY);
     this.setState({
       x,
       y,
@@ -178,18 +177,18 @@ export default class AvatarUploader extends Component {
     let height = flag ? naturalWidth : naturalHeight;
     if (width < minRectSize || height < minRectSize) {
       if (width > height) {
-        width = width / height * minRectSize;
+        width = (width / height) * minRectSize;
         height = minRectSize;
       } else {
-        height = height / width * minRectSize;
+        height = (height / width) * minRectSize;
         width = minRectSize;
       }
     } else if (width > editorWidth || height > editorHeight) {
       if (width / editorWidth > height / editorHeight) {
-        height = height / width * editorWidth;
+        height = (height / width) * editorWidth;
         width = editorWidth;
       } else {
-        width = width / height * editorHeight;
+        width = (width / height) * editorHeight;
         height = editorHeight;
       }
     }
@@ -231,14 +230,14 @@ export default class AvatarUploader extends Component {
     let py = -y;
     if (radius < 0) radius += 4;
     if (radius === 1) {
-      py = x + (height - width) / 2 - height + size;
-      px = (height - width) / 2 - y;
+      py = ((x + ((height - width) / 2)) - height) + size;
+      px = ((height - width) / 2) - y;
     } else if (radius === 2) {
-      px = x - width + size;
-      py = y - height + size;
+      px = (x - width) + size;
+      py = (y - height) + size;
     } else if (radius === 3) {
-      px = y + (width - height) / 2 - width + size;
-      py = (width - height) / 2 - x;
+      px = ((y + ((width - height) / 2)) - width) + size;
+      py = ((width - height) / 2) - x;
     }
     return {
       style: {
@@ -287,7 +286,7 @@ export default class AvatarUploader extends Component {
         </h4>
         <div className={`${prefixClas}-wraper`}>
           <div className={prefixClas} style={style}>
-            <img src={src} style={imageStyle} />
+            <img alt="" src={src} style={imageStyle} />
             <div className={`${prefixClas}-mask`} style={maskStyle}>
               <div onMouseDown={this.handleMoveStart}>
                 <i className="lt" onMouseDown={this.handleResizeStart} />
@@ -360,8 +359,8 @@ export default class AvatarUploader extends Component {
     const { img } = this.state;
     const props = this.getUploadProps();
     return img ? (
-        this.renderEditor(props)
-      ) :
+      this.renderEditor(props)
+    ) :
       (
         <Dragger className="user-info-avatar-dragger" {...props}>
           <Icon type="inbox" />

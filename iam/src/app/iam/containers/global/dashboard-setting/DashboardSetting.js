@@ -24,9 +24,13 @@ const inputWidth = 512;
 
 @Form.create({})
 @injectIntl
-@inject('AppState', 'DashboardStore')
+@inject('AppState')
 @observer
-export default class DashboardSetting extends Component {
+class DashboardSetting extends Component {
+  constructor(props) {
+    super(props);
+    this.editFocusInput = React.createRef();
+  }
 
   componentWillMount() {
     this.fetchData();
@@ -42,7 +46,9 @@ export default class DashboardSetting extends Component {
       if (!error) {
         if (modify) {
           DashboardSettingStore.updateData(values).then((data) => {
-            DashboardStore.updateCachedData(data);
+            if (DashboardStore) {
+              DashboardStore.updateCachedData(data);
+            }
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
           });
         } else {
@@ -69,6 +75,9 @@ export default class DashboardSetting extends Component {
     form.resetFields();
     DashboardSettingStore.setEditData(record);
     DashboardSettingStore.showSideBar();
+    setTimeout(() => {
+      this.editFocusInput.input.focus();
+    }, 10);
   }
 
   getTableColumns() {
@@ -94,10 +103,19 @@ export default class DashboardSetting extends Component {
         render: (text, { namespace }) => `${namespace}-${text}`,
       },
       {
+        title: <FormattedMessage id={`${intlPrefix}.card.title`} />,
+        dataIndex: 'title',
+        key: 'title',
+        filters: [],
+        filteredValue: filters.title || [],
+        sorter: true,
+        sortOrder: columnKey === 'title' && order,
+      },
+      {
         title: <FormattedMessage id={`${intlPrefix}.icon`} />,
         dataIndex: 'icon',
         key: 'icon',
-        render: (text) => (
+        render: text => (
           <Icon type={text} style={{ fontSize: 20 }} />
         ),
       },
@@ -120,7 +138,7 @@ export default class DashboardSetting extends Component {
         filteredValue: filters.level || [],
         sorter: true,
         sortOrder: columnKey === 'level' && order,
-        render: (text) => (
+        render: text => (
           <FormattedMessage id={`${intlPrefix}.level.${text}`} />
         ),
       },
@@ -197,6 +215,9 @@ export default class DashboardSetting extends Component {
                   autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.name`} />}
                   style={{ width: inputWidth }}
+                  ref={(e) => {
+                    this.editFocusInput = e;
+                  }}
                 />,
               )
             }
@@ -229,6 +250,7 @@ export default class DashboardSetting extends Component {
                 <IconSelect
                   label={<FormattedMessage id={`${intlPrefix}.icon`} />}
                   style={{ width: inputWidth }}
+                  showArrow
                 />,
               )
             }
@@ -244,6 +266,7 @@ export default class DashboardSetting extends Component {
     return (
       <Page
         service={[
+          'iam-service.dashboard.list',
           'iam-service.dashboard.query',
           'iam-service.dashboard.update',
         ]}
@@ -282,3 +305,5 @@ export default class DashboardSetting extends Component {
     );
   }
 }
+
+export default Choerodon.dashboard ? inject('DashboardStore')(DashboardSetting) : DashboardSetting;

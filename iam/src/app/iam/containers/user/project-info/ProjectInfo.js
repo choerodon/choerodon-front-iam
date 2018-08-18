@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
+
 const intlPrefix = 'user.proinfo';
 const { Sidebar } = Modal;
 
@@ -43,7 +44,7 @@ export default class ProjectInfo extends Component {
       roleId: null,
       roleName: '',
       proName: '',
-    }
+    };
   }
 
   componentWillMount() {
@@ -59,7 +60,9 @@ export default class ProjectInfo extends Component {
     const pagination = paginationIn || paginationState;
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
-    this.fetch(pagination, filters, params).then(data => {
+    // 防止标签闪烁
+    this.setState({ filters });
+    this.fetch(pagination, filters, params).then((data) => {
       this.setState({
         pagination: {
           current: data.number + 1,
@@ -90,7 +93,7 @@ export default class ProjectInfo extends Component {
     return axios.get(`/iam/v1/users/${id}/project_roles?${querystring.stringify(queryObj)}`);
   }
 
-  handlePageChange = (pagination, filters, {}, params) => {
+  handlePageChange = (pagination, filters, sort, params) => {
     this.loadInitData(pagination, filters, params);
   };
 
@@ -120,10 +123,10 @@ export default class ProjectInfo extends Component {
       percontent: null,
     }, () => {
       this.loadPermissionData();
-    })
+    });
   }
 
-  //关闭sidebar
+  // 关闭sidebar
   closeSidebar = () => {
     this.setState({
       visible: false,
@@ -139,11 +142,11 @@ export default class ProjectInfo extends Component {
     const pagination = paginationIn || paginationState;
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
-    this.permissionFetch(pagination, filters, params).then(data => {
+    this.permissionFetch(pagination, filters, params).then((data) => {
       if (this.state.totalCount === false) {
         this.setState({
           totalCount: data.totalElements,
-        })
+        });
       }
       this.setState({
         perpagination: {
@@ -175,7 +178,7 @@ export default class ProjectInfo extends Component {
     return axios.get(`/iam/v1/roles/${id}/permissions?${querystring.stringify(queryObj)}`);
   }
 
-  handlePerPageChange = (pagination, filters, {}, params) => {
+  handlePerPageChange = (pagination, filters, sort, params) => {
     this.loadPermissionData(pagination, filters, params);
   };
 
@@ -204,13 +207,13 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.detail.table.description`} />,
       dataIndex: 'description',
       key: 'description',
-    }]
+    }];
     return (
       <Content
         className="sidebar-content"
         title={title}
         description={description}
-        link={intl.formatMessage({id: `${intlPrefix}.detail.link`})}
+        link={intl.formatMessage({ id: `${intlPrefix}.detail.link` })}
       >
         <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
@@ -235,41 +238,42 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
+      width: 250,
       render: (text, record) => {
         let icon = '';
-        if (record.hasOwnProperty('organizationId')) {
-          icon = 'project'
+        if ('organizationId' in record) {
+          icon = 'project';
         } else {
           icon = 'person';
         }
         return (
           <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>
-        )
-      }
+        );
+      },
     }, {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
+      width: 300,
     }, {
       title: <FormattedMessage id={`${intlPrefix}.belongorg`} />,
       dataIndex: 'organizationName',
       key: 'organizationName',
+      width: 300,
     }, {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',
       key: 'type',
-      render: (text, record) => {
-        return (
-          record.hasOwnProperty('organizationId') ? '项目' : '角色'
-        );
-      },
+      render: (text, record) => (
+        'organizationId' in record ? '项目' : '角色'
+      ),
     }, {
       title: '',
       width: 100,
       key: 'action',
       align: 'right',
       render: (text, record) => {
-        if (!record.hasOwnProperty('organizationId')) {
+        if (!('organizationId' in record)) {
           return (
             <Permission service={['iam-service.role.listPermissionById']}>
               <Tooltip
@@ -284,25 +288,24 @@ export default class ProjectInfo extends Component {
                 />
               </Tooltip>
             </Permission>
-          )
+          );
         }
-      }
+      },
     }];
 
     return (
       <Page>
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}
-        >
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
-            <FormattedMessage id="refresh"/>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content
           code={intlPrefix}
-          values={{name: AppState.getUserInfo.realName}}
+          values={{ name: AppState.getUserInfo.realName }}
         >
           <Table
             loading={loading}

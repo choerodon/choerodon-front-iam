@@ -55,6 +55,7 @@ export default class Saga extends Component {
     const params = paramsIn || paramsState;
     this.setState({
       loading: true,
+      filters,
     });
     SagaStore.loadData(pagination, filters, sort, params).then((data) => {
       SagaStore.setData(data.content);
@@ -87,6 +88,7 @@ export default class Saga extends Component {
       });
     });
   }
+
   handleOk = () => {
     this.setState({
       visible: false,
@@ -96,11 +98,13 @@ export default class Saga extends Component {
       });
     });
   }
+
   handleTabChange = (showJson) => {
     this.setState({
       showJson: showJson === 'json',
     });
   }
+
   renderTable() {
     const { intl } = this.props;
     const { filters } = this.state;
@@ -207,7 +211,7 @@ export default class Saga extends Component {
                 <TabPane tab={<FormattedMessage id={`${intlPrefix}.json`} />} key="json" />
               </Tabs>
               {showJson
-                ? (<div className="c7n-saga-detail-json"><pre><code id="json">{jsonFormat(data)}</code></pre></div>)
+                ? (<div className="c7n-saga-detail-json" style={{ margin: 0 }}><pre><code id="json">{jsonFormat(data)}</code></pre></div>)
                 : (<SagaImg data={data} />)
               }
             </Content>

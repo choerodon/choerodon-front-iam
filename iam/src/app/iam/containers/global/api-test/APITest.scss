@@ -1,43 +1,57 @@
-.methodTag {
-  display: inline-block;
-  height: 20px;
-  padding: 1px 4px;
-  text-align: center;
-  font-size: 13px;
-  color: #fff;
-  text-transform: uppercase;
-  border-radius: 2px;
+.c7n-api-table {
+  .c7n-apitest-name {
+    max-width: 300px;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .c7n-apitest-url {
+    width: 438px;
+    max-width: 438px;
+  }
+
+  .urlContainer {
+    max-width: 380px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .methodTag {
+    display: inline-block;
+    height: 20px;
+    padding: 1px 4px;
+    text-align: center;
+    font-size: 13px;
+    color: #fff;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
 }
 
-.urlContainer {
-  max-width: 380px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+.c7n-apitest-get {
+  background: #4d90fe;
 }
 
-.get {
-  background: #4D90FE;
+.c7n-apitest-post {
+  background: #00bfa5;
 }
 
-.post {
-  background: #00BFA5;
+.c7n-apitest-put {
+  background: #ffb100;
 }
 
-.put {
-  background: #FFB100;
+.c7n-apitest-delete {
+  background: #f44336;
 }
 
-.delete {
-  background: #F44336;
+.c7n-apitest-options {
+  background: #743be7;
 }
 
-.options {
-  background: #743BE7;
-}
-
-.patch {
-  background: #FF7043;
+.c7n-apitest-patch {
+  background: #ff7043;
 }
 
 .c7n-api-test {
@@ -48,7 +62,7 @@
   .boolean,
   .undefined,
   .null {
-    color: #00BFA5;
+    color: #00bfa5;
   }
   .comment {
     color: rgba(0, 0, 0, 0.56);
@@ -81,7 +95,7 @@
 
       .response-data-container {
         padding: 5px;
-        background: #F1F9FF;
+        background: #f1f9ff;
       }
     }
   }
@@ -116,7 +130,7 @@
           z-index: 2;
           width: 109px;
           height: 31px;
-          top: 0px;
+          top: 0;
           background: white;
         }
       }
@@ -174,9 +188,21 @@
       }
     }
 
-
     .c7n-url-container {
-      margin-top: 24px;
+      margin-top: 30px;
+
+      .c7n-authorize-info {
+        margin-bottom: 20px;
+
+        .info {
+          font-size: 16px;
+          color: #000;
+        }
+
+        button {
+          margin-left: 50px;
+        }
+      }
 
       .method {
         display: inline-block;
@@ -185,7 +211,7 @@
         text-transform: uppercase;
         border-radius: 2px 0 0 2px;
         font-size: 13px;
-        color: #FFFFFF;
+        color: #fff;
       }
 
       input {
@@ -193,7 +219,7 @@
         display: inline-block;
         margin-left: 0;
         margin-right: 24px;
-        width: 74%;
+        width: 64%;
         padding: 7px 0 7px 14px;
         border-top: 1px solid rgba(0, 0, 0, 0.12);
         border-right: 1px solid rgba(0, 0, 0, 0.12);
@@ -218,9 +244,9 @@
         .response-code-container {
           height: 60px;
           margin-top: 12px;
-          background: #F1F9FF;
+          background: #f1f9ff;
           line-height: 60px;
-          color: #444444;
+          color: #444;
           font-size: 14px;
           text-indent: 16px;
         }
@@ -234,7 +260,7 @@
           max-height: 228px;
           padding: 16px;
           overflow: auto;
-          background: #F1F9FF;
+          background: #f1f9ff;
           white-space: nowrap;
           font-size: 14px;
         }
@@ -242,19 +268,81 @@
 
       .c7n-curl {
         margin-top: 24px;
+        position: relative;
 
         .curl-container {
           width: 100%;
+          max-height: 228px;
           margin-top: 12px;
-          line-height: 65px;
-          text-indent: 16px;
+          line-height: 1.5;
+          padding: 16px;
           white-space: nowrap;
-          overflow-x: scroll;
-          background: #F1F9FF;
-          color: #444444;
+          overflow: auto;
+          background: #f1f9ff;
+          color: #444;
           font-size: 14px;
+
+          &:hover {
+            i.icon.icon-library_books {
+              display: inline-block;
+            }
+          }
+        }
+
+        i.icon.icon-library_books {
+          position: absolute;
+          top: 50px;
+          right: 16px;
+          color: #3f51b5;
+          cursor: pointer;
+          font-size: 25px;
+          background: white;
+          display: none;
         }
       }
     }
   }
 }
+
+.c7n-apitest-modal {
+  position: relative;
+  padding-top: 26px;
+  text-align: center;
+
+  .c7n-apitest-modal-icon {
+    height: 30px;
+    width: 172px;
+    margin: 0 auto;
+    background-image: url('./icon/choerodon_logo_color.svg');
+    background-repeat: no-repeat;
+    background-size: auto 31px;
+  }
+
+  .c7n-apitest-modal-title {
+    margin-top: 22px;
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  form {
+    margin-top: 30px;
+    text-align: start;
+    padding: 0 18px;
+  }
+
+  .c7n-apitest-modal-btn-group {
+    position: absolute;
+    top: 300px;
+    left: 18px;
+    display: flex;
+    justify-content: space-between;
+    line-height: 32px;
+    width: 370px;
+    margin: 0 auto;
+
+    button {
+      width: 120px;
+    }
+  }
+}
+

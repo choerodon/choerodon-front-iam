@@ -5,7 +5,12 @@
   "main": "src/app/iam/containers/IAMIndex.js",
   "scripts": {
     "start": "choerodon-front-boot start --config ../config.js",
-    "build": "choerodon-front-boot build --config ../config.js"
+    "build": "choerodon-front-boot build --config ../config.js",
+    "lint": "npm run lint:es && npm run lint:style",
+    "lint:es": "eslint src/**/*.{js,jsx} ../config.js",
+    "lint:style": "stylelint src/**/*.scss --syntax scss",
+    "lint-staged": "lint-staged",
+    "lint-staged:es": "eslint"
   },
   "contributors": [
     "choerodon"
@@ -13,10 +18,23 @@
   "license": "ISC",
   "dependencies": {
     "brace": "^0.11.1",
-    "choerodon-front-boot": "0.7.0",
+    "choerodon-front-boot": "0.7.1",
     "hjson": "^3.1.1",
     "lodash": "^4.17.10",
+    "react-quill": "^1.2.6",
     "react-ace": "^6.0.0",
     "react-ace-editor": "0.0.2"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "npm run lint-staged:es"
+    ],
+    "src/**/*.scss": "stylelint --syntax scss"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "devDependencies": {
+    "eslint-plugin-babel": "^5.1.0"
   }
 }

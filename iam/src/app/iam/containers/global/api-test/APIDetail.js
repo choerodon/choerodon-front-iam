@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { axios as defaultAxios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Upload, Icon } from 'choerodon-ui';
+import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Icon, Modal } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import classnames from 'classnames';
@@ -11,6 +11,7 @@ import Hjson from 'hjson';
 import './APITest.scss';
 import jsonFormat from '../../../common/json-format';
 import APITestStore from '../../../stores/global/api-test';
+import AuthorizeModal from './AuthorizeModal';
 
 let statusCode;
 let responseHeader;
@@ -36,31 +37,40 @@ instance.interceptors.request.use(
     const newConfig = config;
     newConfig.headers['Content-Type'] = 'application/json';
     newConfig.headers.Accept = 'application/json';
-    const accessToken = Choerodon.getAccessToken();
-    if (accessToken) {
+    let accessToken;
+    if (!APITestStore.getApiToken) {
+      accessToken = Choerodon.getAccessToken();
+      if (accessToken) {
+        newConfig.headers.Authorization = accessToken;
+      }
+    } else {
+      accessToken = APITestStore.getApiToken;
       newConfig.headers.Authorization = accessToken;
-      authorization = accessToken;
     }
+    authorization = accessToken;
     return newConfig;
   },
   (err) => {
     const error = err;
     return Promise.reject(error);
-  });
+  },
+);
 
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
   responseHeader = jsonFormat(res.headers);
-  response = res.data instanceof Object ? jsonFormat(res.data) : '' + res.data; // 响应主体
+  response = res.data instanceof Object ? jsonFormat(res.data) : `${res.data}`; // 响应主体
 }, (error) => {
   statusCode = error.response.status; // 响应码
   responseHeader = jsonFormat(error.response.headers);
-  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : '' + error.response.data; // 响应主体
+  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : `${error.response.data}`; // 响应主体
 });
 
 @Form.create()
 @withRouter
 @injectIntl
+@inject('AppState')
+@observer
 export default class APIDetail extends Component {
   state = this.getInitState();
 
@@ -74,7 +84,6 @@ export default class APIDetail extends Component {
       operationId,
       requestUrl: null,
       urlPrefix: '',
-      isShowResult: null,
       isSending: false,
       urlPathValues: {},
       bData: {},
@@ -82,6 +91,7 @@ export default class APIDetail extends Component {
       query: '',
       taArr: {},
       loadFile: null,
+      isShowModal: false,
     };
   }
 
@@ -94,7 +104,7 @@ export default class APIDetail extends Component {
         operation_id: operationId,
       };
       defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/${service}/controllers/${controller}/paths?${querystring.stringify(queryObj)}`).then((data) => {
-        for (const item of data.paths) {
+        data.paths.some((item) => {
           if (item.operationId === operationId) {
             const { basePath, url } = item;
             APITestStore.setApiDetail(item);
@@ -102,9 +112,10 @@ export default class APIDetail extends Component {
               loading: false,
               requestUrl: `${urlPrefix}${basePath}${url}`,
             });
-            return;
+            return true;
           }
-        }
+          return false;
+        });
       });
     } else {
       const { basePath, url } = APITestStore.getApiDetail;
@@ -115,28 +126,28 @@ export default class APIDetail extends Component {
     }
   }
 
+  componentWillUnmount() {
+    APITestStore.setIsShowResult(null);
+  }
+
   getDetail() {
     const { intl } = this.props;
     const { method, url, remark, consumes, produces } = APITestStore.getApiDetail;
     const keyArr = ['请求方式', '路径', '描述', 'Action', '权限层级', '是否为登录可访问', '是否为公开权限', '请求格式', '响应格式'];
-    const tableValue = keyArr.map((item) => {
-      return {
-        name: item,
-      };
-    })
+    const tableValue = keyArr.map(item => ({
+      name: item,
+    }));
     const desc = APITestStore.getApiDetail.description || '[]';
-    const responseDataExample = APITestStore.getApiDetail &&
-      APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
+    const responseDataExample = APITestStore.getApiDetail
+    && APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
     handledDescWithComment = jsonFormat(handledDescWithComment);
     const handledDesc = Hjson.parse(desc);
     const { permission = { roles: [] } } = handledDesc;
-    const roles = permission.roles.length && permission.roles.map((item) => {
-      return {
-        name: '默认角色',
-        value: item,
-      };
-    })
+    const roles = permission.roles.length && permission.roles.map(item => ({
+      name: '默认角色',
+      value: item,
+    }));
     tableValue[0].value = method;
     tableValue[1].value = url;
     tableValue[2].value = remark;
@@ -223,7 +234,7 @@ export default class APIDetail extends Component {
           return text;
         }
       },
-    }]
+    }];
 
     return (
       <div className="c7n-interface-detail">
@@ -234,9 +245,7 @@ export default class APIDetail extends Component {
             dataSource={tableValue}
             pagination={false}
             filterBar={false}
-            rowKey={(record) => {
-              return `${record.name}-${record.value}`;
-            }}
+            rowKey={record => `${record.name}-${record.value}`}
           />
         </div>
         <div className="c7n-request-params">
@@ -264,13 +273,13 @@ export default class APIDetail extends Component {
   }
 
   handleSelectChange = (name, select) => {
-    const a = {target: {value: select}};
+    const a = { target: { value: select } };
     this.changeNormalValue(name, 'query', a);
   };
 
 
   changeTextareaValue = (name, type, e) => {
-    if(type !== 'array') {
+    if (type !== 'array') {
       this.setState({
         bData: e.target.value,
       });
@@ -302,6 +311,15 @@ export default class APIDetail extends Component {
     this.fileInput.click();
   }
 
+  handleCopyCURL(culContent) {
+    const { intl: { formatMessage } } = this.props;
+    const curlRootEle = document.getElementById('curlContent');
+    curlRootEle.value = culContent;
+    curlRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
   getTest = () => {
     let curlContent;
     const upperMethod = {
@@ -311,12 +329,22 @@ export default class APIDetail extends Component {
       put: 'PUT',
       delete: 'DELETE',
       patch: 'PATCH',
-    }
-    const { intl } = this.props;
+    };
+    const { intl, form: { getFieldValue } } = this.props;
     const handleUrl = encodeURI(this.state.requestUrl);
     const handleMethod = upperMethod[APITestStore.getApiDetail.method];
-    const token = authorization ? authorization.split(' ')[1] : null;
-    curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+    const currentToken = APITestStore.getApiToken || authorization;
+    const token = currentToken ? currentToken.split(' ')[1] : null;
+    const bodyStr = (getFieldValue('bodyData') || '').replace(/\n/g, '\\\n');
+    let body = '';
+    if (bodyStr) {
+      body = `-d '${bodyStr}' `;
+    }
+    if (handleMethod === 'GET') {
+      curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+    } else {
+      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' ${body}'${handleUrl}'`;
+    }
     const method = APITestStore && APITestStore.apiDetail.method;
     const { getFieldDecorator, getFieldError } = this.props.form;
     const requestColumns = [{
@@ -349,7 +377,7 @@ export default class APIDetail extends Component {
               <FormItem>
                 {getFieldDecorator('bodyData', {
                   rules: [{
-                    required: !record.type ? true : false,
+                    required: !record.type,
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
@@ -358,23 +386,25 @@ export default class APIDetail extends Component {
               </FormItem>
             </div>);
         } else if (record.type === 'boolean') {
-          editableNode = (<FormItem>
-            {getFieldDecorator(`${record.name}`, {
-              rules: [],
-            })(
-              <div style={{ width: '55px' }}>
-                <Select
-                  dropdownStyle={{ width: '55px' }}
-                  defaultValue=""
-                  onChange={this.handleSelectChange.bind(this, record.name)}
-                >
-                  <Option value="" style={{ height: '22px' }}> </Option>
-                  <Option value="true">true</Option>
-                  <Option value="false">false</Option>
-                </Select>
-              </div>,
-            )}
-          </FormItem>);
+          editableNode = (
+            <FormItem>
+              {getFieldDecorator(`${record.name}`, {
+                rules: [],
+              })(
+                <div style={{ width: '55px' }}>
+                  <Select
+                    dropdownStyle={{ width: '55px' }}
+                    defaultValue=""
+                    onChange={this.handleSelectChange.bind(this, record.name)}
+                  >
+                    <Option value="" style={{ height: '22px' }} />
+                    <Option value="true">true</Option>
+                    <Option value="false">false</Option>
+                  </Select>
+                </div>,
+              )}
+            </FormItem>
+          );
         } else if (record.type === 'array') {
           editableNode = (
             <div style={{ width: '50%' }}>
@@ -400,19 +430,21 @@ export default class APIDetail extends Component {
             </div>
           );
         } else {
-          editableNode = (<FormItem>
-            {getFieldDecorator(`${record.name}`, {
-              rules: [{
-                required: record.required,
-                whitespace: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
-              }],
-            })(
-              <div style={{ width: '50%' }}>
-                <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
-              </div>,
-            )}
-          </FormItem>);
+          editableNode = (
+            <FormItem>
+              {getFieldDecorator(`${record.name}`, {
+                rules: [{
+                  required: record.required,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
+                }],
+              })(
+                <div style={{ width: '50%' }}>
+                  <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                </div>,
+              )}
+            </FormItem>
+          );
         }
         return editableNode;
       },
@@ -434,7 +466,7 @@ export default class APIDetail extends Component {
             let value;
             if (record.body) {
               value = Hjson.parse(record.body, { keepWsc: true });
-              normalBody = Hjson.stringify(value, { bracesSameLine: true, quotes: 'all' });
+              normalBody = Hjson.stringify(value, { bracesSameLine: true, quotes: 'all', separator: true });
               value = jsonFormat(value);
             } else {
               value = null;
@@ -459,7 +491,7 @@ export default class APIDetail extends Component {
           return text;
         }
       },
-    }]
+    }];
 
     return (
       <div className="c7n-interface-test">
@@ -476,30 +508,44 @@ export default class APIDetail extends Component {
           </Form>
         </div>
         <div className="c7n-url-container">
-          <span className={classnames('method', method)}>{method}</span>
-          <input type="text" value={this.state.requestUrl} readOnly />
-          {!this.state.isSending ? (
+          <div className="c7n-authorize-info">
+            <span className="info">{intl.formatMessage({ id: `${intlPrefix}.authorize.account` })}：</span>
+            <span className="info">{APITestStore.getUserInfo || this.props.AppState.getUserInfo.loginName}</span>
             <Button
               funcType="raised"
               type="primary"
               htmlType="submit"
-              onClick={this.handleSubmit}
+              onClick={this.openAuthorizeModal}
             >
-              {intl.formatMessage({ id: `${intlPrefix}.send` })}
+              {intl.formatMessage({ id: `${intlPrefix}.authorize.change` })}
             </Button>
-          ) : (
-            <Button
-              funcType="raised"
-              type="primary"
-              loading
-            >
-              {intl.formatMessage({ id: `${intlPrefix}.sending` })}
-            </Button>
-          )
-          }
+          </div>
+          <div style={{ marginBottom: '30px' }}>
+            <span className={classnames('method', `c7n-apitest-${method}`)}>{method}</span>
+            <input type="text" value={this.state.requestUrl} readOnly />
+            {!this.state.isSending ? (
+              <Button
+                funcType="raised"
+                type="primary"
+                htmlType="submit"
+                onClick={this.handleSubmit}
+              >
+                {intl.formatMessage({ id: `${intlPrefix}.send` })}
+              </Button>
+            ) : (
+              <Button
+                funcType="raised"
+                type="primary"
+                loading
+              >
+                {intl.formatMessage({ id: `${intlPrefix}.sending` })}
+              </Button>
+            )
+            }
+          </div>
         </div>
-        <div style={{ textAlign: 'center', paddingTop: '100px', display: this.state.isShowResult === false ? 'block' : 'none' }}><Spin size="large" /></div>
-        <div className="c7n-response-container" style={{ display: this.state.isShowResult === true ? 'block' : 'none' }}>
+        <div style={{ textAlign: 'center', paddingTop: '100px', display: APITestStore.isShowResult === false ? 'block' : 'none' }}><Spin size="large" /></div>
+        <div className="c7n-response-container" style={{ display: APITestStore.isShowResult === true ? 'block' : 'none' }}>
           <div className="c7n-response-code">
             <h5><FormattedMessage id={`${intlPrefix}.response.code`} /></h5>
             <div className="response-code-container">
@@ -531,9 +577,14 @@ export default class APIDetail extends Component {
             <div className="curl-container" ref={this.curlNode}>
               <pre>
                 <code>
-                  {curlContent}
+                  { curlContent }
                 </code>
               </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyCURL.bind(this, curlContent)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="curlContent" />
             </div>
           </div>
         </div>
@@ -545,89 +596,116 @@ export default class APIDetail extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.setState({ isSending: true, isShowResult: false });
+        this.setState({ isSending: true });
+        APITestStore.setIsShowResult(false);
         this.responseNode.scrollTop = 0;
         this.curlNode.scrollLeft = 0;
         if ('bodyData' in values) {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl,
-            jsonFormat(Hjson.parse(values.bodyData))).then(function (res) {
+            Hjson.parse(values.bodyData || '')).then(function (res) {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           }).catch((error) => {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           });
         } else if (this.fileInput) {
           const formData = new FormData();
-          formData.append('file',  this.fileInput.files[0]);
+          formData.append('file', this.fileInput.files[0]);
           instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData)
             .then(function (res) {
               this.setState({
                 isSending: false,
-                isShowResult: true,
               });
+              APITestStore.setIsShowResult(true);
             }).catch((error) => {
               this.setState({
                 isSending: false,
-                isShowResult: true,
               });
+              APITestStore.setIsShowResult(true);
             });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           }).catch((error) => {
             this.setState({
               isSending: false,
-              isShowResult: true,
             });
+            APITestStore.setIsShowResult(true);
           });
         }
       }
     });
   }
 
+  // 开启授权模态框
+  openAuthorizeModal = () => {
+    if (this.AuthorizeModal) {
+      const { resetFields } = this.AuthorizeModal.props.form;
+      resetFields();
+    }
+    APITestStore.setIsShowModal(true);
+  }
+
+
+  // 关闭授权模态框
+  handleCancel = () => {
+    APITestStore.setIsShowModal(false);
+  };
+
   copyToLeft(value, name) {
     const { setFieldsValue } = this.props.form;
     setFieldsValue({ bodyData: value });
   }
 
-
   changeNormalValue = (name, valIn, e) => {
     const { urlPathValues } = this.state;
+    let query = '';
     let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
     urlPathValues[`{${name}}`] = e.target.value;
     Object.entries(urlPathValues).forEach((items) => {
       requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
     });
-    let query = '';
     if (valIn === 'query' || valIn === 'array') {
       const arr = e.target.value.split('\n');
       this.state.taArr[name] = arr;
       this.setState({
         taArr: this.state.taArr,
       });
-      Object.entries(this.state.taArr).map(a => {
-        const name = a[0];
-        if (Array.isArray(a[1])) {
-          a[1].map(v => { query = `${query}&${name}=${v}`});
-        } else {
-          query = `${query}&${name}=${a[1]}`;
-        }
-      });
-      this.setState({
-        query,
-      });
     }
-    query = _.replace(query, '&', '?');
+    Object.entries(this.state.taArr).forEach((a) => {
+      const entrieName = a[0];
+      if (Array.isArray(a[1])) {
+        a[1].forEach((v) => { query = `${query}&${entrieName}=${v}`; });
+      } else {
+        query = `${query}&${entrieName}=${a[1]}`;
+      }
+    });
+    this.setState({
+      query,
+    });
+    query = _.replace(query, '&', '?');
     this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
   };
+
+  renderModalContent() {
+    const { isShowModal } = this.state;
+    return (
+      <AuthorizeModal
+        isShow={isShowModal}
+        onRef={(node) => {
+          this.AuthorizeModal = node;
+        }}
+      />
+    );
+  }
 
   render() {
     const url = APITestStore && APITestStore.apiDetail.url;
@@ -637,8 +715,8 @@ export default class APIDetail extends Component {
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
           backPath="/iam/api-test"
         />
-        {this.state.loading ? <div style={{ textAlign: 'center', paddingTop: '250px' }}><Spin size="large" /></div> :
-          (
+        {this.state.loading ? <div style={{ textAlign: 'center', paddingTop: '250px' }}><Spin size="large" /></div>
+          : (
             <div>
               <Content
                 className="c7n-api-test"
@@ -657,6 +735,19 @@ export default class APIDetail extends Component {
             </div>
           )
         }
+
+        <Modal
+          bodyStyle={{ height: '356px' }}
+          visible={APITestStore.getIsShowModal}
+          closable={false}
+          footer={null}
+          width={454}
+          maskClosable={!APITestStore.modalSaving}
+          onCancel={this.handleCancel}
+          onOk={e => this.AuthorizeModal.handleSubmit(e)}
+        >
+          {this.renderModalContent()}
+        </Modal>
       </Page>
     );
   }

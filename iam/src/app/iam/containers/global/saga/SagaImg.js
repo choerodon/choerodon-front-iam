@@ -16,6 +16,7 @@ const { TabPane } = Tabs;
 @injectIntl
 export default class SagaImg extends Component {
   state = this.getInitState();
+
   getInitState() {
     const { instance, data } = this.props;
     return {
@@ -24,7 +25,7 @@ export default class SagaImg extends Component {
       json: '',
       lineData: {},
       activeCode: '',
-      activeTab: instance ? 'run' : 'detail',
+      activeTab: instance ? 'run' : '',
       jsonTitle: false, // 是否展示input output
       data,
     };
@@ -81,7 +82,7 @@ export default class SagaImg extends Component {
       let detailTop = container.scrollTop;
       if (detailTop > top) {
         if (detailHeight > container.clientHeight) {
-          detailTop = Math.min(imgHeight - detailHeight + top, detailTop);
+          detailTop = Math.min((imgHeight - detailHeight) + top, detailTop);
         }
         detail.style.cssText = `top: ${detailTop}px`;
         detail.classList.add('autoscroll');
@@ -104,7 +105,7 @@ export default class SagaImg extends Component {
         Choerodon.prompt(data.message);
       } else {
         const { tasks } = data;
-        this.setState({ data })
+        this.setState({ data });
         this.getLineData(tasks);
       }
     });
@@ -123,7 +124,8 @@ export default class SagaImg extends Component {
     const lineData = {};
     const { task: { code, taskCode } } = this.state;
     tasks.forEach(items => items.forEach(
-      (task) => { lineData[task.code || task.taskCode] = task; }));
+      (task) => { lineData[task.code || task.taskCode] = task; },
+    ));
     const task = { ...lineData[code || taskCode] };
     this.setState({
       lineData,
@@ -136,7 +138,7 @@ export default class SagaImg extends Component {
     const { instance } = this.props;
     const clsNames = classnames('c7n-saga-img-circle', {
       'c7n-saga-task-active': code.toLowerCase() === activeCode,
-      'output': !instance && code === 'Output',
+      output: !instance && code === 'Output',
     });
     return (
       <div
@@ -174,11 +176,9 @@ export default class SagaImg extends Component {
     );
   }
 
-  line = () => {
-    return (
-      <div className="c7n-saga-img-line" />
-    );
-  };
+  line = () => (
+    <div className="c7n-saga-img-line" />
+  );
 
   showDetail = (code) => {
     const { instance } = this.props;
@@ -213,8 +213,10 @@ export default class SagaImg extends Component {
   }
 
   handleTabChange = (activeTab) => {
+    const { instance } = this.props;
+
     this.setState({
-      activeTab,
+      activeTab: instance ? activeTab : '',
     });
   }
 
@@ -254,6 +256,19 @@ export default class SagaImg extends Component {
     Choerodon.prompt(formatMessage({ id: 'copy.success' }));
   }
 
+  handleTransObj = (str) => {
+    let obj = null;
+    if (!str) {
+      return obj;
+    }
+    obj = JSON.parse(str);
+    if (typeof obj === 'string') {
+      /* eslint-disable-next-line */
+      obj =  eval(obj);
+    }
+    return obj;
+  }
+
   renderContent = () => {
     const { data: { tasks } } = this.state;
     const line = this.line();
@@ -262,7 +277,8 @@ export default class SagaImg extends Component {
       content.push(line);
       tasks.forEach((items) => {
         const node = items.map((
-          { code, taskCode, status }) => this.squareWrapper(code || taskCode, status));
+          { code, taskCode, status },
+        ) => this.squareWrapper(code || taskCode, status));
         if (node.length === 1) {
           content.push(node);
         } else {
@@ -360,15 +376,17 @@ export default class SagaImg extends Component {
       key: formatMessage({ id: `${intlPrefix}.task.run.exception.msg` }),
       value: exceptionMessage,
     };
+
+    const obj = this.handleTransObj(output);
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
-      value: output ? jsonFormat(JSON.parse(output)) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
+      value: obj ? jsonFormat(obj) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
     };
     return (
       <div className="c7n-saga-task-run">
         <div className="c7n-saga-task-detail">
           <div className="c7n-saga-task-detail-content">
-            {list.map(({ key, value }, index) => <div key={`task-run-${index}`}>{key}: {value}</div>)}
+            {list.map(({ key, value }) => <div key={`task-run-${key}`}>{key}: {value}</div>)}
             {status === 'FAILED' && (
               <div>{failed.key}:
                 <div className="c7n-saga-detail-json">
@@ -377,6 +395,7 @@ export default class SagaImg extends Component {
                   {failed.value && (
                     <Icon
                       type="library_books"
+                      className="copy-icon"
                       onClick={this.handleCopy}
                     />)}
                 </div>
@@ -449,13 +468,13 @@ export default class SagaImg extends Component {
       value: service,
     }];
     const input = {
-      key: formatMessage({ id: `${intlPrefix}.task.input.title` }),
+      key: formatMessage({ id: `${intlPrefix}.task.input.demo` }),
       value: inputSchema ? jsonFormat(JSON.parse(inputSchema)) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
     };
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-content">
-          {list.map(({ key, value }, index) => <div key={`task-detail-${index}`}>{key}: {value}</div>)}
+          {list.map(({ key, value }) => <div key={`task-detail-${key}`}>{key}: {value}</div>)}
           {!instance && (
             <div>{input.key}:
               <div className="c7n-saga-detail-json">
@@ -479,11 +498,24 @@ export default class SagaImg extends Component {
           <div className="c7n-saga-detail-json">
             <pre style={{ maxHeight: '350px' }}>
               <code id="json">
-                {json ? jsonFormat(JSON.parse(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
+                {json ? jsonFormat(this.handleTransObj(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
               </code>
             </pre>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  renderWithoutInstance() {
+    const { json } = this.state;
+    const { intl: { formatMessage } } = this.props;
+    return (
+      <div className="c7n-saga-task-detail">
+        <div className="c7n-saga-task-detail-title">
+          {<FormattedMessage id={`${intlPrefix}.task.detail.title`} />}
+        </div>
+        {this.renderTaskDetail()}
       </div>
     );
   }
@@ -505,11 +537,15 @@ export default class SagaImg extends Component {
         </div>
         {showDetail && (
           <div className="c7n-saga-img-detail" ref={this.taskDetail}>
+            {instance && (
             <Tabs activeKey={activeTab} onChange={this.handleTabChange}>
-              {instance && (<TabPane tab={<FormattedMessage id={`${intlPrefix}.task.run.title`} />} key="run" />)}
+              <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.run.title`} />} key="run" />
               <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.detail.title`} />} key="detail" />
             </Tabs>
-            {instance && activeTab === 'run' ? this.renderTaskRunDetail() : this.renderTaskDetail()}
+            )}
+            {instance && activeTab === 'run' ? this.renderTaskRunDetail() : ''}
+            {instance && activeTab !== 'run' ? this.renderTaskDetail() : ''}
+            {instance ? '' : this.renderWithoutInstance()}
           </div>
         )}
         {jsonTitle && (

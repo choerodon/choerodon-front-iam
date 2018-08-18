@@ -79,7 +79,7 @@
         width: 80px;
         height: 80px;
         font-size: 80px;
-        color: #3F51B5;
+        color: #3f51b5;
       }
       &-text {
         font-size: 18px;
@@ -170,7 +170,6 @@
             border-bottom-width: 3px;
             cursor: se-resize;
           }
-
         }
       }
       &-toolbar {
@@ -223,8 +222,10 @@
   &-divider {
     box-sizing: border-box;
     width: 512px;
+    height: 1px;
     margin: 0 0 12px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: none;
+    background: rgba(0, 0, 0, 0.12);
   }
 
   .form-icon {

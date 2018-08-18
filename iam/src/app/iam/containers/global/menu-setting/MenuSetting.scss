@@ -7,10 +7,12 @@ $drop-gradient: rgba(140, 158, 255, 0.16);
   }
   div > span {
     display: inline-block;
-    margin-top: 12px;
     background: rgba(0, 0, 0, 0.08);
     border-radius: 100px;
     padding: 4px 12px;
+  }
+  div + div > span {
+    margin-top: 6px;
   }
 }
 
@@ -35,5 +37,3 @@ $drop-gradient: rgba(140, 158, 255, 0.16);
     content: '';
   }
 }
-
-

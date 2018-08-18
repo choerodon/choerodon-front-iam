@@ -14,7 +14,7 @@ import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
 
 const intlPrefix = 'global.apitest';
-const Option = Select.Option;
+const { Option } = Select;
 
 @withRouter
 @injectIntl
@@ -45,7 +45,7 @@ export default class APITest extends Component {
 
   /* 微服务下拉框 */
   getOptionList() {
-    const service = APITestStore.service;
+    const { service } = APITestStore;
     return service && service.length > 0 ? (
       APITestStore.service.map(({ name, value }) => (
         <Option key={value}>{name}</Option>
@@ -60,14 +60,14 @@ export default class APITest extends Component {
         Choerodon.prompt(res.message);
         APITestStore.setLoading(false);
       } else if (res.length) {
-        const services = res.map(({ location, name }) => {
-          return {
-            name: name.split(':')[1],
-            value: `${name.split(':')[0]}/${location.split('=')[1]}`,
-          };
-        });
+        const services = res.map(({ location, name }) => ({
+          name: name.split(':')[1],
+          value: `${name.split(':')[0]}/${location.split('=')[1]}`,
+        }));
         APITestStore.setService(services);
         if (!APITestStore.detailFlag) {
+          APITestStore.setApiToken(null);
+          APITestStore.setUserInfo(null);
           APITestStore.setCurrentService(services[0]);
         } else {
           APITestStore.setDetailFlag(false);
@@ -161,14 +161,14 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: 350,
+      className: 'c7n-apitest-name',
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
           return <span>{name}</span>;
         } else {
           return (
-            <span className={classnames('methodTag', method)}>{method}</span>
+            <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>
           );
         }
       },
@@ -176,17 +176,21 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
       key: 'url',
-      width: 438,
-      render: (text, record) => (<Tooltip
-        title={text}
-        placement="bottomLeft"
-        overlayStyle={{ wordBreak: 'break-all' }}
-      ><div className="urlContainer">{text}</div></Tooltip>),
+      className: 'c7n-apitest-url',
+      render: (text, record) => (
+        <Tooltip
+          title={text}
+          placement="bottomLeft"
+          overlayStyle={{ wordBreak: 'break-all' }}
+        >
+          <div className="urlContainer">{text}</div>
+        </Tooltip>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
       key: 'remark',
-      width: 475,
+      // width: 475,
       render: (text, data) => {
         const { description, remark } = data;
         if (remark) {
@@ -197,18 +201,20 @@ export default class APITest extends Component {
       },
     }, {
       title: '',
-      width: '100px',
+      width: 100,
       key: 'action',
       align: 'right',
       render: (text, record) => {
         if ('method' in record) {
           return (
-            <Button
-              shape="circle"
-              icon="find_in_page"
-              size="small"
-              onClick={this.goDetail.bind(this, record)}
-            />
+            <Permission service={['manager-service.api.queryPathDetail']}>
+              <Button
+                shape="circle"
+                icon="find_in_page"
+                size="small"
+                onClick={this.goDetail.bind(this, record)}
+              />
+            </Permission>
           );
         }
       },
@@ -237,13 +243,13 @@ export default class APITest extends Component {
             getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             onChange={this.handleChange.bind(this)}
             label={<FormattedMessage id={`${intlPrefix}.service`} />}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
             {this.getOptionList()}
           </Select>
           <Table
+            className="c7n-api-table"
             loading={APITestStore.loading}
             indentSize={0}
             columns={columns}
@@ -252,7 +258,7 @@ export default class APITest extends Component {
             childrenColumnName="paths"
             filters={params}
             onChange={this.handlePageChange}
-            rowKey={(record) => 'paths' in record ? record.name : record.operationId}
+            rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>
@@ -260,4 +266,3 @@ export default class APITest extends Component {
     );
   }
 }
-

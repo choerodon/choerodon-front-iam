@@ -18,6 +18,7 @@ const intlPrefix = 'organization.user';
 @observer
 export default class User extends Component {
   state = this.getInitState();
+
   getInitState() {
     return {
       submitting: false,
@@ -39,12 +40,15 @@ export default class User extends Component {
       selectedData: '',
     };
   }
+
   componentDidMount() {
     this.loadUser();
   }
+
   componentWillUnmount() {
     this.timer = 0;
   }
+
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       this.loadUser();
@@ -72,6 +76,8 @@ export default class User extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters });
     UserStore.loadUsers(
       id,
       pagination,
@@ -109,12 +115,13 @@ export default class User extends Component {
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     UserStore.unLockUser(organizationId, record.id).then(() => {
-      Choerodon.prompt(intl.formatMessage({id: `${intlPrefix}.unlock.success`}));
+      Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.unlock.success` }));
       this.loadUser();
     }).catch((error) => {
       window.console.log(error);
     });
   };
+
   /*
   * 启用停用
   * */
@@ -126,20 +133,21 @@ export default class User extends Component {
       // 禁用
       // debugger;
       UserStore.UnenableUser(organizationId, record.id, !record.enabled).then(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'disable.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'disable.success' }));
         this.loadUser();
       }).catch((error) => {
-        Choerodon.prompt(intl.formatMessage({id: 'disable.error'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'disable.error' }));
       });
     } else {
       UserStore.EnableUser(organizationId, record.id, !record.enabled).then(() => {
-        Choerodon.prompt(intl.formatMessage({id: 'enable.success'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'enable.success' }));
         this.loadUser();
       }).catch((error) => {
-        Choerodon.prompt(intl.formatMessage({id: 'enable.error'}));
+        Choerodon.prompt(intl.formatMessage({ id: 'enable.error' }));
       });
     }
   };
+
   changeLanguage = (code) => {
     if (code === 'zh_CN') {
       return '简体中文';
@@ -176,7 +184,8 @@ export default class User extends Component {
     e.stopPropagation();
     const { UserStore } = this.props;
     const uploading = UserStore.getUploading;
-    if (uploading) {
+    const { fileLoading } = this.state;
+    if (uploading || fileLoading) {
       return;
     }
     const uploadElement = document.getElementsByClassName('c7n-user-upload-hidden')[0];
@@ -190,6 +199,7 @@ export default class User extends Component {
       status: 'upload',
     });
   };
+
   /**
    *  application/vnd.ms-excel 2003-2007
    *  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 2010
@@ -210,7 +220,6 @@ export default class User extends Component {
         const { fileLoading } = this.state;
         if (status === 'done') {
           this.handleUploadInfo(true);
-          Choerodon.prompt(intl.formatMessage({ id: 'upload.success' }));
         } else if (status === 'error') {
           Choerodon.prompt(`${response.message}`);
         }
@@ -228,15 +237,16 @@ export default class User extends Component {
   }
 
   handleUploadInfo = (immediately) => {
-    const { UserStore, AppState } = this.props;
-    const userId = AppState.getUserId;
+    const { UserStore, AppState: { currentMenuType, getUserId: userId } } = this.props;
+    const { id: organizationId } = currentMenuType;
+
     if (immediately) {
-      UserStore.handleUploadInfo(userId);
+      UserStore.handleUploadInfo(organizationId, userId);
       return;
     }
     this.timer = setTimeout(() => {
       this.timer = 0;
-      UserStore.handleUploadInfo(userId);
+      UserStore.handleUploadInfo(organizationId, userId);
     }, 9000);
   }
 
@@ -257,10 +267,10 @@ export default class User extends Component {
   getSpentTime = (startTime, endTime) => {
     const { intl } = this.props;
     const timeUnit = {
-      day: intl.formatMessage({id: 'day'}),
-      hour: intl.formatMessage({id: 'hour'}),
-      minute: intl.formatMessage({id: 'minute'}),
-      second: intl.formatMessage({id: 'second'}),
+      day: intl.formatMessage({ id: 'day' }),
+      hour: intl.formatMessage({ id: 'hour' }),
+      minute: intl.formatMessage({ id: 'minute' }),
+      second: intl.formatMessage({ id: 'second' }),
     };
     const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
     // 天数
@@ -298,18 +308,31 @@ export default class User extends Component {
     } else if (fileLoading) {
       container.push(this.renderLoading());
     } else if (!uploadInfo.noData) {
-      container.push(<p key={`${intlPrefix}.upload.lasttime`}>
-        <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
-        {uploadInfo.beginTime}</p>);
-      container.push(<p key={`${intlPrefix}.upload.time`}>
-        <FormattedMessage
-          id={`${intlPrefix}.upload.time`}
-          values={{
-            time: this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime),
-            successCount: uploadInfo.successCount || 0,
-            failedCount: uploadInfo.failedCount || 0,
-          }}
-        /></p>);
+      const failedStatus = uploadInfo.finished ? 'detail' : 'error';
+      container.push(
+        <p key={`${intlPrefix}.upload.lasttime`}>
+          <FormattedMessage id={`${intlPrefix}.upload.lasttime`} />
+          {uploadInfo.beginTime}
+          （<FormattedMessage id={`${intlPrefix}.upload.spendtime`} />
+          {this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime)}）
+        </p>,
+        <p key={`${intlPrefix}.upload.time`}>
+          <FormattedMessage
+            id={`${intlPrefix}.upload.time`}
+            values={{
+              successCount: <span className="success-count">{uploadInfo.successfulCount || 0}</span>,
+              failedCount: <span className="failed-count">{uploadInfo.failedCount || 0}</span>,
+            }}
+          />
+          {uploadInfo.url && (
+            <span className={`download-failed-${failedStatus}`}>
+              <a href={uploadInfo.url}>
+                <FormattedMessage id={`${intlPrefix}.download.failed.${failedStatus}`} />
+              </a>
+            </span>
+          )}
+        </p>,
+      );
     } else {
       container.push(<p key={`${intlPrefix}.upload.norecord`}><FormattedMessage id={`${intlPrefix}.upload.norecord`} /></p>);
     }
@@ -329,7 +352,8 @@ export default class User extends Component {
           <Spin size="large" />
         </div>
         <p className="text">{formatMessage({
-          id: `${intlPrefix}.${fileLoading ? 'fileloading' : 'uploading'}.text` })}</p>
+          id: `${intlPrefix}.${fileLoading ? 'fileloading' : 'uploading'}.text` })}
+        </p>
         {!fileLoading && (<p className="tip">{formatMessage({ id: `${intlPrefix}.uploading.tip` })}</p>)}
       </div>
     );
@@ -376,7 +400,7 @@ export default class User extends Component {
       <UserEdit
         id={selectedData}
         visible={visible}
-        edit={status === 'edit'}
+        edit={status === 'modify'}
         onRef={(node) => {
           this.editUser = node;
         }}
@@ -489,26 +513,26 @@ export default class User extends Component {
             text: intl.formatMessage({ id: 'enable' }),
             value: 'true',
           }, {
-            text: intl.formatMessage({id: 'disable'}),
+            text: intl.formatMessage({ id: 'disable' }),
             value: 'false',
           },
         ],
         filteredValue: filters.enabled || [],
       }, {
-        title: <FormattedMessage id={`${intlPrefix}.locked`}/>,
+        title: <FormattedMessage id={`${intlPrefix}.locked`} />,
         key: 'locked',
         render: (text, record) => (
           record.locked
-            ? <FormattedMessage id={`${intlPrefix}.lock`}/>
-            : <FormattedMessage id={`${intlPrefix}.normal`}/>
+            ? <FormattedMessage id={`${intlPrefix}.lock`} />
+            : <FormattedMessage id={`${intlPrefix}.normal`} />
         ),
         filters: [
           {
-            text: intl.formatMessage({id: `${intlPrefix}.normal`}),
+            text: intl.formatMessage({ id: `${intlPrefix}.normal` }),
             value: 'false',
           },
           {
-            text: intl.formatMessage({id: `${intlPrefix}.lock`}),
+            text: intl.formatMessage({ id: `${intlPrefix}.lock` }),
             value: 'true',
           },
         ],
@@ -526,7 +550,7 @@ export default class User extends Component {
               organizationId={organizationId}
             >
               <Tooltip
-                title={<FormattedMessage id="modify"/>}
+                title={<FormattedMessage id="modify" />}
                 placement="bottom"
               >
                 <Button
@@ -544,7 +568,7 @@ export default class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title={<FormattedMessage id="disable"/>}
+                  title={<FormattedMessage id="disable" />}
                   placement="bottom"
                 >
                   <Button
@@ -562,7 +586,7 @@ export default class User extends Component {
                 organizationId={organizationId}
               >
                 <Tooltip
-                  title={<FormattedMessage id="enable"/>}
+                  title={<FormattedMessage id="enable" />}
                   placement="bottom"
                 >
                   <Button
@@ -575,26 +599,30 @@ export default class User extends Component {
               </Permission>
             )
             }
-            {record.locked ?
-              <Permission
-                service={['iam-service.organization-user.unlock']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip
-                  title={<FormattedMessage id={`${intlPrefix}.unlock`}/>}
-                  placement="bottom"
+            {record.locked
+              ? (
+                <Permission
+                  service={['iam-service.organization-user.unlock']}
+                  type={type}
+                  organizationId={organizationId}
                 >
-                  <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
-                </Tooltip>
-              </Permission> :
-              <Permission
-                service={['iam-service.organization-user.unlock']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Button size="small" icon="lock_open" shape="circle" disabled />
-              </Permission>
+                  <Tooltip
+                    title={<FormattedMessage id={`${intlPrefix}.unlock`} />}
+                    placement="bottom"
+                  >
+                    <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
+                  </Tooltip>
+                </Permission>
+              )
+              : (
+                <Permission
+                  service={['iam-service.organization-user.unlock']}
+                  type={type}
+                  organizationId={organizationId}
+                >
+                  <Button size="small" icon="lock_open" shape="circle" disabled />
+                </Permission>
+              )
             }
           </div>
         ),
@@ -613,7 +641,7 @@ export default class User extends Component {
           'iam-service.organization-user.check',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`}/>}>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission
             service={['iam-service.organization-user.create']}
             type={type}
@@ -623,7 +651,7 @@ export default class User extends Component {
               onClick={this.handleCreate}
               icon="playlist_add"
             >
-              <FormattedMessage id={`${intlPrefix}.create`}/>
+              <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
           <Button
@@ -665,7 +693,7 @@ export default class User extends Component {
             title={this.renderSideTitle()}
             visible={visible}
             okText={this.getSidebarText()}
-            cancelText={<FormattedMessage id="cancel" />}
+            cancelText={<FormattedMessage id={status === 'upload' ? 'close' : 'cancel'} />}
             onOk={status === 'upload' ? this.upload : this.handleSubmit}
             onCancel={() => {
               this.setState({

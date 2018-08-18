@@ -47,7 +47,6 @@ class RoleLabelStore {
     }
     return axios.get(`/iam/v1/labels?${querystring.stringify(queryObj)}`);
   }
-
 }
 
 const roleLabelStore = new RoleLabelStore();

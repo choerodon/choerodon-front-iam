@@ -243,7 +243,7 @@ export default class MailSetting extends Component {
               ) : ''
             }
             <hr className="divider" />
-            <Permission service={['notify-service.config.updateEmail']} >
+            <Permission service={['notify-service.config.updateEmail']}>
               <div className="btnGroup">
                 <Button
                   funcType="raised"

@@ -303,7 +303,7 @@ export default class Project extends Component {
             name: this.state.projectDatas.code,
           },
         };
-      default :
+      default:
         return {};
     }
   }

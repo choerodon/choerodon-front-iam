@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
@@ -6,7 +7,6 @@ import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Icon, Modal } 
 import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import classnames from 'classnames';
-import _ from 'lodash';
 import Hjson from 'hjson';
 import './APITest.scss';
 import jsonFormat from '../../../common/json-format';
@@ -691,7 +691,7 @@ export default class APIDetail extends Component {
     this.setState({
       query,
     });
-    query = _.replace(query, '&', '?');
+    query = query.replace('&', '?');
     this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
   };
 

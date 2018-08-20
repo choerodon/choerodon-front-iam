@@ -57,7 +57,17 @@
     "no-param-reassign": "off",
     "no-trailing-spaces": "off",
     "no-unused-vars": "off",
+    "prefer-destructuring": "off",
+    "operator-linebreak": "off",
+    "react/jsx-wrap-multilines": "off",
+    "react/jsx-closing-tag-location": "off",
+    "react/no-access-state-in-setstate": "off",
     "object-curly-newline": "off",
+    "lines-between-class-members": "off",
+    "implicit-arrow-linebreak": "off",
+    "function-paren-newline": "off",
+    "eact/jsx-closing-tag-location": "off",
+    "react/no-unused-state": "off",
     "react/destructuring-assignment": "off",
     "react/jsx-filename-extension": "off",
     "react/jsx-no-bind": [
@@ -78,7 +88,9 @@
     ],
     "react/prop-types": "off",
     "react/require-default-props": "off",
-    "react/sort-comp": "off"
+    "react/sort-comp": "off",
+    "react/jsx-curly-brace-presence": "off",
+    "jsx-a11y/label-has-associated-control": "off"
   },
   "globals": {
     "Choerodon": true

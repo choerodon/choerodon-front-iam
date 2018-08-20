@@ -128,10 +128,17 @@
   icon: center
   sort: 4
   site:
+  - "send-setting":
+      icon: application_model
+      Routes: /iam/send-setting
+      sort: 1
+      permission:
+      - 'notify-service.email-template-site.pageSite'
+      - 'notify-service.email-template-site.create'
   - "mail-template":
       icon: application_model
       Routes: /iam/mail-template
-      sort: 1
+      sort: 2
       permission:
       - 'notify-service.email-template-site.pageSite'
       - 'notify-service.email-template-site.create'
@@ -141,7 +148,15 @@
   - "mail-setting":
       icon: contact_mail
       Routes: /iam/mail-setting
-      sort: 2
+      sort: 3
+      permission:
+      - 'notify-service.config.selectEmail'
+      - 'notify-service.config.testEmailConnect'
+      - 'notify-service.config.updateEmail'
+  - "msg-record":
+      icon: speaker_notes
+      Routes: /iam/msg-record
+      sort: 4
       permission:
       - 'notify-service.config.selectEmail'
       - 'notify-service.config.testEmailConnect'

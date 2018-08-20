@@ -246,8 +246,7 @@ export default class MenuSetting extends Component {
           sidebar: false,
           menuGroup,
           tempDirs,
-        })
-        ;
+        });
       }
     });
   };

@@ -6,8 +6,8 @@ import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
-import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
 import MemberRoleType, { pageSize } from './MemberRoleType';
+import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import './MemberRole.scss';
 
 const { Sidebar } = Modal;
@@ -956,4 +956,3 @@ export default class MemberRole extends Component {
     );
   }
 }
-

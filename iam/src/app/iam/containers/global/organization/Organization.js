@@ -431,4 +431,3 @@ export default class Organization extends Component {
     );
   }
 }
-

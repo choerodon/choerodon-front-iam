@@ -13,7 +13,7 @@ import {
   axios, Content, Header, Page, Permission, 
 } from 'choerodon-front-boot';
 
-const intlPrefix = 'global.msgrecord';
+// const intlPrefix = 'global.msgrecord';
 
 @withRouter
 @injectIntl
@@ -28,7 +28,7 @@ export default class APITest extends Component {
         service={['manager-service.service.pageManager']}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
+          title="消息记录"
         >
           <Button
             onClick={this.handleRefresh}
@@ -37,10 +37,7 @@ export default class APITest extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content
-          code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
-        />
+        <Content />
       </Page>
     );
   }

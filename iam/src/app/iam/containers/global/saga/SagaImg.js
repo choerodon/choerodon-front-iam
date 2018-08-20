@@ -384,6 +384,18 @@ export default class SagaImg extends Component {
     };
     return (
       <div className="c7n-saga-task-run">
+        <div className="c7n-saga-task-btns">
+          {instanceLock && (status === 'RUNNING' || status === 'FAILED') && (
+            <span onClick={this.handleUnLock}>
+              <Icon type="lock_open" />
+              {formatMessage({ id: `${intlPrefix}.task.unlock` })}
+            </span>)}
+          {status === 'FAILED' && (
+            <span onClick={this.handleRetry}>
+              <Icon type="sync" />
+              {formatMessage({ id: `${intlPrefix}.task.retry` })}
+            </span>)}
+        </div>
         <div className="c7n-saga-task-detail">
           <div className="c7n-saga-task-detail-content">
             {list.map(({ key, value }) => <div key={`task-run-${key}`}>{key}: {value}</div>)}
@@ -407,18 +419,6 @@ export default class SagaImg extends Component {
                 </div>
               </div>)}
           </div>
-        </div>
-        <div className="c7n-saga-task-btns">
-          {instanceLock && (status === 'RUNNING' || status === 'FAILED') && (
-            <span onClick={this.handleUnLock}>
-              <Icon type="lock_open" />
-              {formatMessage({ id: `${intlPrefix}.task.unlock` })}
-            </span>)}
-          {status === 'FAILED' && (
-            <span onClick={this.handleRetry}>
-              <Icon type="sync" />
-              {formatMessage({ id: `${intlPrefix}.task.retry` })}
-            </span>)}
         </div>
       </div>
     );

@@ -55,6 +55,12 @@
 }
 
 .c7n-api-test {
+  &-description{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 296px;
+    overflow: hidden;
+  }
   .string,
   .number {
     color: #f44336;

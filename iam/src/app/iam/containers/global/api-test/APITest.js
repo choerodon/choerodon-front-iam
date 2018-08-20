@@ -190,6 +190,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
       key: 'remark',
+      className: 'c7n-api-test-description',
       // width: 475,
       render: (text, data) => {
         const { description, remark } = data;

@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { Button, Table, Tooltip, Modal } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import SagaImg from './../saga/SagaImg';
+import SagaImg from '../saga/SagaImg';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
 import './style/saga-instance.scss';
 

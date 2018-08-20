@@ -1,19 +1,18 @@
-
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
-import querystring from 'query-string';
 import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
+import MemberRoleType, { pageSize } from './MemberRoleType';
 import './MemberRole.scss';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
-const pageSize = 10;
 const FormItemNumLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -24,147 +23,6 @@ const FormItemNumLayout = {
     sm: { span: 10 },
   },
 };
-
-// 公用方法类
-class MemberRoleType {
-  constructor(context) {
-    this.context = context;
-    const { AppState } = this.context.props;
-    this.data = AppState.currentMenuType;
-    const { type, id, name } = this.data;
-    let apiGetway = `/iam/v1/${type}s/${id}`;
-    let codePrefix;
-    switch (type) {
-      case 'organization':
-        codePrefix = 'organization';
-        break;
-      case 'project':
-        codePrefix = 'project';
-        break;
-      case 'site':
-        codePrefix = 'global';
-        apiGetway = `/iam/v1/${type}`;
-        break;
-      default:
-        break;
-    }
-    this.code = `${codePrefix}.memberrole`;
-    this.values = { name: name || 'Choerodon' };
-    this.urlUsers = `${apiGetway}/role_members/users`;
-    this.urlRoles = `${apiGetway}/role_members/users/roles`;
-    this.urlRoleMember = `${apiGetway}/role_members`;
-    this.urlDeleteMember = `${apiGetway}/role_members/delete`;
-    this.urlUserCount = `${apiGetway}/role_members/users/count`;
-    this.roleId = id || 0;
-  }
-
-  // fetch分配角色（post）
-  fetchRoleMember(memberIds, body, isEdit) {
-    let str = `member_ids=${memberIds.join(',')}`;
-    if (isEdit === true) {
-      str += '&is_edit=true';
-    }
-    return axios.post(`${this.urlRoleMember}?${str}`, JSON.stringify(body));
-  }
-
-  // delete分配角色（delete)
-  deleteRoleMember(body) {
-    const { id } = this.data;
-    body.sourceId = id || 0;
-    return axios.post(this.urlDeleteMember, JSON.stringify(body));
-  }
-
-  // 根据用户名查询memberId
-  searchMemberId(loginName) {
-    if (loginName) {
-      return axios.get(`/iam/v1/users?login_name=${loginName}`);
-    }
-  }
-
-  searchMemberIds(loginNames) {
-    const promises = loginNames.map((index, value) => this.searchMemberId(index));
-    return axios.all(promises);
-  }
-
-  loadRoleMemberData(roleData, { current }, { loginName, realName }, params) {
-    const { id: roleId, users, name } = roleData;
-    const body = {
-      loginName: loginName && loginName[0],
-      realName: realName && realName[0],
-      param: params,
-    };
-    const queryObj = { role_id: roleId, size: pageSize, page: current - 1 };
-    roleData.loading = true;
-    return axios.post(`${this.urlUsers}?${querystring.stringify(queryObj)}`,
-      JSON.stringify(body))
-      .then(({ content }) => {
-        roleData.users = users.concat(content.map((member) => {
-          member.roleId = roleId;
-          member.roleName = name;
-          return member;
-        }));
-        delete roleData.loading;
-        this.context.forceUpdate();
-      });
-  }
-
-  loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }, params) {
-    const body = {
-      loginName: loginName && loginName[0],
-      roleName: roles && roles[0],
-      realName: realName && realName[0],
-      param: params,
-    };
-    const queryObj = { size, page: current - 1, sort: 'id' };
-    return axios.post(`${this.urlRoles}?${querystring.stringify(queryObj)}`, JSON.stringify(body));
-  }
-
-  loadRoleMemberDatas({ loginName, realName, name }) {
-    const body = {
-      roleName: name && name[0],
-      loginName: loginName && loginName[0],
-      realName: realName && realName[0],
-    };
-    return axios.post(this.urlUserCount, JSON.stringify(body));
-  }
-
-  // 多路请求
-  fetch() {
-    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params, roleMemberParams } = this.context.state;
-    this.context.setState({
-      loading: true,
-    });
-    return axios.all([
-      this.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params),
-      this.loadRoleMemberDatas(roleMemberFilters),
-    ]).then(([{ content, totalElements, number }, roleData]) => {
-      this.context.setState({
-        memberDatas: content,
-        expandedKeys,
-        roleMemberDatas: roleData.filter((role) => {
-          role.users = role.users || [];
-          if (role.userCount > 0) {
-            if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-              this.loadRoleMemberData(role, {
-                current: 1,
-                pageSize,
-              }, roleMemberFilters, roleMemberParams);
-            }
-            return true;
-          }
-          return false;
-        }),
-        roleData,
-        loading: false,
-        memberRolePageInfo: {
-          total: totalElements,
-          current: number + 1,
-          pageSize,
-        },
-      });
-    });
-  }
-}
 
 @Form.create({})
 @withRouter
@@ -204,6 +62,7 @@ export default class MemberRole extends Component {
       roleMemberFilterRole: [],
       roleIds: [],
       params: [],
+      overflow: false,
     };
   }
 
@@ -217,6 +76,33 @@ export default class MemberRole extends Component {
     this.init();
   }
 
+  componentDidMount() {
+    this.updateSelectContainer();
+  }
+
+  componentDidUpdate() {
+    this.updateSelectContainer();
+  }
+
+  saveSideBarRef = (node) => {
+    if (node) {
+      this.sidebarBody = findDOMNode(node).parentNode;
+    }
+  };
+
+  updateSelectContainer() {
+    const body = this.sidebarBody;
+    if (body) {
+      const { overflow } = this.state;
+      const bodyOverflow = body.clientHeight < body.scrollHeight;
+      if (bodyOverflow !== overflow) {
+        this.setState({
+          overflow: bodyOverflow,
+        });
+      }
+    }
+  }
+
   reload = () => {
     this.setState(this.getInitState(), () => {
       this.init();
@@ -228,7 +114,7 @@ export default class MemberRole extends Component {
     return intl.formatMessage({
       id,
     }, values);
-  }
+  };
 
   // 创建编辑角色 状态
   getOption = (current) => {
@@ -239,8 +125,8 @@ export default class MemberRole extends Component {
           options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
         } else {
           options.push(
-            <Option value={id} key={id}>
-              <Tooltip title={code} placement="topLeft">
+            <Option value={id} key={id} title={name}>
+              <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
                 <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
               </Tooltip>
             </Option>,
@@ -290,7 +176,7 @@ export default class MemberRole extends Component {
   }
 
   getRoleFormItems = () => {
-    const { selectType, roleIds } = this.state;
+    const { selectType, roleIds, overflow } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItems = roleIds.map((id, index) => {
       const key = id === undefined ? `role-index-${index}` : String(id);
@@ -308,9 +194,10 @@ export default class MemberRole extends Component {
           initialValue: id,
         })(
           <Select
+            className="member-role-select"
             style={{ width: 300 }}
             label={<FormattedMessage id="memberrole.role.label" />}
-            getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+            getPopupContainer={() => overflow ? this.sidebarBody : document.body}
             filterOption={(input, option) => {
               const childNode = option.props.children;
               if (childNode && React.isValidElement(childNode)) {
@@ -318,7 +205,9 @@ export default class MemberRole extends Component {
               }
               return false;
             }}
-            onChange={(value) => { roleIds[index] = value; }}
+            onChange={(value) => {
+              roleIds[index] = value;
+            }}
             filter
           >
             {this.getOption(id)}
@@ -432,6 +321,8 @@ export default class MemberRole extends Component {
     const { code, values } = this.roles;
     const modify = selectType === 'edit';
     return {
+      className: 'sidebar-content',
+      ref: this.saveSideBarRef,
       code: modify ? `${code}.modify` : `${code}.add`,
       values: modify ? { name: currentMemberData.loginName } : values,
     };
@@ -447,13 +338,11 @@ export default class MemberRole extends Component {
 
   getSidebarContent() {
     const { roleData = [], roleIds } = this.state;
-    const header = this.getHeader();
     const disabled = roleIds.findIndex((id, index) => id === undefined) !== -1
       || !roleData.filter(({ enabled, id }) => enabled && roleIds.indexOf(id) === -1).length;
     return (
       <Content
-        className="sidebar-content"
-        {...header}
+        {...this.getHeader()}
       >
         <Form layout="vertical">
           {this.getProjectNameDom()}
@@ -475,7 +364,7 @@ export default class MemberRole extends Component {
       }
     }
     return false;
-  }
+  };
 
   // ok 按钮保存
   handleOk = (e) => {

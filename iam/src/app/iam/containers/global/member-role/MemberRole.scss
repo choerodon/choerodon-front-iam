@@ -38,7 +38,7 @@
     vertical-align: text-top;
   }
   .memberrole-roles .role-table {
-      padding-bottom: 6px;
+    padding-bottom: 6px;
   }
 }
 
@@ -62,4 +62,8 @@
 .role-member-table tr.ant-table-expanded-row:focus > td,
 .role-member-table tr.ant-table-expanded-row:hover > td {
   background: inherit;
+}
+
+.member-role-select .ant-select-selection-selected-value {
+  width: 100%;
 }

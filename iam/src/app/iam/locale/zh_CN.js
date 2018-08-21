@@ -19,7 +19,7 @@ const pageDetail = {
   'global.menusetting.detail.link': `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
 
   // 角色标签
-  'global.rolelabel.title': '平台"{name}"的角色标签',
+  'abel.title': '平台"{name}"的角色标签',
   'global.rolelabel.description': '角色标签是在角色管理中可以与角色相关联，用于定义角色的特定逻辑的功能，需与代码开发结合。',
   'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/role-label/`,
 
@@ -121,6 +121,14 @@ const pageDetail = {
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
   'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+  // 发送设置
+  'global.sendsetting.title': '平台"{name}"的发送设置',
+  'global.sendsetting.description': '展示你能使用的消息模板发送的特定触发事件，您可以规定对应触发事件所要应用的模板，发送频率等。',
+  'global.sendsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+
+  'global.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
+  'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为及时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
+  'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
@@ -135,7 +143,7 @@ const pageDetail = {
   'global.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
   'global.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
-  'global.mailtemplate.modify.title': '在平台"{name}"中修改邮件模板',
+  'global.mailtemplate.modify.title': '修改邮件模板"{name}"',
   'global.mailtemplate.modify.description': '修改邮件模板可以让您根据自己的需求，修改发送的主题、内容。',
   'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
@@ -244,7 +252,7 @@ const pageDetail = {
 
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
-  'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容',
+  'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容。',
   'organization.mailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
   'organization.mailtemplate.create.title': '在组织"{name}"中创建邮件模板',
@@ -255,7 +263,7 @@ const pageDetail = {
   'organization.mailtemplate.baseon.description': '基于预定义创建邮件模板，您可以编辑该邮件模板的主题、内容。',
   'organization.mailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
-  'organization.mailtemplate.modify.title': '在组织"{name}"中修改邮件模板',
+  'organization.mailtemplate.modify.title': '修改邮件模板"{name}"',
   'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
   'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
@@ -510,7 +518,7 @@ const zh_CN = {
   'global.role.permission.code': '权限',
   'global.role.permission.desc': '描述',
   'global.role.code.exist.msg': '角色编码已存在，请输入其他角色编码',
-  'global.role.name.exist.msg': '该角色名已创建',
+  '': '该角色名已创建',
   'global.role.modify.level.title': '修改角色层级',
   'global.role.modify.level.content': '确定要修改角色的层级吗？更换角色层级将清空您的角色编码、已选权限和已选标签。',
   'global.role.level.require.msg': '请选择角色层级',
@@ -646,6 +654,10 @@ const zh_CN = {
   'global.apitest.authorize': '授权',
   'global.apitest.authorize.title': 'API测试授权认证',
   'global.apitest.authorize.change': '更改授权账号',
+
+  // 发送设置
+  'global.sendsetting.header.title': '发送设置',
+  'global.sendsetting.modify': '修改发送设置',
 
 
   // 邮件模板

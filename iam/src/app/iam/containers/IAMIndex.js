@@ -23,6 +23,7 @@ const sagaInstance = asyncRouter(() => import('./global/saga-instance'));
 const smsTemplate = asyncRouter(() => import('./global/sms-template'));
 const smsSetting = asyncRouter(() => import('./global/sms-setting'));
 const dashboardSetting = asyncRouter(() => import('./global/dashboard-setting'));
+const sendSetting = asyncRouter(() => import('./global/send-setting'));
 
 // organization
 const client = asyncRouter(() => import('./organization/client'));
@@ -58,6 +59,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/msg-record`} component={msgRecord} />
           <Route path={`${match.url}/mail-template`} component={mailTemplate} />
           <Route path={`${match.url}/mail-setting`} component={mailSetting} />
+          <Route path={`${match.url}/send-setting`} component={sendSetting} />
           <Route path={`${match.url}/microservice`} component={microService} />
           <Route path={`${match.url}/organization`} component={organization} />
           <Route path={`${match.url}/role`} component={role} />

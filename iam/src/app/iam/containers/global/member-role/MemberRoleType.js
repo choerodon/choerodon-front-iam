@@ -3,7 +3,10 @@ import querystring from 'query-string';
 
 export const pageSize = 10;
 
-// 公用方法类
+/**
+ * 公用方法类
+ * 当要改写 src/app/iam/containers/global/member-role/MemberRoleType.js中的内容时可以逐步把用到的东西移到store里
+ */
 export default class MemberRoleType {
   constructor(context) {
     this.context = context;

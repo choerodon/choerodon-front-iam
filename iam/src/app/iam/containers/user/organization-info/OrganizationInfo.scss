@@ -1,0 +1,15 @@
+.c7n-org-info{
+  &-code{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 296px;
+    overflow: hidden;
+  }
+
+  &-description{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 296px;
+    overflow: hidden;
+  }
+}

@@ -207,7 +207,6 @@ export default class OrganizationInfo extends Component {
         <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
           loading={perloading}
-          style={{ width: '512px' }}
           columns={columns}
           pagination={perpagination}
           filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

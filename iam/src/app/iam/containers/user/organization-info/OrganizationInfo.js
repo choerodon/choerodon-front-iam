@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
+import './OrganizationInfo.scss';
 
 const intlPrefix = 'user.orginfo';
 const { Sidebar } = Modal;
@@ -192,10 +193,12 @@ export default class OrganizationInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.detail.table.permission`} />,
       dataIndex: 'code',
       key: 'code',
+      className: 'c7n-org-info-code',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.detail.table.description`} />,
       dataIndex: 'description',
       key: 'description',
+      className: 'c7n-org-info-description',
     }];
     return (
       <Content
@@ -207,7 +210,6 @@ export default class OrganizationInfo extends Component {
         <p style={{ fontSize: '18px', marginBottom: '8px' }}>{totalCount}个已分配权限</p>
         <Table
           loading={perloading}
-          style={{ width: '512px' }}
           columns={columns}
           pagination={perpagination}
           filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

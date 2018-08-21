@@ -405,9 +405,6 @@ export default class CreateRole extends Component {
                 {...formItemLayout}
               >
                 <Table
-                  style={{
-                    width: '512px',
-                  }}
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',
@@ -473,17 +470,16 @@ export default class CreateRole extends Component {
                 code={`${intlPrefix}.create.addpermission`}
               >
                 <Table
-                  style={{
-                    width: '512px',
-                  }}
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',
                     key: 'code',
+                    className: 'choerodon-role-code',
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
                     dataIndex: 'description',
                     key: 'description',
+                    className: 'choerodon-role-description',
                   }]}
                   rowKey="id"
                   dataSource={data}

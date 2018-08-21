@@ -28,17 +28,7 @@ class MailTemplateType {
     const { AppState } = this.context.props;
     this.data = AppState.currentMenuType;
     const { type, id, name } = this.data;
-    let codePrefix;
-    switch (type) {
-      case 'organization':
-        codePrefix = 'organization';
-        break;
-      case 'project':
-        codePrefix = 'project';
-        break;
-      default:
-        codePrefix = 'global';
-    }
+    const codePrefix = type === 'organization' ? 'organization' : 'global';
     this.code = `${codePrefix}.mailtemplate`;
     this.values = { name: name || 'Choerodon' };
     this.type = type;
@@ -242,9 +232,12 @@ export default class MailTemplate extends Component {
     const { selectType } = this.state;
     const { code, values } = this.mail;
     const selectCode = `${code}.${selectType}`;
+    const modifyValues = {
+      name: MailTemplateStore.getCurrentDetail.code,
+    }
     return {
       code: selectCode,
-      values,
+      values: selectType === 'modify' ? modifyValues : values,
     };
   }
 

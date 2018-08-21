@@ -129,7 +129,7 @@
   sort: 4
   site:
   - "send-setting":
-      icon: application_model
+      icon: mail_set
       Routes: /iam/send-setting
       sort: 1
       permission:
@@ -252,10 +252,22 @@
           - 'iam-service.password-policy.create'
           - 'iam-service.password-policy.queryByOrganizationId'
           - 'iam-service.password-policy.update'
+
+# 组织层消息中心
+"msg-center-organization":
+  icon: center
+  sort: 3
+  organization:
+    - "send-setting-organization":
+        icon: mail_set
+        Routes: /iam/send-setting
+        sort: 1
+        permission:
+          - 'notify-service.email-template-org.pageOrganization'
     - "mail-template-organization":
         icon: application_model
         Routes: /iam/mail-template
-        sort: 7
+        sort: 2
         permission:
           - 'notify-service.email-template-org.pageOrganization'
           - 'notify-service.email-template-org.create'
@@ -263,6 +275,12 @@
           - 'notify-service.email-template-org.delete'
           - 'notify-service.email-template-org.query'
           - 'notify-service.send-setting-org.listNames'
+    - "msg-record-organization":
+        icon: speaker_notes
+        Routes: /iam/msg-record
+        sort: 3
+        permission:
+          - 'notify-service.email-template-org.pageOrganization'
 
 # 项目设置
 "prosetting":

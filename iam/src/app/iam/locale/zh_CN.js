@@ -1,4 +1,5 @@
 const docServer = 'http://v0-9.choerodon.io/zh/docs';
+
 const pageDetail = {
   // menusetting
   // home
@@ -338,6 +339,7 @@ const pageDetail = {
   'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
 
 };
+
 /* eslint-disable-next-line */
 const zh_CN = {
 

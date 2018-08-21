@@ -45,6 +45,9 @@ const pageDetail = {
   'global.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
   'global.memberrole.modify.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
+  'global.memberrole.upload.description': '您可以在此将文件中的角色信息导入到平台中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
+  'global.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
+
   // 角色管理
   'global.role.title': '平台"{name}"的角色管理',
   'global.role.description': '角色是您可分配给成员的一组权限。您可以创建角色并为其添加权限，也可以复制现有角色并调整其权限。',
@@ -194,6 +197,10 @@ const pageDetail = {
   'organization.memberrole.modify.title': '对成员"{name}"的角色进行修改',
   'organization.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
   'organization.memberrole.modify.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
+
+  'organization.memberrole.upload.title': '在组织"{name}"中导入角色',
+  'organization.memberrole.upload.description': '您可以在此将文件中的角色信息导入到组织中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
+  'organization.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   // 客户端
   'organization.client.title': '组织"{name}"的客户端',
@@ -986,8 +993,10 @@ const zh_CN = {
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',
+  'global.memberrole.upload.title': '在平台"{name}"中导入角色',
   'organization.memberrole.header.title': '组织角色分配',
   'project.memberrole.header.title': '项目角色分配',
+  'project.memberrole.upload.title': '在项目"{name}"中导入角色',
 
   'memberrole.member': '成员',
   'memberrole.role.require.msg': '必须至少选择一个角色',
@@ -998,6 +1007,7 @@ const zh_CN = {
   'memberrole.remove.content': '确认移除成员"{member}"的角色"{role}"?',
   'memberrole.remove.title': '移除角色',
   'memberrole.add': '添加成员角色',
+  'memberrole.upload': '导入角色',
   'memberrole.modify': '修改成员角色',
   'memberrole.add.other': '添加其他角色',
   'memberrole.member.disabled.tip': '该成员已停用',
@@ -1007,11 +1017,27 @@ const zh_CN = {
   'memberrole.role.disabled.tip': '该角色已停用',
   'memberrole.rolemember': '角色/成员',
   'memberrole.view': '查看方式',
+  'memberrole.fileloading.text': '正在上传...',
+  'memberrole.uploading.text': '正在导入...',
+  'memberrole.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
 
   // MemberLabel
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
+
+  // Upload
+  'download.template': '下载',
+  'upload.file': '上传',
+  'upload.lasttime': '上次导入完成时间',
+  'upload.norecord': '当前没有导入用户记录',
+  'upload.time': '共导入{successCount}条数据成功，{failedCount}条数据失败',
+  'upload.spendtime': '耗时',
+  'uploading.text': '正在导入...',
+  'fileloading.text': '正在上传...',
+  'uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
+  'download.failed.detail': '点击下载失败详情',
+  'download.failed.error': '失败详情文件丢失，无法下载',
 
   // page
   ...pageDetail,

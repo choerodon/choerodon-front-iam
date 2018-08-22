@@ -89,7 +89,7 @@ export default class MemberRole extends Component {
   }
 
   componentWillUnmount() {
-    this.timer = 0;
+    clearInterval(this.timer);
   }
 
   saveSideBarRef = (node) => {
@@ -1017,10 +1017,15 @@ export default class MemberRole extends Component {
     });
   };
 
+  /**
+   * immediately为false时设置2秒查询一次接口，若有更新删除定时器并更新列表
+   * @param immediately
+   */
   handleUploadInfo = (immediately) => {
     const { MemberRoleStore } = this.props;
+    const { fileLoading } = this.state;
     const uploadInfo = MemberRoleStore.getUploadInfo || {};
-    if (uploadInfo.finished) {
+    if (uploadInfo.finished && fileLoading) {
       this.setState({
         fileLoading: false,
       });
@@ -1029,10 +1034,15 @@ export default class MemberRole extends Component {
       MemberRoleStore.handleUploadInfo();
       return;
     }
-    this.timer = setTimeout(() => {
-      this.timer = 0;
+    if (uploadInfo.finished) {
+      clearInterval(this.timer);
+      this.reload();
+      return;
+    }
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
       MemberRoleStore.handleUploadInfo();
-    }, 9000);
+    }, 2000);
   };
 
   upload = (e) => {

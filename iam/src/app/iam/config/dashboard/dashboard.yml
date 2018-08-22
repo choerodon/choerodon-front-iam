@@ -29,3 +29,9 @@ dashboard:
     description: "项目信息"
     level: project
     sort: 5
+  - code: "OrganizationInfo"
+    icon: domain
+    title: "组织信息"
+    description: "组织信息"
+    level: organization
+    sort: 6

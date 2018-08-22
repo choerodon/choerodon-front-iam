@@ -9,9 +9,9 @@ import './index.scss';
 
 const intlPrefix = 'dashboard.userinfo';
 
-@inject('AppState')
+@inject('AppState', 'HeaderStore')
 @observer
-export default class ProjectInfo extends Component {
+export default class UserInfo extends Component {
 
   componentWillMount() {
     this.loadUserInfo();
@@ -22,7 +22,9 @@ export default class ProjectInfo extends Component {
   };
 
   render() {
-    const { getUserInfo: { loginName, realName, email, ldap } } = UserInfoStore;
+    const { HeaderStore: { getOrgData } } = this.props;
+    const { getUserInfo: { loginName, realName, email, ldap, organizationId } } = UserInfoStore;
+    const { name } = getOrgData.find(({ id }) => String(id) === String(organizationId)) || {};
     return (
       <div className="c7n-iam-dashboard-user-info">
         <dl>
@@ -34,6 +36,8 @@ export default class ProjectInfo extends Component {
           <dd>{email}</dd>
           <dt><FormattedMessage id={`${intlPrefix}.ldap`} /></dt>
           <dd><FormattedMessage id={`${intlPrefix}.ldap.${!!ldap}`} /></dd>
+          <dt><FormattedMessage id={`${intlPrefix}.organization`} /></dt>
+          <dd>{name}</dd>
         </dl>
         <DashBoardNavBar>
           <Link to="/iam/user-info?type=site"><FormattedMessage id={`${intlPrefix}.redirect`} /></Link>

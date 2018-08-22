@@ -261,7 +261,7 @@ class DashboardSetting extends Component {
   }
 
   render() {
-    const { DashboardSettingStore } = this.props;
+    const { DashboardSettingStore, intl } = this.props;
     const { pagination, params, loading, dashboardData, sidebarVisible } = DashboardSettingStore;
     return (
       <Page
@@ -289,6 +289,7 @@ class DashboardSetting extends Component {
             filters={params}
             onChange={this.handleTableChange}
             rowKey={({ code, namespace }) => `${namespace}-${code}`}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
             title={<FormattedMessage id={`${intlPrefix}.sidebar.title`} />}

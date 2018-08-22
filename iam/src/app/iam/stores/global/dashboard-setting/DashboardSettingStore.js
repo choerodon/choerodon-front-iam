@@ -10,11 +10,11 @@ class DashboardSettingStore {
   @observable pagination = {
     current: 1,
     pageSize: 10,
+    total: 0,
   };
   @observable filters = {};
   @observable sort = {};
   @observable params = [];
-  @observable total = 0;
   @observable editData = {};
 
   refresh() {
@@ -75,11 +75,13 @@ class DashboardSettingStore {
       params: params.join(','),
       sort: sorter.join(','),
     })}`)
-      .then(action(({ failed, content, size, totalElements }) => {
+      .then(action(({ failed, content, totalElements }) => {
         if (!failed) {
           this.dashboardData = content;
-          this.pagination = pagination;
-          this.total = totalElements;
+          this.pagination = {
+            ...pagination,
+            total: totalElements,
+          };
         }
         this.loading = false;
       }))

@@ -1,20 +1,29 @@
-
 import React, { Component } from 'react';
+import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import querystring from 'query-string';
 import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
-import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
-const { HeaderStore } = stores;
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
+const inputWidth = 512;
 
 @Form.create()
 @withRouter
 @injectIntl
-@inject('AppState')
+@inject('AppState', 'HeaderStore')
 @observer
 export default class Organization extends Component {
   constructor(props) {
@@ -23,97 +32,27 @@ export default class Organization extends Component {
     this.creatOrgFocusInput = React.createRef();
   }
 
-  state = this.getInitState();
-
-  getInitState() {
-    return {
-      visible: false,
-      content: null,
-      show: '',
-      submitting: false,
-      loading: false,
-      editData: {},
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      sort: {
-        columnKey: null,
-        order: null,
-      },
-      filters: {},
-      params: [],
-    };
-  }
-
   componentWillMount() {
     this.loadOrganizations();
   }
 
   handleRefresh = () => {
-    this.setState(this.getInitState(), () => {
-      this.loadOrganizations();
-    });
+    const { OrganizationStore } = this.props;
+    OrganizationStore.refresh();
   };
 
-  loadOrganizations(paginationIn, sortIn, filtersIn, paramsIn) {
-    const {
-      pagination: paginationState,
-      sort: sortState,
-      filters: filtersState,
-      params: paramsState,
-    } = this.state;
-    const pagination = paginationIn || paginationState;
-    const sort = sortIn || sortState;
-    const filters = filtersIn || filtersState;
-    const params = paramsIn || paramsState;
-    this.fetch(pagination, sort, filters, params).then((data) => {
-      this.setState({
-        pagination: {
-          current: data.number + 1,
-          pageSize: data.size,
-          total: data.totalElements,
-        },
-        content: data.content,
-        loading: false,
-        sort,
-        filters,
-        params,
-      });
-    });
-  }
-
-  fetch({ current, pageSize }, { columnKey, order }, { name, code, enabled }, params) {
-    this.setState({
-      loading: true,
-      filters: { name, code, enabled },
-    });
-    const queryObj = {
-      page: current - 1,
-      size: pageSize,
-      name,
-      code,
-      enabled,
-      params,
-    };
-    if (columnKey) {
-      const sorter = [];
-      sorter.push(columnKey);
-      if (order === 'descend') {
-        sorter.push('desc');
-      }
-      queryObj.sort = sorter.join(',');
-    }
-    return axios.get(`/iam/v1/organizations?${querystring.stringify(queryObj)}`);
+  loadOrganizations(pagination, filters, sort, params) {
+    const { OrganizationStore } = this.props;
+    OrganizationStore.loadData(pagination, filters, sort, params);
   }
 
   // 创建组织侧边
   createOrg = () => {
-    this.props.form.resetFields();
-    this.setState({
-      visible: true,
-      show: 'create',
+    const { form, OrganizationStore } = this.props;
+    form.resetFields();
+    runInAction(() => {
+      OrganizationStore.show = 'create';
+      OrganizationStore.showSideBar();
     });
     setTimeout(() => {
       this.creatOrgFocusInput.input.focus();
@@ -121,11 +60,12 @@ export default class Organization extends Component {
   };
 
   handleEdit = (data) => {
-    this.props.form.resetFields();
-    this.setState({
-      visible: true,
-      show: 'edit',
-      editData: data,
+    const { form, OrganizationStore } = this.props;
+    form.resetFields();
+    runInAction(() => {
+      OrganizationStore.show = 'edit';
+      OrganizationStore.setEditData(data);
+      OrganizationStore.showSideBar();
     });
     setTimeout(() => {
       this.editOrgFocusInput.input.focus();
@@ -134,80 +74,30 @@ export default class Organization extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, { code, name }, modify) => {
+    const { form, intl, OrganizationStore, HeaderStore } = this.props;
+    form.validateFields((err, values, modify) => {
       if (!err) {
-        const { intl } = this.props;
-        const { show, editData: { id, code: originCode, objectVersionNumber } } = this.state;
-        const isCreate = show === 'create';
-        if (!modify && !isCreate) {
-          this.setState({
-            visible: false,
-          });
-          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-          return;
-        }
-        let url;
-        let body;
-        let message;
-        let method;
-        if (isCreate) {
-          url = '/org/v1/organizations';
-          body = {
-            name,
-            code,
-          };
-          message = intl.formatMessage({ id: 'create.success' });
-          method = 'post';
-        } else {
-          url = `/iam/v1/organizations/${id}`;
-          body = {
-            name,
-            objectVersionNumber,
-            code: originCode,
-          };
-          message = intl.formatMessage({ id: 'modify.success' });
-          method = 'put';
-        }
-        this.setState({ submitting: true });
-        axios[method](url, JSON.stringify(body))
-          .then((data) => {
-            this.setState({
-              submitting: false,
-              visible: false,
-            });
-            if (data.failed) {
-              Choerodon.prompt(data.message);
-            } else {
-              Choerodon.prompt(message);
-              if (isCreate) {
-                this.handleRefresh();
-                HeaderStore.addOrg(data);
-              } else {
-                this.loadOrganizations();
-                HeaderStore.updateOrg(data);
-              }
-            }
-          })
-          .catch((error) => {
-            this.setState({ submitting: false });
-            Choerodon.handleResponseError(error);
+        OrganizationStore.createOrUpdateOrg(values, modify, HeaderStore)
+          .then((message) => {
+            OrganizationStore.hideSideBar();
+            Choerodon.prompt(intl.formatMessage({ id: message }));
           });
       }
     });
   };
 
   handleCancelFun = () => {
-    this.setState({
-      visible: false,
-    });
+    const { OrganizationStore } = this.props;
+    OrganizationStore.hideSideBar();
   };
 
   handleDisable = ({ enabled, id }) => {
-    const { intl } = this.props;
-    axios.put(`/iam/v1/organizations/${id}/${enabled ? 'disable' : 'enable'}`).then((data) => {
-      Choerodon.prompt(intl.formatMessage({ id: enabled ? 'disable.success' : 'enable.success' }));
-      this.loadOrganizations();
-    }).catch(Choerodon.handleResponseError);
+    const { intl, OrganizationStore } = this.props;
+    OrganizationStore.toggleDisable(id, enabled)
+      .then(() => {
+        Choerodon.prompt(intl.formatMessage({ id: enabled ? 'disable.success' : 'enable.success' }));
+      })
+      .catch(Choerodon.handleResponseError);
   };
 
   /**
@@ -217,10 +107,10 @@ export default class Organization extends Component {
    * @param callback 回调函数
    */
   checkCode = (rule, value, callback) => {
-    const { intl } = this.props;
-    axios.post('/iam/v1/organizations/check', JSON.stringify({ code: value }))
-      .then((mes) => {
-        if (mes.failed) {
+    const { intl, OrganizationStore } = this.props;
+    OrganizationStore.checkCode(value)
+      .then(({ failed }) => {
+        if (failed) {
           callback(intl.formatMessage({ id: 'global.organization.onlymsg' }));
         } else {
           callback();
@@ -229,20 +119,7 @@ export default class Organization extends Component {
   };
 
   renderSidebarContent() {
-    const { intl } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const { show, editData } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-    };
-    const inputWidth = 512;
+    const { intl, form: { getFieldDecorator }, OrganizationStore: { show, editData } } = this.props;
     return (
       <Content
         className="sidebar-content"
@@ -272,7 +149,9 @@ export default class Organization extends Component {
                   validateTrigger: 'onBlur',
                   validateFirst: true,
                 })(
-                  <Input ref={(e) => { this.creatOrgFocusInput = e; }} label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
+                  <Input ref={(e) => {
+                    this.creatOrgFocusInput = e;
+                  }} label={<FormattedMessage id="global.organization.code" />} autoComplete="off" style={{ width: inputWidth }} />,
                 )}
               </FormItem>
             )
@@ -285,7 +164,9 @@ export default class Organization extends Component {
               validateTrigger: 'onBlur',
               initialValue: show === 'create' ? undefined : editData.name,
             })(
-              <Input ref={(e) => { this.editOrgFocusInput = e; }} label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
+              <Input ref={(e) => {
+                this.editOrgFocusInput = e;
+              }} label={<FormattedMessage id="global.organization.name" />} autoComplete="off" style={{ width: inputWidth }} />,
             )}
           </FormItem>
         </Form>
@@ -294,16 +175,12 @@ export default class Organization extends Component {
   }
 
   handlePageChange = (pagination, filters, sorter, params) => {
-    this.loadOrganizations(pagination, sorter, filters, params);
+    this.loadOrganizations(pagination, filters, sorter, params);
   };
 
-  render() {
-    const { intl } = this.props;
-    const {
-      sort: { columnKey, order }, filters, pagination,
-      params, content, loading, visible, show, submitting,
-    } = this.state;
-    const columns = [{
+  getTableColumns() {
+    const { intl, OrganizationStore: { sort: { columnKey, order }, filters } } = this.props;
+    return [{
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
@@ -340,7 +217,7 @@ export default class Organization extends Component {
       render: enable => intl.formatMessage({ id: enable ? 'enable' : 'disable' }),
     }, {
       title: '',
-      width: '100px',
+      width: 100,
       key: 'action',
       align: 'right',
       render: (text, record) => (
@@ -374,6 +251,15 @@ export default class Organization extends Component {
         </div>
       ),
     }];
+  }
+
+  render() {
+    const {
+      intl, OrganizationStore: {
+        params, loading, pagination, sidebarVisible, submitting, show, orgData,
+      },
+    } = this.props;
+
     return (
       <Page
         service={[
@@ -406,8 +292,8 @@ export default class Organization extends Component {
           code="global.organization"
         >
           <Table
-            columns={columns}
-            dataSource={content}
+            columns={this.getTableColumns()}
+            dataSource={orgData}
             pagination={pagination}
             onChange={this.handlePageChange}
             filters={params}
@@ -417,7 +303,7 @@ export default class Organization extends Component {
           />
           <Sidebar
             title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'} />}
-            visible={visible}
+            visible={sidebarVisible}
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun}
             okText={<FormattedMessage id={show === 'create' ? 'create' : 'save'} />}

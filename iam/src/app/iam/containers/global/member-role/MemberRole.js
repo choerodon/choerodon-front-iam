@@ -1036,12 +1036,12 @@ export default class MemberRole extends Component {
     }
     if (uploadInfo.finished) {
       clearInterval(this.timer);
-      this.reload();
       return;
     }
     clearInterval(this.timer);
     this.timer = setInterval(() => {
       MemberRoleStore.handleUploadInfo();
+      this.init();
     }, 2000);
   };
 

@@ -133,8 +133,7 @@
       Routes: /iam/send-setting
       sort: 1
       permission:
-      - 'notify-service.email-template-site.pageSite'
-      - 'notify-service.email-template-site.create'
+      - 'notify-service.send-setting-site.pageSite'
   - "mail-template":
       icon: application_model
       Routes: /iam/mail-template
@@ -252,6 +251,18 @@
           - 'iam-service.password-policy.create'
           - 'iam-service.password-policy.queryByOrganizationId'
           - 'iam-service.password-policy.update'
+    - "mail-template-organization":
+        icon: application_model
+        Routes: /iam/mail-template
+        sort: 7
+        delete: ture
+        permission:
+          - 'notify-service.email-template-org.pageOrganization'
+          - 'notify-service.email-template-org.create'
+          - 'notify-service.email-template-org.update'
+          - 'notify-service.email-template-org.delete'
+          - 'notify-service.email-template-org.query'
+          - 'notify-service.send-setting-org.listNames'
 
 # 组织层消息中心
 "msg-center-organization":
@@ -263,7 +274,7 @@
         Routes: /iam/send-setting
         sort: 1
         permission:
-          - 'notify-service.email-template-org.pageOrganization'
+          - 'notify-service.send-setting-org.pageOrganization'
     - "mail-template-organization":
         icon: application_model
         Routes: /iam/mail-template

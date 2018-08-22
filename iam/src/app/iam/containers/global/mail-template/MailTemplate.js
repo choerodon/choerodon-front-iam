@@ -145,13 +145,8 @@ export default class MailTemplate extends Component {
   handleDelete(record) {
     const { intl } = this.props;
     Modal.confirm({
-      title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
-      content: intl.formatMessage({
-        id: record.subMenus && record.subMenus.length
-          ? `${intlPrefix}.delete.owncontent.hassub`
-          : `${intlPrefix}.delete.owncontent`,
-        name: record.name,
-      }, {
+      title: intl.formatMessage({ id: 'mailtemplate.delete.owntitle' }),
+      content: intl.formatMessage({ id: 'mailtemplate.delete.owncontent' }, {
         name: record.name,
       }),
       onOk: () => {
@@ -159,12 +154,12 @@ export default class MailTemplate extends Component {
           if (data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.delete.success` }));
+            Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
             this.reload();
           }
         }).catch((error) => {
           if (error) {
-            Choerodon.prompt('接口错误');
+            Choerodon.prompt(intl.formatMessage({ id: 'delete.error' }));
           }
         });
       },
@@ -324,7 +319,7 @@ export default class MailTemplate extends Component {
                 whitespace: true,
                 message: this.formatMessage('mailtemplate.code.required'),
               }, {
-                validator: this.checkCode,
+                validator: selectType !== 'modify' ? this.checkCode : '',
               }],
               validateTrigger: 'onBlur',
               validateFirst: true,
@@ -365,7 +360,7 @@ export default class MailTemplate extends Component {
                 disabled={selectType !== 'create'}
               >
                 {
-                  MailTemplateStore.getTemplateType && MailTemplateStore.getTemplateType.map(({ name, id, code }) => (
+                  MailTemplateStore.getTemplateType.length && MailTemplateStore.getTemplateType.map(({ name, id, code }) => (
                     <Option key={id} value={code}>{name}</Option>
                   ))
                 }
@@ -429,8 +424,16 @@ export default class MailTemplate extends Component {
     const { intl } = this.props;
     const { selectType } = this.state;
     const { type, orgId } = this.mail;
-    this.props.form.validateFieldsAndScroll((err, values) => {
+    this.props.form.validateFieldsAndScroll((err, values, modify) => {
       if (!err) {
+        if (!modify && selectType === 'modify') {
+          this.setState({
+            isShowSidebar: false,
+          });
+          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+          return;
+        }
+
         this.setState({
           isSubmitting: true,
         });
@@ -511,7 +514,7 @@ export default class MailTemplate extends Component {
       sorter: true,
       sortOrder: columnKey === 'id' && order,
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
+      title: <FormattedMessage id="mailtemplate.table.name" />,
       dataIndex: 'name',
       key: 'name',
       width: 350,
@@ -519,14 +522,14 @@ export default class MailTemplate extends Component {
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
+      title: <FormattedMessage id="mailtemplate.table.code" />,
       dataIndex: 'code',
       key: 'code',
       width: 438,
       filters: [],
       filteredValue: filters.code || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.mailtype`} />,
+      title: <FormattedMessage id="mailtemplate.table.mailtype" />,
       dataIndex: 'type',
       key: 'type',
       width: 475,
@@ -536,7 +539,7 @@ export default class MailTemplate extends Component {
       filteredValue: filters.type || [],
     },
     {
-      title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,
+      title: <FormattedMessage id="mailtemplate.table.fromtype" />,
       dataIndex: 'isPredefined',
       key: 'isPredefined',
       render: isPredefined => this.renderBuiltIn(isPredefined),
@@ -597,7 +600,7 @@ export default class MailTemplate extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${this.mail.code}.header.title`} />}
+          title={<FormattedMessage id="mailtemplate.header.title" />}
         >
           <Permission service={createService}>
             <Button

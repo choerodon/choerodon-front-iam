@@ -8,6 +8,8 @@ class SendSettingStore {
 
   @observable currentRecord = {};
 
+  @observable template = [];
+
   @action setData(data) {
     this.data = data;
   }
@@ -22,6 +24,14 @@ class SendSettingStore {
 
   @computed get getCurrentRecord() {
     return this.currentRecord;
+  }
+
+  @action setTemplate(data) {
+    this.template = data;
+  }
+
+  @computed get getTemplate() {
+    return this.template;
   }
 
 
@@ -48,6 +58,27 @@ class SendSettingStore {
     }
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
     return axios.get(`/notify/v1/notices/send_settings${path}?${querystring.stringify(queryObj)}`);
+  }
+
+  loadCurrentRecord = (id, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.get(`/notify/v1/notices/send_settings/${id}${path}`);
+  }
+
+  loadTemplate = (appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    axios.get(`notify/v1/notices/emails/templates/names${path}`).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setTemplate(data);
+      }
+    });
+  }
+
+  modifySetting = (id, body, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.put(`notify/v1/notices/send_settings/${id}${path}`, JSON.stringify(body));
   }
 }
 

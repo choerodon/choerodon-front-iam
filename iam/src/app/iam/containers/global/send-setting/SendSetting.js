@@ -47,6 +47,10 @@ export default class SendSetting extends Component {
     this.loadSettingList();
   }
 
+  componentWillUnmount() {
+    SendSettingStore.setTemplate([]);
+  }
+
   getInitState() {
     return {
       loading: true,
@@ -98,7 +102,9 @@ export default class SendSetting extends Component {
       });
     }).catch((error) => {
       Choerodon.handleResponseError(error);
-      MailTemplateStore.setLoading(false);
+      this.setState({
+        loading: false,
+      });
     });
   }
 
@@ -115,9 +121,69 @@ export default class SendSetting extends Component {
 
   // 打开侧边栏
   handleModify = (record) => {
+    const { type, orgId } = this.setting;
     this.props.form.resetFields();
-    this.setState({ visible: true });
-    SendSettingStore.setCurrentRecord(record);
+    if (!SendSettingStore.getTemplate.length) {
+      SendSettingStore.loadTemplate(type, orgId);
+    }
+    SendSettingStore.loadCurrentRecord(record.id, type, orgId).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        SendSettingStore.setCurrentRecord(data);
+        this.setState({
+          visible: true,
+        });
+      }
+    });
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { intl } = this.props;
+    const { type, orgId } = this.setting;
+    this.props.form.validateFieldsAndScroll((err, values, modify) => {
+      if (!err) {
+        if (!modify) {
+          this.setState({
+            visible: false,
+          });
+          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+          return;
+        }
+
+        this.setState({
+          submitting: true,
+        });
+        const body = {
+          emailTemplateId: values.emailTemplateId === 'empty' ? null : values.emailTemplateId,
+          retryCount: Number(values.retryCount),
+          isSendInstantly: values.sendnow === 'instant',
+          isManualRetry: values.manual === 'allow',
+          objectVersionNumber: SendSettingStore.getCurrentRecord.objectVersionNumber,
+          id: SendSettingStore.getCurrentRecord.id,
+        };
+        SendSettingStore.modifySetting(SendSettingStore.getCurrentRecord.id, body, this.setting.type, this.setting.orgId).then((data) => {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+            this.setState({
+              submitting: false,
+            });
+          } else {
+            Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+            this.setState({
+              submitting: false,
+              visible: false,
+            });
+          }
+        }).catch((error) => {
+          Choerodon.prompt(intl.formatMessage({ id: 'modify.error' }));
+          this.setState({
+            submitting: false,
+          });
+        });
+      }
+    });
   }
 
   // 关闭侧边栏
@@ -127,9 +193,35 @@ export default class SendSetting extends Component {
     });
   };
 
+  // 侧边栏
+  getHeader() {
+    const { code } = this.setting;
+    const selectCode = `${code}.modify`;
+    const modifyValues = {
+      name: SendSettingStore.getCurrentRecord.name,
+    }
+    return {
+      code: selectCode,
+      values: modifyValues,
+    };
+  }
+
+  getPermission() {
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    let modifyService = ['notify-service.send-setting-site.update'];
+    if (type === 'organization') {
+      modifyService = ['notify-service.send-setting-org.update'];
+    }
+    return modifyService;
+  }
+
+
   renderSidebarContent() {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const header = this.getHeader();
+    const { getCurrentRecord } = SendSettingStore;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -144,22 +236,30 @@ export default class SendSetting extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.modify`}
-        values={{ name: SendSettingStore.getCurrentRecord.name }}
+        {...header}
       >
         <Form className="c7n-sendsetting-form">
           <FormItem
             {...formItemLayout}
           >
             {
-              getFieldDecorator('template', {
-                rules: [{}],
+              getFieldDecorator('emailTemplateId', {
+                rules: [],
+                initialValue: !getCurrentRecord.emailTemplateCode ? 'empty' : getCurrentRecord.emailTemplateCode,
               })(
                 <Select
                   style={{ width: inputWidth }}
-                  label="应用邮箱模板"
+                  label={<FormattedMessage id="sendsetting.template" />}
                   getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                />,
+                >
+                  {
+                    SendSettingStore.getTemplate.length > 0 ? [<Option key="empty" value="empty">无</Option>].concat(
+                      SendSettingStore.getTemplate.map(({ name, id }) => (
+                        <Option key={id} value={id}>{name}</Option>
+                      )),
+                    ) : <Option key="empty" value="empty">无</Option>
+                  }
+                </Select>,
               )
             }
           </FormItem>
@@ -167,14 +267,20 @@ export default class SendSetting extends Component {
             {...formItemLayout}
           >
             {
-              getFieldDecorator('resendtime', {
-                rules: [{}],
+              getFieldDecorator('retryCount', {
+                rules: [],
+                initialValue: String(getCurrentRecord.retryCount),
               })(
                 <Select
                   style={{ width: 300 }}
-                  label="重发次数"
+                  label={<FormattedMessage id="sendsetting.retrycount" />}
                   getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                />,
+                >
+                  <Option value="0">0</Option>
+                  <Option value="1">1</Option>
+                  <Option value="2">2</Option>
+                  <Option value="3">3</Option>
+                </Select>,
               )
             }
           </FormItem>
@@ -184,10 +290,10 @@ export default class SendSetting extends Component {
             {
               getFieldDecorator('sendnow', {
                 rules: [],
-                initialValue: 'instant',
+                initialValue: getCurrentRecord.isSendInstantly ? 'instant' : 'notinstant',
               })(
                 <RadioGroup
-                  label="即时发送"
+                  label={<FormattedMessage id="sendsetting.sendinstantly" />}
                   className="radioGroup"
                 >
                   <Radio value="instant">{intl.formatMessage({ id: 'yes' })}</Radio>
@@ -202,10 +308,10 @@ export default class SendSetting extends Component {
             {
               getFieldDecorator('manual', {
                 rules: [],
-                initialValue: 'allow',
+                initialValue: getCurrentRecord.isManualRetry ? 'allow' : 'notallow',
               })(
                 <RadioGroup
-                  label="允许手动重发"
+                  label={<FormattedMessage id="sendsetting.alllow.manual" />}
                   className="radioGroup"
                 >
                   <Radio value="allow">{intl.formatMessage({ id: 'yes' })}</Radio>
@@ -221,27 +327,28 @@ export default class SendSetting extends Component {
 
   render() {
     const { intl } = this.props;
+    const modifyService = this.getPermission();
     const { sort: { columnKey, order }, filters, params, pagination, loading, visible, submitting } = this.state;
     const columns = [{
-      title: '触发类型',
+      title: <FormattedMessage id="sendsetting.trigger.type" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
     }, {
-      title: '编码',
+      title: <FormattedMessage id="sendsetting.code" />,
       dataIndex: 'code',
       key: 'code',
       filters: [],
       filteredValue: filters.code || [],
     }, {
-      title: '描述',
+      title: <FormattedMessage id="sendsetting.description" />,
       dataIndex: 'description',
       key: 'description',
       filters: [],
       filteredValue: filters.description || [],
     }, {
-      title: '应用邮箱模板',
+      title: <FormattedMessage id="sendsetting.template" />,
       dataIndex: 'emailTemplateCode',
       key: 'emailTemplateCode',
     }, {
@@ -250,25 +357,36 @@ export default class SendSetting extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        <Tooltip
-          title={<FormattedMessage id="modify" />}
-          placement="bottom"
-        >
-          <Button
-            size="small"
-            icon="mode_edit"
-            shape="circle"
-            onClick={this.handleModify.bind(this, record)}
-          />
-        </Tooltip>
+        <Permission service={modifyService}>
+          <Tooltip
+            title={<FormattedMessage id="modify" />}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="mode_edit"
+              shape="circle"
+              onClick={this.handleModify.bind(this, record)}
+            />
+          </Tooltip>
+        </Permission>
       ),
     }]
 
     return (
       <Page
-        service={['manager-service.service.pageManager']}
+        service={[
+          'notify-service.send-setting-site.pageSite',
+          'notify-service.send-setting-org.pageOrganization',
+          'notify-service.send-setting-site.query',
+          'notify-service.send-setting-org.query',
+          'notify-service.send-setting-site.update',
+          'notify-service.send-setting-org.update',
+          'notify-service.email-template-site.listNames',
+          'notify-service.email-template-org.listNames',
+        ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
+        <Header title={<FormattedMessage id="sendsetting.header.title" />}>
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
@@ -277,7 +395,8 @@ export default class SendSetting extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
+          code={this.setting.code}
+          values={{ name: `${this.setting.values.name || 'Choerodon'}` }}
         >
           <Table
             columns={columns}
@@ -290,7 +409,7 @@ export default class SendSetting extends Component {
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
-            title={<FormattedMessage id={`${intlPrefix}.modify`} />}
+            title={<FormattedMessage id="sendsetting.modify" />}
             visible={visible}
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun}

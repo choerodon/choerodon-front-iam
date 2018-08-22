@@ -258,6 +258,15 @@ const pageDetail = {
   'organization.user.upload.description': '您可以在此将文件中的信息导入到组织中去。注：您必须使用用户上传模板，请在用户管理界面，点击“下载”下载模板。',
   'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
+  // 发送设置
+  'organization.sendsetting.title': '组织"{name}"的发送设置',
+  'organization.sendsetting.description': '展示你能使用的消息模板发送的特定触发事件，您可以规定对应触发事件所要应用的模板，发送频率等。',
+  'organization.sendsetting.link': '',
+
+  'organization.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
+  'organization.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为及时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
+  'organization.sendsetting.modify.link': '',
+
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
   'organization.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接收的邮件内容。',
@@ -665,19 +674,24 @@ const zh_CN = {
   'global.apitest.authorize.change': '更改授权账号',
 
   // 发送设置
-  'global.sendsetting.header.title': '发送设置',
-  'global.sendsetting.modify': '修改发送设置',
-
+  'sendsetting.header.title': '发送设置',
+  'sendsetting.modify': '修改发送设置',
+  'sendsetting.template': '应用邮箱模板',
+  'sendsetting.retrycount': '重发次数',
+  'sendsetting.sendinstantly': '即时发送',
+  'sendsetting.alllow.manual': '允许手动重发',
+  'sendsetting.trigger.type': '触发类型',
+  'sendsetting.code': '编码',
+  'sendsetting.description': '描述',
 
   // 邮件模板
-  'global.mailtemplate.header.title': '邮件模板',
-  'global.mailtemplate.table.name': '模板名称',
-  'global.mailtemplate.table.code': '编码',
-  'global.mailtemplate.table.mailtype': '邮件类型',
-  'global.mailtemplate.table.fromtype': '来源',
-  'global.mailtemplate.delete.owntitle': '删除邮件模板',
-  'global.mailtemplate.delete.owncontent': '确定要删除邮件模板"{name}"吗？',
-  'global.mailtemplate.delete.success': '成功删除该邮件模板',
+  'mailtemplate.header.title': '邮件模板',
+  'mailtemplate.table.name': '模板名称',
+  'mailtemplate.table.code': '编码',
+  'mailtemplate.table.mailtype': '邮件类型',
+  'mailtemplate.table.fromtype': '来源',
+  'mailtemplate.delete.owntitle': '删除邮件模板',
+  'mailtemplate.delete.owncontent': '确定要删除邮件模板"{name}"吗？',
   'mailtemplate.create': '创建模板',
   'mailtemplate.modify': '修改模板',
   'mailtemplate.code': '模板编码',
@@ -939,14 +953,6 @@ const zh_CN = {
   'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
   'organization.user.download.failed.detail': '点击下载失败详情',
   'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
-
-  // 邮件模板
-  'organization.mailtemplate.header.title': '邮件模板',
-  'organization.mailtemplate.table.name': '模板名称',
-  'organization.mailtemplate.table.code': '编码',
-  'organization.mailtemplate.table.mailtype': '邮件类型',
-  'organization.mailtemplate.table.fromtype': '来源',
-
 
   // 项目层
   // 项目信息

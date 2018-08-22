@@ -35,6 +35,7 @@
 "rentsetting.client": "Client"
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "Password Policy"
+"rentsetting.mail-template-organization": "Mail Template"
 
 "msg-center-organization": "Message Center"
 "msg-center-organization.send-setting-organization": "Send Setting"

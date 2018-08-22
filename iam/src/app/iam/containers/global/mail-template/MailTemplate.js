@@ -530,11 +530,10 @@ export default class MailTemplate extends Component {
       dataIndex: 'type',
       key: 'type',
       width: 475,
-      /* TODO: 这里后端查询type值没返回结果 GET /v1/notices/emails/templates */
-      // filters: MailTemplateStore.getTemplateType.map(({ name }) => ({ text: name, value: name })),
-      // sorter: true,
-      // sortOrder: columnKey === 'type' && order,
-      // filteredValue: filters.type || [],
+      filters: MailTemplateStore.getTemplateType.map(({ name }) => ({ text: name, value: name })),
+      sorter: true,
+      sortOrder: columnKey === 'type' && order,
+      filteredValue: filters.type || [],
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.table.fromtype`} />,

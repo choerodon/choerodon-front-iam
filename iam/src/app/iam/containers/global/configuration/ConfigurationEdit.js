@@ -8,9 +8,10 @@ import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
 import { Input, Button, Form, Steps, Select, Modal, Row, Col } from 'choerodon-ui';
 import querystring from 'query-string';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import AceEditor from 'react-ace';
+import AceEditor, { diff as DiffEditor } from 'react-ace';
 import 'brace/mode/yaml';
 import 'brace/theme/dawn';
+import 'brace/theme/github';
 import ConfigurationStore from '../../../stores/global/configuration';
 import './Configuration.scss';
 
@@ -33,6 +34,7 @@ class EditConfig extends Component {
       currentServiceConfig: null, // 配置模板下拉内容
       initVersion: undefined,
       yamlData: null,
+      oldYamlData: '',
       id: this.props.match.params.id,
       service: this.props.match.params.name,
     };
@@ -123,6 +125,7 @@ class EditConfig extends Component {
       } else {
         this.setState({
           yamlData: data.yaml,
+          oldYamlData: data.yaml,
           totalLine: data.totalLine,
           current: 2,
         });
@@ -293,7 +296,7 @@ class EditConfig extends Component {
           onChange={this.handleChangeValue}
           showPrintMargin={false}
           mode="yaml"
-          theme="dawn"
+          theme="github"
           value={yamlData}
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
         />
@@ -315,7 +318,7 @@ class EditConfig extends Component {
 
   /* 渲染第三步 */
   handleRenderConfirm = () => {
-    const { yamlData, totalLine, service } = this.state;
+    const { yamlData, totalLine, service, oldYamlData } = this.state;
     return (
       <div className="confirmContainer">
         <div>
@@ -335,13 +338,13 @@ class EditConfig extends Component {
           </Row>
         </div>
         <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
-        <AceEditor
+        <DiffEditor
           readOnly
-          showPrintMargin={false}
           mode="yaml"
-          theme="dawn"
-          value={yamlData}
-          style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
+          theme="github"
+          value={[yamlData, oldYamlData]}
+          style={{ height: totalLine ? `${(totalLine + 2) * 16}px` : '500px', width: '100%' }}
+          onLoad={this.onDiffEditorLoding}
         />
         <section className="serviceSection">
           <Button
@@ -361,6 +364,15 @@ class EditConfig extends Component {
       </div>
     );
   }
+
+  /**
+   * 在加载的时候隐藏diffEditor的第二个editor
+   * @param e e是react-ace的整个diffEditor
+   */
+  onDiffEditorLoding = (e) => {
+    e.$editors[1].container.style.display = 'none';
+    e.$editors[0].container.style.width = '100%';
+  };
 
 
   render() {

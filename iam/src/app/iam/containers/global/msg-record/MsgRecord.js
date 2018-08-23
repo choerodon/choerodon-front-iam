@@ -15,11 +15,34 @@ import {
 
 // const intlPrefix = 'global.msgrecord';
 
+// 公用方法类
+class MsgRecordType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    const codePrefix = type === 'organization' ? 'organization' : 'global';
+    this.code = `${codePrefix}.msgrecord`;
+    this.values = { name: name || 'Choerodon' };
+    this.type = type;
+    this.orgId = id;
+  }
+}
+
 @withRouter
 @injectIntl
 @inject('AppState')
 @observer
 export default class APITest extends Component {
+  componentWillMount() {
+    this.initMsgRecord();
+  }
+
+  initMsgRecord() {
+    this.msgrecord = new MsgRecordType(this);
+  }
+
   render() {
     const { intl } = this.props;
 
@@ -28,7 +51,7 @@ export default class APITest extends Component {
         service={['manager-service.service.pageManager']}
       >
         <Header
-          title="消息记录"
+          title={<FormattedMessage id="msgrecord.header.title" />}
         >
           <Button
             onClick={this.handleRefresh}
@@ -37,7 +60,14 @@ export default class APITest extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content />
+        <Content
+          code={this.msgrecord.code}
+          values={{ name: `${this.msgrecord.values.name || 'Choerodon'}` }}
+        >
+          <Table
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+          />
+        </Content>
       </Page>
     );
   }

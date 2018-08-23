@@ -143,14 +143,13 @@ class OrganizationStore {
         }));
     }
     // axios.put(`/iam/v1/organizations/${organizationId}`, JSON.stringify(data));
-
   }
 
   getOrgById = organizationId =>
     axios.get(`/iam/v1/organizations/${organizationId}`);
 
   getRolesById(organizationId, userId) {
-    //return axios.get(`/iam/v1/organizations/${organizationId}/${userId}/roles`);
+    // return axios.get(`/iam/v1/organizations/${organizationId}/${userId}/roles`);
     return Promise.resolve([]);
   }
 
@@ -163,7 +162,6 @@ class OrganizationStore {
       this.myRoles = roles;
     }));
   }
-
 }
 
 const organizationStore = new OrganizationStore();

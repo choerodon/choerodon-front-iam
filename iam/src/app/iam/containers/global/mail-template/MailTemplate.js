@@ -229,7 +229,7 @@ export default class MailTemplate extends Component {
     const selectCode = `${code}.${selectType}`;
     const modifyValues = {
       name: MailTemplateStore.getCurrentDetail.code,
-    }
+    };
     return {
       code: selectCode,
       values: selectType === 'modify' ? modifyValues : values,
@@ -288,12 +288,14 @@ export default class MailTemplate extends Component {
     const { getFieldDecorator } = this.props.form;
     const header = this.getHeader();
     const inputWidth = 512;
-    let type;
-    if (selectType === 'create') {
-      type = MailTemplateStore.getTemplateType[0];
-    } else {
-      type = MailTemplateStore.getCurrentDetail.type;
-    }
+    const docServer = 'http://v0-9.choerodon.io/zh/docs';
+    const tipLink = `${docServer}/user-guide/system-configuration/message/variable-description/`;
+    const tip = (
+      <div className="c7n-mailcontent-icon-container-tip">
+        <FormattedMessage id="mailtemplate.mailcontent.tip" />
+        <a href={tipLink} target="_blank"><span>{intl.formatMessage({ id: 'learnmore' })}</span><Icon type="open_in_new" style={{ fontSize: '13px' }} /></a>
+      </div>
+    );
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -385,8 +387,17 @@ export default class MailTemplate extends Component {
 
           </FormItem>
           <div style={{ marginBottom: '8px' }}>
-            <div>
+            <div className="c7n-mailcontent-icon-container">
               <span className="c7n-mailcontent-label">{intl.formatMessage({ id: 'mailtemplate.mail.content' })}</span>
+              <Popover
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                placement="right"
+                trigger="hover"
+                content={tip}
+                overlayStyle={{ maxWidth: '380px' }}
+              >
+                <Icon type="help" />
+              </Popover>
             </div>
             <Editor
               style={{ height: 320, width: '100%' }}

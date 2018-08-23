@@ -135,6 +135,11 @@ const pageDetail = {
   'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
   'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
+  // 消息记录
+  'global.msgrecord.title': '平台"{name}"的消息记录',
+  'global.msgrecord.description': '通过此平台，您可以查看发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
+  'global.msgrecord.link': '',
+
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
   'global.mailtemplate.description': '由特定的事件触发后，系统自动发送邮件给用户，邮件模板统一了用户接受的邮件内容。',
@@ -267,6 +272,11 @@ const pageDetail = {
   'organization.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
   'organization.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
   'organization.sendsetting.modify.link': '',
+
+  // 消息记录
+  'organization.msgrecord.title': '组织"{name}"的消息记录',
+  'organization.msgrecord.description': '通过此平台，您可以查看发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
+  'organization.msgrecord.link': '',
 
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
@@ -686,6 +696,9 @@ const zh_CN = {
   'sendsetting.code': '编码',
   'sendsetting.description': '描述',
 
+  // 消息记录
+  'msgrecord.header.title': '消息记录',
+
   // 邮件模板
   'mailtemplate.header.title': '邮件模板',
   'mailtemplate.table.name': '模板名称',
@@ -708,6 +721,7 @@ const zh_CN = {
   'mailtemplate.title.required': '请输入邮件标题',
   'mailtemplate.mail.content': '邮件内容',
   'mailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
+  'mailtemplate.mailcontent.tip': '模板中的参数变量通过`${}`进行替换，在发送时，将`${}`替换成对应的实际变量。登录名:${loginName}',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',

@@ -79,6 +79,7 @@ export default class APITest extends Component {
           APITestStore.setApiToken(null);
           APITestStore.setUserInfo(null);
           APITestStore.setCurrentService(services[0]);
+          APITestStore.setCurrentVersion(services[0].version);
         } else {
           APITestStore.setDetailFlag(false);
         }

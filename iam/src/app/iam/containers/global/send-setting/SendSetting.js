@@ -10,7 +10,6 @@ import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import SendSettingStore from '../../../stores/global/send-setting';
 import './SendSetting.scss';
-import MailTemplateStore from "../../../stores/global/mail-template";
 
 const { Sidebar } = Modal;
 const { Option } = Select;
@@ -175,6 +174,7 @@ export default class SendSetting extends Component {
               submitting: false,
               visible: false,
             });
+            this.loadSettingList();
           }
         }).catch((error) => {
           Choerodon.prompt(intl.formatMessage({ id: 'modify.error' }));
@@ -199,7 +199,7 @@ export default class SendSetting extends Component {
     const selectCode = `${code}.modify`;
     const modifyValues = {
       name: SendSettingStore.getCurrentRecord.name,
-    }
+    };
     return {
       code: selectCode,
       values: modifyValues,
@@ -245,7 +245,7 @@ export default class SendSetting extends Component {
             {
               getFieldDecorator('emailTemplateId', {
                 rules: [],
-                initialValue: !getCurrentRecord.emailTemplateCode ? 'empty' : getCurrentRecord.emailTemplateCode,
+                initialValue: !getCurrentRecord.emailTemplateId ? 'empty' : getCurrentRecord.emailTemplateId,
               })(
                 <Select
                   style={{ width: inputWidth }}
@@ -371,7 +371,7 @@ export default class SendSetting extends Component {
           </Tooltip>
         </Permission>
       ),
-    }]
+    }];
 
     return (
       <Page

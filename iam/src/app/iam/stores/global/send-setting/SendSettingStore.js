@@ -10,6 +10,8 @@ class SendSettingStore {
 
   @observable template = [];
 
+  @observable currentTemplate = [];
+
   @action setData(data) {
     this.data = data;
   }
@@ -24,6 +26,14 @@ class SendSettingStore {
 
   @computed get getCurrentRecord() {
     return this.currentRecord;
+  }
+
+  @action setCurrentTemplate(data) {
+    this.currentTemplate = data;
+  }
+
+  @computed get getCurrentTemplate() {
+    return this.currentTemplate;
   }
 
   @action setTemplate(data) {

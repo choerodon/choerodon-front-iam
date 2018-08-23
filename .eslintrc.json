@@ -65,11 +65,13 @@
     "object-curly-newline": "off",
     "lines-between-class-members": "off",
     "implicit-arrow-linebreak": "off",
+    "no-template-curly-in-string": "off",
     "function-paren-newline": "off",
     "eact/jsx-closing-tag-location": "off",
     "react/no-unused-state": "off",
     "react/destructuring-assignment": "off",
     "react/jsx-filename-extension": "off",
+    "react/jsx-no-target-blank": "off",
     "react/jsx-no-bind": [
       "error",
       {

@@ -35,3 +35,9 @@ dashboard:
     description: "组织信息"
     level: organization
     sort: 6
+  - code: "MyProject"
+    icon: project_list
+    title: "我的项目"
+    description: "组织信息"
+    level: site
+    sort: 6

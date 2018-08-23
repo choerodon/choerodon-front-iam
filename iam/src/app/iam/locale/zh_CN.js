@@ -611,6 +611,7 @@ const zh_CN = {
   'global.configuration.template.modify.content': '确认修改配置模板吗？更换配置模板将重新生成您的配置信息。',
   'global.configuration.service.require.msg': '请选择微服务',
   'global.configuration.template.require.msg': '请选择配置模板',
+  'global.configuration.modifytime': '修改时间',
   'global.configuration.version.require.msg': '请输入配置版本',
   'global.configuration.version.pattern.msg': '版本号只能包含数字，小写字母，小数点，\'-\'',
   'global.configuration.version.only.msg': '该配置版本已存在，请输入其他配置版本',

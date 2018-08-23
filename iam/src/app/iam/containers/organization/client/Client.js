@@ -145,7 +145,7 @@ export default class Client extends Component {
    * @returns {*}
    */
   handlePageChange = (pagination, filters, sorter, params) => {
-    this.loadClient(pagination, filters, sorter, params);
+    this.loadClient(pagination, sorter, filters, params);
   };
 
   /**

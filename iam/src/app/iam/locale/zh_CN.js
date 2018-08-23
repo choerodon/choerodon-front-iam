@@ -132,7 +132,7 @@ const pageDetail = {
   'global.sendsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   'global.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
-  'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为及时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
+  'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
   'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
 
   // 邮件模板
@@ -265,7 +265,7 @@ const pageDetail = {
   'organization.sendsetting.link': '',
 
   'organization.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
-  'organization.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为及时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
+  'organization.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
   'organization.sendsetting.modify.link': '',
 
   // 邮件模板

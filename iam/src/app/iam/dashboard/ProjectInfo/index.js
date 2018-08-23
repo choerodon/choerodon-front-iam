@@ -29,7 +29,7 @@ export default class ProjectInfo extends Component {
           <dd>{organizeName}</dd>
         </dl>
         <DashBoardNavBar>
-          <Link to={`/iam/project-setting?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`}>
+          <Link to={`/iam/project-setting?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`}>
             <FormattedMessage id={`${intlPrefix}.redirect`} />
           </Link>
         </DashBoardNavBar>

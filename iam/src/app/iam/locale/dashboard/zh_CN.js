@@ -23,6 +23,11 @@ const zh_CN = {
   'dashboard.organizationinfo.role': '我的角色',
   'dashboard.organizationinfo.projects': '我参与项目数（包括停用）',
 
+  // MyProject
+  'dashboard.myproject.name': '项目名称',
+  'dashboard.myproject.code': '项目编码',
+  'dashboard.myproject.redirect': '转至所有项目信息',
+
 };
 /* eslint-disable-next-line */
 export default zh_CN;

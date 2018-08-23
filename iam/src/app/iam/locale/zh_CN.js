@@ -1009,6 +1009,7 @@ const zh_CN = {
   'user.proinfo.detail.header.title': '角色权限',
   'user.proinfo.detail.table.permission': '权限',
   'user.proinfo.detail.table.description': '描述',
+  'user.proinfo.project.redirect': '跳转至项目"{name}"',
 
 
   // 角色分配

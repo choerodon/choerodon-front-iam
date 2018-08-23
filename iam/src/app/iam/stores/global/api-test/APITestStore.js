@@ -8,6 +8,8 @@ import { axios, store } from 'choerodon-front-boot';
 class ApitestStore {
   @observable service = [];
   @observable currentService = {};
+  @observable currentVersion = {};
+  @observable versions = ['asdasd', 'asd'];
   @observable apiData = [];
   @observable isShowModal = false;
   @observable detailFlag = false;
@@ -23,6 +25,10 @@ class ApitestStore {
 
   @action setDetailFlag(flag) {
     this.detailFlag = flag;
+  }
+
+  @action setVersions(data) {
+    this.versions = data;
   }
 
   @action setLoading(flag) {
@@ -61,8 +67,16 @@ class ApitestStore {
     this.currentService = data;
   }
 
+  @action setCurrentVersion(data) {
+    this.currentVersion = data;
+  }
+
   @computed get getCurrentService() {
     return this.currentService;
+  }
+
+  @computed get getCurrentVersion() {
+    return this.currentVersion;
   }
 
   @action setApiToken(data) {

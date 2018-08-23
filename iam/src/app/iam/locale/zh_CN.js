@@ -909,6 +909,9 @@ const zh_CN = {
   'organization.pwdpolicy.notrecentcount': '最大近期密码数',
   'organization.pwdpolicy.regularexpression': '密码正则',
   'organization.pwdpolicy.locktime': '锁定时长',
+  'organization.pwdpolicy.max.length': '所有最少字数限制的总和须小于或等于最大密码长度',
+  'organization.pwdpolicy.min.length': '所有最少字数限制的总和须大于或等于最小密码长度',
+  'organization.pwdpolicy.min.lessthan.more': '最小密码长度须小于或等于最大密码长度',
 
   // 用户管理
   'organization.user.unlock': '解锁',

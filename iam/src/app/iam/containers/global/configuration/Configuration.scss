@@ -1,3 +1,31 @@
+.codeMarker {
+  background: #FFF677;
+  position: absolute;
+  z-index: 20;
+}
+
+.ace_meta  {
+  color: #794938;
+}
+
+.ace-tm .ace_meta.ace_tag {
+  color: #794938;
+}
+.ace-tm .ace_storage, .ace-tm .ace_keyword {
+  color: #794938;
+}
+
+.ace-tm .ace_constant.ace_language {
+  color: #794938;
+}
+
+.ace_keyword {
+  color: #794938;
+}
+.ace_constant{
+  color: #811F24;
+}
+
 .createConfigContainer {
   margin-bottom: 32px;
   padding: 32px;

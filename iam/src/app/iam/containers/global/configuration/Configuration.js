@@ -258,7 +258,13 @@ export default class Configuration extends Component {
       title: <FormattedMessage id={`${intlPrefix}.publictime`} />,
       dataIndex: 'publicTime',
       key: 'publicTime',
-    }, {
+    },
+    {
+      title: <FormattedMessage id={`${intlPrefix}.modifytime`} />,
+      dataIndex: 'modifyTime',
+      key: 'modifyTime',
+    },
+    {
       title: <FormattedMessage id={`${intlPrefix}.isdefault`} />,
       dataIndex: 'isDefault',
       key: 'isDefault',

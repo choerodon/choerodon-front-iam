@@ -124,6 +124,7 @@ const pageDetail = {
   'global.apitest.detail.title': 'API"{name}"的测试',
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
   'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.apitest.version': '版本',
 
   // 发送设置
   'global.sendsetting.title': '平台"{name}"的发送设置',
@@ -1017,6 +1018,8 @@ const zh_CN = {
   'organization.memberrole.header.title': '组织角色分配',
   'project.memberrole.header.title': '项目角色分配',
   'project.memberrole.upload.title': '在项目"{name}"中导入角色',
+  'project.memberrole.upload.description': '您可以在此将文件中的角色信息导入到项目中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
+  'project.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'memberrole.member': '成员',
   'memberrole.role.require.msg': '必须至少选择一个角色',

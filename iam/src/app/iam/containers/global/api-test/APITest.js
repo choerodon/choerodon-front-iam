@@ -53,6 +53,15 @@ export default class APITest extends Component {
     ) : <Option value="empty">无服务</Option>;
   }
 
+  /* 微服务版本下拉框 */
+  getVersionList() {
+    const { versions, currentService } = APITestStore;
+    return versions && versions.length > 0 ? (
+      APITestStore.versions.map((version, index) => (<Option key={index}>{version}</Option>),
+      )
+    ) : <Option value="empty">无版本</Option>;
+  }
+
   loadInitData = () => {
     APITestStore.setLoading(true);
     APITestStore.loadService().then((res) => {
@@ -63,6 +72,7 @@ export default class APITest extends Component {
         const services = res.map(({ location, name }) => ({
           name: name.split(':')[1],
           value: `${name.split(':')[0]}/${location.split('=')[1]}`,
+          version: location.split('=')[1],
         }));
         APITestStore.setService(services);
         if (!APITestStore.detailFlag) {
@@ -75,9 +85,25 @@ export default class APITest extends Component {
         this.loadApi();
       }
     });
+  };
+
+  loadVersions = () => {
+    const { service, currentService } = APITestStore;
+    const newVersions = [];
+    if (service && service.length > 0) {
+      APITestStore.service.forEach(({ name, value, version }, index) => {
+        if (currentService.version === version) {
+          newVersions.push(version);
+        }
+      },
+      );
+      APITestStore.setCurrentVersion(newVersions[0]);
+      APITestStore.setVersions(newVersions);
+    }
   }
 
   loadApi = (paginationIn, filtersIn, paramsIn) => {
+    this.loadVersions(); // 在加载前根据store里的currentVerison加载版本
     APITestStore.setLoading(true);
     const {
       pagination: paginationState,
@@ -88,7 +114,7 @@ export default class APITest extends Component {
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
     const serviceName = APITestStore.getCurrentService.value.split('/')[0];
-    const version = APITestStore.getCurrentService.value.split('/')[1];
+    const version = APITestStore.getCurrentVersion; // 修改为获取当前版本号的api
     this.fetch(serviceName, version, pagination, params)
       .then((data) => {
         APITestStore.setApiData(data.content);
@@ -139,7 +165,20 @@ export default class APITest extends Component {
    */
   handleChange(serviceName) {
     const currentService = APITestStore.service.find(service => service.value === serviceName);
+    this.loadVersions();
     APITestStore.setCurrentService(currentService);
+    this.setState(this.getInitState(), () => {
+      this.loadApi();
+    });
+  }
+
+  /**
+   * 微服务版本下拉框改变事件
+   * @param serviceName 服务名称
+   */
+  handleVersionChange(serviceVersion) {
+    const currentVersion = APITestStore.versions.find(version => version === serviceVersion);
+    APITestStore.setCurrentVersion(currentVersion);
     this.setState(this.getInitState(), () => {
       this.loadApi();
     });
@@ -239,7 +278,7 @@ export default class APITest extends Component {
           values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Select
-            style={{ width: '512px', marginBottom: '32px' }}
+            style={{ width: '247px', marginBottom: '32px' }}
             value={APITestStore.currentService.value}
             getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             onChange={this.handleChange.bind(this)}
@@ -248,6 +287,16 @@ export default class APITest extends Component {
             filter
           >
             {this.getOptionList()}
+          </Select>
+          <Select
+            readOnly
+            style={{ width: '247px', marginBottom: '32px', marginLeft: '18px' }}
+            value={APITestStore.currentVersion}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+            onChange={this.handleVersionChange.bind(this)}
+            label={<FormattedMessage id={`${intlPrefix}.version`} />}
+          >
+            {this.getVersionList()}
           </Select>
           <Table
             className="c7n-api-table"

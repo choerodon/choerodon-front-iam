@@ -157,6 +157,40 @@ export default class PasswordPolicy extends Component {
     });
   };
 
+  checkMaxLength = (rule, value, callback) => {
+    const { getFieldValue } = this.props.form;
+    const { intl } = this.props;
+    const digitsCount = getFieldValue('digitsCount');
+    const lowercaseCount = getFieldValue('lowercaseCount');
+    const uppercaseCount = getFieldValue('uppercaseCount');
+    const specialCharCount = getFieldValue('specialCharCount');
+    if (digitsCount + lowercaseCount + uppercaseCount + specialCharCount > value) {
+      callback(intl.formatMessage({ id: `${inputPrefix}.max.length` }));
+    }
+    this.props.form.validateFields(['minLength'], { force: true });
+    callback();
+  }
+
+  checkMinLength = (rule, value, callback) => {
+    const { intl } = this.props;
+    const { getFieldValue } = this.props.form;
+    const maxLength = getFieldValue('maxLength');
+    const digitsCount = getFieldValue('digitsCount');
+    const lowercaseCount = getFieldValue('lowercaseCount');
+    const uppercaseCount = getFieldValue('uppercaseCount');
+    const specialCharCount = getFieldValue('specialCharCount');
+    if (value > maxLength) callback(intl.formatMessage({ id: `${inputPrefix}.min.lessthan.more` }));
+    if (digitsCount + lowercaseCount + uppercaseCount + specialCharCount < value) {
+      callback(intl.formatMessage({ id: `${inputPrefix}.min.length` }));
+    }
+    callback();
+  }
+
+  checkOtherLength = (rule, value, callback) => {
+    this.props.form.validateFields(['maxLength'], { force: true });
+    callback();
+  }
+
   render() {
     const { AppState, form, intl } = this.props;
     const { getFieldDecorator } = form;
@@ -224,6 +258,10 @@ export default class PasswordPolicy extends Component {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                 },
+                {
+                  validator: this.checkMinLength,
+                  validateFirst: true,
+                },
               ],
               initialValue: passwordPolicy && passwordPolicy.minLength ?
                 passwordPolicy.minLength : 0,
@@ -243,6 +281,10 @@ export default class PasswordPolicy extends Component {
                 {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
+                },
+                {
+                  validator: this.checkMaxLength,
+                  validateFirst: true,
                 },
               ],
               initialValue: passwordPolicy && passwordPolicy.maxLength ?
@@ -264,12 +306,16 @@ export default class PasswordPolicy extends Component {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                 },
+                {
+                  validator: this.checkOtherLength,
+                  validateFirst: true,
+                },
               ],
               initialValue: passwordPolicy && passwordPolicy.digitsCount ?
                 passwordPolicy.digitsCount : 0,
             })(
               <InputNumber
-                onBlur={this.inputNumBlur.bind(this, 'minLength')}
+                onBlur={this.inputNumBlur.bind(this, 'digitsCount')}
                 autoComplete="off"
                 min={0}
                 label={<FormattedMessage id={`${inputPrefix}.digitscount`} />}
@@ -283,6 +329,10 @@ export default class PasswordPolicy extends Component {
                 {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
+                },
+                {
+                  validator: this.checkOtherLength,
+                  validateFirst: true,
                 },
               ],
               initialValue: passwordPolicy && passwordPolicy.lowercaseCount ?
@@ -304,6 +354,10 @@ export default class PasswordPolicy extends Component {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                 },
+                {
+                  validator: this.checkOtherLength,
+                  validateFirst: true,
+                },
               ],
               initialValue: passwordPolicy && passwordPolicy.uppercaseCount ?
                 passwordPolicy.uppercaseCount : 0,
@@ -323,6 +377,10 @@ export default class PasswordPolicy extends Component {
                 {
                   pattern: /^([1-9]\d*|[0]{1,1})$/,
                   message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
+                },
+                {
+                  validator: this.checkOtherLength,
+                  validateFirst: true,
                 },
               ],
               initialValue: passwordPolicy && passwordPolicy.specialCharCount ?

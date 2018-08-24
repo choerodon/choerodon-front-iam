@@ -7,9 +7,13 @@
     margin-left: 33px;
     line-height: 20px;
     font-size: 13px;
+    font-weight: 400;
   }
   dd {
     color: rgba(0, 0, 0, 0.54);
-    margin-bottom: 18px;
+    margin-bottom: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

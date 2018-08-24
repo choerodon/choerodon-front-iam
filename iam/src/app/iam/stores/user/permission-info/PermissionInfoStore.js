@@ -57,8 +57,6 @@ class PermissionInfoStore {
     this.sort = {};
     this.params = [];
   }
-
 }
 
-const permissionInfoStore = new PermissionInfoStore();
-export default permissionInfoStore;
+export default new PermissionInfoStore();

@@ -8,8 +8,7 @@ import { Button, Icon, Modal, Table, Tooltip } from 'choerodon-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Link, withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
-import './ProjectInfo.scss';
-import PermissionInfo from './PermissionInfo';
+import PermissionInfo from '../permission-info';
 
 const intlPrefix = 'user.proinfo';
 const { Sidebar } = Modal;
@@ -183,7 +182,7 @@ export default class ProjectInfo extends Component {
             okText={<FormattedMessage id="close" />}
             okCancel={false}
           >
-            <PermissionInfo store={PermissionInfoStore} />
+            <PermissionInfo store={PermissionInfoStore} type={intlPrefix} />
           </Sidebar>
         </Content>
       </Page>

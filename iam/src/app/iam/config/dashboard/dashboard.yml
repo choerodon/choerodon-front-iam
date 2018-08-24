@@ -38,6 +38,12 @@ dashboard:
   - code: "MyProject"
     icon: project_list
     title: "我的项目"
-    description: "组织信息"
+    description: "我的项目"
     level: site
-    sort: 6
+    sort: 7
+  - code: "MyOrganization"
+    icon: domain_list
+    title: "我的组织"
+    description: "我的组织"
+    level: site
+    sort: 8

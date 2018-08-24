@@ -132,7 +132,7 @@ export default class APIDetail extends Component {
 
   getDetail() {
     const { intl } = this.props;
-    const { method, url, remark, consumes, produces } = APITestStore.getApiDetail;
+    const { code, method, url, remark, consumes, produces } = APITestStore.getApiDetail;
     const keyArr = ['请求方式', '路径', '描述', 'Action', '权限层级', '是否为登录可访问', '是否为公开权限', '请求格式', '响应格式'];
     const tableValue = keyArr.map(item => ({
       name: item,
@@ -160,7 +160,10 @@ export default class APIDetail extends Component {
     if (roles) {
       tableValue.splice(5, 0, ...roles);
     }
-
+    tableValue.unshift({
+      name: '权限编码',
+      value: code,
+    })
 
     const infoColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.property`} />,

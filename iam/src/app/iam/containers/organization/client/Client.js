@@ -225,18 +225,25 @@ export default class Client extends Component {
   };
 
   isJson = (string) => {
-    if (typeof string === 'string') {
-      const str = string.trim();
-      if (str.substr(0, 1) === '{' && str.substr(-1, 1) === '}') {
-        try {
-          JSON.parse(str);
-          return true;
-        } catch (e) {
-          return false;
-        }
+    // if (typeof string === 'string') {
+    //   const str = string.trim();
+    //   if (str.substr(0, 1) === '{' && str.substr(-1, 1) === '}') {
+    //     try {
+    //       JSON.parse(str);
+    //       return true;
+    //     } catch (e) {
+    //       return false;
+    //     }
+    //   }
+    // }
+    // return false;
+    try {
+      if (typeof JSON.parse(string) === 'object') {
+        return true;
       }
+    } catch (e) {
+      return false;
     }
-    return false;
   };
 
   saveSelectRef = (node, name) => {

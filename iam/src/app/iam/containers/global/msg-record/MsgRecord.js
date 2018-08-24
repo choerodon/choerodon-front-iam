@@ -144,9 +144,11 @@ export default class APITest extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
+        debugger;
         Choerodon.prompt(intl.formatMessage({ id: 'msgrecord.send.success' }));
+        this.loadMsgRecord();
       }
-    }).catch((error) => {
+    }).catch(() => {
       Choerodon.prompt(intl.formatMessage({ id: 'msgrecord.send.failed' }));
     });
   }

@@ -13,46 +13,54 @@ class ProjectStore {
   @observable totalSize;
   @observable totalPage;
   @observable isLoading = true;
+  @observable myRoles = [];
 
   constructor(totalPage = 1, totalSize = 0) {
     this.totalPage = totalPage;
     this.totalSize = totalSize;
   }
 
-  @action setTotalSize(totalSize) {
+  @action
+  setTotalSize(totalSize) {
     this.totalSize = totalSize;
   }
 
-  @computed get getTotalSize() {
+  @computed
+  get getTotalSize() {
     return this.totalSize;
   }
 
-  @action setTotalPage(totalPage) {
+  @action
+  setTotalPage(totalPage) {
     this.totalPage = totalPage;
   }
 
-  @computed get getTotalPage() {
+  @computed
+  get getTotalPage() {
     return this.totalPage;
   }
 
-  @action setProjectData(data) {
+  @action
+  setProjectData(data) {
     this.projectData = data;
   }
 
-  @computed get getProjectData() {
+  @computed
+  get getProjectData() {
     return this.projectData.slice();
   }
 
-  @action changeLoading(flag) {
+  @action
+  changeLoading(flag) {
     this.isLoading = flag;
   }
 
-  @computed get getIsLoading() {
+  @computed
+  get getIsLoading() {
     return this.isLoading;
   }
 
-  loadProject = (
-    organizationId,
+  loadProject = (organizationId,
     { current, pageSize },
     { columnKey = 'id', order = 'descend' },
     { name, code, enabled, params }) => {
@@ -75,10 +83,11 @@ class ProjectStore {
     }
     return axios.get(`/iam/v1/organizations/${organizationId}/projects?${querystring.stringify(queryObj)}`);
   };
+
   enableProject(orgId, projectId, data) {
-    return data ? axios.put(`/iam/v1/organizations/${orgId}/projects/${projectId}/disable`) :
-      axios.put(`/iam/v1/organizations/${orgId}/projects/${projectId}/enable`);
+    return data ? axios.put(`/iam/v1/organizations/${orgId}/projects/${projectId}/disable`) : axios.put(`/iam/v1/organizations/${orgId}/projects/${projectId}/enable`);
   }
+
   checkProjectName = organizationId =>
     axios.get(`/iam/v1/organization/${organizationId}/projects/self`);
 
@@ -93,6 +102,17 @@ class ProjectStore {
 
   getProjectById = (organizationId, id) =>
     axios.get(`/iam/v1/organizations/${organizationId}/projects?param=${id}`);
+
+  getRolesById(organizationId, userId) {
+    return axios.get(`/iam/v1/project/${organizationId}/role_members/users/${userId}`);
+  }
+
+  loadMyData = (organizationId, userId) => {
+    this.getRolesById(organizationId, userId).then(action((roles) => {
+      this.myRoles = roles;
+    }));
+  };
 }
+
 const projectStore = new ProjectStore();
 export default projectStore;

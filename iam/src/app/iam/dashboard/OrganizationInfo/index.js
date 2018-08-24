@@ -10,7 +10,6 @@ const intlPrefix = 'dashboard.organizationinfo';
 @inject('AppState')
 @observer
 export default class OrganizationInfo extends Component {
-
   componentWillMount() {
     this.loadOrganizationInfo();
   }
@@ -31,7 +30,7 @@ export default class OrganizationInfo extends Component {
           <dd>{code}</dd>
           <dt><FormattedMessage id={`${intlPrefix}.role`} /></dt>
           <dd>
-            {myRoles.map(({ organizationName }) => organizationName).join(',')}
+            {myRoles.map(({ name }) => name).join(',')}
           </dd>
           <dt><FormattedMessage id={`${intlPrefix}.projects`} /></dt>
           <dd>{projectCount}</dd>

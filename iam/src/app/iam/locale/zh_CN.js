@@ -698,6 +698,14 @@ const zh_CN = {
 
   // 消息记录
   'msgrecord.header.title': '消息记录',
+  'msgrecord.status': '状态',
+  'msgrecord.email': '接收邮箱',
+  'msgrecord.templateType': '模板类型',
+  'msgrecord.failedReason': '失败原因',
+  'msgrecord.creationDate': '发送时间',
+  'msgrecord.resend': '重发',
+  'msgrecord.send.success': '发送成功',
+  'msgrecord.send.failed': '发送失败',
 
   // 邮件模板
   'mailtemplate.header.title': '邮件模板',

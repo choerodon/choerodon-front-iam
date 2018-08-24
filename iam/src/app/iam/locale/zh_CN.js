@@ -129,16 +129,16 @@ const pageDetail = {
   // 发送设置
   'global.sendsetting.title': '平台"{name}"的发送设置',
   'global.sendsetting.description': '展示你能使用的消息模板发送的特定触发事件，您可以规定对应触发事件所要应用的模板，发送频率等。',
-  'global.sendsetting.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.sendsetting.link': `${docServer}/user-guide/system-configuration/message/send-config/`,
 
   'global.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
   'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
-  'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/message/send-config/`,
 
   // 消息记录
   'global.msgrecord.title': '平台"{name}"的消息记录',
   'global.msgrecord.description': '通过此平台，您可以查看发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
-  'global.msgrecord.link': '',
+  'global.msgrecord.link': `${docServer}/user-guide/system-configuration/message/record/`,
 
   // 邮件模板
   'global.mailtemplate.title': '平台"{name}"的邮件模板',
@@ -276,7 +276,7 @@ const pageDetail = {
   // 消息记录
   'organization.msgrecord.title': '组织"{name}"的消息记录',
   'organization.msgrecord.description': '通过此平台，您可以查看发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
-  'organization.msgrecord.link': '',
+  'organization.msgrecord.link': `${docServer}/user-guide/system-configuration/message/record/`,
 
   // 邮件模板
   'organization.mailtemplate.title': '组织"{name}"的邮件模板',
@@ -546,7 +546,7 @@ const zh_CN = {
   'global.role.permission.code': '权限',
   'global.role.permission.desc': '描述',
   'global.role.code.exist.msg': '角色编码已存在，请输入其他角色编码',
-  '': '该角色名已创建',
+  'global.role.name.exist.msg': '该角色名已创建',
   'global.role.modify.level.title': '修改角色层级',
   'global.role.modify.level.content': '确定要修改角色的层级吗？更换角色层级将清空您的角色编码、已选权限和已选标签。',
   'global.role.level.require.msg': '请选择角色层级',

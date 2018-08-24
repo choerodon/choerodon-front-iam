@@ -344,19 +344,18 @@ const pageDetail = {
   'user.orginfo.title': '用户"{name}"的组织信息',
   'user.orginfo.description': '用户必须且只能属于一个组织，但可以在其他组织被分配角色。本页面展示您所属的组织以及您被分配的组织角色，所属组织在列表第一行。',
   'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/org-info/`,
-
-  'user.orginfo.detail.title': '查看角色"{roleName}"的权限',
-  'user.orginfo.detail.description': '您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。',
-  'user.orginfo.detail.link': `${docServer}/user-guide/system-configuration/person/org-info/`,
+  'user.orginfo.permission.description': `您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。`,
 
   // 项目信息
   'user.proinfo.title': '用户"{name}"的项目信息',
   'user.proinfo.description': '用户可以在不同项目的被分配角色，本页面展示您所在的项目以及项目里您的角色。',
   'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
+  'user.proinfo.permission.description': `您可以在此查看您在项目"{proName}"下"{roleName}"的权限。`,
 
-  'user.proinfo.detail.title': '查看角色"{roleName}"的权限',
-  'user.proinfo.detail.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',
-  'user.proinfo.detail.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
+  // 权限信息
+  'user.permissioninfo.title': '查看角色"{roleName}"的权限',
+  'user.permissioninfo.description': '{description}',
+  'user.permissioninfo.link': '{link}',
 
 };
 
@@ -1026,17 +1025,19 @@ const zh_CN = {
   'user.orginfo.header.title': '组织信息',
   'user.orginfo.name': '组织/角色',
   'user.orginfo.detail.header.title': '角色权限',
-  'user.orginfo.detail.table.permission': '权限',
-  'user.orginfo.detail.table.description': '描述',
+  'user.orginfo.organization.redirect': '跳转至组织"{name}"',
 
   // 项目信息
   'user.proinfo.header.title': '项目信息',
   'user.proinfo.name': '项目/角色',
-  'user.proinfo.belongorg': '所属组织',
   'user.proinfo.detail.header.title': '角色权限',
-  'user.proinfo.detail.table.permission': '权限',
-  'user.proinfo.detail.table.description': '描述',
+  'user.proinfo.belongorg': '所属组织',
   'user.proinfo.project.redirect': '跳转至项目"{name}"',
+
+  // 权限信息
+  'user.permissioninfo.header.title': '角色权限',
+  'user.permissioninfo.table.permission': '权限',
+  'user.permissioninfo.table.description': '描述',
 
 
   // 角色分配

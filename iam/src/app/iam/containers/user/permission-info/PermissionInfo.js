@@ -3,8 +3,9 @@ import { observer } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content } from 'choerodon-front-boot';
 import { Table } from 'choerodon-ui';
+import './PermissionInfo.scss';
 
-const intlPrefix = 'user.proinfo.detail';
+const intlPrefix = 'user.permissioninfo';
 
 @injectIntl
 @observer
@@ -19,12 +20,12 @@ export default class PermissionInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.permission`} />,
       dataIndex: 'code',
       key: 'code',
-      className: 'c7n-project-info-code',
+      className: 'c7n-permission-info-code',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'description',
       key: 'description',
-      className: 'c7n-project-info-description',
+      className: 'c7n-permission-info-description',
     }];
   }
 
@@ -33,22 +34,25 @@ export default class PermissionInfo extends Component {
       intl,
       store: {
         loading, params, pagination, permissionData,
-        pagination: { total }, role: { id, name, projectName },
+        pagination: { total }, role: { name, projectName, organizationName },
       },
+      type,
     } = this.props;
-    const title = intl.formatMessage({ id: `${intlPrefix}.title` }, {
-      roleName: name,
-    });
-    const description = intl.formatMessage({ id: `${intlPrefix}.description` }, {
+    const description = intl.formatMessage({ id: `${type}.permission.description` }, {
       proName: projectName,
+      orgName: organizationName,
       roleName: name,
     });
+    const link = intl.formatMessage({ id: `${type}.link` });
     return (
       <Content
         className="sidebar-content"
-        title={title}
-        description={description}
-        link={intl.formatMessage({ id: `${intlPrefix}.link` })}
+        code={intlPrefix}
+        values={{
+          roleName: name,
+          description,
+          link,
+        }}
       >
         <p style={{ fontSize: 18, marginBottom: 8 }}>{total}个已分配权限</p>
         <Table

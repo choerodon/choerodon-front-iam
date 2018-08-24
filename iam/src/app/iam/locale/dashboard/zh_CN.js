@@ -28,6 +28,11 @@ const zh_CN = {
   'dashboard.myproject.code': '项目编码',
   'dashboard.myproject.redirect': '转至所有项目信息',
 
+  // MyOrganization
+  'dashboard.myorganization.name': '组织名称',
+  'dashboard.myorganization.code': '组织编码',
+  'dashboard.myorganization.redirect': '转至所有组织信息',
+
 };
 /* eslint-disable-next-line */
 export default zh_CN;

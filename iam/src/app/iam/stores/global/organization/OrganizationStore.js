@@ -142,15 +142,13 @@ class OrganizationStore {
           Choerodon.handleResponseError(error);
         }));
     }
-    // axios.put(`/iam/v1/organizations/${organizationId}`, JSON.stringify(data));
   }
 
   getOrgById = organizationId =>
     axios.get(`/iam/v1/organizations/${organizationId}`);
 
   getRolesById(organizationId, userId) {
-    // return axios.get(`/iam/v1/organizations/${organizationId}/${userId}/roles`);
-    return Promise.resolve([]);
+    return axios.get(`/iam/v1/organization/${organizationId}/role_members/users/${userId}`);
   }
 
   loadMyData(organizationId, userId) {

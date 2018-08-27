@@ -255,8 +255,12 @@ export default class SendSetting extends Component {
                 >
                   {
                     SendSettingStore.getTemplate.length > 0 ? [<Option key="empty" value="empty">无</Option>].concat(
-                      SendSettingStore.getTemplate.map(({ name, id }) => (
-                        <Option key={id} value={id}>{name}</Option>
+                      SendSettingStore.getTemplate.map(({ name, id, code }) => (
+                        <Option key={id} value={id}>
+                          <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
+                            <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
+                          </Tooltip>
+                        </Option>
                       )),
                     ) : <Option key="empty" value="empty">无</Option>
                   }

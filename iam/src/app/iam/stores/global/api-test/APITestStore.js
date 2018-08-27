@@ -18,6 +18,7 @@ class ApitestStore {
   @observable modalSaving = false;
   @observable userInfo = null;
   @observable isShowResult = null;
+  @observable isExpand = new Map();
   @observable apiDetail = {
     description: '[]',
     responses: [],
@@ -25,6 +26,15 @@ class ApitestStore {
 
   @action setDetailFlag(flag) {
     this.detailFlag = flag;
+  }
+
+  @action setIsExpand(flag, name) {
+    this.isExpand.set(flag, name);
+  }
+
+  @action clearIsExpand() {
+    this.isExpand = null;
+    this.isExpand = new Map();
   }
 
   @action setVersions(data) {
@@ -49,6 +59,10 @@ class ApitestStore {
 
   @computed get getUserInfo() {
     return this.userInfo;
+  }
+
+  @computed get getIsExpand() {
+    return this.isExpand;
   }
 
   @action setIsShowModal(flag) {

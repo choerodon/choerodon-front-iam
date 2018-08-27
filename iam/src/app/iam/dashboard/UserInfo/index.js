@@ -22,9 +22,10 @@ export default class UserInfo extends Component {
   };
 
   render() {
-    const { HeaderStore: { getOrgData } } = this.props;
+    const { HeaderStore } = this.props;
     const { getUserInfo: { loginName, realName, email, ldap, organizationId } } = UserInfoStore;
-    const { name } = getOrgData.find(({ id }) => String(id) === String(organizationId)) || {};
+    const orgData = HeaderStore.getOrgData || [];
+    const { name } = orgData.find(({ id }) => String(id) === String(organizationId)) || {};
     return (
       <div className="c7n-iam-dashboard-user-info">
         <dl>

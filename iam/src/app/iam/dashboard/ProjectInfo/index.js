@@ -40,7 +40,7 @@ export default class ProjectInfo extends Component {
           <dd>{organizeName}</dd>
           <dt><FormattedMessage id={`${intlPrefix}.role`} /></dt>
           <dd>
-            {myRoles.map(({ name }) => name).join(',')}
+            {myRoles.map(({ name }) => name).join(', ')}
           </dd>
         </dl>
         <DashBoardNavBar>

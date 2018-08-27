@@ -435,16 +435,8 @@ export default class MailTemplate extends Component {
     const { intl } = this.props;
     const { selectType } = this.state;
     const { type, orgId } = this.mail;
-    this.props.form.validateFieldsAndScroll((err, values, modify) => {
+    this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        if (!modify && selectType === 'modify') {
-          this.setState({
-            isShowSidebar: false,
-          });
-          Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-          return;
-        }
-
         this.setState({
           isSubmitting: true,
         });

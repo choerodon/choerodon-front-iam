@@ -253,7 +253,7 @@
         icon: application_model
         Routes: /iam/mail-template
         sort: 7
-        delete: ture
+        delete: true
         permission:
           - 'notify-service.email-template-org.pageOrganization'
           - 'notify-service.email-template-org.create'

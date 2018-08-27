@@ -6,6 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from '../saga/SagaImg';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
 import './style/saga-instance.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'global.saga-instance';
 const { Sidebar } = Modal;
@@ -198,6 +199,11 @@ export default class SagaInstance extends Component {
         dataIndex: 'sagaCode',
         filters: [],
         filteredValue: filters.sagaCode || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.2}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.reftype`} />,

@@ -9,6 +9,8 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { Link, withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import PermissionInfo from '../permission-info';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import './ProjectInfo.scss';
 
 const intlPrefix = 'user.proinfo';
 const { Sidebar } = Modal;
@@ -68,7 +70,7 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: 250,
+      width: 300,
       render: (text, record) => {
         let icon = '';
         if ('organizationId' in record) {
@@ -77,7 +79,9 @@ export default class ProjectInfo extends Component {
           icon = 'person';
         }
         return (
-          <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>
+          <MouseOverWrapper text={text} width={0.28} className={'c7n-pro-info-proname'}>
+            <Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}
+          </MouseOverWrapper>
         );
       },
     }, {
@@ -85,11 +89,21 @@ export default class ProjectInfo extends Component {
       dataIndex: 'code',
       key: 'code',
       width: 300,
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.belongorg`} />,
       dataIndex: 'organizationName',
       key: 'organizationName',
       width: 300,
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',

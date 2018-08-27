@@ -52,7 +52,6 @@ class OrganizationInfoStore {
         this.loading = false;
       }));
   }
-
 }
 
 const organizationInfoStore = new OrganizationInfoStore();

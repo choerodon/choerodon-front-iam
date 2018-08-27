@@ -508,6 +508,12 @@ export default class MemberRole extends Component {
             fileLoading: false,
           });
         }
+        if (response && response.failed === true) {
+          Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
+        }
         if (!fileLoading) {
           this.setState({
             fileLoading: status === 'uploading',

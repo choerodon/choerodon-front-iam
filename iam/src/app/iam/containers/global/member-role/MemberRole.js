@@ -326,6 +326,20 @@ export default class MemberRole extends Component {
     }
   }
 
+  getUploadOkText = () => {
+    const { fileLoading } = this.state;
+    const { MemberRoleStore } = this.props;
+    const uploading = MemberRoleStore.getUploading;
+    if (fileLoading === true) {
+      return '上传中...';
+    } else if (uploading) {
+      return '导入中...';
+    } else {
+      return '上传';
+    }
+  }
+
+
   getHeader() {
     const { selectType, currentMemberData } = this.state;
     const { code, values } = this.roles;
@@ -1111,7 +1125,9 @@ export default class MemberRole extends Component {
   }
 
   render() {
-    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting } = this.state;
+    const { MemberRoleStore } = this.props;
+    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting, fileLoading } = this.state;
+    const uploading = MemberRoleStore.getUploading;
     const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');
     const { createService, deleteService } = this.getPermission();
     return (
@@ -1207,11 +1223,11 @@ export default class MemberRole extends Component {
           <Sidebar
             title={this.getSidebarTitle()}
             visible={sidebar}
-            okText={selectType === 'upload' ? this.formatMessage('upload') : okText}
+            okText={selectType === 'upload' ? this.getUploadOkText() : okText}
+            confirmLoading={uploading && fileLoading && submitting}
             cancelText={<FormattedMessage id={selectType === 'upload' ? 'close' : 'cancel'} />}
             onOk={selectType === 'upload' ? this.upload : this.handleOk}
             onCancel={this.closeSidebar}
-            confirmLoading={submitting}
           >
             {roleData.length && this.state.selectType !== 'upload' ? this.getSidebarContent() : null}
             {this.state.selectType === 'upload' ? this.renderUpload() : null}

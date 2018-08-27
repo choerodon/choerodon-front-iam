@@ -25,6 +25,7 @@ export default class APITest extends Component {
 
   componentDidMount() {
     this.loadInitData();
+    APITestStore.clearIsExpand();
   }
 
   getInitState() {
@@ -206,7 +207,7 @@ export default class APITest extends Component {
         const { name, method } = data;
         if (name) {
           // 控制展开的箭头
-          return <div><span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.get(name)) ? 'expanded' : 'collapsed'}`)} />{name}</div>;
+          return <div><span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.get(name)) ? 'expanded' : 'collapsed'}`)} /><span>{name}</span></div>;
         } else {
           return (
             <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>

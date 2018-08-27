@@ -6,6 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Action, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import RoleStore from '../../../stores/global/role/RoleStore';
 import './Role.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'global.role';
 @Form.create({})
@@ -206,6 +207,11 @@ export default class Role extends Component {
       sorter: true,
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
@@ -214,6 +220,11 @@ export default class Role extends Component {
       sorter: true,
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="level" />,
       dataIndex: 'level',

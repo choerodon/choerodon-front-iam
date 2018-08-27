@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
 import ConfigurationStore from '../../../stores/global/configuration';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -248,12 +249,22 @@ export default class Configuration extends Component {
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.18}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.version`} />,
       dataIndex: 'configVersion',
       key: 'configVersion',
       filters: [],
       filteredValue: filters.configVersion || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.18}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.publictime`} />,
       dataIndex: 'publicTime',

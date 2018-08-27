@@ -6,6 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import { inject, observer } from 'mobx-react';
 import './Route.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
@@ -749,12 +750,22 @@ export default class Route extends Component {
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.path`} />,
       dataIndex: 'path',
       key: 'path',
       filters: [],
       filteredValue: filters.path || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.service`} />,
       dataIndex: 'serviceId',

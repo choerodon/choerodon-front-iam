@@ -4,10 +4,9 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import UserEdit from './UserEdit';
-
 import './User.scss';
-
 
 const { Sidebar } = Modal;
 const intlPrefix = 'organization.user';
@@ -456,12 +455,22 @@ export default class User extends Component {
         key: 'loginName',
         filters: [],
         filteredValue: filters.loginName || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       }, {
         title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
         filters: [],
         filteredValue: filters.realName || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.source`} />,

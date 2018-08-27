@@ -15,8 +15,8 @@ import {
 import MailTemplateStore from '../../../stores/global/mail-template';
 import Editor from '../../../components/editor';
 import './MailTemplate.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
-const intlPrefix = 'global.mailtemplate';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -511,12 +511,6 @@ export default class MailTemplate extends Component {
     const okText = selectType === 'modify' ? this.formatMessage('save') : this.formatMessage('create');
     const mailTemplateData = MailTemplateStore.getMailTemplate();
     const columns = [{
-      dataIndex: 'id',
-      key: 'id',
-      hidden: true,
-      sorter: true,
-      sortOrder: columnKey === 'id' && order,
-    }, {
       title: <FormattedMessage id="mailtemplate.table.name" />,
       dataIndex: 'name',
       key: 'name',
@@ -524,6 +518,11 @@ export default class MailTemplate extends Component {
       filters: [],
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="mailtemplate.table.code" />,
       dataIndex: 'code',
@@ -531,6 +530,11 @@ export default class MailTemplate extends Component {
       width: 438,
       filters: [],
       filteredValue: filters.code || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="mailtemplate.table.mailtype" />,
       dataIndex: 'type',
@@ -540,6 +544,11 @@ export default class MailTemplate extends Component {
       sorter: true,
       sortOrder: columnKey === 'type' && order,
       filteredValue: filters.type || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     },
     {
       title: <FormattedMessage id="mailtemplate.table.fromtype" />,

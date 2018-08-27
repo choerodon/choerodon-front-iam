@@ -249,6 +249,7 @@ export default class SendSetting extends Component {
                 initialValue: !getCurrentRecord.emailTemplateId ? 'empty' : getCurrentRecord.emailTemplateId,
               })(
                 <Select
+                  className="c7n-email-template-select"
                   style={{ width: inputWidth }}
                   label={<FormattedMessage id="sendsetting.template" />}
                   getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
@@ -256,7 +257,7 @@ export default class SendSetting extends Component {
                   {
                     SendSettingStore.getTemplate.length > 0 ? [<Option key="empty" value="empty">无</Option>].concat(
                       SendSettingStore.getTemplate.map(({ name, id, code }) => (
-                        <Option key={id} value={id}>
+                        <Option key={id} value={id} title={name}>
                           <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
                             <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
                           </Tooltip>
@@ -340,32 +341,40 @@ export default class SendSetting extends Component {
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
-      render: (text, record) => (
-        (<MouseOverWrapper text={record.name} width={0.1}>
-          {record.name}
-        </MouseOverWrapper>)
-      ),
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>),
     }, {
       title: <FormattedMessage id="sendsetting.code" />,
       dataIndex: 'code',
       key: 'code',
       filters: [],
       filteredValue: filters.code || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>),
     }, {
       title: <FormattedMessage id="sendsetting.description" />,
       dataIndex: 'description',
       key: 'description',
       filters: [],
       filteredValue: filters.description || [],
-      render: (text, record) => (
-        <MouseOverWrapper text={record.description} width={0.3}>
-          {record.description}
+      render: text => (
+        <MouseOverWrapper text={text} width={0.3}>
+          {text}
         </MouseOverWrapper>
       ),
     }, {
       title: <FormattedMessage id="sendsetting.template" />,
       dataIndex: 'emailTemplateCode',
       key: 'emailTemplateCode',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: '',
       width: '100px',

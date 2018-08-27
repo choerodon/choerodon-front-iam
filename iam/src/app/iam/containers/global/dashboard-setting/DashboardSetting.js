@@ -5,6 +5,7 @@ import { Button, Form, Icon, IconSelect, Input, Modal, Select, Table, Tabs, Tool
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './DashboardSetting.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const { Sidebar } = Modal;
 
@@ -91,6 +92,11 @@ class DashboardSetting extends Component {
         filteredValue: filters.name || [],
         sorter: true,
         sortOrder: columnKey === 'name' && order,
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.code`} />,
@@ -110,6 +116,11 @@ class DashboardSetting extends Component {
         filteredValue: filters.title || [],
         sorter: true,
         sortOrder: columnKey === 'title' && order,
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.icon`} />,

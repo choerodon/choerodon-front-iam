@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
@@ -196,7 +197,11 @@ export default class Organization extends Component {
       key: 'name',
       filters: [],
       sorter: true,
-      render: text => <span>{text}</span>,
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
     }, {
@@ -207,6 +212,11 @@ export default class Organization extends Component {
       sorter: true,
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="global.organization.project.count" />,
       dataIndex: 'projectCount',

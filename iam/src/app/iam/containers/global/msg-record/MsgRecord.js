@@ -10,8 +10,7 @@ import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import MsgRecordStore from '../../../stores/global/msg-record';
 import './MsgRecord.scss';
-
-// const intlPrefix = 'global.msgrecord';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 // 公用方法类
 class MsgRecordType {
@@ -176,18 +175,33 @@ export default class APITest extends Component {
       key: 'email',
       filters: [],
       filteredValue: filters.email || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="msgrecord.templateType" />,
       dataIndex: 'templateType',
       key: 'templateType',
       filters: [],
       filteredValue: filters.templateType || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="msgrecord.failedReason" />,
       dataIndex: 'failedReason',
       key: 'failedReason',
       filters: [],
       filteredValue: filters.failedReason || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="msgrecord.creationDate" />,
       dataIndex: 'creationDate',

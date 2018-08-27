@@ -25,6 +25,7 @@ export default class APITest extends Component {
 
   componentDidMount() {
     this.loadInitData();
+    APITestStore.clearIsExpand();
   }
 
   getInitState() {
@@ -205,7 +206,8 @@ export default class APITest extends Component {
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
-          return <span>{name}</span>;
+          // 控制展开的箭头
+          return <div><span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.get(name)) ? 'expanded' : 'collapsed'}`)} /><span>{name}</span></div>;
         } else {
           return (
             <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>
@@ -311,6 +313,12 @@ export default class APITest extends Component {
             onChange={this.handlePageChange}
             rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+            onRowClick={(record) => {
+              // 当map中不存在这条的展开记录 或者这条的展开状态是false时设置为true， 其他情况则设置为false
+              APITestStore.setIsExpand(record.name, !((APITestStore.getIsExpand.has(record.name) && APITestStore.getIsExpand.get(record.name)) && true));
+            }
+            }
+            expandRowByClick
           />
         </Content>
       </Page>

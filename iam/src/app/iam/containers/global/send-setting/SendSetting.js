@@ -9,6 +9,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import SendSettingStore from '../../../stores/global/send-setting';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './SendSetting.scss';
 
 const { Sidebar } = Modal;
@@ -335,6 +336,11 @@ export default class SendSetting extends Component {
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
+      render: (text, record) => (
+        (<MouseOverWrapper text={record.name} width={0.1}>
+          {record.name}
+        </MouseOverWrapper>)
+      ),
     }, {
       title: <FormattedMessage id="sendsetting.code" />,
       dataIndex: 'code',
@@ -347,6 +353,11 @@ export default class SendSetting extends Component {
       key: 'description',
       filters: [],
       filteredValue: filters.description || [],
+      render: (text, record) => (
+        <MouseOverWrapper text={record.description} width={0.3}>
+          {record.description}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="sendsetting.template" />,
       dataIndex: 'emailTemplateCode',

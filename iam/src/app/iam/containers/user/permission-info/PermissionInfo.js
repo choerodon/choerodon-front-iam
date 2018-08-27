@@ -64,6 +64,8 @@ export default class PermissionInfo extends Component {
           filters={params}
           rowKey="code"
           onChange={this.handlePageChange}
+          fixed
+          className="c7n-permission-info-table"
         />
       </Content>
     );

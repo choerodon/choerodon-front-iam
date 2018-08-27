@@ -3,12 +3,12 @@
     &-json {
       .string,
       .number {
-        color: #f44336;
+        color: #880000;
       }
       .boolean,
       .undefined,
       .null {
-        color: #00bfa5;
+        color: #1f811f;
       }
     }
   }

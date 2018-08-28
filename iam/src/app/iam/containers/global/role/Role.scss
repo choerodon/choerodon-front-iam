@@ -1,3 +1,27 @@
+.c7n-role {
+  &-permission-table{
+    table{
+      table-layout:fixed;
+    }
+    &-code {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 60%;
+      width: 60%;
+      overflow: hidden;
+    }
+
+    &-description {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 40%;
+      width: 40%;
+      overflow: hidden;
+    }
+  }
+}
+
+
 .choerodon-role {
   .choerodon-loading {
     display: inherit;
@@ -21,13 +45,15 @@
   &-code {
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 296px;
+    max-width: 60%;
+    width: 60%;
     overflow: hidden;
   }
   &-description{
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 296px;
+    max-width: 40%;
+    width: 40%;
     overflow: hidden;
   }
 }

@@ -7,6 +7,7 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import './Project.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -387,15 +388,24 @@ export default class Project extends Component {
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
-      sorter: (a, b) => (a.name > b.name ? 1 : 0),
-      render: (text, record) => <span>{text}</span>,
+      width: '35%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
-      sorter: (a, b) => (a.code > b.code ? 1 : 0),
+      width: '35%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',

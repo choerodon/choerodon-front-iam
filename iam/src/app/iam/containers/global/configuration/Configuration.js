@@ -247,10 +247,11 @@ export default class Configuration extends Component {
       title: <FormattedMessage id={`${intlPrefix}.id`} />,
       dataIndex: 'name',
       key: 'name',
+      width: '25%',
       filters: [],
       filteredValue: filters.name || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.18}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),
@@ -258,10 +259,11 @@ export default class Configuration extends Component {
       title: <FormattedMessage id={`${intlPrefix}.version`} />,
       dataIndex: 'configVersion',
       key: 'configVersion',
+      width: '25%',
       filters: [],
       filteredValue: filters.configVersion || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.18}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),

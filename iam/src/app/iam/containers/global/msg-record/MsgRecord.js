@@ -173,6 +173,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id="msgrecord.email" />,
       dataIndex: 'email',
       key: 'email',
+      width: '20%',
       filters: [],
       filteredValue: filters.email || [],
       render: text => (
@@ -184,6 +185,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id="msgrecord.templateType" />,
       dataIndex: 'templateType',
       key: 'templateType',
+      width: '20%',
       filters: [],
       filteredValue: filters.templateType || [],
       render: text => (
@@ -195,6 +197,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id="msgrecord.failedReason" />,
       dataIndex: 'failedReason',
       key: 'failedReason',
+      width: '20%',
       filters: [],
       filteredValue: filters.failedReason || [],
       render: text => (

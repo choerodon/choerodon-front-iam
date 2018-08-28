@@ -16,7 +16,7 @@ class MsgRecordStore {
 
   loadData(
     { current, pageSize },
-    { status, email, templateType, failedReason },
+    { status, email, templateType, failedReason, retryStatus },
     { columnKey = 'id', order = 'descend' },
     params, appType, orgId) {
     const queryObj = {
@@ -26,6 +26,7 @@ class MsgRecordStore {
       receiveEmail: email,
       templateType,
       failedReason,
+      retryStatus,
       params,
     };
     if (columnKey) {
@@ -42,7 +43,7 @@ class MsgRecordStore {
 
   retry = (id, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
-    return axios.get(`/notify/v1/records/emails/${id}/retry${path}`);
+    return axios.post(`/notify/v1/records/emails/${id}/retry${path}`);
   }
 }
 

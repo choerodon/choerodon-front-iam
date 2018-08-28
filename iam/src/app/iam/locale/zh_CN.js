@@ -20,7 +20,7 @@ const pageDetail = {
   'global.menusetting.detail.link': `${docServer}/user-guide/system-configuration/platform/menu_configuration/`,
 
   // 角色标签
-  'abel.title': '平台"{name}"的角色标签',
+  'global.rolelabel.title': '平台"{name}"的角色标签',
   'global.rolelabel.description': '角色标签是在角色管理中可以与角色相关联，用于定义角色的特定逻辑的功能，需与代码开发结合。',
   'global.rolelabel.link': `${docServer}/user-guide/system-configuration/platform/role-label/`,
 

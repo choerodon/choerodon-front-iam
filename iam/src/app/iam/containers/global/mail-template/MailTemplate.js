@@ -514,7 +514,7 @@ export default class MailTemplate extends Component {
       title: <FormattedMessage id="mailtemplate.table.name" />,
       dataIndex: 'name',
       key: 'name',
-      width: 350,
+      width: '25%',
       filters: [],
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
@@ -527,7 +527,7 @@ export default class MailTemplate extends Component {
       title: <FormattedMessage id="mailtemplate.table.code" />,
       dataIndex: 'code',
       key: 'code',
-      width: 438,
+      width: '25%',
       filters: [],
       filteredValue: filters.code || [],
       render: text => (
@@ -539,7 +539,7 @@ export default class MailTemplate extends Component {
       title: <FormattedMessage id="mailtemplate.table.mailtype" />,
       dataIndex: 'type',
       key: 'type',
-      width: 475,
+      width: '30%',
       filters: MailTemplateStore.getTemplateType.map(({ name }) => ({ text: name, value: name })),
       sorter: true,
       sortOrder: columnKey === 'type' && order,
@@ -554,6 +554,7 @@ export default class MailTemplate extends Component {
       title: <FormattedMessage id="mailtemplate.table.fromtype" />,
       dataIndex: 'isPredefined',
       key: 'isPredefined',
+      width: '30%',
       render: isPredefined => this.renderBuiltIn(isPredefined),
       filteredValue: filters.isPredefined || [],
       filters: [{
@@ -563,7 +564,6 @@ export default class MailTemplate extends Component {
         text: intl.formatMessage({ id: 'mailtemplate.selfdefined' }),
         value: false,
       }],
-      width: 475,
     },
     {
       title: '',

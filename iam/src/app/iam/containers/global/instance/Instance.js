@@ -175,10 +175,11 @@ export default class Instance extends Component {
       title: <FormattedMessage id={`${intlPrefix}.id`} />,
       dataIndex: 'instanceId',
       key: 'instanceId',
+      width: '30%',
       filters: [],
       filteredValue: filters.instanceId || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.18}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),
@@ -186,10 +187,11 @@ export default class Instance extends Component {
       title: <FormattedMessage id={`${intlPrefix}.version`} />,
       dataIndex: 'version',
       key: 'version',
+      width: '30%',
       filters: [],
       filteredValue: filters.version || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.18}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),

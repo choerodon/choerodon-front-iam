@@ -453,6 +453,7 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.loginname`} />,
         dataIndex: 'loginName',
         key: 'loginName',
+        width: '15%',
         filters: [],
         filteredValue: filters.loginName || [],
         render: text => (
@@ -464,6 +465,7 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
+        width: '15%',
         filters: [],
         filteredValue: filters.realName || [],
         render: text => (

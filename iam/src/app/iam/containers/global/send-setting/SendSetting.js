@@ -339,6 +339,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.trigger.type" />,
       dataIndex: 'name',
       key: 'name',
+      width: '20%',
       filters: [],
       filteredValue: filters.name || [],
       render: text => (
@@ -349,6 +350,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.code" />,
       dataIndex: 'code',
       key: 'code',
+      width: '20%',
       filters: [],
       filteredValue: filters.code || [],
       render: text => (
@@ -359,6 +361,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.description" />,
       dataIndex: 'description',
       key: 'description',
+      width: '35%',
       filters: [],
       filteredValue: filters.description || [],
       render: text => (
@@ -370,6 +373,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.template" />,
       dataIndex: 'emailTemplateCode',
       key: 'emailTemplateCode',
+      width: '20%',
       render: text => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}

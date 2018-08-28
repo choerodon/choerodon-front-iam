@@ -274,8 +274,8 @@ export default class Configuration extends Component {
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.modifytime`} />,
-      dataIndex: 'modifyTime',
-      key: 'modifyTime',
+      dataIndex: 'lastUpdateDate',
+      key: 'lastUpdateDate',
     },
     {
       title: <FormattedMessage id={`${intlPrefix}.isdefault`} />,

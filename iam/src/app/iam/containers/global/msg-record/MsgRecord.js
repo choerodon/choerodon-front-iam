@@ -143,7 +143,6 @@ export default class APITest extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        debugger;
         Choerodon.prompt(intl.formatMessage({ id: 'msgrecord.send.success' }));
         this.loadMsgRecord();
       }
@@ -185,11 +184,11 @@ export default class APITest extends Component {
       title: <FormattedMessage id="msgrecord.templateType" />,
       dataIndex: 'templateType',
       key: 'templateType',
-      width: '20%',
+      width: '15%',
       filters: [],
       filteredValue: filters.templateType || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.2}>
+        <MouseOverWrapper text={text} width={0.1}>
           {text}
         </MouseOverWrapper>
       ),
@@ -206,6 +205,21 @@ export default class APITest extends Component {
         </MouseOverWrapper>
       ),
     }, {
+      title: '重发状态',
+      dataIndex: 'retryStatus',
+      key: 'retryStatus',
+      filters: [],
+      filteredValue: filters.retryStatus || [],
+      render: (text) => {
+        let value = '';
+        if (text === 'RETRY_SUCCEED') {
+          value = '重发成功';
+        } else if (text === 'RETRY_FAILED') {
+          value = '重发失败';
+        }
+        return value;
+      },
+    }, {
       title: <FormattedMessage id="msgrecord.creationDate" />,
       dataIndex: 'creationDate',
       key: 'creationDate',
@@ -215,7 +229,7 @@ export default class APITest extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        record.status === 'FAILED' ?
+        record.status === 'FAILED' && record.isManualRetry ?
           <Tooltip
             title={<FormattedMessage id="msgrecord.resend" />}
             placement="bottom"

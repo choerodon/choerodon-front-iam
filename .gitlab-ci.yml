@@ -1,4 +1,4 @@
-image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cifront:0.5.0
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cifront:0.6.0
 
 stages:
   - node_build
@@ -10,7 +10,6 @@ variables:
 node_build:
   stage: node_build
   script:
-    - pip install pymysql
     - node_module iam
     - node_build build
     - cp -r dist /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/dist
@@ -25,7 +24,6 @@ node_build:
 node_build_dev:
   stage: node_build
   script:
-    - pip install pymysql
     - node_module iam
     - node_build build
     - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
@@ -37,7 +35,7 @@ node_build_dev:
     - tags
 
 docker_build:
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.5.0
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.6.0
   stage: docker_build
   script:
     - docker_build
@@ -51,9 +49,8 @@ docker_build:
     - tags
 
 .auto_devops: &auto_devops |
-    curl -o .auto_devops.sh \
-        "${CHOERODON_URL}/devops/ci?token=${Token}&type=front"
-    if [ $? -ne 0 ];then
+    http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=front"`
+    if [ "$http_status_code" != "200" ]; then
       cat .auto_devops.sh
       exit 1
     fi

@@ -196,9 +196,9 @@ export default class Organization extends Component {
       dataIndex: 'name',
       key: 'name',
       filters: [],
-      sorter: true,
+      width: '35%',
       render: text => (
-        <MouseOverWrapper text={text} width={0.2}>
+        <MouseOverWrapper text={text} width={0.3}>
           {text}
         </MouseOverWrapper>
       ),
@@ -209,11 +209,11 @@ export default class Organization extends Component {
       dataIndex: 'code',
       key: 'code',
       filters: [],
-      sorter: true,
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
+      width: '20%',
       render: text => (
-        <MouseOverWrapper text={text} width={0.1}>
+        <MouseOverWrapper text={text} width={0.3}>
           {text}
         </MouseOverWrapper>
       ),

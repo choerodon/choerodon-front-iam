@@ -748,6 +748,7 @@ export default class Route extends Component {
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
+      width: '20%',
       filters: [],
       filteredValue: filters.name || [],
       render: text => (
@@ -759,6 +760,7 @@ export default class Route extends Component {
       title: <FormattedMessage id={`${intlPrefix}.path`} />,
       dataIndex: 'path',
       key: 'path',
+      width: '20%',
       filters: [],
       filteredValue: filters.path || [],
       render: text => (

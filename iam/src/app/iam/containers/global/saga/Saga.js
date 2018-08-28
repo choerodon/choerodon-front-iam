@@ -114,6 +114,7 @@ export default class Saga extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.code`} />,
         key: 'code',
+        width: '30%',
         dataIndex: 'code',
         filters: [],
         filteredValue: filters.code || [],
@@ -133,6 +134,7 @@ export default class Saga extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.desc`} />,
         key: 'description',
+        width: '40%',
         dataIndex: 'description',
         filters: [],
         filteredValue: filters.description || [],

@@ -405,14 +405,17 @@ export default class CreateRole extends Component {
                 {...formItemLayout}
               >
                 <Table
+                  className="c7n-role-permission-table"
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',
                     key: 'code',
+                    className: 'choerodon-role-code',
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
                     dataIndex: 'description',
                     key: 'description',
+                    className: 'choerodon-role-description',
                   }]}
                   dataSource={selectedPermission || []}
                   filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
@@ -470,6 +473,7 @@ export default class CreateRole extends Component {
                 code={`${intlPrefix}.create.addpermission`}
               >
                 <Table
+                  className="c7n-role-permission-table"
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
                     dataIndex: 'code',

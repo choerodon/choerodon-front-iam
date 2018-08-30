@@ -692,6 +692,8 @@ const zh_CN = {
   'sendsetting.modify': '修改发送设置',
   'sendsetting.template': '应用邮箱模板',
   'sendsetting.retrycount': '重发次数',
+  'sendsetting.retrycount.required': '请输入重发次数',
+  'sendsetting.retrycount.pattern': '请输入大于等于0且小于等于10的整数',
   'sendsetting.sendinstantly': '即时发送',
   'sendsetting.alllow.manual': '允许手动重发',
   'sendsetting.trigger.type': '触发类型',
@@ -708,6 +710,7 @@ const zh_CN = {
   'msgrecord.resend': '重发',
   'msgrecord.send.success': '发送成功',
   'msgrecord.send.failed': '发送失败',
+  'msgrecord.send.count': '重发次数',
 
   // 邮件模板
   'mailtemplate.header.title': '邮件模板',

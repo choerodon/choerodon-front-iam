@@ -205,7 +205,7 @@ export default class APITest extends Component {
         </MouseOverWrapper>
       ),
     }, {
-      title: '重发次数',
+      title: <FormattedMessage id="msgrecord.send.count" />,
       dataIndex: 'retryCount',
       key: 'retryCount',
     }, {
@@ -218,7 +218,7 @@ export default class APITest extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        (!record.retryCount) && record.status === 'FAILED' && record.isManualRetry ?
+        record.status === 'FAILED' && record.isManualRetry ?
           <Tooltip
             title={<FormattedMessage id="msgrecord.resend" />}
             placement="bottom"

@@ -25,32 +25,16 @@
 
 .ql-snow .ql-tooltip::before {
   content: "访问链接:";
-  line-height: 26px;
-  margin-right: 8px;
 }
 
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
   content: '保存';
-  padding-right: 0px;
 }
 
 .ql-snow .ql-tooltip a.ql-action::after {
-  border-right: 1px solid #ccc;
   content: '编辑';
-  margin-left: 16px;
-  padding-right: 8px;
 }
 
 .ql-snow .ql-tooltip a.ql-remove::before {
   content: '移除链接';
-  margin-left: 8px;
-}
-
-.ql-tooltip {
-  left: 0 !important;
-}
-
-.ql-editing {
-  left: 0 !important;
 }

@@ -89,6 +89,9 @@ const pageDetail = {
   'global.configuration.modify.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
   'global.configuration.modify.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
 
+  'global.configuration.newYaml': '新配置信息：',
+  'global.configuration.oldYaml': '原配置信息：',
+
   // 实例管理
   'global.instance.title': '平台"{name}"的实例管理',
   'global.instance.description': '实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。',

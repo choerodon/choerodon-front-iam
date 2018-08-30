@@ -123,9 +123,7 @@ export default class SendSetting extends Component {
   handleModify = (record) => {
     const { type, orgId } = this.setting;
     this.props.form.resetFields();
-    if (!SendSettingStore.getTemplate.length) {
-      SendSettingStore.loadTemplate(type, orgId);
-    }
+    SendSettingStore.loadTemplate(type, orgId, record.code);
     SendSettingStore.loadCurrentRecord(record.id, type, orgId).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);

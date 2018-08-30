@@ -27,6 +27,8 @@ class EditConfig extends Component {
 
   newAce = null;
 
+  scrollTarget = null;
+
   getInitState() {
     return {
       current: 1,
@@ -321,13 +323,19 @@ class EditConfig extends Component {
   };
 
   syncOldAceScroll = (cm) => {
-    if (this.oldAce) {
+    if (this.scrollTarget == 'old') {
+      this.scrollTarget = null;
+    } else if (this.oldAce) {
+      this.scrollTarget = 'new';
       this.oldAce.scrollTo(cm);
     }
   };
 
   syncNewAceScroll = (cm) => {
-    if (this.newAce) {
+    if (this.scrollTarget == 'new') {
+      this.scrollTarget = null;
+    } else if (this.newAce) {
+      this.scrollTarget = 'old';
       this.newAce.scrollTo(cm);
     }
   };

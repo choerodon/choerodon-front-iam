@@ -4,18 +4,14 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
-import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
-import { Input, Button, Form, Steps, Select, Modal, Row, Col } from 'choerodon-ui';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { Button, Col, Form, Input, Modal, Row, Select, Steps } from 'choerodon-ui';
 import querystring from 'query-string';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import AceEditor, { diff as DiffEditor } from 'react-ace';
-import 'brace/mode/yaml';
-import 'brace/theme/dawn';
-import 'brace/theme/github';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import AceEditor from '../../../components/yamlAce';
 import ConfigurationStore from '../../../stores/global/configuration';
 import './Configuration.scss';
 
-const { confirm } = Modal;
 const { Step } = Steps;
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -26,6 +22,10 @@ const intlPrefix = 'global.configuration';
 
 class EditConfig extends Component {
   state = this.getInitState();
+
+  oldAce = null;
+
+  newAce = null;
 
   getInitState() {
     return {
@@ -39,7 +39,6 @@ class EditConfig extends Component {
       service: this.props.match.params.name,
     };
   }
-
 
   componentWillMount() {
     ConfigurationStore.setRelatedService({}); // 保存时的微服务信息
@@ -62,7 +61,7 @@ class EditConfig extends Component {
         ConfigurationStore.setService(data || []);
       }
     });
-  }
+  };
 
   /**
    * 根据所选微服务 获取配置模板
@@ -114,7 +113,7 @@ class EditConfig extends Component {
         current: 2,
       });
     }
-  }
+  };
 
   /* 获取配置yaml */
   getConfigYaml() {
@@ -145,23 +144,26 @@ class EditConfig extends Component {
       status = 'finish';
     }
     return status;
-  }
+  };
 
   /**
    * 上一步
    * @param index
    */
   changeStep = (index) => {
+    if (index === 1) {
+      this.setState({ yamlData: this.state.oldYamlData });
+    }
     this.setState({ current: index });
-  }
+  };
 
   /**
    * 获取编辑器内容
    * @param value 编辑器内容
    */
   handleChangeValue = (e) => {
-    this.setState({ yamlData: e[0] });
-  }
+    this.setState({ yamlData: e });
+  };
 
   /* 修改配置 */
   editConfig = () => {
@@ -180,7 +182,7 @@ class EditConfig extends Component {
         this.props.history.push('/iam/configuration');
       }
     });
-  }
+  };
 
   /* 取消 */
   cancelAll = () => {
@@ -188,7 +190,7 @@ class EditConfig extends Component {
     ConfigurationStore.setRelatedService(currentService);
     ConfigurationStore.setStatus('');
     this.props.history.push('/iam/configuration');
-  }
+  };
 
 
   /* 渲染第一步 */
@@ -281,26 +283,27 @@ class EditConfig extends Component {
         </section>
       </div>
     );
-  }
+  };
 
   /* 渲染第二步 */
   handleRenderInfo = () => {
-    const { yamlData, totalLine, oldYamlData } = this.state;
+    const { yamlData, totalLine } = this.state;
     return (
-      <div>
+      <div key="step">
         <p>
           <FormattedMessage id={`${intlPrefix}.step2.description`} />
         </p>
         <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`} /></span>
-        <DiffEditor
-          onChange={this.handleChangeValue}
-          showPrintMargin={false}
-          mode="yaml"
-          theme="github"
-          value={[yamlData, oldYamlData]}
-          style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
-          onLoad={this.onDiffEditorLoding}
-        />
+        <Row key="ace-row">
+          <Col key="ace-column" span={24}>
+            <AceEditor
+              key="ace"
+              onChange={this.handleChangeValue}
+              value={yamlData}
+              style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
+            />
+          </Col>
+        </Row>
         <section className="serviceSection">
           <Button
             type="primary"
@@ -315,13 +318,33 @@ class EditConfig extends Component {
         </section>
       </div>
     );
-  }
+  };
+
+  syncOldAceScroll = (cm) => {
+    if (this.oldAce) {
+      this.oldAce.scrollTo(cm);
+    }
+  };
+
+  syncNewAceScroll = (cm) => {
+    if (this.newAce) {
+      this.newAce.scrollTo(cm);
+    }
+  };
+
+  saveOldAce = (node) => {
+    this.oldAce = node;
+  };
+
+  saveNewAce = (node) => {
+    this.newAce = node;
+  };
 
   /* 渲染第三步 */
   handleRenderConfirm = () => {
     const { yamlData, totalLine, service, oldYamlData } = this.state;
     return (
-      <div className="confirmContainer">
+      <div key="step" className="confirmContainer">
         <div>
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.configid`} />：</Col>
@@ -337,20 +360,35 @@ class EditConfig extends Component {
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.service`} />：</Col><Col span={13}>{service}</Col>
           </Row>
-
         </div>
         <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
-        <div className="c7n-config-yaml-tips">
-          <FormattedMessage id={`${intlPrefix}.newYaml`} />
-          <FormattedMessage id={`${intlPrefix}.oldYaml`} />
-        </div>
-        <DiffEditor
-          readOnly
-          mode="yaml"
-          theme="github"
-          value={[yamlData, oldYamlData]}
-          style={{ height: totalLine ? `${(totalLine + 2) * 16}px` : '500px', width: '1000px' }}
-        />
+        <Row key="ace-row">
+          <Col key="ace-column" span={12}>
+            <div>
+              <FormattedMessage id={`${intlPrefix}.newYaml`} />
+            </div>
+            <AceEditor
+              key="ace"
+              ref={this.saveNewAce}
+              readOnly="nocursor"
+              value={yamlData}
+              style={{ height: totalLine ? `${(totalLine + 2) * 16}px` : '500px', width: '100%' }}
+              onScroll={this.syncOldAceScroll}
+            />
+          </Col>
+          <Col span={12}>
+            <div>
+              <FormattedMessage id={`${intlPrefix}.oldYaml`} />
+            </div>
+            <AceEditor
+              ref={this.saveOldAce}
+              readOnly="nocursor"
+              value={oldYamlData}
+              style={{ height: totalLine ? `${(totalLine + 2) * 16}px` : '500px', width: '100%' }}
+              onScroll={this.syncNewAceScroll}
+            />
+          </Col>
+        </Row>
         <section className="serviceSection">
           <Button
             type="primary"
@@ -368,17 +406,7 @@ class EditConfig extends Component {
         </section>
       </div>
     );
-  }
-
-  /**
-   * 在加载的时候隐藏diffEditor的第二个editor
-   * @param e e是react-ace的整个diffEditor
-   */
-  onDiffEditorLoding = (e) => {
-    e.$editors[1].container.style.display = 'none';
-    e.$editors[0].container.style.width = '100%';
   };
-
 
   render() {
     const { current } = this.state;

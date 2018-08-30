@@ -13,24 +13,24 @@ Quill.register(Size, true);
 class Editor extends Component {
   constructor(props) {
     super(props);
+    this.onQuillChange = this.onQuillChange.bind(this);
     this.state = {
-      // message: null,
-      // msgSaving: null,
-      // chatError: null,
+      delta: null,
     };
-    this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentWillMount() {
+    this.props.onRef(this);
   }
 
   modules = {
     toolbar: [
       ['bold', 'italic', 'underline'],
       [{ list: 'ordered' }, { list: 'bullet' }],
-      // ['link', 'image'],
-      ['link'],
+      ['link', 'image'],
       [{ color: [] }],
       [{ font: [] }],
       [{ size: ['10px', '12px', '14px', '16px', '18px', '20px'] }],
-      // ['clean'],
     ],
     imageDrop: true,
   };
@@ -44,57 +44,50 @@ class Editor extends Component {
     'list',
     'bullet',
     'link',
-    // 'image',
+    'image',
     'color',
     'background',
     'font',
     'size',
   ];
 
+
+  /**
+   *
+   * @param content HTML格式的内容
+   * @param delta delta格式的内容
+   * @param source change的触发者 user/silent/api
+   * @param editor 文本框对象
+   */
+  onQuillChange = (content, delta, source, editor) => {
+    this.props.onChange(content);
+    const currentDelta = editor.getContents();
+    this.setState({
+      delta: currentDelta,
+    });
+  }
+
   defaultStyle = {
-    width: 498,
-    height: 200,
-    borderRight: 'none',
+    width: '100%',
+    height: 320,
   };
 
-  isHasImg = (delta) => {
-    let pass = false;
-    if (delta && delta.ops) {
-      delta.ops.forEach((item) => {
-        if (item.insert && item.insert.image) {
-          pass = true;
-        }
-      });
-    }
-    return pass;
-  };
-
-
-  handleChange = (content, delta, source, editor) => {
-    const value = editor.getHTML();
-    this.props.onChange(value);
-    // if (this.props.onChange && value && value.ops) {
-    //   window.console.log(value.ops);
-    //
-    // }
-  };
+  getDelta = () => this.state.delta;
 
   render() {
     const { value } = this.props;
     const style = { ...this.defaultStyle, ...this.props.style };
-    const editHeight = style.height - (this.props.toolbarHeight || 42);
+    const editHeight = style.height - 42;
     return (
-      <div style={{ width: '100%' }}>
-        <div style={style} className="react-quill-editor">
-          <ReactQuill
-            theme="snow"
-            modules={this.modules}
-            formats={this.formats}
-            style={{ height: editHeight }}
-            value={value}
-            onChange={this.handleChange}
-          />
-        </div>
+      <div style={style} className="react-quill-editor">
+        <ReactQuill
+          theme="snow"
+          modules={this.modules}
+          formats={this.formats}
+          style={{ height: editHeight }}
+          value={value}
+          onChange={this.onQuillChange}
+        />
       </div>
     );
   }

@@ -205,20 +205,9 @@ export default class APITest extends Component {
         </MouseOverWrapper>
       ),
     }, {
-      title: '重发状态',
-      dataIndex: 'retryStatus',
-      key: 'retryStatus',
-      filters: [],
-      filteredValue: filters.retryStatus || [],
-      render: (text) => {
-        let value = '';
-        if (text === 'RETRY_SUCCEED') {
-          value = '重发成功';
-        } else if (text === 'RETRY_FAILED') {
-          value = '重发失败';
-        }
-        return value;
-      },
+      title: '重发次数',
+      dataIndex: 'retryCount',
+      key: 'retryCount',
     }, {
       title: <FormattedMessage id="msgrecord.creationDate" />,
       dataIndex: 'creationDate',
@@ -229,7 +218,7 @@ export default class APITest extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        record.status === 'FAILED' && record.isManualRetry ?
+        (!record.retryCount) && record.status === 'FAILED' && record.isManualRetry ?
           <Tooltip
             title={<FormattedMessage id="msgrecord.resend" />}
             placement="bottom"

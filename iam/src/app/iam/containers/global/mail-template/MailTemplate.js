@@ -13,9 +13,10 @@ import {
   axios, Content, Header, Page, Permission, Action,
 } from 'choerodon-front-boot';
 import MailTemplateStore from '../../../stores/global/mail-template';
-import Editor from '../../../components/editor';
 import './MailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import { beforeTextUpload } from '../../../components/editor/EditorUtils';
+import Editor from '../../../components/editor';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
@@ -56,8 +57,7 @@ export default class MailTemplate extends Component {
 
   getInitState() {
     return {
-      editorContent: '',
-      initValue: '',
+      editorContent: null,
       isShowSidebar: false,
       selectType: 'create',
       isSubmitting: false,
@@ -400,10 +400,14 @@ export default class MailTemplate extends Component {
               </Popover>
             </div>
             <Editor
-              style={{ height: 320, width: '100%' }}
               value={this.state.editorContent}
+              onRef={(node) => {
+                this.editor = node;
+              }}
               onChange={(value) => {
-                this.setState({ editorContent: value });
+                this.setState({
+                  editorContent: value,
+                });
               }}
             />
           </div>
@@ -432,71 +436,84 @@ export default class MailTemplate extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { intl } = this.props;
-    const { selectType } = this.state;
-    const { type, orgId } = this.mail;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({
-          isSubmitting: true,
-        });
-        let body;
-        if (selectType !== 'modify') {
-          body = {
-            ...values,
-            content: this.state.editorContent,
-            isPredefined: true,
-          };
-          MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
-            if (data.failed) {
-              Choerodon.prompt(data.message);
-            } else {
-              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-              this.setState({
-                isShowSidebar: false,
-              });
-              this.reload();
-            }
-            this.setState({
-              isSubmitting: false,
-            });
-          }).catch((error) => {
-            Choerodon.handleResponseError(error);
-            this.setState({
-              isSubmitting: false,
-            });
-          });
+        window.console.log(this.editor);
+        const deltaOps = this.editor.getDelta();
+        const sendData = { ...values };
+        // 判断富文本编辑器是否为空
+        if (deltaOps) {
+          beforeTextUpload(deltaOps, sendData, this.handleSave, this.state.editorContent);
         } else {
-          body = {
-            ...values,
-            content: this.state.editorContent,
-            id: MailTemplateStore.getCurrentDetail.id,
-            isPredefined: MailTemplateStore.getCurrentDetail.isPredefined,
-            objectVersionNumber: MailTemplateStore.getCurrentDetail.objectVersionNumber,
-          };
-          MailTemplateStore.updateTemplateDetail(MailTemplateStore.getCurrentDetail.id, body, type, orgId).then((data) => {
-            if (data.failed) {
-              Choerodon.prompt(data.message);
-            } else {
-              Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
-              MailTemplateStore.setCurrentDetail(data);
-              this.loadTemplate();
-              this.setState({
-                isShowSidebar: false,
-              });
-            }
-            this.setState({
-              isSubmitting: false,
-            });
-          }).catch((error) => {
-            Choerodon.handleResponseError(error);
-            this.setState({
-              isSubmitting: false,
-            });
-          });
+          this.handleSave(values);
         }
       }
     });
+  }
+
+  handleSave = (values) => {
+    const { intl } = this.props;
+    const { selectType } = this.state;
+    const { type, orgId } = this.mail;
+    this.setState({
+      isSubmitting: true,
+    });
+    let body;
+    if (selectType !== 'modify') {
+      body = {
+        ...values,
+        isPredefined: true,
+      };
+      window.console.log(body);
+      MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+          this.setState({
+            isShowSidebar: false,
+          });
+          this.reload();
+        }
+        this.setState({
+          isSubmitting: false,
+        });
+      }).catch((error) => {
+        Choerodon.handleResponseError(error);
+        this.setState({
+          isSubmitting: false,
+        });
+      });
+    } else {
+      body = {
+        ...values,
+        content: this.state.editorContent,
+        id: MailTemplateStore.getCurrentDetail.id,
+        isPredefined: MailTemplateStore.getCurrentDetail.isPredefined,
+        objectVersionNumber: MailTemplateStore.getCurrentDetail.objectVersionNumber,
+      };
+
+      MailTemplateStore.updateTemplateDetail(MailTemplateStore.getCurrentDetail.id, body, type, orgId).then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
+          MailTemplateStore.setCurrentDetail(data);
+          this.loadTemplate();
+          this.setState({
+            isShowSidebar: false,
+          });
+        }
+        this.setState({
+          isSubmitting: false,
+        });
+      }).catch((error) => {
+        Choerodon.handleResponseError(error);
+        this.setState({
+          isSubmitting: false,
+        });
+      });
+    }
   }
 
   render() {

@@ -75,9 +75,9 @@ class SendSettingStore {
     return axios.get(`/notify/v1/notices/send_settings/${id}${path}`);
   }
 
-  loadTemplate = (appType, orgId) => {
+  loadTemplate = (appType, orgId, businessType) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
-    axios.get(`notify/v1/notices/emails/templates/names${path}`).then((data) => {
+    axios.get(`notify/v1/notices/emails/templates/names${path}?business_type=${businessType}`).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {

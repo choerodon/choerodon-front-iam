@@ -4,7 +4,7 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Select, Table, Tooltip, Form, Modal, Radio } from 'choerodon-ui';
+import { Button, Select, Table, Tooltip, Form, Modal, Radio, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -272,19 +272,23 @@ export default class SendSetting extends Component {
           >
             {
               getFieldDecorator('retryCount', {
-                rules: [],
+                rules: [
+                  {
+                    required: true,
+                    message: intl.formatMessage({ id: 'sendsetting.retrycount.required' }),
+                  }, {
+                    pattern: /^\d$|^10$/,
+                    message: intl.formatMessage({ id: 'sendsetting.retrycount.pattern' }),
+                  }],
                 initialValue: String(getCurrentRecord.retryCount),
               })(
-                <Select
-                  style={{ width: 300 }}
+                <InputNumber
+                  autoComplete="off"
+                  min={0}
+                  max={10}
                   label={<FormattedMessage id="sendsetting.retrycount" />}
-                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                >
-                  <Option value="0">0</Option>
-                  <Option value="1">1</Option>
-                  <Option value="2">2</Option>
-                  <Option value="3">3</Option>
-                </Select>,
+                  style={{ width: inputWidth }}
+                />,
               )
             }
           </FormItem>

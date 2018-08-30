@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import ImageDrop from './ImageDrop';
 import './Editor.scss';
+import ImageDrop from './ImageDrop';
 
 Quill.register('modules/imageDrop', ImageDrop);
+
+
+const Align = Quill.import('attributors/style/align');
+Align.whitelist = ['right', 'center', 'justify'];
+Quill.register(Align, true);
 
 const Size = Quill.import('attributors/style/size');
 Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px'];
@@ -27,10 +32,11 @@ class Editor extends Component {
     toolbar: [
       ['bold', 'italic', 'underline'],
       [{ list: 'ordered' }, { list: 'bullet' }],
-      ['link', 'image'],
+      [{ align: [] }],
       [{ color: [] }],
       [{ font: [] }],
       [{ size: ['10px', '12px', '14px', '16px', '18px', '20px'] }],
+      ['link', 'image'],
     ],
     imageDrop: true,
   };
@@ -49,6 +55,7 @@ class Editor extends Component {
     'background',
     'font',
     'size',
+    'align',
   ];
 
 

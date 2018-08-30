@@ -4,11 +4,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page } from 'choerodon-front-boot';
-import { Table, Row, Col, Tabs } from 'choerodon-ui';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import AceEditor from 'react-ace';
-import 'brace/mode/yaml';
-import 'brace/theme/dawn';
+import { Col, Row, Table, Tabs } from 'choerodon-ui';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import AceEditor from '../../../components/yamlAce';
 import InstanceStore from '../../../stores/global/instance';
 import './Instance.scss';
 
@@ -117,7 +115,7 @@ export default class InstanceDetail extends Component {
         />
       </div>
     );
-  }
+  };
 
   getConfigInfo = () => {
     let configInfo = '';
@@ -135,11 +133,7 @@ export default class InstanceDetail extends Component {
         <div>
           <p><FormattedMessage id={`${intlPrefix}.configinfo`} /></p>
           <AceEditor
-            readOnly
-            showPrintMargin={false}
-            mode="yaml"
-            theme="dawn"
-            defaultValue=""
+            readOnly="nocursor"
             value={configInfo}
             style={{ height: '650px', width: '100%' }}
           />
@@ -147,17 +141,14 @@ export default class InstanceDetail extends Component {
         <div>
           <p><FormattedMessage id={`${intlPrefix}.envinfo`} /></p>
           <AceEditor
-            readOnly
-            showPrintMargin={false}
-            mode="yaml"
-            theme="dawn"
+            readOnly="nocursor"
             value={envinfo}
             style={{ height: '650px', width: '100%' }}
           />
         </div>
       </div>
     );
-  }
+  };
 
   render() {
     return (

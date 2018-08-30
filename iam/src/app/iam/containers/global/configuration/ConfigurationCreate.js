@@ -4,13 +4,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
-import { Content, Header, Page, Permission, axios } from 'choerodon-front-boot';
-import { Input, Button, Form, Steps, Select, Modal, Row, Col } from 'choerodon-ui';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { Button, Col, Form, Input, Modal, Row, Select, Steps } from 'choerodon-ui';
 import querystring from 'query-string';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import AceEditor from 'react-ace';
-import 'brace/mode/yaml';
-import 'brace/theme/dawn';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import AceEditor from '../../../components/yamlAce';
 import './Configuration.scss';
 import ConfigurationStore from '../../../stores/global/configuration';
 
@@ -73,7 +71,7 @@ class CreateConfig extends Component {
         ConfigurationStore.setService(data || []);
       }
     });
-  }
+  };
 
   /**
    * 选择微服务
@@ -99,7 +97,7 @@ class CreateConfig extends Component {
       setFieldsValue({ template: undefined, version: undefined });
       this.loadCurrentServiceConfig(serviceName);
     }
-  }
+  };
 
   /**
    * 选择配置模板
@@ -256,7 +254,7 @@ class CreateConfig extends Component {
         callback();
       }
     });
-  }
+  };
 
   /* 获取步骤条状态 */
   getStatus = (index) => {
@@ -270,7 +268,7 @@ class CreateConfig extends Component {
       status = 'finish';
     }
     return status;
-  }
+  };
 
 
   /**
@@ -279,7 +277,7 @@ class CreateConfig extends Component {
    */
   changeStep = (index) => {
     this.setState({ current: index });
-  }
+  };
 
   /* 获取配置yaml */
   getConfigYaml() {
@@ -303,7 +301,7 @@ class CreateConfig extends Component {
    */
   handleChangeValue = (value) => {
     this.setState({ yamlData: value });
-  }
+  };
 
 
   /* 第一步 */
@@ -411,7 +409,7 @@ class CreateConfig extends Component {
         </section>
       </div>
     );
-  }
+  };
 
   /* 第一步-下一步 */
   handleSubmit = () => {
@@ -432,7 +430,7 @@ class CreateConfig extends Component {
         });
       }
     });
-  }
+  };
 
   /* 第二步 */
   handleRenderInfo = () => {
@@ -445,9 +443,6 @@ class CreateConfig extends Component {
         <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`} /></span>
         <AceEditor
           onChange={this.handleChangeValue}
-          showPrintMargin={false}
-          mode="yaml"
-          theme="dawn"
           value={yamlData}
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
         />
@@ -465,14 +460,14 @@ class CreateConfig extends Component {
         </section>
       </div>
     );
-  }
+  };
 
   /* 第二步-下一步 */
   jumpToEnd = () => {
     this.setState({
       current: 3,
     });
-  }
+  };
 
   /* 第三步 */
   handleRenderConfirm = () => {
@@ -494,9 +489,6 @@ class CreateConfig extends Component {
         <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
         <AceEditor
           readOnly
-          showPrintMargin={false}
-          mode="yaml"
-          theme="dawn"
           value={yamlData}
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
         />
@@ -517,7 +509,7 @@ class CreateConfig extends Component {
         </section>
       </div>
     );
-  }
+  };
 
   /* 创建配置 */
   createConfig = () => {
@@ -540,13 +532,13 @@ class CreateConfig extends Component {
         this.props.history.push('/iam/configuration');
       }
     });
-  }
+  };
 
   /* 取消 */
   cancelAll = () => {
     ConfigurationStore.setRelatedService(ConfigurationStore.getCurrentService);
     this.props.history.push('/iam/configuration');
-  }
+  };
 
 
   render() {

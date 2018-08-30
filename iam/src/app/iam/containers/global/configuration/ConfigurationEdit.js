@@ -159,8 +159,8 @@ class EditConfig extends Component {
    * 获取编辑器内容
    * @param value 编辑器内容
    */
-  handleChangeValue = (value) => {
-    this.setState({ yamlData: value });
+  handleChangeValue = (e) => {
+    this.setState({ yamlData: e[0] });
   }
 
   /* 修改配置 */
@@ -285,20 +285,21 @@ class EditConfig extends Component {
 
   /* 渲染第二步 */
   handleRenderInfo = () => {
-    const { yamlData, totalLine } = this.state;
+    const { yamlData, totalLine, oldYamlData } = this.state;
     return (
       <div>
         <p>
           <FormattedMessage id={`${intlPrefix}.step2.description`} />
         </p>
         <span className="yamlInfoTitle"> <FormattedMessage id={`${intlPrefix}.info`} /></span>
-        <AceEditor
+        <DiffEditor
           onChange={this.handleChangeValue}
           showPrintMargin={false}
           mode="yaml"
           theme="github"
-          value={yamlData}
+          value={[yamlData, oldYamlData]}
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width: '100%' }}
+          onLoad={this.onDiffEditorLoding}
         />
         <section className="serviceSection">
           <Button
@@ -336,15 +337,19 @@ class EditConfig extends Component {
           <Row>
             <Col span={3}><FormattedMessage id={`${intlPrefix}.service`} />：</Col><Col span={13}>{service}</Col>
           </Row>
+
         </div>
         <span className="finalyamTitle"><FormattedMessage id={`${intlPrefix}.info`} />：</span>
+        <div className="c7n-config-yaml-tips">
+          <FormattedMessage id={`${intlPrefix}.newYaml`} />
+          <FormattedMessage id={`${intlPrefix}.oldYaml`} />
+        </div>
         <DiffEditor
           readOnly
           mode="yaml"
           theme="github"
           value={[yamlData, oldYamlData]}
-          style={{ height: totalLine ? `${(totalLine + 2) * 16}px` : '500px', width: '100%' }}
-          onLoad={this.onDiffEditorLoding}
+          style={{ height: totalLine ? `${(totalLine + 2) * 16}px` : '500px', width: '1000px' }}
         />
         <section className="serviceSection">
           <Button

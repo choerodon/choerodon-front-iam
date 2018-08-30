@@ -58,7 +58,11 @@ export default class APITest extends Component {
   getVersionList() {
     const { versions, currentService } = APITestStore;
     return versions && versions.length > 0 ? (
-      APITestStore.versions.map((version, index) => (<Option key={index}>{version}</Option>),
+
+      APITestStore.versions.map((version, index) => (
+        <Option key={index}><Tooltip title={version} placement="right" align={{ offset: [20, 0] }}>
+          <span style={{ display: 'inline-block', width: '100%' }}>{version}</span>
+        </Tooltip></Option>),
       )
     ) : <Option value="empty">无版本</Option>;
   }

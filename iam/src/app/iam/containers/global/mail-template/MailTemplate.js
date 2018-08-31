@@ -356,7 +356,7 @@ export default class MailTemplate extends Component {
               initialValue: selectType !== 'create' ? MailTemplateStore.getCurrentDetail.type : undefined,
             })(
               <Select
-                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
                 label={<FormattedMessage id="mailtemplate.type" />}
                 style={{ width: inputWidth }}
                 disabled={selectType !== 'create'}

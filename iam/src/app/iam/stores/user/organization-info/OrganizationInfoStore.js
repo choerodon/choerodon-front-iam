@@ -15,7 +15,7 @@ class OrganizationInfoStore {
   @observable params = [];
 
   refresh(id) {
-    this.loadData(id, { current: 1, pageSize: 10 }, {}, []);
+    this.loadData(id, { current: 1, pageSize: 10 }, []);
   }
 
   @action

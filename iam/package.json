@@ -20,7 +20,8 @@
     "choerodon-front-boot": "0.7.3",
     "hjson": "^3.1.1",
     "react-codemirror": "^1.0.0",
-    "react-quill": "^1.2.6"
+    "react-quill": "^1.2.6",
+    "quill-delta-to-html": "^0.7.0"
   },
   "lint-staged": {
     "src/**/*.{js,jsx}": [

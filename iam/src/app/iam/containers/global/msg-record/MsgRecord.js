@@ -140,12 +140,12 @@ export default class APITest extends Component {
   retry(record) {
     const { intl } = this.props;
     MsgRecordStore.retry(record.id, this.msgrecord.type, this.msgrecord.orgId).then((data) => {
+      let msg = intl.formatMessage({ id: 'msgrecord.send.success' });
       if (data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        Choerodon.prompt(intl.formatMessage({ id: 'msgrecord.send.success' }));
-        this.loadMsgRecord();
+        msg = data.message;
       }
+      Choerodon.prompt(msg);
+      this.loadMsgRecord();
     }).catch(() => {
       Choerodon.prompt(intl.formatMessage({ id: 'msgrecord.send.failed' }));
     });

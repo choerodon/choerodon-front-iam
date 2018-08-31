@@ -43,7 +43,8 @@ class MsgRecordStore {
 
   retry = (id, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
-    return axios.post(`/notify/v1/records/emails/${id}/retry${path}`);
+    const method = appType === 'site' ? 'post' : 'get';
+    return axios[method](`/notify/v1/records/emails/${id}/retry${path}`);
   }
 }
 

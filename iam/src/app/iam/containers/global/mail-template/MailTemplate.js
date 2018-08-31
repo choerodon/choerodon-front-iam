@@ -438,7 +438,6 @@ export default class MailTemplate extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        window.console.log(this.editor);
         const deltaOps = this.editor.getDelta();
         const sendData = { ...values };
         // 判断富文本编辑器是否为空
@@ -464,7 +463,6 @@ export default class MailTemplate extends Component {
         ...values,
         isPredefined: true,
       };
-      window.console.log(body);
       MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);

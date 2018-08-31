@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { DeltaOperation } from 'react-quill';
-// const QuillDeltaToHtmlConverter = require('quill-delta-to-html');
+import axios from 'axios';
+import QuillDeltaToHtmlConverter from 'quill-delta-to-html';
 
 /**
  * 将以base64的图片url数据转换为Blob
@@ -49,11 +50,23 @@ export function replaceBase64ToUrl(imgUrlList, imgBase, text) {
   imgUrlList.forEach((imgUrl, index) => {
     imgMap[imgBase[index]] = imgUrl;
   });
+  window.console.log(imgMap);
   deltaOps.forEach((item, index) => {
-    if (item.insert && item.insert.image && imgBase.indexOf(item.insert.image) != -1) {
-      deltaOps[index].insert.image = imgMap[item.insert.image];
+    if (item.insert && item.insert.image && imgBase.indexOf(item.insert.image) !== -1) {
+      deltaOps.ops[index].insert.image = Choerodon.fileServer(imgMap[item.insert.image]);
     }
   });
+}
+
+export function uploadImage(data) {
+  const axiosConfig = {
+    headers: { 'content-type': 'multipart/form-data' },
+  };
+  return axios.post(
+    '/notify/v1/notices/files',
+    data,
+    axiosConfig,
+  );
 }
 
 /**
@@ -67,18 +80,15 @@ export function beforeTextUpload(text, data, callback, htmlcontent) {
   const send = data;
   const { imgBase, formData } = getImgInDelta(deltaOps);
   if (imgBase.length) {
-    // uploadImage(formData).then((imgUrlList) => {
-    //   replaceBase64ToUrl(imgUrlList, imgBase, deltaOps);
-    //   const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
-    //   const html = converter.convert();
-    //   send.gitlabDescription = html;
-    //   send.description = JSON.stringify(deltaOps);
-    //   func(send);
-    // });
-    callback(send);
+    uploadImage(formData).then((imgUrlList) => {
+      replaceBase64ToUrl(imgUrlList, imgBase, deltaOps);
+      const converter = new QuillDeltaToHtmlConverter(deltaOps.ops, {});
+      const html = converter.convert();
+      send.content = html;
+      callback(send);
+      window.console.log(send);
+    });
   } else {
-    // const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
-    // const html = converter.convert();
     send.content = htmlcontent;
     callback(send);
   }

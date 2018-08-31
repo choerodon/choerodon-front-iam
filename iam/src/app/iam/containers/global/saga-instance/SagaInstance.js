@@ -224,7 +224,7 @@ export default class SagaInstance extends Component {
       },
       {
         title: '',
-        width: '100px',
+        width: '50px',
         key: 'action',
         align: 'right',
         render: (text, record) => (

@@ -53,7 +53,7 @@ export function replaceBase64ToUrl(imgUrlList, imgBase, text) {
   window.console.log(imgMap);
   deltaOps.forEach((item, index) => {
     if (item.insert && item.insert.image && imgBase.indexOf(item.insert.image) !== -1) {
-      deltaOps.ops[index].insert.image = Choerodon.fileServer(imgMap[item.insert.image]);
+      deltaOps.ops[index].insert.image = `${Choerodon.fileServer(imgMap[item.insert.image])}.png`;
     }
   });
 }
@@ -86,7 +86,6 @@ export function beforeTextUpload(text, data, callback, htmlcontent) {
       const html = converter.convert();
       send.content = html;
       callback(send);
-      window.console.log(send);
     });
   } else {
     send.content = htmlcontent;

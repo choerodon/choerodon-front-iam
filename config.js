@@ -7,8 +7,7 @@ const config = {
     'primary-color': '#3F51B5',
   },
   cookieServer: '', //  子域名token共享
-  // server: 'https://api.choerodon.com.cn',
-  server: 'http://api.staging.saas.hand-china.com',
+  server: 'https://api.choerodon.com.cn',
   dashboard: {
     iam: {
       components: 'src/app/iam/dashboard/*',

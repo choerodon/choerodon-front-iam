@@ -485,7 +485,7 @@ export default class MailTemplate extends Component {
     } else {
       body = {
         ...values,
-        content: this.state.editorContent,
+        content: values.content,
         id: MailTemplateStore.getCurrentDetail.id,
         isPredefined: MailTemplateStore.getCurrentDetail.isPredefined,
         objectVersionNumber: MailTemplateStore.getCurrentDetail.objectVersionNumber,

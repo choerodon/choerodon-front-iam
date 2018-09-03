@@ -327,7 +327,7 @@ export default class MailTemplate extends Component {
               validateFirst: true,
               initialValue: selectType === 'modify' ? MailTemplateStore.getCurrentDetail.code : undefined,
             })(
-              <Input ref={(e) => { this.creatTemplateFocusInput = e; }} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} disabled={selectType === 'modify'} />,
+              <Input maxLength={15} ref={(e) => { this.creatTemplateFocusInput = e; }} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} disabled={selectType === 'modify'} />,
             )
             }
           </FormItem>
@@ -342,7 +342,7 @@ export default class MailTemplate extends Component {
               }],
               initialValue: selectType === 'modify' ? MailTemplateStore.getCurrentDetail.name : undefined,
             })(
-              <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.name" />} disabled={selectType === 'modify'} />,
+              <Input maxLength={32} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.name" />} disabled={selectType === 'modify'} />,
             )}
           </FormItem>
           <FormItem
@@ -414,7 +414,7 @@ export default class MailTemplate extends Component {
         </Form>
       </Content>
     );
-  }
+  }z
 
   getPermission() {
     const { AppState } = this.props;

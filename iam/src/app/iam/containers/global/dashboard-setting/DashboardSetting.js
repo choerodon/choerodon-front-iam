@@ -231,6 +231,7 @@ class DashboardSetting extends Component {
                   ref={(e) => {
                     this.editFocusInput = e;
                   }}
+                  maxLength={32}
                 />,
               )
             }
@@ -251,6 +252,7 @@ class DashboardSetting extends Component {
                   autoComplete="off"
                   label={<FormattedMessage id={`${intlPrefix}.card.title`} />}
                   style={{ width: inputWidth }}
+                  maxLength={32}
                 />,
               )
             }

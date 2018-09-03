@@ -53,7 +53,7 @@ export function replaceBase64ToUrl(imgUrlList, imgBase, text) {
   window.console.log(imgMap);
   deltaOps.forEach((item, index) => {
     if (item.insert && item.insert.image && imgBase.indexOf(item.insert.image) !== -1) {
-      deltaOps.ops[index].insert.image = `${Choerodon.fileServer(imgMap[item.insert.image])}.png`;
+      deltaOps.ops[index].insert.image = `${Choerodon.fileServer(`notify-service/${imgMap[item.insert.image]}`)}`;
     }
   });
 }

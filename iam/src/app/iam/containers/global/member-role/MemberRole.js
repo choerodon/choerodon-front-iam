@@ -732,10 +732,17 @@ export default class MemberRole extends Component {
 
   renderMemberTable() {
     const { selectMemberRoles, roleMemberDatas, memberRolePageInfo, memberDatas, memberRoleFilters, loading } = this.state;
-    const filtersRole = roleMemberDatas.map(({ name }) => ({
+    const filtersRoleObj = {};
+    let filtersRole = roleMemberDatas.map(({ name }) => ({
       value: name,
       text: name,
     }));
+
+    filtersRole = filtersRole.reduce((item, next) => {
+      filtersRoleObj[next.value] ? '' : filtersRoleObj[next.value] = true && item.push(next);
+      return item;
+    }, []);
+
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     const columns = [
       {
@@ -878,10 +885,15 @@ export default class MemberRole extends Component {
   renderRoleTable() {
     const { roleMemberDatas, roleMemberFilterRole, selectRoleMemberKeys, expandedKeys, roleMemberParams, roleMemberFilters, loading } = this.state;
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
-    const filtersData = roleMemberDatas.map(({ name }) => ({
+    let filtersData = roleMemberDatas.map(({ name }) => ({
       value: name,
       text: name,
     }));
+    const filtersDataObj = {};
+    filtersData = filtersData.reduce((item, next) => {
+      filtersDataObj[next.value] ? '' : filtersDataObj[next.value] = true && item.push(next);
+      return item;
+    }, []);
     let dataSource = roleMemberDatas;
     if (roleMemberFilterRole && roleMemberFilterRole.length) {
       dataSource = roleMemberDatas.filter(({ name }) => roleMemberFilterRole.some(role => name.indexOf(role) !== -1));

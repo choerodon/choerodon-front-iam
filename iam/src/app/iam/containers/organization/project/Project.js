@@ -346,6 +346,7 @@ export default class Project extends Component {
                 label={<FormattedMessage id={`${intlPrefix}.code`} />}
                 style={{ width: inputWidth }}
                 ref={(e) => { this.createFocusInput = e; }}
+                maxLength={14}
               />,
             )}
           </FormItem>) : null}
@@ -365,6 +366,7 @@ export default class Project extends Component {
                 label={<FormattedMessage id={`${intlPrefix}.name`} />}
                 style={{ width: inputWidth }}
                 ref={(e) => { this.editFocusInput = e; }}
+                maxLength={32}
               />,
             )}
           </FormItem>

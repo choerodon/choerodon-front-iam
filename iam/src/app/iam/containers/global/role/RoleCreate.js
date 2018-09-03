@@ -330,6 +330,7 @@ export default class CreateRole extends Component {
                       width: '512px',
                     }}
                     disabled={level === ''}
+                    maxLength={64}
                   />,
                 )}
               </FormItem>
@@ -352,6 +353,7 @@ export default class CreateRole extends Component {
                     style={{
                       width: '512px',
                     }}
+                    maxLength={64}
                   />,
                 )}
               </FormItem>

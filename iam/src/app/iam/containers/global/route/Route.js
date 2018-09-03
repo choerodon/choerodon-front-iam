@@ -570,6 +570,7 @@ export default class Route extends Component {
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
                 ref={(e) => { this.createRouteFocusInput = e; }}
+                maxLength={64}
               />,
             )}
           </FormItem>

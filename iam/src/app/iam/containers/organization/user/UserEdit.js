@@ -374,6 +374,7 @@ export default class UserEdit extends Component {
                   label={intl.formatMessage({ id: `${intlPrefix}.password` })}
                   type="password"
                   style={{ width: inputWidth }}
+                  showPasswordEye
                 />,
               )}
             </FormItem>
@@ -400,6 +401,7 @@ export default class UserEdit extends Component {
                   type="password"
                   style={{ width: inputWidth }}
                   onBlur={this.handleRePasswordBlur}
+                  showPasswordEye
                 />,
               )}
             </FormItem>

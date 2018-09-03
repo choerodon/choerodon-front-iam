@@ -162,6 +162,7 @@ export default class Password extends Component {
                     label={<FormattedMessage id={`${intlPrefix}.newpassword`} />}
                     type="password"
                     style={{ width: inputWidth }}
+                    showPasswordEye
                   />,
                 )}
               </FormItem>
@@ -184,6 +185,7 @@ export default class Password extends Component {
                     type="password"
                     style={{ width: inputWidth }}
                     onBlur={this.handleConfirmBlur}
+                    showPasswordEye
                   />,
                 )}
               </FormItem>

@@ -56,7 +56,7 @@
 }
 
 .c7n-api-test {
-  &-description{
+  &-description {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 296px;
@@ -64,12 +64,12 @@
   }
   .string,
   .number {
-    color: #f44336;
+    color: #800;
   }
   .boolean,
   .undefined,
   .null {
-    color: #00bfa5;
+    color: #1f811f;
   }
   .comment {
     color: rgba(0, 0, 0, 0.56);

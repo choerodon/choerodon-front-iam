@@ -495,7 +495,7 @@ export default class MailTemplate extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          Choerodon.prompt(intl.formatMessage({id: 'save.success'}));
+          Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
           MailTemplateStore.setCurrentDetail(data);
           this.loadTemplate();
           this.setState({

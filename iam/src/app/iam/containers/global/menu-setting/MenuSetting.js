@@ -639,9 +639,9 @@ export default class MenuSetting extends Component {
         if (type === 'menu') {
           icon = 'dehaze';
         } else if (!dft) {
-          icon = 'custom_Directory';
-        } else {
           icon = 'folder';
+        } else {
+          icon = 'custom_Directory';
         }
         return (
           <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>

@@ -27,6 +27,10 @@
 "msg-center.mail-setting": "Mail Config"
 "msg-center.msg-record": "Message Record"
 
+"task-dispatch": "Task Dispatch"
+"task-dispatch.task-detail": "Task Deatil"
+"task-dispatch.execution-record": "Execution Record"
+
 "rentsetting": "Organization settings"
 # organization
 "rentsetting.project": "Project"

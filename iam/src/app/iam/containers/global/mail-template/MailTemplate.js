@@ -438,6 +438,9 @@ export default class MailTemplate extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({
+          isSubmitting: true,
+        });
         const deltaOps = this.editor.getDelta();
         const sendData = { ...values };
         // 判断富文本编辑器是否为空
@@ -454,9 +457,6 @@ export default class MailTemplate extends Component {
     const { intl } = this.props;
     const { selectType } = this.state;
     const { type, orgId } = this.mail;
-    this.setState({
-      isSubmitting: true,
-    });
     let body;
     if (selectType !== 'modify') {
       body = {

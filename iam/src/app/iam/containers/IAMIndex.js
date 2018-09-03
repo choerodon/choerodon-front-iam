@@ -24,6 +24,8 @@ const smsTemplate = asyncRouter(() => import('./global/sms-template'));
 const smsSetting = asyncRouter(() => import('./global/sms-setting'));
 const dashboardSetting = asyncRouter(() => import('./global/dashboard-setting'));
 const sendSetting = asyncRouter(() => import('./global/send-setting'));
+const taskDetail = asyncRouter(() => import('./global/task-detail'));
+const executionRecord = asyncRouter(() => import('./global/execution-record'));
 
 // organization
 const client = asyncRouter(() => import('./organization/client'));
@@ -70,6 +72,8 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
           <Route path={`${match.url}/sms-template`} component={smsTemplate} />
           <Route path={`${match.url}/sms-setting`} component={smsSetting} />
+          <Route path={`${match.url}/task-detail`} component={taskDetail} />
+          <Route path={`${match.url}/execution-record`} component={executionRecord} />
           <Route path={`${match.url}/dashboard-setting`} component={dashboardSetting} />
           <Route path={`${match.url}/client`} component={client} />
           <Route path={`${match.url}/ldap`} component={ldap} />

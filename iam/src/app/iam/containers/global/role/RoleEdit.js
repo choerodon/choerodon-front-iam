@@ -6,6 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
 import RoleStore from '../../../stores/global/role/RoleStore';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './Role.scss';
 
 const { Option } = Select;
@@ -366,17 +367,26 @@ export default class EditRole extends Component {
                 {...formItemLayout}
               >
                 <Table
-                  style={{
-                    width: '512px',
-                  }}
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
+                    width: '50%',
                     dataIndex: 'code',
                     key: 'code',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.5}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
+                    width: '50%',
                     dataIndex: 'description',
                     key: 'description',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.5}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }]}
                   rowKey="id"
                   dataSource={selectedPermission || []}
@@ -438,17 +448,26 @@ export default class EditRole extends Component {
             values={{ name }}
           >
             <Table
-              style={{
-                width: '512px',
-              }}
               columns={[{
                 title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
+                width: '50%',
                 dataIndex: 'code',
                 key: 'code',
+                render: text => (
+                  <MouseOverWrapper text={text} width={0.45}>
+                    {text}
+                  </MouseOverWrapper>
+                ),
               }, {
                 title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
+                width: '50%',
                 dataIndex: 'description',
                 key: 'description',
+                render: text => (
+                  <MouseOverWrapper text={text} width={0.45}>
+                    {text}
+                  </MouseOverWrapper>
+                ),
               }]}
               rowKey="id"
               dataSource={data}

@@ -4,6 +4,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content } from 'choerodon-front-boot';
 import { Table } from 'choerodon-ui';
 import './PermissionInfo.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'user.permissioninfo';
 
@@ -18,14 +19,26 @@ export default class PermissionInfo extends Component {
   getTableColumns() {
     return [{
       title: <FormattedMessage id={`${intlPrefix}.table.permission`} />,
+      width: '50%',
       dataIndex: 'code',
       key: 'code',
       className: 'c7n-permission-info-code',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.45}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
+      width: '50%',
       dataIndex: 'description',
       key: 'description',
       className: 'c7n-permission-info-description',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.45}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }];
   }
 

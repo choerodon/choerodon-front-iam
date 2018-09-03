@@ -7,6 +7,7 @@ import { Button, Col, Form, Input, Modal, Row, Select, Table, Tooltip } from 'ch
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, axios } from 'choerodon-front-boot';
 import RoleStore from '../../../stores/global/role/RoleStore';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './Role.scss';
 
 const { Option } = Select;
@@ -408,14 +409,24 @@ export default class CreateRole extends Component {
                   className="c7n-role-permission-table"
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
+                    width: '50%',
                     dataIndex: 'code',
                     key: 'code',
-                    className: 'choerodon-role-code',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.5}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
+                    width: '50%',
                     dataIndex: 'description',
                     key: 'description',
-                    className: 'choerodon-role-description',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.5}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }]}
                   dataSource={selectedPermission || []}
                   filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
@@ -476,14 +487,24 @@ export default class CreateRole extends Component {
                   className="c7n-role-permission-table"
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
+                    width: '50%',
                     dataIndex: 'code',
                     key: 'code',
-                    className: 'choerodon-role-code',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.45}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
+                    width: '50%',
                     dataIndex: 'description',
                     key: 'description',
-                    className: 'choerodon-role-description',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.45}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }]}
                   rowKey="id"
                   dataSource={data}

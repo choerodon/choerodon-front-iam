@@ -7,6 +7,7 @@ import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot'
 const apiTest = asyncRouter(() => import('./global/api-test'));
 const configuration = asyncRouter(() => import('./global/configuration'));
 const instance = asyncRouter(() => import('./global/instance'));
+const inmailTemplate = asyncRouter(() => import('./global/inmail-template'));
 const mailTemplate = asyncRouter(() => import('./global/mail-template'));
 const mailSetting = asyncRouter(() => import('./global/mail-setting'));
 const memberRole = asyncRouter(() => import('./global/member-role'));
@@ -55,6 +56,7 @@ class IAMIndex extends React.Component {
         <Switch>
           <Route path={`${match.url}/api-test`} component={apiTest} />
           <Route path={`${match.url}/configuration`} component={configuration} />
+          <Route path={`${match.url}/inmail-template`} component={inmailTemplate} />
           <Route path={`${match.url}/instance`} component={instance} />
           <Route path={`${match.url}/member-role`} component={memberRole} />
           <Route path={`${match.url}/menu-setting`} component={menuSetting} />

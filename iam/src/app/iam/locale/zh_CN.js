@@ -160,6 +160,11 @@ const pageDetail = {
   'global.mailtemplate.modify.description': '修改邮件模板可以让您根据自己的需求，修改发送的主题、内容。',
   'global.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
 
+  // 站内信模板
+  'global.inmailtemplate.title': '平台"{name}"的站内信模板',
+  'global.inmailtemplate.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模板统一了用户接收的站内信内容。',
+  'global.inmailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
 
   // 邮箱配置
   'global.mailsetting.title': '平台"{name}"的邮箱配置',
@@ -297,6 +302,11 @@ const pageDetail = {
   'organization.mailtemplate.modify.title': '修改邮件模板"{name}"',
   'organization.mailtemplate.modify.description': '由特定事件触发后，系统自动发送邮件给用户，邮件模版统一了用户接收的邮件内容。',
   'organization.mailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
+  // 站内信模板
+  'organization.inmailtemplate.title': '组织"{name}"的站内信模板',
+  'organization.inmailtemplate.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模板统一了用户接收的站内信内容。',
+  'organization.inmailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
 
   // 项目设置
@@ -735,6 +745,13 @@ const zh_CN = {
   'mailtemplate.mail.content': '邮件内容',
   'mailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
   'mailtemplate.mailcontent.tip': '模板中的参数变量通过`${}`进行替换，在发送时，将`${}`替换成对应的实际变量。登录名:${loginName}',
+
+  // 站内信模板
+  'inmailtemplate.header.title': '站内信模板',
+  'inmailtemplate.table.name': '模板名称',
+  'inmailtemplate.table.code': '编码',
+  'inmailtemplate.table.mailtype': '短信类型',
+  'inmailtemplate.table.fromtype': '来源',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',

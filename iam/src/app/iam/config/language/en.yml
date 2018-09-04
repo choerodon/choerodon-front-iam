@@ -24,6 +24,7 @@
 "msg-center": "Message Center"
 "msg-center.send-setting": "Send Setting"
 "msg-center.mail-template": "Mail Template"
+"msg-center.inmail-template": "Website Mail Template"
 "msg-center.mail-setting": "Mail Config"
 "msg-center.msg-record": "Message Record"
 
@@ -44,6 +45,7 @@
 "msg-center-organization": "Message Center"
 "msg-center-organization.send-setting-organization": "Send Setting"
 "msg-center-organization.mail-template-organization": "Mail Template"
+"msg-center-organization.inmail-template-organization": "Website Mail Template"
 "msg-center-organization.msg-record-organization": "Message Record"
 
 "prosetting": "Project Manage"

@@ -24,6 +24,7 @@
 "msg-center": "消息中心"
 "msg-center.send-setting": "发送设置"
 "msg-center.mail-template": "邮件模板"
+"msg-center.inmail-template": "站内信模板"
 "msg-center.mail-setting": "邮箱配置"
 "msg-center.msg-record": "消息记录"
 
@@ -44,6 +45,7 @@
 "msg-center-organization": "消息中心"
 "msg-center-organization.send-setting-organization": "发送设置"
 "msg-center-organization.mail-template-organization": "邮件模板"
+"msg-center-organization.inmail-template-organization": "站内信模板"
 "msg-center-organization.msg-record-organization": "消息记录"
 
 "prosetting": 项目设置

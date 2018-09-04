@@ -144,10 +144,16 @@
         - 'notify-service.email-template-site.update'
         - 'notify-service.email-template-site.query'
         - 'notify-service.send-setting-site.listNames'
+    - "inmail-template":
+        icon: inmail_template
+        Routes: /iam/inmail-template
+        sort: 3
+        permission:
+        - 'notify-service.email-template-site.pageSite'
     - "mail-setting":
         icon: contact_mail
         Routes: /iam/mail-setting
-        sort: 3
+        sort: 4
         permission:
         - 'notify-service.config.selectEmail'
         - 'notify-service.config.testEmailConnect'
@@ -155,7 +161,7 @@
     - "msg-record":
         icon: speaker_notes
         Routes: /iam/msg-record
-        sort: 4
+        sort: 5
         permission:
         - 'notify-service.message-record-site.pageEmail'
 
@@ -302,10 +308,16 @@
           - 'notify-service.email-template-org.delete'
           - 'notify-service.email-template-org.query'
           - 'notify-service.send-setting-org.listNames'
+    - "inmail-template-organization":
+        icon: inmail_template
+        Routes: /iam/inmail-template
+        sort: 3
+        permission:
+        - 'notify-service.email-template-site.pageSite'
     - "msg-record-organization":
         icon: speaker_notes
         Routes: /iam/msg-record
-        sort: 3
+        sort: 4
         permission:
           - 'notify-service.message-record-org.pageEmail'
 

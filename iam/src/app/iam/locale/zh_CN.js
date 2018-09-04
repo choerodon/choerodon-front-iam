@@ -350,7 +350,7 @@ const pageDetail = {
 
   // 修改密码
   'user.changepwd.title': '对用户"{name}"密码进行修改',
-  'user.changepwd.description': '非LDAP用户可以修改自己的登录密码。',
+  'user.changepwd.description': '非LDAP用户可以修改自己的登录密码，ldap用户不可更改密码。',
   'user.changepwd.link': `${docServer}/user-guide/system-configuration/person/secret_change/`,
 
   // 组织信息

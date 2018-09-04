@@ -141,6 +141,7 @@ export default class Password extends Component {
                     type="password"
                     style={{ width: inputWidth }}
                     ref={(e) => { this.editFocusInput = e; }}
+                    disabled={user.ldap}
                   />,
                 )}
               </FormItem>
@@ -163,6 +164,7 @@ export default class Password extends Component {
                     type="password"
                     style={{ width: inputWidth }}
                     showPasswordEye
+                    disabled={user.ldap}
                   />,
                 )}
               </FormItem>
@@ -186,6 +188,7 @@ export default class Password extends Component {
                     style={{ width: inputWidth }}
                     onBlur={this.handleConfirmBlur}
                     showPasswordEye
+                    disabled={user.ldap}
                   />,
                 )}
               </FormItem>
@@ -207,12 +210,13 @@ export default class Password extends Component {
                         type="primary"
                         htmlType="submit"
                         loading={submitting}
+                        disabled={user.ldap}
                       ><FormattedMessage id="save" /></Button>
                       <Button
                         funcType="raised"
                         onClick={this.reload}
                         style={{ marginLeft: 16 }}
-                        disabled={submitting}
+                        disabled={submitting || user.ldap}
                       ><FormattedMessage id="cancel" /></Button>
                     </Col>
                   </Row>

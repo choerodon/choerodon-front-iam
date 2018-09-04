@@ -169,13 +169,13 @@
         Routes: /iam/task-detail
         sort: 1
         permission:
-          - "notify-service.send-setting-site.pageSite"
+          - 'notify-service.send-setting-site.pageSite'
     - "execution-record":
         icon: work_log
         Routes: /iam/execution-record
         sort: 2
         permission:
-          - "notify-service.send-setting-site.pageSite"
+          - 'notify-service.send-setting-site.pageSite'
 
 # 事务管理
 "global-transaction":

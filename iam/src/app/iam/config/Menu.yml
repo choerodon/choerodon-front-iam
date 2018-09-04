@@ -377,3 +377,9 @@
         sort: 4
         permission:
           - 'iam-service.user.listProjectAndRoleById'
+    - "user-msg":
+        icon: message_notification
+        Routes: /iam/user-msg
+        sort: 5
+        permission:
+        - 'iam-service.user.listProjectAndRoleById'

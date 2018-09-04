@@ -1,0 +1,50 @@
+.c7n-user-msg {
+  &-btns {
+    margin-bottom: 24px;
+    .text {
+      display: inline-block;
+      margin-right: 15px;
+    }
+    button:nth-child(2) {
+      border-radius: 2px 0 0 2px;
+    }
+    button:nth-child(3) {
+      border-radius: 0 2px 2px 0;
+    }
+    button.active {
+      background: rgba(140, 158, 255, 0.2);
+    }
+  }
+
+  &-card.active {
+    .ant-card-body {
+      display: block;
+    }
+    .ant-card-head {
+      background: #5c6bc0;
+    }
+    span {
+       color: white;
+    }
+    .ant-checkbox-inner {
+      background-color: #5c6bc0;
+      border-color: white;
+    }
+  }
+
+  &-card {
+    background: rgba(255, 255, 255, 0.29);
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.20);
+    margin-top: 16px;
+    .ant-card-body {
+      display: none;
+    }
+
+    .ant-card-head {
+      height: 48px;
+      &-title {
+        padding: 12px 0;
+      }
+    }
+  }
+}

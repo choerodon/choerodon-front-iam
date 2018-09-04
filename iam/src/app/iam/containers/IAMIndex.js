@@ -43,6 +43,7 @@ const password = asyncRouter(() => import('./user/password'));
 const organizationInfo = asyncRouter(() => import('./user/organization-info'));
 const projectInfo = asyncRouter(() => import('./user/project-info'));
 const userInfo = asyncRouter(() => import('./user/user-info'));
+const userMsg = asyncRouter(() => import('./user/user-msg'));
 
 
 @inject('AppState')
@@ -87,6 +88,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/organization-info`} component={organizationInfo} />
           <Route path={`${match.url}/project-info`} component={projectInfo} />
           <Route path={`${match.url}/user-info`} component={userInfo} />
+          <Route path={`${match.url}/user-msg`} component={userMsg} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

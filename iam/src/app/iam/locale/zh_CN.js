@@ -1062,6 +1062,16 @@ const zh_CN = {
   'user.permissioninfo.table.permission': '权限',
   'user.permissioninfo.table.description': '描述',
 
+  // 消息通知
+  'user.usermsg.header.title': '消息通知',
+  'user.usermsg.title': '用户"{name}"的消息通知',
+  'user.usermsg.description': '展示你能使用的消息模版发送的特定触发事件，您可以规定对应触发事件所要应用的模版，发送频率等。',
+  'user.usermsg.view': '查看消息',
+  'user.usermsg.unread': '未读消息',
+  'user.usermsg.all': '全部消息',
+  'user.usermsg.markread': '标记为已读',
+  'user.usermsg.markreadall': '全部标记为已读',
+
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

@@ -16,6 +16,21 @@
     }
   }
 
+  &-read {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.54);
+    line-height: 20px;
+    float: right;
+    &-title {
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+  &-unread {
+    font-size: 13px;
+    color: #000;
+    float: right;
+  }
+
   &-card.active {
     .ant-card-body {
       display: block;
@@ -38,6 +53,13 @@
     margin-top: 16px;
     .ant-card-body {
       display: none;
+    }
+    span:nth-child(3) {
+      padding-left: 72px;
+      font-weight: initial;
+    }
+    span:nth-child(4) {
+      font-weight: initial;
     }
 
     .ant-card-head {

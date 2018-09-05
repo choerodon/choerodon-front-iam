@@ -4,7 +4,7 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Table, Tooltip } from 'choerodon-ui';
+import { Button, Table, Tooltip, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -119,19 +119,27 @@ export default class APITest extends Component {
     let obj = {};
     if (status === 'COMPLETED') {
       obj = {
-        key: 'completed',
+        icon: 'check_circle',
         value: '完成',
+        color: '#00bfa5',
       };
     } else {
       obj = {
-        key: 'failed',
+        icon: 'cancel',
         value: '失败',
+        color: '#f44336',
       };
     }
-
     return (
-      <span className={`c7n-msgrecord-status ${obj.key}`}>
-        {obj.value}
+      <span>
+        <Icon
+          type={obj.icon}
+          style={{
+            paddingRight: '6px',
+            verticalAlign: 'top',
+            color: `${obj.color}`,
+          }}
+        />{obj.value}
       </span>
     );
   }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Table, Tooltip, Modal } from 'choerodon-ui';
+import { Button, Table, Tooltip, Modal, Icon } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from '../saga/SagaImg';
@@ -129,29 +129,39 @@ export default class SagaInstance extends Component {
     switch (status) {
       case 'RUNNING':
         obj = {
-          key: 'running',
+          icon: 'timelapse',
           value: '运行中',
+          color: '#1f78d1',
         };
         break;
       case 'FAILED':
         obj = {
-          key: 'failed',
+          icon: 'cancel',
           value: '失败',
+          color: '#f44336',
         };
         break;
       case 'NON_CONSUMER':
       case 'COMPLETED':
         obj = {
-          key: 'completed',
+          icon: 'check_circle',
           value: '完成',
+          color: '#00bfa5',
         };
         break;
       default:
         break;
     }
     return (
-      <span className={`c7n-saga-instance-status ${obj.key}`}>
-        {obj.value}
+      <span>
+        <Icon
+          type={obj.icon}
+          style={{
+            paddingRight: '6px',
+            verticalAlign: 'top',
+            color: `${obj.color}`,
+          }}
+        />{obj.value}
       </span>
     );
   }

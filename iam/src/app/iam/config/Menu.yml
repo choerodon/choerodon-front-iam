@@ -171,7 +171,7 @@
   sort: 5
   site:
     - "task-detail":
-        icon: work_log
+        icon: subject
         Routes: /iam/task-detail
         sort: 1
         permission:

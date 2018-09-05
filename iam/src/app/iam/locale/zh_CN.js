@@ -68,6 +68,19 @@ const pageDetail = {
   'global.role.modify.addpermission.description': '您可以在此为角色添加一个或多个权限。',
   'global.role.modify.addpermission.link': `${docServer}/user-guide/system-configuration/platform/role/`,
 
+  // 任务明细
+  'global.taskdetail.title': '平台"{name}"的任务明细',
+  'global.taskdetail.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细。',
+  'global.taskdetail.link': '',
+
+  'global.taskdetail.create.title': '在平台"{name}"中创建任务',
+  'global.taskdetail.create.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细。',
+  'global.taskdetail.create.link': '',
+
+  'global.taskdetail.detail.title': '"{name}"的任务详情',
+  'global.taskdetail.detail.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任',
+  'global.taskdetail.detail.link': '',
+
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
   'global.microservice.description': '大型应用程序由一个或多个微服务组成。微服务可被独立部署，且为松耦合。每个微服务是专注于单一责任与功能的小型功能区块。',
@@ -357,13 +370,13 @@ const pageDetail = {
   'user.orginfo.title': '用户"{name}"的组织信息',
   'user.orginfo.description': '用户必须且只能属于一个组织，但可以在其他组织被分配角色。本页面展示您所属的组织以及您被分配的组织角色，所属组织在列表第一行。',
   'user.orginfo.link': `${docServer}/user-guide/system-configuration/person/org-info/`,
-  'user.orginfo.permission.description': `您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。`,
+  'user.orginfo.permission.description': '您可以在此查看您在组织"{orgName}"下"{roleName}"的权限。',
 
   // 项目信息
   'user.proinfo.title': '用户"{name}"的项目信息',
   'user.proinfo.description': '用户可以在不同项目的被分配角色，本页面展示您所在的项目以及项目里您的角色。',
   'user.proinfo.link': `${docServer}/user-guide/system-configuration/person/pro-info/`,
-  'user.proinfo.permission.description': `您可以在此查看您在项目"{proName}"下"{roleName}"的权限。`,
+  'user.proinfo.permission.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',
 
   // 权限信息
   'user.permissioninfo.title': '查看角色"{roleName}"的权限',
@@ -450,6 +463,7 @@ const zh_CN = {
   level: '层级',
   source: '来源',
   type: '类型',
+  description: '描述',
 
   // type
   global: '全局',
@@ -566,6 +580,40 @@ const zh_CN = {
   'global.role.code.require.msg': '请输入角色编码',
   'global.role.code.pattern.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'global.role.level.nothing.msg': '请先选择角色层级',
+
+  // 任务明细
+  'global.taskdetail.header.title': '任务明细',
+  'global.taskdetail.create.service': '创建任务',
+  'global.taskdetail.last.execution.time': '上次执行时间',
+  'global.taskdetail.next.execution.time': '下次执行时间',
+  'global.taskdetail.create.header.title': '创建任务',
+  'global.taskdetail.task.name': '任务名称',
+  'global.taskdetail.task.name.required': '请输入任务名称',
+  'global.taskdetail.task.description': '任务描述',
+  'global.taskdetail.task.description.required': '请输入任务描述',
+  'global.taskdetail.task.start.time': '开始时间',
+  'global.taskdetail.task.end.time': '结束时间',
+  'global.taskdetail.trigger.type': '触发类型',
+  'global.taskdetail.easy.task': '简单任务',
+  'global.taskdetail.cron.task': 'Cron任务',
+  'global.taskdetail.cron.expression': 'Cron表达式',
+  'global.taskdetail.cron.expression.required': '请输入Cron表达式',
+  'global.taskdetail.service.name': '服务名',
+  'global.taskdetail.task.class.name': '任务类名',
+  'global.taskdetail.params.name': '参数名称',
+  'global.taskdetail.params.value': '参数值',
+  'global.taskdetail.params.data': '参数数据',
+  'global.taskdetail.repeat.interval': '重复间隔',
+  'global.taskdetail.repeat.time': '重复次数',
+  'global.taskdetail.repeat.time.required': '请输入重复次数',
+  'global.taskdetail.detail.header.title': '任务详情',
+  'global.taskdetail.task.info': '任务信息',
+  'global.taskdetail.task.log': '任务日志',
+  'global.taskdetail.task.status': '状态',
+  'global.taskdetail.instance.id': '实例ID',
+  'global.taskdetail.plan.execution.time': '计划执行时间',
+  'global.taskdetail.actual.execution.time': '实际执行时间',
+
 
   // 微服务管理
   'global.microservice.header.title': '微服务',

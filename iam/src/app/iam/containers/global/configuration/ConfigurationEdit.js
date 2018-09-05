@@ -323,7 +323,7 @@ class EditConfig extends Component {
   };
 
   syncOldAceScroll = (cm) => {
-    if (this.scrollTarget == 'old') {
+    if (this.scrollTarget ==='old') {
       this.scrollTarget = null;
     } else if (this.oldAce) {
       this.scrollTarget = 'new';
@@ -332,7 +332,7 @@ class EditConfig extends Component {
   };
 
   syncNewAceScroll = (cm) => {
-    if (this.scrollTarget == 'new') {
+    if (this.scrollTarget === 'new') {
       this.scrollTarget = null;
     } else if (this.newAce) {
       this.scrollTarget = 'old';

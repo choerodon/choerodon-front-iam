@@ -229,7 +229,6 @@ class CreateConfig extends Component {
     let handledTime;
     if (time < 10) {
       handledTime = `0${String(time)}`;
-      window.console.log(handledTime);
     } else {
       handledTime = String(time);
     }

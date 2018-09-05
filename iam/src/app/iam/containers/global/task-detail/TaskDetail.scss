@@ -1,0 +1,71 @@
+.c7n-create-task {
+  &-radio-container > label:first-child {
+    margin-right: 52px;
+  }
+
+  &-select {
+    position: relative;
+    top: 6px;
+  }
+
+  &-inline-formitem {
+    display: inline-block;
+  }
+
+  div.c7n-create-task-inline-formitem {
+    margin-right: 18px;
+  }
+}
+
+.c7n-task-container-status {
+  vertical-align: middle;
+
+  .enabled {
+    color: #1ab16f;
+  }
+
+  .disabled {
+    color: #F44336;
+  }
+
+  .end {
+    color: #FFB100;
+  }
+
+  span {
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+}
+
+.c7n-task-detail-row {
+  margin-bottom: 12px;
+
+  div:first-child {
+    width: 11.5%;
+  }
+
+  div:last-child {
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.c7n-task-log-status {
+  color: white;
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-size: 12px;
+
+  &.failed {
+    background: #f44336;
+  }
+  &.running {
+    background: #4d90fe;
+  }
+  &.completed {
+    background: #1BC123;
+  }
+}
+
+
+

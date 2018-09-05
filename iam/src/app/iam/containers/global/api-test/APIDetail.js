@@ -163,7 +163,7 @@ export default class APIDetail extends Component {
     tableValue.unshift({
       name: '权限编码',
       value: code,
-    })
+    });
 
     const infoColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.property`} />,

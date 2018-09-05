@@ -157,6 +157,7 @@ export default class Organization extends Component {
                     label={<FormattedMessage id="global.organization.code" />}
                     autoComplete="off"
                     style={{ width: inputWidth }}
+                    maxLength={14}
                   />,
                 )}
               </FormItem>
@@ -177,6 +178,7 @@ export default class Organization extends Component {
                 label={<FormattedMessage id="global.organization.name" />}
                 autoComplete="off"
                 style={{ width: inputWidth }}
+                maxLength={32}
               />,
             )}
           </FormItem>

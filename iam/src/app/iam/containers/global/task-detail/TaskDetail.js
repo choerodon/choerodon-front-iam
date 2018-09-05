@@ -228,6 +228,7 @@ export default class TaskDetail extends Component {
       default:
         break;
     }
+
     return (
       <span className={`c7n-task-log-status ${obj.key}`}>
         {obj.value}

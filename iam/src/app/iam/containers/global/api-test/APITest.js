@@ -12,6 +12,7 @@ import querystring from 'query-string';
 import classnames from 'classnames';
 import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'global.apitest';
 const { Option } = Select;
@@ -206,12 +207,17 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
-      className: 'c7n-apitest-name',
+      width: '20%',
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
           // 控制展开的箭头
-          return <div><span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.get(name)) ? 'expanded' : 'collapsed'}`)} /><span>{name}</span></div>;
+          return (
+            <MouseOverWrapper text={name} width={0.18}>
+              <span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.get(name)) ? 'expanded' : 'collapsed'}`)} />
+              <span>{name}</span>
+            </MouseOverWrapper>
+          );
         } else {
           return (
             <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>
@@ -221,34 +227,43 @@ export default class APITest extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
+      width: '35%',
       key: 'url',
-      className: 'c7n-apitest-url',
       render: (text, record) => (
-        <Tooltip
-          title={text}
-          placement="bottomLeft"
-          overlayStyle={{ wordBreak: 'break-all' }}
-        >
-          <div className="urlContainer">{text}</div>
-        </Tooltip>
+        <MouseOverWrapper text={text} width={0.3}>
+          {text}
+        </MouseOverWrapper>
       ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
+      width: '30%',
       key: 'remark',
-      className: 'c7n-api-test-description',
-      // width: 475,
       render: (text, data) => {
         const { description, remark } = data;
         if (remark) {
-          return remark;
+          return (<MouseOverWrapper text={remark} width={0.26}>
+            {remark}
+          </MouseOverWrapper>);
         } else {
           return description;
         }
       },
     }, {
+      width: 160,
+      title: <FormattedMessage id={`${intlPrefix}.available.range`} />,
+      dataIndex: 'innerInterface',
+      key: 'innerInterface',
+      render: (text) => {
+        if (text === true) {
+          return <span>内部</span>;
+        } else if (text === false) {
+          return <span>外部</span>;
+        }
+      },
+    }, {
       title: '',
-      width: 100,
+      width: 56,
       key: 'action',
       align: 'right',
       render: (text, record) => {

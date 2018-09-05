@@ -730,7 +730,7 @@ export default class APIDetail extends Component {
                   <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.detail`} />} key="detail">
                     {this.getDetail()}
                   </TabPane>
-                  <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.test`} />} key="test">
+                  <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.test`} />} key="test" disabled={APITestStore.getApiDetail.innerInterface}>
                     {this.getTest()}
                   </TabPane>
                 </Tabs>

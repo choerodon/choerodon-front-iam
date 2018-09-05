@@ -81,6 +81,11 @@ const pageDetail = {
   'global.taskdetail.detail.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任',
   'global.taskdetail.detail.link': '',
 
+  // 执行记录
+  'global.execution.title': '平台"{name}"的执行记录',
+  'global.execution.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细。',
+  'global.execution.link': '',
+
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
   'global.microservice.description': '大型应用程序由一个或多个微服务组成。微服务可被独立部署，且为松耦合。每个微服务是专注于单一责任与功能的小型功能区块。',
@@ -614,6 +619,10 @@ const zh_CN = {
   'global.taskdetail.plan.execution.time': '计划执行时间',
   'global.taskdetail.actual.execution.time': '实际执行时间',
 
+  // 执行记录
+  'global.execution.header.title': '执行记录',
+  'global.execution.failed.reason': '失败原因',
+
 
   // 微服务管理
   'global.microservice.header.title': '微服务',
@@ -715,6 +724,7 @@ const zh_CN = {
   'global.apitest.table.name': '名称/方法',
   'global.apitest.table.path': '路径',
   'global.apitest.table.description': '描述',
+  'global.apitest.available.range': '可用范围',
   'global.apitest.interface.detail': '接口详情',
   'global.apitest.interface.test': '接口测试',
   'global.apitest.interface.info': '接口信息',

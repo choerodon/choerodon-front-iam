@@ -454,7 +454,7 @@ export default class EditRole extends Component {
                 dataIndex: 'code',
                 key: 'code',
                 render: text => (
-                  <MouseOverWrapper text={text} width={0.45}>
+                  <MouseOverWrapper text={text} width={0.4}>
                     {text}
                   </MouseOverWrapper>
                 ),
@@ -464,7 +464,7 @@ export default class EditRole extends Component {
                 dataIndex: 'description',
                 key: 'description',
                 render: text => (
-                  <MouseOverWrapper text={text} width={0.45}>
+                  <MouseOverWrapper text={text} width={0.4}>
                     {text}
                   </MouseOverWrapper>
                 ),

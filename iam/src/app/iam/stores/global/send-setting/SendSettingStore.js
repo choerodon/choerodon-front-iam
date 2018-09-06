@@ -10,6 +10,8 @@ class SendSettingStore {
 
   @observable template = [];
 
+  @observable pmTemplate = [];
+
   @observable currentTemplate = [];
 
   @action setData(data) {
@@ -42,6 +44,14 @@ class SendSettingStore {
 
   @computed get getTemplate() {
     return this.template;
+  }
+
+  @action setPmTemplate(data) {
+    this.pmTemplate = data;
+  }
+
+  @computed get getPmTemplate() {
+    return this.pmTemplate;
   }
 
 
@@ -82,6 +92,17 @@ class SendSettingStore {
         Choerodon.prompt(data.message);
       } else {
         this.setTemplate(data);
+      }
+    });
+  };
+
+  loadPmTemplate = (appType, orgId, businessType) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    axios.get(`notify/v1/notices/letters/templates/names${path}?business_type=${businessType}`).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setPmTemplate(data);
       }
     });
   }

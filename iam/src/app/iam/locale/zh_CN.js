@@ -759,6 +759,7 @@ const zh_CN = {
   'sendsetting.header.title': '发送设置',
   'sendsetting.modify': '修改发送设置',
   'sendsetting.template': '应用邮箱模板',
+  'sendsetting.pmtemplate': '应用站内信模板',
   'sendsetting.retrycount': '重发次数',
   'sendsetting.retrycount.required': '请输入重发次数',
   'sendsetting.retrycount.pattern': '请输入大于等于0且小于等于10的整数',

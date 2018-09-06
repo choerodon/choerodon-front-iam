@@ -49,6 +49,7 @@ export default class SendSetting extends Component {
 
   componentWillUnmount() {
     SendSettingStore.setTemplate([]);
+    SendSettingStore.setPmTemplate([]);
   }
 
   getInitState() {
@@ -124,6 +125,7 @@ export default class SendSetting extends Component {
     const { type, orgId } = this.setting;
     this.props.form.resetFields();
     SendSettingStore.loadTemplate(type, orgId, record.code);
+    SendSettingStore.loadPmTemplate(type, orgId, record.code);
     SendSettingStore.loadCurrentRecord(record.id, type, orgId).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
@@ -155,6 +157,7 @@ export default class SendSetting extends Component {
         });
         const body = {
           emailTemplateId: values.emailTemplateId === 'empty' ? null : values.emailTemplateId,
+          pmTemplateId: values.pmTemplateId === 'empty' ? null : values.pmTemplateId,
           retryCount: Number(values.retryCount),
           isSendInstantly: values.sendnow === 'instant',
           isManualRetry: values.manual === 'allow',
@@ -271,6 +274,36 @@ export default class SendSetting extends Component {
             {...formItemLayout}
           >
             {
+              getFieldDecorator('pmTemplateId', {
+                rules: [],
+                initialValue: !getCurrentRecord.pmTemplateId ? 'empty' : getCurrentRecord.pmTemplateId,
+              })(
+                <Select
+                  className="c7n-email-template-select"
+                  style={{ width: inputWidth }}
+                  label={<FormattedMessage id="sendsetting.pmtemplate" />}
+                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                >
+                  {
+
+                    SendSettingStore.getPmTemplate.length > 0 ? [<Option key="empty" value="empty">无</Option>].concat(
+                      SendSettingStore.getPmTemplate.map(({ name, id, code }) => (
+                        <Option key={id} value={id} title={name}>
+                          <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
+                            <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
+                          </Tooltip>
+                        </Option>
+                      )),
+                    ) : <Option key="empty" value="empty">无</Option>
+                  }
+                </Select>,
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {
               getFieldDecorator('retryCount', {
                 rules: [
                   {
@@ -341,7 +374,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.trigger.type" />,
       dataIndex: 'name',
       key: 'name',
-      width: '20%',
+      width: '15%',
       filters: [],
       filteredValue: filters.name || [],
       render: text => (
@@ -352,7 +385,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.code" />,
       dataIndex: 'code',
       key: 'code',
-      width: '20%',
+      width: '15%',
       filters: [],
       filteredValue: filters.code || [],
       render: text => (
@@ -375,7 +408,17 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.template" />,
       dataIndex: 'emailTemplateCode',
       key: 'emailTemplateCode',
-      width: '20%',
+      width: '15%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id="sendsetting.pmtemplate" />,
+      dataIndex: 'pmTemplateCode',
+      key: 'pmTemplateCode',
+      width: '15%',
       render: text => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}
@@ -402,7 +445,6 @@ export default class SendSetting extends Component {
         </Permission>
       ),
     }];
-
     return (
       <Page
         service={[

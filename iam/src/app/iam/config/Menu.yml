@@ -187,6 +187,12 @@
         sort: 2
         permission:
           - 'notify-service.send-setting-site.pageSite'
+    - "task-classname":
+        icon: classname
+        Routes: /iam/task-classname
+        sort: 3
+        permission:
+          - 'notify-service.send-setting-site.pageSite'
 
 # 事务管理
 "global-transaction":

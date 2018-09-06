@@ -31,6 +31,7 @@
 "task-dispatch": "Task Dispatch"
 "task-dispatch.task-detail": "Task Detail"
 "task-dispatch.execution-record": "Execution Record"
+"task-dispatch.task-classname": "Task Class Name"
 
 "rentsetting": "Organization settings"
 # organization

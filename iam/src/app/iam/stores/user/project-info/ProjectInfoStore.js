@@ -52,7 +52,6 @@ class ProjectInfoStore {
         this.loading = false;
       }));
   }
-
 }
 
 const projectInfoStore = new ProjectInfoStore();

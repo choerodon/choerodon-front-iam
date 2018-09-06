@@ -87,23 +87,34 @@ export default class UserMsg extends Component {
   };
 
   renderUserMsgCard() {
-    const innerHTML = UserMsgStore.getUserMsg.map(({ msg, title, id, isRead, reciveTime }) => (
-      <Card
-        key={id}
-        className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === id })}
-        title={this.renderMsgTitle(title, id, isRead, reciveTime)}
-        onHeadClick={() => this.handleCardClick(id)}
-        style={{ display: !isRead || this.state.showAll ? null : 'none' }}
-      >
-        <div dangerouslySetInnerHTML={{ __html: `${msg}` }} />
-      </Card>
-    ));
+    let visiableCardCount = 0;
+    const innerHTML = UserMsgStore.getUserMsg.map(({ msg, title, id, isRead, reciveTime }) => {
+      visiableCardCount += isRead ? 0 : 1;
+      return (
+        <Card
+          key={id}
+          className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === id })}
+          title={this.renderMsgTitle(title, id, isRead, reciveTime)}
+          onHeadClick={() => this.handleCardClick(id)}
+          style={{ display: !isRead || this.state.showAll ? null : 'none' }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: `${msg}` }} />
+        </Card>
+      );
+    });
     return (
       <div>
-        {innerHTML}
+        {(visiableCardCount !== 0 || this.state.showAll) ? innerHTML : this.renderEmpty()}
       </div>
     );
   }
+
+  renderEmpty = () => (
+    <div>
+      <div className="c7n-user-msg-empty-icon" />
+      <div className="c7n-user-msg-empty-icon-text"><FormattedMessage id="user.usermsg.empty" /></div>
+    </div>
+  );
 
   render() {
     const user = UserMsgStore.getUserInfo;

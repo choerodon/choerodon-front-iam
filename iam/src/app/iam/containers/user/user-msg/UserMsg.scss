@@ -1,4 +1,20 @@
 .c7n-user-msg {
+  &-empty-icon {
+    height: 120px;
+    width: 120px;
+    margin: 80px auto 0;
+    background-image: url('./icon/empty.svg');
+    background-repeat: no-repeat;
+    background-size: auto 120px;
+  }
+  &-empty-icon-text {
+    margin: 0 auto;
+    text-align: center;
+    color: #747474;
+    font-size: 15px;
+    font-weight: 400;
+    padding-top: 20px;
+  }
   &-btns {
     width: 96%;
     margin: auto;

@@ -1193,6 +1193,7 @@ const zh_CN = {
   'user.usermsg.all': '全部消息',
   'user.usermsg.markread': '标记为已读',
   'user.usermsg.markreadall': '全部标记为已读',
+  'user.usermsg.empty': '已看完所有通知！',
 
 
   // 角色分配

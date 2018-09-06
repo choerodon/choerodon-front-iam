@@ -70,21 +70,30 @@ const pageDetail = {
 
   // 任务明细
   'global.taskdetail.title': '平台"{name}"的任务明细',
-  'global.taskdetail.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细。',
+  'global.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
   'global.taskdetail.link': '',
 
   'global.taskdetail.create.title': '在平台"{name}"中创建任务',
-  'global.taskdetail.create.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细。',
+  'global.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
   'global.taskdetail.create.link': '',
 
   'global.taskdetail.detail.title': '"{name}"的任务详情',
-  'global.taskdetail.detail.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任',
+  'global.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
   'global.taskdetail.detail.link': '',
 
   // 执行记录
   'global.execution.title': '平台"{name}"的执行记录',
-  'global.execution.description': '任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细任务明细。',
+  'global.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
   'global.execution.link': '',
+
+  // 任务类名
+  'global.task.classname.title': '平台"{name}"的任务类名',
+  'global.task.classname.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
+  'global.task.classname.link': '',
+
+  'global.task.classname.class.title': '"{name}"的类详情',
+  'global.task.classname.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
+  'global.task.classname.class.link': '',
 
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
@@ -647,6 +656,19 @@ const zh_CN = {
   'global.execution.header.title': '执行记录',
   'global.execution.failed.reason': '失败原因',
 
+  // 任务类名
+  'global.task.classname.header.title': '任务类名',
+  'global.task.classname.code': '类编码',
+  'global.task.classname.belong.service': '所属微服务',
+  'global.task.classname.classname': '类名',
+  'global.task.classname.online.instance.count': '在线实例数',
+  'global.task.classname.class.header.title': '类详情',
+  'global.task.classname.params.list': '参数列表',
+  'global.task.classname.params.json': 'JSON',
+  'global.task.classname.params.name': '参数名称',
+  'global.task.classname.params.description': '参数描述',
+  'global.task.classname.params.type': '参数类型',
+  'global.task.classname.params.default': '默认值',
 
   // 微服务管理
   'global.microservice.header.title': '微服务',

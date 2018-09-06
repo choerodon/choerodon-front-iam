@@ -8,7 +8,6 @@ import 'codemirror/theme/neat.css';
 import 'codemirror/addon/fold/foldgutter.css';
 
 export default class YamlAce extends Component {
-
   static defaultProps = {
     readOnly: false,
     options: {

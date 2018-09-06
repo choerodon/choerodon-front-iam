@@ -4,6 +4,7 @@ import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, 
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
+import TaskDetailStore from '../../../stores/global/task-detail';
 import './TaskDetail.scss';
 
 const intlPrefix = 'global.taskdetail';
@@ -141,12 +142,12 @@ export default class TaskDetail extends Component {
   getInitState() {
     return {
       isShowSidebar: false,
-      selectType: 'create', // 当前侧边栏为创建or详情
       isSubmitting: false,
+      selectType: 'create', // 当前侧边栏为创建or详情
       triggerType: 'easy', // 创建任务默认触发类型
       loading: true,
       logLoading: true,
-      showInfo: true,
+      showLog: false,
       currentRecord: '',
       pagination: {
         current: dataSource.number + 1,
@@ -173,6 +174,50 @@ export default class TaskDetail extends Component {
     };
   }
 
+  // componentWillMount() {
+  //   this.loadTaskDetail();
+  // }
+  //
+  // loadTaskDetail(paginationIn, sortIn, filtersIn, paramsIn) {
+  //   const {
+  //     pagination: paginationState,
+  //     sort: sortState,
+  //     filters: filtersState,
+  //     params: paramsState,
+  //   } = this.state;
+  //   const pagination = paginationIn || paginationState;
+  //   const sort = sortIn || sortState;
+  //   const filters = filtersIn || filtersState;
+  //   const params = paramsIn || paramsState;
+  //   // 防止标签闪烁
+  //   this.setState({ filters, loading: true });
+  //   TaskDetailStore.loadData(pagination, filters, sort, params).then((data) => {
+  //     TaskDetailStore.setData(data.content);
+  //     this.setState({
+  //       pagination: {
+  //         current: data.number + 1,
+  //         pageSize: data.size,
+  //         total: data.totalElements,
+  //       },
+  //       loading: false,
+  //       sort,
+  //       filters,
+  //       params,
+  //     });
+  //   }).catch((error) => {
+  //     Choerodon.handleResponseError(error);
+  //     this.setState({
+  //       loading: false,
+  //     });
+  //   });
+  // }
+
+
+  /**
+   * 渲染任务明细列表状态列
+   * @param status
+   * @returns {*}
+   */
   renderStatus(status) {
     let obj = {};
     let type;
@@ -197,86 +242,18 @@ export default class TaskDetail extends Component {
     }
 
     return (
-      <div className="c7n-task-container-status">
+      <span className="c7n-task-container-status">
         <Icon type={type} className={`${obj.key}`} />
         <span>{obj.value}</span>
-      </div>
-    );
-  }
-
-  renderTaskStatus(taskStatus) {
-    let obj = {};
-    switch (taskStatus) {
-      case 'RUNNING':
-        obj = {
-          key: 'running',
-          value: '进行中',
-        };
-        break;
-      case 'FAILED':
-        obj = {
-          key: 'failed',
-          value: '失败',
-        };
-        break;
-      case 'COMPLETED':
-        obj = {
-          key: 'completed',
-          value: '完成',
-        };
-        break;
-      default:
-        break;
-    }
-
-    return (
-      <span className={`c7n-task-log-status ${obj.key}`}>
-        {obj.value}
       </span>
     );
   }
 
-
-  handleOpen = (selectType, record = {}) => {
-    this.props.form.resetFields();
-    this.setState({
-      isShowSidebar: true,
-      selectType,
-    });
-    if (selectType === 'create') {
-      setTimeout(() => {
-        this.creatTaskFocusInput.input.focus();
-      }, 10);
-    } else {
-      this.setState({
-        currentRecord: record,
-      });
-    }
-  }
-
-  handleCancel = () => {
-    this.setState({
-      isShowSidebar: false,
-    });
-  }
-
-  // 渲染侧边栏成功按钮文字
-  renderSidebarOkText() {
-    const { selectType } = this.state;
-    if (selectType === 'create') {
-      return <FormattedMessage id="create" />;
-    } else {
-      return <FormattedMessage id="close" />;
-    }
-  }
-
-  // 创建任务切换触发类型
-  changeValue(e) {
-    this.setState({
-      triggerType: e.target.value,
-    });
-  }
-
+  /**
+   * 渲染任务明细列表启停用按钮
+   * @param record 表格行数据
+   * @returns {*}
+   */
   showActionButton(record) {
     if (record.status === 'enabled') {
       return (
@@ -316,6 +293,64 @@ export default class TaskDetail extends Component {
     }
   }
 
+  /**
+   * 开启侧边栏
+   * @param selectType create/detail
+   * @param record 列表行数据
+   */
+  handleOpen = (selectType, record = {}) => {
+    this.props.form.resetFields();
+    this.setState({
+      isShowSidebar: true,
+      selectType,
+      showLog: false,
+    });
+    if (selectType === 'create') {
+      setTimeout(() => {
+        this.creatTaskFocusInput.input.focus();
+      }, 10);
+    } else {
+      this.setState({
+        currentRecord: record,
+      });
+    }
+  }
+
+  // 关闭侧边栏
+  handleCancel = () => {
+    this.setState({
+      isShowSidebar: false,
+    });
+  }
+
+  /**
+   * 侧边栏tab切换
+   * @param showLog
+   */
+  handleTabChange = (showLog) => {
+    this.setState({
+      showLog: showLog === 'log',
+    });
+  }
+
+
+  // 渲染侧边栏成功按钮文字
+  renderSidebarOkText() {
+    const { selectType } = this.state;
+    if (selectType === 'create') {
+      return <FormattedMessage id="create" />;
+    } else {
+      return <FormattedMessage id="close" />;
+    }
+  }
+
+  // 创建任务切换触发类型
+  changeValue(e) {
+    this.setState({
+      triggerType: e.target.value,
+    });
+  }
+
   // 创建任务提交
   handleSubmit = (e) => {
     e.preventDefault();
@@ -334,12 +369,44 @@ export default class TaskDetail extends Component {
     }
   }
 
-  handleTabChange = (showInfo) => {
-    this.setState({
-      showInfo: showInfo === 'info',
-    });
+  /**
+   * 渲染任务日志列表状态列
+   * @param taskStatus
+   * @returns {*}
+   */
+  renderTaskStatus(taskStatus) {
+    let obj = {};
+    switch (taskStatus) {
+      case 'RUNNING':
+        obj = {
+          key: 'running',
+          value: '进行中',
+        };
+        break;
+      case 'FAILED':
+        obj = {
+          key: 'failed',
+          value: '失败',
+        };
+        break;
+      case 'COMPLETED':
+        obj = {
+          key: 'completed',
+          value: '完成',
+        };
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <span className={`c7n-task-log-status ${obj.key}`}>
+        {obj.value}
+      </span>
+    );
   }
 
+  // 渲染创建任务
   renderCreateContent() {
     const { intl } = this.props;
     const { selectType, triggerType } = this.state;
@@ -539,9 +606,10 @@ export default class TaskDetail extends Component {
     );
   }
 
+  // 渲染任务详情
   renderDetailContent() {
     const { intl: { formatMessage } } = this.props;
-    const { selectType, showInfo } = this.state;
+    const { selectType, showLog } = this.state;
     const { logSort: { columnKey, order }, logFilters, logParams, logPagination, logLoading } = this.state;
     const {
       currentRecord: {
@@ -624,11 +692,11 @@ export default class TaskDetail extends Component {
         code={`${intlPrefix}.detail`}
         values={{ name: '名称测试' }}
       >
-        <Tabs activeKey={showInfo ? 'info' : 'log'} onChange={this.handleTabChange}>
+        <Tabs activeKey={showLog ? 'log' : 'info'} onChange={this.handleTabChange}>
           <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.info`} />} key="info" />
           <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.log`} />} key="log" />
         </Tabs>
-        {showInfo
+        {!showLog
           ? (<div>
             {
               infoList.map(({ key, value }) =>
@@ -764,9 +832,9 @@ export default class TaskDetail extends Component {
             okText={this.renderSidebarOkText()}
             okCancel={selectType !== 'detail'}
             confirmLoading={isSubmitting}
+            className="c7n-task-detail-sidebar"
           >
-            {selectType === 'create' && this.renderCreateContent()}
-            {selectType === 'detail' && this.renderDetailContent()}
+            {selectType === 'create' ? this.renderCreateContent() : this.renderDetailContent()}
           </Sidebar>
         </Content>
       </Page>

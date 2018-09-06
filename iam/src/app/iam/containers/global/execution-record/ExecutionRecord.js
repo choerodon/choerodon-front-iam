@@ -4,6 +4,7 @@ import { Button, Table, Tooltip, Input, Popover, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
+import ExecutionRecordStore from '../../../stores/global/execution-record';
 import './ExecutionRecord.scss';
 
 const intlPrefix = 'global.execution';
@@ -52,7 +53,6 @@ const dataSource = {
 @withRouter
 @injectIntl
 @inject('AppState')
-
 export default class ExecutionRecord extends Component {
   state = this.getInitState();
 
@@ -72,6 +72,45 @@ export default class ExecutionRecord extends Component {
       params: [],
     };
   }
+
+  // componentWillMount() {
+  //   this.loadExecutionRecord();
+  // }
+  //
+  // loadExecutionRecord(paginationIn, sortIn, filtersIn, paramsIn) {
+  //   const {
+  //     pagination: paginationState,
+  //     sort: sortState,
+  //     filters: filtersState,
+  //     params: paramsState,
+  //   } = this.state;
+  //   const pagination = paginationIn || paginationState;
+  //   const sort = sortIn || sortState;
+  //   const filters = filtersIn || filtersState;
+  //   const params = paramsIn || paramsState;
+  //   // 防止标签闪烁
+  //   this.setState({ filters, loading: true });
+  //   ExecutionRecordStore.loadData(pagination, filters, sort, params).then((data) => {
+  //     ExecutionRecordStore.setData(data.content);
+  //     this.setState({
+  //       pagination: {
+  //         current: data.number + 1,
+  //         pageSize: data.size,
+  //         total: data.totalElements,
+  //       },
+  //       loading: false,
+  //       sort,
+  //       filters,
+  //       params,
+  //     });
+  //   }).catch((error) => {
+  //     Choerodon.handleResponseError(error);
+  //     this.setState({
+  //       loading: false,
+  //     });
+  //   });
+  // }
+
 
   renderStatus(status) {
     let obj = {};
@@ -152,7 +191,7 @@ export default class ExecutionRecord extends Component {
       title: <FormattedMessage id={`${tablePrefix}.actual.execution.time`} />,
       dataIndex: 'actualExecutionTime',
       key: 'actualExecutionTime',
-    }]
+    }];
     return (
       <Page>
         <Header

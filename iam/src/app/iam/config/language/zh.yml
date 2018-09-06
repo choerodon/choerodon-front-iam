@@ -31,6 +31,7 @@
 "task-dispatch": "任务调度"
 "task-dispatch.task-detail": "任务明细"
 "task-dispatch.execution-record": "执行记录"
+"task-dispatch.task-classname": "任务类名"
 
 "rentsetting": 组织设置
 # organization

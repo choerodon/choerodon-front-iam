@@ -419,13 +419,13 @@ export default class MailTemplate extends Component {
   getPermission() {
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    let createService = ['notify-service.email-template-site.create'];
-    let modifyService = ['notify-service.email-template-site.update'];
-    let deleteService = ['notify-service.email-template-site.delete'];
+    let createService = ['notify-service.pm-template-site.create'];
+    let modifyService = ['notify-service.pm-template-site.update'];
+    let deleteService = ['notify-service.pm-template-site.delete'];
     if (type === 'organization') {
-      createService = ['notify-service.email-template-org.create'];
-      modifyService = ['notify-service.email-template-org.update'];
-      deleteService = ['notify-service.email-template-org.delete'];
+      createService = ['notify-service.pm-template-org.create'];
+      modifyService = ['notify-service.pm-template-org.update'];
+      deleteService = ['notify-service.pm-template-org.delete'];
     }
     return {
       createService,
@@ -616,14 +616,14 @@ export default class MailTemplate extends Component {
     return (
       <Page
         service={[
-          'notify-service.email-template-site.pageSite',
-          'notify-service.email-template-org.pageOrganization',
-          'notify-service.email-template-site.create',
-          'notify-service.email-template-org.create',
-          'notify-service.email-template-site.update',
-          'notify-service.email-template-org.update',
-          'notify-service.email-template-site.delete',
-          'notify-service.email-template-org.delete',
+          'notify-service.pm-template-site.pageSite',
+          'notify-service.pm-template-org.pageOrganization',
+          'notify-service.pm-template-site.create',
+          'notify-service.pm-template-org.create',
+          'notify-service.pm-template-site.update',
+          'notify-service.pm-template-org.update',
+          'notify-service.pm-template-site.delete',
+          'notify-service.pm-template-org.delete',
         ]}
       >
         <Header

@@ -7,7 +7,6 @@ import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
 import UserMsgStore from '../../../stores/user/user-msg/UserMsgStore';
-import User from '../../organization/user/User';
 
 const intlPrefix = 'user.usermsg';
 
@@ -62,6 +61,11 @@ export default class UserMsg extends Component {
   }
 
   handleCheckboxChange = (id) => {
+    if (UserMsgStore.getSelectMsg.has(id)) {
+      UserMsgStore.deleteSelectMsgById(id);
+    } else {
+      UserMsgStore.addSelectMsgById(id);
+    }
     this.setState({
       needExpand: false,
     });
@@ -110,6 +114,7 @@ export default class UserMsg extends Component {
         >
           <Button
             icon="refresh"
+            onClick={this.refresh}
           >
             <FormattedMessage id="refresh" />
           </Button>

@@ -245,7 +245,7 @@ export default class MailTemplate extends Component {
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
     const path = this.mail.type === 'site' ? '' : `/organizations/${this.mail.orgId}`;
-    axios.get(`notify/v1/notices/emails/templates/check${path}?code=${value}`).then((mes) => {
+    axios.get(`notify/v1/notices/letters/templates/check${path}?code=${value}`).then((mes) => {
       if (mes.failed) {
         callback(intl.formatMessage({ id: 'inmailtemplate.code.exist' }));
       } else {

@@ -149,7 +149,12 @@
         Routes: /iam/inmail-template
         sort: 3
         permission:
-        - 'notify-service.email-template-site.pageSite'
+        - 'notify-service.pm-template-site.pageSite'
+        - 'notify-service.pm-template-site.pageSite'
+        - 'notify-service.pm-template-site.create'
+        - 'notify-service.pm-template-site.update'
+        - 'notify-service.pm-template-site.query'
+        - 'notify-service.send-setting-site.listNames'
     - "mail-setting":
         icon: contact_mail
         Routes: /iam/mail-setting
@@ -313,7 +318,12 @@
         Routes: /iam/inmail-template
         sort: 3
         permission:
-        - 'notify-service.email-template-site.pageSite'
+          - 'notify-service.pm-template-org.pageOrganization'
+          - 'notify-service.pm-template-org.create'
+          - 'notify-service.pm-template-org.update'
+          - 'notify-service.pm-template-org.delete'
+          - 'notify-service.pm-template-org.query'
+          - 'notify-service.send-setting-org.listNames'
     - "msg-record-organization":
         icon: speaker_notes
         Routes: /iam/msg-record

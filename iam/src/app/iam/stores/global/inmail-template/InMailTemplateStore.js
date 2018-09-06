@@ -1,5 +1,5 @@
 /**
- * Created by chenbinjie on 2018/9/4.
+ * Created by chenbinjie on 2018/8/6.
  */
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
@@ -7,32 +7,42 @@ import querystring from 'query-string';
 
 @store('InMailTemplateStore')
 class InMailTemplateStore {
+  @observable apiData = [];
+
   @observable loading = true;
 
   @observable mailTemplate = [];
 
   @observable templateType = [];
 
-  @observable currentCode = 'global.inmail-template';
+  @observable currentDetail = {};
 
-  @action
-  setLoading(flag) {
+  @action setLoading(flag) {
     this.loading = flag;
   }
 
-  @computed
-  get getLoading() {
-    return this.loading;
+  @action setMailTemplate(data) {
+    this.mailTemplate = data;
   }
 
-  @action
-  setCurrentCode(code) {
-    this.currentCode = code;
+  @action setTemplateType(data) {
+    this.templateType = data;
   }
 
-  @computed
-  get getCurrentCode() {
-    return this.currentCode;
+  @computed get getTemplateType() {
+    return this.templateType;
+  }
+
+  @action setCurrentDetail(data) {
+    this.currentDetail = data;
+  }
+
+  @computed get getCurrentDetail() {
+    return this.currentDetail;
+  }
+
+  getMailTemplate() {
+    return this.mailTemplate;
   }
 
   loadMailTemplate = (
@@ -58,12 +68,38 @@ class InMailTemplateStore {
       queryObj.sort = sorter.join(',');
     }
     if (appType === 'site') {
-      return axios.get(`/notify/v1/notices/emails/templates?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
+      return axios.get(`/notify/v1/notices/letters/templates?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
     } else {
-      return axios.get(`/notify/v1/notices/emails/templates/organizations/${orgId}?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
+      return axios.get(`/notify/v1/notices/letters/templates/organizations/${orgId}?page=${current - 1}&size=${pageSize}&${querystring.stringify(queryObj)}`);
     }
   };
+
+  loadTemplateType = (appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.get(`/notify/v1/notices/send_settings/names${path}`);
+  };
+
+  createTemplate = (data, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.post(`notify/v1/notices/letters/templates${path}`, JSON.stringify(data));
+  };
+
+  deleteMailTemplate = (id, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.delete(`/notify/v1/notices/letters/templates/${id}${path}`);
+  };
+
+  getTemplateDetail = (id, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.get(`notify/v1/notices/letters/templates/${id}${path}`);
+  };
+
+
+  updateTemplateDetail = (id, data, appType, orgId) => {
+    const path = appType === 'site' ? '' : `/organizations/${orgId}`;
+    return axios.put(`notify/v1/notices/letters/templates/${id}${path}`, JSON.stringify(data));
+  }
 }
 
-const inMailTemplateStore = new InMailTemplateStore();
-export default inMailTemplateStore;
+const mailTemplateStore = new InMailTemplateStore();
+export default mailTemplateStore;

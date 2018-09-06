@@ -183,6 +183,18 @@ const pageDetail = {
   'global.inmailtemplate.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模板统一了用户接收的站内信内容。',
   'global.inmailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
+  'global.inmailtemplate.create.title': '在平台"{name}"中创建站内信模板',
+  'global.inmailtemplate.create.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模板统一了用户接收的站内信内容。',
+  'global.inmailtemplate.create.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
+
+  'global.inmailtemplate.baseon.title': '在平台"{name}"中创建站内信模板',
+  'global.inmailtemplate.baseon.description': '基于预定义创建站内信模板，您可以编辑该站内信模板的主题、内容。',
+  'global.inmailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
+
+  'global.inmailtemplate.modify.title': '修改站内信模板"{name}"',
+  'global.inmailtemplate.modify.description': '修改站内信模板可以让您根据自己的需求，修改发送的主题、内容。',
+  'global.inmailtemplate.modify.link': `${docServer}/user-guide/system-configuration/message/email-template/`,
+
 
   // 邮箱配置
   'global.mailsetting.title': '平台"{name}"的邮箱配置',
@@ -325,6 +337,18 @@ const pageDetail = {
   'organization.inmailtemplate.title': '组织"{name}"的站内信模板',
   'organization.inmailtemplate.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模板统一了用户接收的站内信内容。',
   'organization.inmailtemplate.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
+  'organization.inmailtemplate.create.title': '在组织"{name}"中创建站内信模板',
+  'organization.inmailtemplate.create.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模版统一了用户接收的站内信内容。',
+  'organization.inmailtemplate.create.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
+  'organization.inmailtemplate.baseon.title': '在组织"{name}"中创建站内信模板',
+  'organization.inmailtemplate.baseon.description': '基于预定义创建站内信模板，您可以编辑该站内信模板的主题、内容。',
+  'organization.inmailtemplate.baseon.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
+
+  'organization.inmailtemplate.modify.title': '修改站内信模板"{name}"',
+  'organization.inmailtemplate.modify.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模版统一了用户接收的站内信内容。',
+  'organization.inmailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
 
   // 项目设置
@@ -811,6 +835,23 @@ const zh_CN = {
   'inmailtemplate.table.code': '编码',
   'inmailtemplate.table.mailtype': '短信类型',
   'inmailtemplate.table.fromtype': '来源',
+  'inmailtemplate.delete.owntitle': '删除站内信模板',
+  'inmailtemplate.delete.owncontent': '确定要删除站内信模板"{name}"吗？',
+  'inmailtemplate.create': '创建模板',
+  'inmailtemplate.modify': '修改模板',
+  'inmailtemplate.code': '模板编码',
+  'inmailtemplate.name': '模板名称',
+  'inmailtemplate.type': '站内信类型',
+  'inmailtemplate.title': '站内信标题',
+  'inmailtemplate.predefined': '预定义',
+  'inmailtemplate.selfdefined': '自定义',
+  'inmailtemplate.code.required': '请输入模板编码',
+  'inmailtemplate.name.required': '请输入模板名称',
+  'inmailtemplate.type.required': '请选择模板类型',
+  'inmailtemplate.title.required': '请输入站内信标题',
+  'inmailtemplate.mail.content': '站内信内容',
+  'inmailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
+  'inmailtemplate.mailcontent.tip': '模板中的参数变量通过`${}`进行替换，在发送时，将`${}`替换成对应的实际变量。登录名:${loginName}',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',

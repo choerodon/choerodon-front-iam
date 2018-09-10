@@ -376,7 +376,7 @@ export default class APIDetail extends Component {
         let editableNode;
         if (!record.type) {
           editableNode = (
-            <div style={{ width: '50%' }}>
+            <div style={{ width: '50%' }} className="c7n-TextEditToggle-text">
               <FormItem>
                 {getFieldDecorator('bodyData', {
                   rules: [{
@@ -384,7 +384,10 @@ export default class APIDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
-                  <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
+                  <div className="c7n-TextEditToggle-text">
+                    <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />
+                    <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
+                  </div>,
                 )}
               </FormItem>
             </div>);
@@ -418,9 +421,12 @@ export default class APIDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
-                  <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />,
-                )}
+                  <div className="c7n-TextEditToggle-text">
+                    <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />
+                    <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
+                  </div>)}
               </FormItem>
+
             </div>);
         } else if (record.type === 'file') {
           editableNode = (
@@ -442,8 +448,9 @@ export default class APIDetail extends Component {
                   message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                 }],
               })(
-                <div style={{ width: '50%' }}>
-                  <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                <div style={{ width: '50%' }} className="c7n-TextEditToggle-text">
+                  <Input onFocus={this.inputOnFocus} autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                  <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
                 </div>,
               )}
             </FormItem>

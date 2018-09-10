@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
+import ExecutableProgram from "./global/executable-program/ExecutableProgram";
 
 // global 对应目录
 const apiTest = asyncRouter(() => import('./global/api-test'));
@@ -27,7 +28,7 @@ const dashboardSetting = asyncRouter(() => import('./global/dashboard-setting'))
 const sendSetting = asyncRouter(() => import('./global/send-setting'));
 const taskDetail = asyncRouter(() => import('./global/task-detail'));
 const executionRecord = asyncRouter(() => import('./global/execution-record'));
-const taskClassName = asyncRouter(() => import('./global/task-classname'));
+const executableProgram = asyncRouter(() => import('./global/executable-program'));
 
 
 // organization
@@ -79,7 +80,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/sms-setting`} component={smsSetting} />
           <Route path={`${match.url}/task-detail`} component={taskDetail} />
           <Route path={`${match.url}/execution-record`} component={executionRecord} />
-          <Route path={`${match.url}/task-classname`} component={taskClassName} />
+          <Route path={`${match.url}/executable-program`} component={executableProgram} />
           <Route path={`${match.url}/dashboard-setting`} component={dashboardSetting} />
           <Route path={`${match.url}/client`} component={client} />
           <Route path={`${match.url}/ldap`} component={ldap} />

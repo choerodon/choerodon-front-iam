@@ -2,8 +2,8 @@ import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import querystring from 'query-string';
 
-@store('TaskClassNameStore')
-class TaskClassNameStore {
+@store('ExecutableProgramStore')
+class ExecutableProgramStore {
   @observable data = [];
 
   @action setData(data) {
@@ -39,5 +39,5 @@ class TaskClassNameStore {
   }
 }
 
-const taskClassNameStore = new TaskClassNameStore();
-export default taskClassNameStore;
+const executableProgramStore = new ExecutableProgramStore();
+export default executableProgramStore;

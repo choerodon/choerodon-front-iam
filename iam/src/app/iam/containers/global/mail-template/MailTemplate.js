@@ -21,6 +21,7 @@ import Editor from '../../../components/editor';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const { TextArea } = Input;
 
 // 公用方法类
 class MailTemplateType {
@@ -60,6 +61,7 @@ export default class MailTemplate extends Component {
       editorContent: null,
       isShowSidebar: false,
       selectType: 'create',
+      changedHTML: null,
       isSubmitting: false,
       pagination: {
         current: 1,
@@ -90,6 +92,8 @@ export default class MailTemplate extends Component {
    */
   handleOpen = (selectType, record = {}) => {
     this.props.form.resetFields();
+    const htmlContainer = document.getElementsByClassName('c7n-editor-changedHTML-container')[0];
+    if (htmlContainer) htmlContainer.style.display = 'none';
     if (!MailTemplateStore.getTemplateType.length) {
       this.loadTemplateType(this.mail.type, this.mail.orgId);
     }
@@ -414,7 +418,7 @@ export default class MailTemplate extends Component {
         </Form>
       </Content>
     );
-  }z
+  }
 
   getPermission() {
     const { AppState } = this.props;

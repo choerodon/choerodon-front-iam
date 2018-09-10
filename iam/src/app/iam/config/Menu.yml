@@ -17,7 +17,7 @@
     - "menu-management":
         icon: view_list
         Routes: /iam/menu-setting
-        sort: 2
+        sort: 6
         permission:
           - 'iam-service.menu.create'
           - 'iam-service.menu.saveListTree'
@@ -27,13 +27,13 @@
     - "role-label":
         icon: role_tag
         Routes: /iam/role-label
-        sort: 3
+        sort: 2
         permission:
           - 'iam-service.label.listByType'
     - "role":
         icon: assignment_ind
         Routes: /iam/role
-        sort: 4
+        sort: 3
         permission:
           - 'iam-service.role.create'
           - 'iam-service.role.createBaseOnRoles'
@@ -48,7 +48,7 @@
     - "member-role-global":
         icon: person_add
         Routes: /iam/member-role
-        sort: 5
+        sort: 4
         permission:
           - 'iam-service.role-member.createOrUpdateOnSiteLevel'
           - 'iam-service.role-member.deleteOnSiteLevel'
@@ -58,7 +58,7 @@
     - "root-user":
         icon: root
         Routes: /iam/root-user
-        sort: 6
+        sort: 5
         permission:
           - 'iam-service.user.pagingQueryAdminUsers'
           - 'iam-service.user.addDefaultUsers'
@@ -75,7 +75,7 @@
 # 微服务管理
 "microservice":
   icon: micro
-  sort: 2
+  sort: 3
   site:
     - "micro":
         icon: microservice
@@ -114,7 +114,7 @@
 # api管理
 "api":
   icon: API
-  sort: 3
+  sort: 2
   site:
     - "api-test":
         icon: APItest
@@ -126,7 +126,7 @@
 # 消息中心
 "msg-center":
   icon: center
-  sort: 4
+  sort: 6
   site:
     - "send-setting":
         icon: mail_set
@@ -189,7 +189,7 @@
           - 'notify-service.send-setting-site.pageSite'
     - "task-classname":
         icon: classname
-        Routes: /iam/task-classname
+        Routes: /iam/executable-program
         sort: 3
         permission:
           - 'notify-service.send-setting-site.pageSite'
@@ -197,7 +197,7 @@
 # 事务管理
 "global-transaction":
   icon: developer_board
-  sort: 6
+  sort: 4
   site:
     - "saga":
         icon: saga_define

@@ -4,12 +4,13 @@ import { Button, Select, Table, Tooltip, Modal, Form, Input, Popover, Icon, Tabs
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
-import TaskClassNameStore from '../../../stores/global/task-classname';
+import ExecutableProgramStore from '../../../stores/global/executable-program';
 import jsonFormat from '../../../common/json-format';
+import './ExecutableProgram.scss';
 
 const { Sidebar } = Modal;
 const { TabPane } = Tabs;
-const intlPrefix = 'global.task.classname';
+const intlPrefix = 'global.executable.program';
 const dataSource = {
   totalPages: 1,
   totalElements: 3,
@@ -61,7 +62,7 @@ const dataSource = {
 @injectIntl
 @inject('AppState')
 
-export default class TaskDetail extends Component {
+export default class ExecutableProgram extends Component {
   state = this.getInitState();
 
   getInitState() {
@@ -271,7 +272,7 @@ export default class TaskDetail extends Component {
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
-            title={<FormattedMessage id={`${intlPrefix}.class.header.title`} />}
+            title={<FormattedMessage id={`${intlPrefix}.program.header.title`} />}
             visible={isShowSidebar}
             onOk={this.handleOk}
             okText={<FormattedMessage id="close" />}

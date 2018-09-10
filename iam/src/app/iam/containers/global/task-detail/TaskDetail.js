@@ -304,6 +304,7 @@ export default class TaskDetail extends Component {
       isShowSidebar: true,
       selectType,
       showLog: false,
+      triggerType: 'easy',
     });
     if (selectType === 'create') {
       setTimeout(() => {

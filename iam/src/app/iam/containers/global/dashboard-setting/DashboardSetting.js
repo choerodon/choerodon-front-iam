@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { toJS } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, IconSelect, Input, Modal, Select, Table, Tabs, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, IconSelect, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './DashboardSetting.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import RoleStore from '../../../stores/global/role/RoleStore';
 
 const { Sidebar } = Modal;
+const { Option } = Select;
 
 const intlPrefix = 'global.dashboard-setting';
 const FormItem = Form.Item;
@@ -37,6 +39,12 @@ class DashboardSetting extends Component {
     this.fetchData();
   }
 
+  handleRoleClick = () => {
+    const { DashboardSettingStore } = this.props;
+    DashboardSettingStore.setNeedUpdateRoles(true);
+    DashboardSettingStore.setNeedRoles(!DashboardSettingStore.editData.needRoles);
+  };
+
   handleRefresh = () => {
     this.props.DashboardSettingStore.refresh();
   };
@@ -45,7 +53,7 @@ class DashboardSetting extends Component {
     const { form, intl, DashboardStore, DashboardSettingStore } = this.props;
     form.validateFields((error, values, modify) => {
       if (!error) {
-        if (modify) {
+        if (modify || DashboardSettingStore.needUpdateRoles) {
           DashboardSettingStore.updateData(values).then((data) => {
             if (DashboardStore) {
               DashboardStore.updateCachedData(data);
@@ -68,14 +76,23 @@ class DashboardSetting extends Component {
   };
 
   fetchData(pagination, filters, sort, params) {
+    const { DashboardSettingStore } = this.props;
     this.props.DashboardSettingStore.loadData(pagination, filters, sort, params);
+    RoleStore.loadRole({ pageSize: 999 }, {}, {}).then((data) => {
+      data.content.forEach((v) => {
+        DashboardSettingStore.roleMap.set(v.id, v);
+      });
+    });
   }
 
   editCard(record) {
     const { DashboardSettingStore, form } = this.props;
-    form.resetFields();
+    RoleStore.loadRole({ pageSize: 999 }, {}, { level: record.level }).then((data) => {
+      RoleStore.setRoles(data.content);
+    });
     DashboardSettingStore.setEditData(record);
     DashboardSettingStore.showSideBar();
+    form.resetFields();
     setTimeout(() => {
       this.editFocusInput.input.focus();
     }, 10);
@@ -179,10 +196,17 @@ class DashboardSetting extends Component {
     ];
   }
 
+  renderRoleSelect = () => {
+    const roles = RoleStore.getRoles;
+    return roles.map(item =>
+      <Option key={item.id} value={item.id}>{item.name}</Option>);
+  };
+
   renderForm() {
+    const roles = RoleStore.getRoles;
     const {
       form: { getFieldDecorator }, intl,
-      DashboardSettingStore: { editData: { code, name, level, icon, title, namespace } },
+      DashboardSettingStore: { editData: { code, name, level, icon, title, namespace, roleIds, needRoles } },
     } = this.props;
     return (
       <Content
@@ -256,6 +280,45 @@ class DashboardSetting extends Component {
                 />,
               )
             }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('roleIds', {
+              valuePropName: 'value',
+              initialValue: roleIds && roleIds.slice(),
+            })(
+              <Select
+                mode="multiple"
+                label={<FormattedMessage id={`${intlPrefix}.role`} />}
+                size="default"
+                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                style={{
+                  width: '512px',
+                  display: needRoles ? 'inline-block' : 'none',
+                }}
+              >
+                {this.renderRoleSelect()}
+              </Select>,
+            )}
+            <Button
+              size="small"
+              icon="delete"
+              shape="circle"
+              onClick={this.handleRoleClick}
+              className={'delete-role'}
+              style={{
+                display: needRoles ? 'inline-block' : 'none',
+              }}
+            />
+            <Button
+              type="primary"
+              funcType="raised"
+              onClick={this.handleRoleClick}
+              style={{
+                display: !needRoles ? 'inline-block' : 'none',
+              }}
+            ><FormattedMessage id={`${intlPrefix}.open-role`} /></Button>
           </FormItem>
           <FormItem {...formItemLayout}>
             {

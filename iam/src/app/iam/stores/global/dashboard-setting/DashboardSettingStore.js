@@ -16,10 +16,26 @@ class DashboardSettingStore {
   @observable sort = {};
   @observable params = [];
   @observable editData = {};
+  @observable needRoles = false;
+  @observable currentRoles = [];
+  @observable roleMap = new Map();
+  @observable needUpdateRoles = false;
 
   refresh() {
     this.loadData({ current: 1, pageSize: 10 }, {}, {}, []);
   }
+
+  @action
+  setNeedUpdateRoles(flag) {
+    this.needUpdateRoles = flag;
+  }
+
+  @action
+  setNeedRoles(flag) {
+    this.editData.needRoles = flag;
+  }
+
+  getNeedRoles = () => this.editData.needRoles;
 
   @action
   setEditData(data) {
@@ -39,11 +55,14 @@ class DashboardSettingStore {
   @action
   updateData(values) {
     this.loading = true;
-    return axios.post(`/iam/v1/dashboards/${this.editData.id}`, JSON.stringify(Object.assign({}, this.editData, values)))
+    const rolesQuery = values.roleIds || this.needUpdateRoles === this.editData.roleIds ? '' : '?update_role=true';
+    return axios.post(`/iam/v1/dashboards/${this.editData.id}${rolesQuery}`, JSON.stringify(Object.assign({}, this.editData, values)))
       .then(action((data) => {
         Object.assign(this.editData, data);
+        if (this.editData.roleIds === null) this.editData.roleIds = values.roleIds; // 在没有更新roleIds的时候data中的roleIds会为空，不修改不应该置为空而是应该不变。
         this.loading = false;
         this.sidebarVisible = false;
+        this.needUpdateRoles = false;
         return data;
       }))
       .catch(action((error) => {

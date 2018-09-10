@@ -233,7 +233,8 @@ const pageDetail = {
   'global.dashboard-setting.modify.title': '对卡片"{name}"进行修改',
   'global.dashboard-setting.modify.description': '您可以在此修改仪表盘中卡片的配置。',
   'global.dashboard-setting.modify.link': '',
-
+  'global.dashboard-setting.role': '卡片角色',
+  'global.dashboard-setting.open-role': '开启角色控制',
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
   'organization.project.description': '项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。',

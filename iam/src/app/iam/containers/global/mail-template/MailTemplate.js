@@ -92,8 +92,7 @@ export default class MailTemplate extends Component {
    */
   handleOpen = (selectType, record = {}) => {
     this.props.form.resetFields();
-    const htmlContainer = document.getElementsByClassName('c7n-editor-changedHTML-container')[0];
-    if (htmlContainer) htmlContainer.style.display = 'none';
+    if (this.editor) this.editor.hideHtmlContainer();
     if (!MailTemplateStore.getTemplateType.length) {
       this.loadTemplateType(this.mail.type, this.mail.orgId);
     }
@@ -440,18 +439,20 @@ export default class MailTemplate extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    const { intl } = this.props;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({
-          isSubmitting: true,
-        });
         const deltaOps = this.editor.getDelta();
         const sendData = { ...values };
+        const pattern = /^((<[^(>|img)]+>)*\s*)*$/g;
         // 判断富文本编辑器是否为空
-        if (deltaOps) {
+        if (!pattern.test(this.state.editorContent)) {
+          this.setState({
+            isSubmitting: true,
+          });
           beforeTextUpload(deltaOps, sendData, this.handleSave, this.state.editorContent);
         } else {
-          this.handleSave(values);
+          Choerodon.prompt(intl.formatMessage({ id: 'mailtemplate.mailcontent.required' }));
         }
       }
     });

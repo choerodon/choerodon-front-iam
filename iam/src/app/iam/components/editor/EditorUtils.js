@@ -50,7 +50,6 @@ export function replaceBase64ToUrl(imgUrlList, imgBase, text) {
   imgUrlList.forEach((imgUrl, index) => {
     imgMap[imgBase[index]] = imgUrl;
   });
-  window.console.log(imgMap);
   deltaOps.forEach((item, index) => {
     if (item.insert && item.insert.image && imgBase.indexOf(item.insert.image) !== -1) {
       deltaOps.ops[index].insert.image = `${Choerodon.fileServer(`notify-service/${imgMap[item.insert.image]}`)}`;
@@ -90,32 +89,5 @@ export function beforeTextUpload(text, data, callback, htmlcontent) {
   } else {
     send.content = htmlcontent;
     callback(send);
-  }
-}
-
-
-export function text2Delta(description) {
-  if (
-    description &&
-    description.indexOf('[') === 0 &&
-    description[description.length - 1] === ']'
-  ) {
-    return JSON.parse(description);
-  }
-  return description || '';
-}
-
-/**
- * 将delta结构转为html
- * @param {*} delta
- */
-export function delta2Html(description) {
-  const delta = text2Delta(description);
-  const converter = new QuillDeltaToHtmlConverter(delta, {});
-  const text = converter.convert();
-  if (text.substring(0, 3) === '<p>') {
-    return text.substring(3, converter.convert().length - 4);
-  } else {
-    return text;
   }
 }

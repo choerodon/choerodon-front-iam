@@ -5,50 +5,11 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import ExecutionRecordStore from '../../../stores/global/execution-record';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './ExecutionRecord.scss';
 
 const intlPrefix = 'global.execution';
 const tablePrefix = 'global.taskdetail';
-const dataSource = {
-  totalPages: 1,
-  totalElements: 3,
-  numberOfElements: 3,
-  number: 0,
-  size: 20,
-  content: [
-    {
-      id: 705,
-      name: '名称1',
-      lastExecutionTime: '2018-08-05 14:22',
-      nextExecutionTime: '2018-08-10 14:22',
-      status: 'RUNNING',
-      planExecutionTime: '2018-08-10 14:22',
-      actualExecutionTime: '2018-08-10 14:22',
-      failReason: '123',
-    },
-    {
-      id: 704,
-      name: '名称2',
-      lastExecutionTime: '2018-08-05 14:22',
-      nextExecutionTime: '2018-08-10 14:22',
-      status: 'FAILED',
-      planExecutionTime: '2018-08-10 14:22',
-      actualExecutionTime: '2018-08-10 14:22',
-      failReason: '123',
-    },
-    {
-      id: 703,
-      name: '名称3',
-      lastExecutionTime: '2018-08-05 14:22',
-      nextExecutionTime: '2018-08-10 14:22',
-      status: 'COMPLETED',
-      planExecutionTime: '2018-08-10 14:22',
-      actualExecutionTime: '2018-08-10 14:22',
-      failReason: '123',
-    },
-  ],
-  empty: false,
-};
 
 @withRouter
 @injectIntl
@@ -60,9 +21,9 @@ export default class ExecutionRecord extends Component {
     return {
       loading: true,
       pagination: {
-        current: dataSource.number + 1,
-        pageSize: dataSource.size,
-        total: dataSource.totalElements,
+        current: 1,
+        pageSize: 10,
+        total: 0,
       },
       sort: {
         columnKey: 'id',
@@ -73,44 +34,53 @@ export default class ExecutionRecord extends Component {
     };
   }
 
-  // componentWillMount() {
-  //   this.loadExecutionRecord();
-  // }
-  //
-  // loadExecutionRecord(paginationIn, sortIn, filtersIn, paramsIn) {
-  //   const {
-  //     pagination: paginationState,
-  //     sort: sortState,
-  //     filters: filtersState,
-  //     params: paramsState,
-  //   } = this.state;
-  //   const pagination = paginationIn || paginationState;
-  //   const sort = sortIn || sortState;
-  //   const filters = filtersIn || filtersState;
-  //   const params = paramsIn || paramsState;
-  //   // 防止标签闪烁
-  //   this.setState({ filters, loading: true });
-  //   ExecutionRecordStore.loadData(pagination, filters, sort, params).then((data) => {
-  //     ExecutionRecordStore.setData(data.content);
-  //     this.setState({
-  //       pagination: {
-  //         current: data.number + 1,
-  //         pageSize: data.size,
-  //         total: data.totalElements,
-  //       },
-  //       loading: false,
-  //       sort,
-  //       filters,
-  //       params,
-  //     });
-  //   }).catch((error) => {
-  //     Choerodon.handleResponseError(error);
-  //     this.setState({
-  //       loading: false,
-  //     });
-  //   });
-  // }
+  componentWillMount() {
+    this.loadExecutionRecord();
+  }
 
+  loadExecutionRecord(paginationIn, filtersIn, sortIn, paramsIn) {
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters, loading: true });
+    ExecutionRecordStore.loadData(pagination, filters, sort, params).then((data) => {
+      ExecutionRecordStore.setData(data.content);
+      this.setState({
+        pagination: {
+          current: data.number + 1,
+          pageSize: data.size,
+          total: data.totalElements,
+        },
+        loading: false,
+        sort,
+        filters,
+        params,
+      });
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+      this.setState({
+        loading: false,
+      });
+    });
+  }
+
+  handlePageChange = (pagination, filters, sort, params) => {
+    this.loadExecutionRecord(pagination, filters, sort, params);
+  };
+
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadExecutionRecord();
+    });
+  };
 
   renderStatus(status) {
     let obj = {};
@@ -146,7 +116,8 @@ export default class ExecutionRecord extends Component {
 
   render() {
     const { intl } = this.props;
-    const { sort: { columnKey, order }, filters, params, pagination, loading } = this.state;
+    const { filters, params, pagination, loading } = this.state;
+    const recordData = ExecutionRecordStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id="status" />,
       dataIndex: 'status',
@@ -165,40 +136,55 @@ export default class ExecutionRecord extends Component {
       render: status => this.renderStatus(status),
     }, {
       title: <FormattedMessage id="name" />,
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'taskName',
+      key: 'taskName',
+      width: '11%',
       filters: [],
-      filteredValue: filters.name || [],
+      filteredValue: filters.taskName || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.failed.reason`} />,
-      dataIndex: 'failReason',
-      key: 'failReason',
+      dataIndex: 'exceptionMessage',
+      key: 'exceptionMessage',
+      width: '11%',
       filters: [],
-      filteredValue: filters.failReason || [],
+      filteredValue: filters.exceptionMessage || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${tablePrefix}.last.execution.time`} />,
-      dataIndex: 'lastExecutionTime',
-      key: 'lastExecutionTime',
+      dataIndex: 'actualLastTime',
+      key: 'actualLastTime',
     }, {
       title: <FormattedMessage id={`${tablePrefix}.plan.execution.time`} />,
-      dataIndex: 'planExecutionTime',
-      key: 'planExecutionTime',
+      dataIndex: 'plannedStartTime',
+      key: 'plannedStartTime',
     }, {
       title: <FormattedMessage id={`${tablePrefix}.next.execution.time`} />,
-      dataIndex: 'nextExecutionTime',
-      key: 'nextExecutionTime',
+      dataIndex: 'plannedNextTime',
+      key: 'plannedNextTime',
     }, {
       title: <FormattedMessage id={`${tablePrefix}.actual.execution.time`} />,
-      dataIndex: 'actualExecutionTime',
-      key: 'actualExecutionTime',
+      dataIndex: 'actualStartTime',
+      key: 'actualStartTime',
     }];
     return (
-      <Page>
+      <Page
+        service={['asgard-service.schedule-task-instance.pagingQuery']}
+      >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
             icon="refresh"
+            onClick={this.handleRefresh}
           >
             <FormattedMessage id="refresh" />
           </Button>
@@ -207,10 +193,12 @@ export default class ExecutionRecord extends Component {
           code={intlPrefix}
         >
           <Table
+            loading={loading}
             columns={columns}
-            dataSource={dataSource.content}
+            dataSource={recordData}
             pagination={pagination}
             filters={params}
+            onChange={this.handlePageChange}
             rowKey="id"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />

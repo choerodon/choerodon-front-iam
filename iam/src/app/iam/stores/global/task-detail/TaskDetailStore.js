@@ -16,15 +16,15 @@ class TaskDetailStore {
 
   loadData(
     { current, pageSize },
-    { status, email, retryStatus },
+    { status, name, description },
     { columnKey = 'id', order = 'descend' },
     params) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
       status,
-      email,
-      retryStatus,
+      name,
+      description,
       params,
     };
     if (columnKey) {
@@ -35,6 +35,9 @@ class TaskDetailStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/notify/v1/records/emails?${querystring.stringify(queryObj)}`);
+    return axios.get(`asgard/v1/schedules/tasks?${querystring.stringify(queryObj)}`);
   }
 }
+
+const taskDetailStore = new TaskDetailStore();
+export default taskDetailStore;

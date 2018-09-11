@@ -3,8 +3,8 @@ import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './Editor.scss';
 import QuillDeltaToHtmlConverter from 'quill-delta-to-html';
+import classnames from 'classnames';
 import ImageDrop from './ImageDrop';
-
 
 Quill.register('modules/imageDrop', ImageDrop);
 
@@ -57,6 +57,9 @@ class Editor extends Component {
     this.onQuillChange = this.onQuillChange.bind(this);
     this.state = {
       delta: null,
+      originalHtml: null,
+      htmlString: null,
+      isShowHtmlContainer: false,
     };
   }
 
@@ -80,14 +83,14 @@ class Editor extends Component {
       const html = converter.convert();
       this.setState({
         htmlString: html,
+        isShowHtmlContainer: true,
       });
     } else {
       this.setState({
         htmlString: null,
+        isShowHtmlContainer: true,
       });
     }
-    const htmlContainer = document.getElementsByClassName('c7n-editor-changedHTML-container')[0];
-    htmlContainer.style.display = 'block';
   }
 
   modules = {
@@ -126,10 +129,10 @@ class Editor extends Component {
   onQuillChange = (content, delta, source, editor) => {
     this.props.onChange(content);
     const currentDelta = editor.getContents();
-    const htmlString = editor.getHTML();
+    const originalHtml = editor.getHTML();
     this.setState({
       delta: currentDelta,
-      htmlString,
+      originalHtml,
     });
   }
 
@@ -142,9 +145,16 @@ class Editor extends Component {
 
   // 返回可视化编辑
   backEdit = () => {
-    const htmlContainer = document.getElementsByClassName('c7n-editor-changedHTML-container')[0];
-    htmlContainer.style.display = 'none';
-    this.props.onChange(this.state.htmlString);
+    this.setState({
+      isShowHtmlContainer: false,
+    })
+    this.props.onChange(this.state.originalHtml);
+  }
+
+  hideHtmlContainer = () => {
+    this.setState({
+      isShowHtmlContainer: false,
+    });
   }
 
   // HTML形式内容变化时触发
@@ -169,11 +179,13 @@ class Editor extends Component {
           value={value}
           onChange={this.onQuillChange}
         />
-        <div className="c7n-editor-changedHTML-container">
+        <div className="c7n-editor-changedHTML-container" style={{ display: this.state.isShowHtmlContainer ? 'block' : 'none' }}>
           <div className="c7n-editor-changedHTML-container-toolbar">
             <span onClick={this.backEdit}>{'<< 返回可视化编辑'}</span>
           </div>
-          <textarea value={this.state.htmlString} onInput={this.handleHtmlChange} />
+          <div className="c7n-editor-changedHTML-container-content">
+            {this.state.htmlString}
+          </div>
         </div>
       </div>
     );

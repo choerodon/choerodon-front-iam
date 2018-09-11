@@ -659,9 +659,9 @@ const zh_CN = {
 
   // 可执行程序
   'global.executable.program.header.title': '可执行程序',
-  'global.executable.program.code': '类编码',
+  'global.executable.program.code': '程序编码',
   'global.executable.program.belong.service': '所属微服务',
-  'global.executable.program.classname': '类名',
+  'global.executable.program.name': '程序名',
   'global.executable.program.online.instance.count': '在线实例数',
   'global.executable.program.program.header.title': '程序详情',
   'global.executable.program.params.list': '参数列表',
@@ -851,6 +851,7 @@ const zh_CN = {
   'mailtemplate.mail.content': '邮件内容',
   'mailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
   'mailtemplate.mailcontent.tip': '模板中的参数变量通过`${}`进行替换，在发送时，将`${}`替换成对应的实际变量。登录名:${loginName}',
+  'mailtemplate.mailcontent.required': '邮件模板内容不可为空',
 
   // 站内信模板
   'inmailtemplate.header.title': '站内信模板',

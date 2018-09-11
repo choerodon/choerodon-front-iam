@@ -7,6 +7,8 @@ import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
 import UserMsgStore from '../../../stores/user/user-msg/UserMsgStore';
+import InMailTemplateStore from '../../../stores/global/inmail-template';
+import User from "../../organization/user/User";
 
 const intlPrefix = 'user.usermsg';
 
@@ -27,6 +29,12 @@ export default class UserMsg extends Component {
 
   componentDidMount() {
     this.loadUserInfo();
+    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, []);
+  }
+
+  refresh() {
+    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, []);
+    UserMsgStore.selectMsg.clear();
   }
 
   getUserMsgClass(name) {
@@ -43,22 +51,40 @@ export default class UserMsg extends Component {
   }
 
   showUserMsg(show) {
-    // this.reload();
+    this.refresh();
     this.setState({
       showAll: show,
     });
   }
 
-  renderMsgTitle(title, id, isRead, reciveTime) {
+  renderMsgTitle(title, id, read, sendTime) {
     return (
       <div>
-        <Checkbox style={{ verticalAlign: 'text-bottom' }} onChange={() => this.handleCheckboxChange(id)} />
-        <span className={isRead ? 'c7n-user-msg-read-title' : 'c7n-user-msg-unread-title'}>{title}</span>
-        <span className={isRead ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{reciveTime}</span>
-        <span className={isRead ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{isRead ? '已读' : '未读'}</span>
+        <Checkbox style={{ verticalAlign: 'text-bottom' }} onChange={() => this.handleCheckboxChange(id)} checked={UserMsgStore.getSelectMsg.has(id)} />
+        <span className={read ? 'c7n-user-msg-read-title' : 'c7n-user-msg-unread-title'}>{title}</span>
+        <span className={read ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{sendTime}</span>
+        <span className={read ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{read ? '已读' : '未读'}</span>
       </div>
     );
   }
+
+  handleDelete = () => {
+    const { intl } = this.props;
+    if (UserMsgStore.getSelectMsg.size > 0) {
+      Modal.confirm({
+        title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.delete.owncontent` }, {
+          count: UserMsgStore.selectMsg.size,
+        }),
+        onOk: () => {
+          UserMsgStore.deleteMsg().then(() => {
+            Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
+            this.refresh();
+          });
+        },
+      });
+    }
+  };
 
   handleCheckboxChange = (id) => {
     if (UserMsgStore.getSelectMsg.has(id)) {
@@ -82,23 +108,21 @@ export default class UserMsg extends Component {
     }, 10);
   };
 
-  loadUserInfo = () => {
-    UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
-  };
+  loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
   renderUserMsgCard() {
     let visiableCardCount = 0;
-    const innerHTML = UserMsgStore.getUserMsg.map(({ msg, title, id, isRead, reciveTime }) => {
-      visiableCardCount += isRead ? 0 : 1;
+    const innerHTML = UserMsgStore.getUserMsg && UserMsgStore.getUserMsg.map(({ content, title, id, read, sendTime }) => {
+      visiableCardCount += read ? 0 : 1;
       return (
         <Card
           key={id}
-          className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === id })}
-          title={this.renderMsgTitle(title, id, isRead, reciveTime)}
+          className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === id }, { 'c7n-unread-line': !read })}
+          title={this.renderMsgTitle(title, id, read, sendTime)}
           onHeadClick={() => this.handleCardClick(id)}
-          style={{ display: !isRead || this.state.showAll ? null : 'none' }}
+          style={{ display: !read || this.state.showAll ? null : 'none' }}
         >
-          <div dangerouslySetInnerHTML={{ __html: `${msg}` }} />
+          <div dangerouslySetInnerHTML={{ __html: `${content}` }} />
         </Card>
       );
     });
@@ -131,13 +155,21 @@ export default class UserMsg extends Component {
           </Button>
           <Button
             icon="drafts"
+            onClick={() => UserMsgStore.readMsg().then(() => this.refresh())}
           >
             <FormattedMessage id={`${intlPrefix}.markread`} />
           </Button>
           <Button
             icon="all_read"
+            onClick={() => UserMsgStore.userMsg && UserMsgStore.readMsg(UserMsgStore.userMsg.map(v => v.id)).then(() => this.refresh())}
           >
             <FormattedMessage id={`${intlPrefix}.markreadall`} />
+          </Button>
+          <Button
+            icon="delete"
+            onClick={this.handleDelete}
+          >
+            <FormattedMessage id={'delete'} />
           </Button>
         </Header>
         <Content

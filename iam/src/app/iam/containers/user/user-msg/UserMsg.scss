@@ -61,6 +61,11 @@
     }
     .ant-card-head {
       background: #5266d4;
+      height: 48px;
+      &-title {
+        font-size: 16px;
+        padding: 12px 0;
+      }
     }
     span {
        color: white;
@@ -82,18 +87,31 @@
     }
     span:nth-child(3) {
       padding-left: 72px;
-      font-weight: initial;
+      font-weight: 500;
     }
     span:nth-child(4) {
-      font-weight: initial;
+      font-weight: 500;
     }
-
     .ant-card-head {
+      .unread {
+        border-left: 2px solid #3f51b5;
+      }
       cursor: pointer;
-      height: 48px;
+      height: 30px;
+      min-height: 30px;
       &-title {
-        padding: 12px 0;
+        font-size: 13px;
+        padding: 5px 0;
+      }
+      .ant-checkbox {
+        color: rgba(0, 0, 0, 0.56);
       }
     }
+  }
+}
+
+.c7n-unread-line {
+  .ant-card-head {
+    border-left: 2px solid #3f51b5;
   }
 }

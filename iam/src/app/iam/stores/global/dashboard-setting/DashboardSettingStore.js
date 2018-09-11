@@ -32,10 +32,8 @@ class DashboardSettingStore {
 
   @action
   setNeedRoles(flag) {
-    this.editData.needRoles = flag;
+    this.needRoles = flag;
   }
-
-  getNeedRoles = () => this.editData.needRoles;
 
   @action
   setEditData(data) {
@@ -56,6 +54,7 @@ class DashboardSettingStore {
   updateData(values) {
     this.loading = true;
     const rolesQuery = values.roleIds || this.needUpdateRoles === this.editData.roleIds ? '' : '?update_role=true';
+    this.editData.needRoles = this.needRoles;
     return axios.post(`/iam/v1/dashboards/${this.editData.id}${rolesQuery}`, JSON.stringify(Object.assign({}, this.editData, values)))
       .then(action((data) => {
         Object.assign(this.editData, data);

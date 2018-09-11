@@ -42,7 +42,7 @@ class DashboardSetting extends Component {
   handleRoleClick = () => {
     const { DashboardSettingStore } = this.props;
     DashboardSettingStore.setNeedUpdateRoles(true);
-    DashboardSettingStore.setNeedRoles(!DashboardSettingStore.editData.needRoles);
+    DashboardSettingStore.setNeedRoles(!DashboardSettingStore.needRoles);
   };
 
   handleRefresh = () => {
@@ -87,6 +87,7 @@ class DashboardSetting extends Component {
 
   editCard(record) {
     const { DashboardSettingStore, form } = this.props;
+    DashboardSettingStore.setNeedRoles(record.needRoles);
     RoleStore.loadRole({ pageSize: 999 }, {}, { level: record.level }).then((data) => {
       RoleStore.setRoles(data.content);
     });
@@ -206,7 +207,7 @@ class DashboardSetting extends Component {
     const roles = RoleStore.getRoles;
     const {
       form: { getFieldDecorator }, intl,
-      DashboardSettingStore: { editData: { code, name, level, icon, title, namespace, roleIds, needRoles } },
+      DashboardSettingStore: { editData: { code, name, level, icon, title, namespace, roleIds }, needRoles },
     } = this.props;
     return (
       <Content

@@ -876,6 +876,7 @@ const zh_CN = {
   'inmailtemplate.mail.content': '站内信内容',
   'inmailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
   'inmailtemplate.mailcontent.tip': '模板中的参数变量通过`${}`进行替换，在发送时，将`${}`替换成对应的实际变量。登录名:${loginName}',
+  'inmailtemplate.mailcontent.required': '站内信模板内容不可为空',
 
   // 邮箱配置
   'global.mailsetting.header.title': '邮箱配置',

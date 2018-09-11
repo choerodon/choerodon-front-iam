@@ -220,7 +220,7 @@ export default class ExecutableProgram extends Component {
       filters: [],
       filteredValue: filters.serviceName || [],
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.classname`} />,
+      title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'classname',
       key: 'classname',
       filters: [],

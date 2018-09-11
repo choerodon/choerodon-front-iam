@@ -150,9 +150,9 @@ export default class TaskDetail extends Component {
       showLog: false,
       currentRecord: '',
       pagination: {
-        current: dataSource.number + 1,
-        pageSize: dataSource.size,
-        total: dataSource.totalElements,
+        current: 1,
+        pageSize: 10,
+        total: 0,
       },
       sort: {
         columnKey: 'id',
@@ -174,44 +174,53 @@ export default class TaskDetail extends Component {
     };
   }
 
-  // componentWillMount() {
-  //   this.loadTaskDetail();
-  // }
-  //
-  // loadTaskDetail(paginationIn, sortIn, filtersIn, paramsIn) {
-  //   const {
-  //     pagination: paginationState,
-  //     sort: sortState,
-  //     filters: filtersState,
-  //     params: paramsState,
-  //   } = this.state;
-  //   const pagination = paginationIn || paginationState;
-  //   const sort = sortIn || sortState;
-  //   const filters = filtersIn || filtersState;
-  //   const params = paramsIn || paramsState;
-  //   // 防止标签闪烁
-  //   this.setState({ filters, loading: true });
-  //   TaskDetailStore.loadData(pagination, filters, sort, params).then((data) => {
-  //     TaskDetailStore.setData(data.content);
-  //     this.setState({
-  //       pagination: {
-  //         current: data.number + 1,
-  //         pageSize: data.size,
-  //         total: data.totalElements,
-  //       },
-  //       loading: false,
-  //       sort,
-  //       filters,
-  //       params,
-  //     });
-  //   }).catch((error) => {
-  //     Choerodon.handleResponseError(error);
-  //     this.setState({
-  //       loading: false,
-  //     });
-  //   });
-  // }
+  componentWillMount() {
+    this.loadTaskDetail();
+  }
 
+  loadTaskDetail(paginationIn, sortIn, filtersIn, paramsIn) {
+    const {
+      pagination: paginationState,
+      sort: sortState,
+      filters: filtersState,
+      params: paramsState,
+    } = this.state;
+    const pagination = paginationIn || paginationState;
+    const sort = sortIn || sortState;
+    const filters = filtersIn || filtersState;
+    const params = paramsIn || paramsState;
+    // 防止标签闪烁
+    this.setState({ filters, loading: true });
+    TaskDetailStore.loadData(pagination, filters, sort, params).then((data) => {
+      TaskDetailStore.setData(data.content);
+      this.setState({
+        pagination: {
+          current: data.number + 1,
+          pageSize: data.size,
+          total: data.totalElements,
+        },
+        loading: false,
+        sort,
+        filters,
+        params,
+      });
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+      this.setState({
+        loading: false,
+      });
+    });
+  }
+
+  handlePageChange = (pagination, filters, sort, params) => {
+    this.loadTemplate(pagination, filters, sort, params);
+  };
+
+  handleRefresh = () => {
+    this.setState(this.getInitState(), () => {
+      this.loadTaskDetail();
+    });
+  };
 
   /**
    * 渲染任务明细列表状态列
@@ -728,7 +737,8 @@ export default class TaskDetail extends Component {
 
   render() {
     const { intl } = this.props;
-    const { sort: { columnKey, order }, filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
+    const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
+    const TaskData = TaskDetailStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
@@ -743,12 +753,12 @@ export default class TaskDetail extends Component {
       filteredValue: filters.description || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.last.execution.time`} />,
-      dataIndex: 'lastExecutionTime',
-      key: 'lastExecutionTime',
+      dataIndex: 'lastExecTime',
+      key: 'lastExecTime',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.next.execution.time`} />,
-      dataIndex: 'nextExecutionTime',
-      key: 'nextExecutionTime',
+      dataIndex: 'nextExecTime',
+      key: 'nextExecTime',
     }, {
       title: <FormattedMessage id="status" />,
       dataIndex: 'status',
@@ -810,6 +820,7 @@ export default class TaskDetail extends Component {
           </Button>
           <Button
             icon="refresh"
+            onClick={this.handleRefresh}
           >
             <FormattedMessage id="refresh" />
           </Button>
@@ -818,10 +829,12 @@ export default class TaskDetail extends Component {
           code={intlPrefix}
         >
           <Table
+            loading={loading}
             columns={columns}
-            dataSource={dataSource.content}
+            dataSource={TaskData}
             pagination={pagination}
             filters={params}
+            onChange={this.handlePageChange}
             rowKey="id"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />

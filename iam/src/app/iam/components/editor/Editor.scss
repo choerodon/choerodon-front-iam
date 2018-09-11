@@ -43,13 +43,13 @@
 
 .c7n-editor-changedHTML-container {
   position: absolute;
-  display: none;
   top: 0;
   width: 100%;
-  height: 278px;
+  height: 320px;
   border: 1px solid #ccc;
   line-height: 1.42;
   outline: none;
+  background: #fff;
 
   &-toolbar {
     border-bottom: 2px solid #ccc;
@@ -71,7 +71,7 @@
   }
 
 
-  textarea {
+  .c7n-editor-changedHTML-container-content {
     width: 100%;
     height: 276px;
     padding: 12px 15px;

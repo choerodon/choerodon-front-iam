@@ -186,7 +186,7 @@
         Routes: /iam/execution-record
         sort: 2
         permission:
-          - 'notify-service.send-setting-site.pageSite'
+          - 'asgard-service.schedule-task-instance.pagingQuery'
     - "task-classname":
         icon: classname
         Routes: /iam/executable-program

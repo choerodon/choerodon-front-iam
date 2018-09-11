@@ -16,15 +16,15 @@ class ExecutionRecordStore {
 
   loadData(
     { current, pageSize },
-    { status, email, retryStatus },
+    { status, taskName, exceptionMessage },
     { columnKey = 'id', order = 'descend' },
     params) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
       status,
-      email,
-      retryStatus,
+      taskName,
+      exceptionMessage,
       params,
     };
     if (columnKey) {
@@ -35,7 +35,7 @@ class ExecutionRecordStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/notify/v1/records/emails?${querystring.stringify(queryObj)}`);
+    return axios.get(`asgard/v1/schedules/tasks/instances?${querystring.stringify(queryObj)}`);
   }
 }
 

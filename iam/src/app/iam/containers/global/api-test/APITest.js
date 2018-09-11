@@ -22,7 +22,7 @@ const { Option } = Select;
 @inject('AppState')
 @observer
 export default class APITest extends Component {
-  state = this.getInitState();
+  state = APITestStore.getInitData ? APITestStore.getInitData : this.getInitState();
 
   componentDidMount() {
     this.loadInitData();
@@ -194,6 +194,7 @@ export default class APITest extends Component {
   goDetail(record) {
     APITestStore.setApiDetail(record);
     APITestStore.setDetailFlag(true);
+    APITestStore.setInitData(this.state); // 用来记录当前的分页状况当前页数等
     const version = APITestStore.getCurrentService.value.split('/')[1];
     const service = APITestStore.getCurrentService.value.split('/')[0];
     const { refController, operationId } = record;

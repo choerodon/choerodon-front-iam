@@ -130,7 +130,6 @@ export default class User extends Component {
     const organizationId = menuType.id;
     if (record.enabled) {
       // 禁用
-      // debugger;
       UserStore.UnenableUser(organizationId, record.id, !record.enabled).then(() => {
         Choerodon.prompt(intl.formatMessage({ id: 'disable.success' }));
         this.loadUser();

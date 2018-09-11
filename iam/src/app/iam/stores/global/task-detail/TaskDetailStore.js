@@ -37,7 +37,12 @@ class TaskDetailStore {
     }
     return axios.get(`asgard/v1/schedules/tasks?${querystring.stringify(queryObj)}`);
   }
+
+  ableTask = (id, objectVersionNumber, status) => axios.put(`/asgard/v1/schedules/tasks/${id}/${status}?objectVersionNumber=${objectVersionNumber}`);
+
+  deleteTask = id => axios.delete(`/asgard/v1/schedules/tasks/${id}`);
 }
+
 
 const taskDetailStore = new TaskDetailStore();
 export default taskDetailStore;

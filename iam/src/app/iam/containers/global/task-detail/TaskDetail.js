@@ -230,13 +230,13 @@ export default class TaskDetail extends Component {
   renderStatus(status) {
     let obj = {};
     let type;
-    if (status === 'enabled') {
+    if (status === 'ENABLE') {
       obj = {
         key: 'enabled',
         value: '启用',
       };
       type = 'check_circle';
-    } else if (status === 'disabled') {
+    } else if (status === 'DISABLE') {
       obj = {
         key: 'disabled',
         value: '停用',
@@ -264,7 +264,7 @@ export default class TaskDetail extends Component {
    * @returns {*}
    */
   showActionButton(record) {
-    if (record.status === 'enabled') {
+    if (record.status === 'ENABLE') {
       return (
         <Tooltip
           title={<FormattedMessage id="disable" />}
@@ -274,10 +274,11 @@ export default class TaskDetail extends Component {
             size="small"
             icon="remove_circle_outline"
             shape="circle"
+            // onClick={this.handleAble.bind(this, record)}
           />
         </Tooltip>
       );
-    } else if (record.status === 'disabled') {
+    } else if (record.status === 'DISABLE') {
       return (
         <Tooltip
           title={<FormattedMessage id="enable" />}
@@ -287,6 +288,7 @@ export default class TaskDetail extends Component {
             size="small"
             icon="finished"
             shape="circle"
+            // onClick={this.handleAble.bind(this, record)}
           />
         </Tooltip>
       );
@@ -300,6 +302,48 @@ export default class TaskDetail extends Component {
         />
       );
     }
+  }
+
+  /**
+   * 启停用任务
+   * @param record 表格行数据
+   */
+  // handleAble = (record) => {
+  //   const { id, objectVersionNumber } = record;
+  //   const { intl } = this.props;
+  //   const status = record.status === 'ENABLE' ? 'disable' : 'enable';
+  //   TaskDetailStore.ableTask(id, objectVersionNumber, status).then((data) => {
+  //     if (data.failed) {
+  //       Choerodon.prompt(data.message);
+  //     } else {
+  //       Choerodon.prompt(intl.formatMessage({ id: `${status}.success` }));
+  //       this.loadTaskDetail();
+  //     }
+  //   }).catch(() => {
+  //     Choerodon.prompt(intl.formatMessage({ id: `${status}.error` }));
+  //   });
+  // }
+
+  /**
+   * 删除任务
+   * @param record 表格行数据
+   */
+  handleDelete = (record) => {
+    const { intl } = this.props;
+    Modal.confirm({
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
+      onOk: () => TaskDetailStore.deleteTask(record.id).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
+          this.loadTaskDetail();
+        }
+      }).catch(() => {
+        Choerodon.prompt(intl.formatMessage({ id: 'delete.error' }));
+      }),
+    });
   }
 
   /**
@@ -476,6 +520,7 @@ export default class TaskDetail extends Component {
               {getFieldDecorator('startTime', {
                 rules: [{
                   required: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.task.description.required` }),
                 }],
               })(
                 <DatePicker
@@ -490,7 +535,10 @@ export default class TaskDetail extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('endTime', {
-                rules: [],
+                rules: [{
+                  required: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.task.description.required` }),
+                }],
               })(
                 <DatePicker
                   label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
@@ -764,13 +812,13 @@ export default class TaskDetail extends Component {
       dataIndex: 'status',
       key: 'status',
       filters: [{
-        value: 'enabled',
+        value: 'ENABLE',
         text: '启用',
       }, {
-        value: 'disabled',
+        value: 'DISABLE',
         text: '停用',
       }, {
-        value: 'end',
+        value: 'FINISHED',
         text: '结束',
       }],
       filteredValue: filters.status || [],
@@ -802,6 +850,7 @@ export default class TaskDetail extends Component {
               size="small"
               icon="delete_forever"
               shape="circle"
+              onClick={this.handleDelete.bind(this, record)}
             />
           </Tooltip>
         </div>

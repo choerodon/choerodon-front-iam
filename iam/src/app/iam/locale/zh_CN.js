@@ -652,6 +652,8 @@ const zh_CN = {
   'global.taskdetail.instance.id': '实例ID',
   'global.taskdetail.plan.execution.time': '计划执行时间',
   'global.taskdetail.actual.execution.time': '实际执行时间',
+  'global.taskdetail.delete.title': '删除任务',
+  'global.taskdetail.delete.content': '确定要删除任务"{name}"吗',
 
   // 执行记录
   'global.execution.header.title': '执行记录',

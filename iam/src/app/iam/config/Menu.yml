@@ -319,17 +319,6 @@
           - 'notify-service.email-template-org.delete'
           - 'notify-service.email-template-org.query'
           - 'notify-service.send-setting-org.listNames'
-    - "inmail-template-organization":
-        icon: inmail_template
-        Routes: /iam/inmail-template
-        sort: 3
-        permission:
-          - 'notify-service.pm-template-org.pageOrganization'
-          - 'notify-service.pm-template-org.create'
-          - 'notify-service.pm-template-org.update'
-          - 'notify-service.pm-template-org.delete'
-          - 'notify-service.pm-template-org.query'
-          - 'notify-service.send-setting-org.listNames'
     - "msg-record-organization":
         icon: speaker_notes
         Routes: /iam/msg-record

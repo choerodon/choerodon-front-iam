@@ -23,6 +23,7 @@ class ApitestStore {
     description: '[]',
     responses: [],
   };
+  @observable initData = null; // 用来缓存APITest列表页的state实现打开新的page然后返回仍在离开时的分页
 
   @action setDetailFlag(flag) {
     this.detailFlag = flag;
@@ -55,6 +56,14 @@ class ApitestStore {
 
   @action setUserInfo(data) {
     this.userInfo = data;
+  }
+
+  @action setInitData(data) {
+    this.initData = data;
+  }
+
+  @computed get getInitData() {
+    return this.initData;
   }
 
   @computed get getUserInfo() {

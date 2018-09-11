@@ -384,12 +384,10 @@ export default class APIDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
-                  <div className="c7n-TextEditToggle-text">
-                    <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />
-                    <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
-                  </div>,
+                  <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
                 )}
               </FormItem>
+              <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
             </div>);
         } else if (record.type === 'boolean') {
           editableNode = (

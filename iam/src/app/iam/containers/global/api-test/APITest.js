@@ -157,6 +157,7 @@ export default class APITest extends Component {
 
   handlePageChange = (pagination, filters, sorter = {}, params) => {
     this.loadApi(pagination, filters, params);
+    APITestStore.clearIsExpand();
   };
 
   handleRefresh = () => {

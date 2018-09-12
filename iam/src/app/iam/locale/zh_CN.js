@@ -1202,7 +1202,8 @@ const zh_CN = {
   'user.usermsg.allempty': '暂无消息',
   'user.usermsg.delete.owntitle': '删除消息记录',
   'user.usermsg.delete.owncontent': '确定要删除选中的{count}条记录吗',
-
+  'user.usermsg.nomore': '暂无更多消息',
+  'user.usermsg.load-more': '加载更多',
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

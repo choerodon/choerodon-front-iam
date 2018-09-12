@@ -27,12 +27,13 @@ export default class UserMsg extends Component {
 
   componentDidMount() {
     this.loadUserInfo();
-    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, [], this.state.showAll);
+    UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll);
   }
 
   refresh = () => {
-    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, [], this.state.showAll);
+    UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll);
     UserMsgStore.selectMsg.clear();
+    UserMsgStore.initPagination();
   };
 
   getUserMsgClass(name) {
@@ -136,14 +137,22 @@ export default class UserMsg extends Component {
     </div>
   );
 
+  onLoadMore = () => {
+    UserMsgStore.loadMore(this.state.showAll);
+  };
+
+  renderLoadMore = () => (UserMsgStore.getUserMsg.length > 0 ? (
+    <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px', color: 'rgba(0, 0, 0, 0.54)' }}>
+      {UserMsgStore.getLoadingMore && <Spin />}
+      {!UserMsgStore.getLoadingMore && this.state.showAll && !UserMsgStore.getLoading && !UserMsgStore.isNoMore &&
+        <Button type="primary" funcType="raised" onClick={this.onLoadMore}> <FormattedMessage id={`${intlPrefix}.load-more`} /></Button>
+      }
+      {UserMsgStore.isNoMore && !UserMsgStore.getLoadingMore ? <FormattedMessage id={`${intlPrefix}.nomore`} /> : null}
+    </div>
+  ) : null);
+
   render() {
     const user = UserMsgStore.getUserInfo;
-    const loadMore = UserMsgStore.getUserMsg.size > 0 ? (
-      <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
-        <Spin />
-        <Button onClick={this.onLoadMore}>loading more</Button>
-      </div>
-    ) : null;
     return (
       <Page>
         <Header
@@ -202,7 +211,7 @@ export default class UserMsg extends Component {
           <List
             loading={UserMsgStore.getLoading}
             itemLayout="horizontal"
-            loadMore={loadMore}
+            loadMore={this.renderLoadMore()}
             dataSource={UserMsgStore.getUserMsg}
             renderItem={item => (
               this.renderUserMsgCard(item)

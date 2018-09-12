@@ -25,8 +25,10 @@ export default class APITest extends Component {
   state = APITestStore.getInitData ? APITestStore.getInitData : this.getInitState();
 
   componentDidMount() {
-    this.loadInitData();
-    APITestStore.clearIsExpand();
+    if (!APITestStore.getInitData) {
+      this.loadInitData();
+    }
+    // APITestStore.clearIsExpand();
   }
 
   getInitState() {
@@ -42,6 +44,7 @@ export default class APITest extends Component {
       },
       filters: {},
       params: [],
+      expandedRow: [],
     };
   }
 
@@ -99,10 +102,10 @@ export default class APITest extends Component {
     const newVersions = [];
     if (service && service.length > 0) {
       APITestStore.service.forEach(({ name, value, version }, index) => {
-        if (currentService.version === version) {
-          newVersions.push(version);
-        }
-      },
+          if (currentService.version === version) {
+            newVersions.push(version);
+          }
+        },
       );
       APITestStore.setCurrentVersion(newVersions[0]);
       APITestStore.setVersions(newVersions);
@@ -216,7 +219,7 @@ export default class APITest extends Component {
           // 控制展开的箭头
           return (
             <MouseOverWrapper text={name} width={0.18}>
-              <span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.get(name)) ? 'expanded' : 'collapsed'}`)} />
+              <span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.has(name)) ? 'expanded' : 'collapsed'}`)} />
               <span>{name}</span>
             </MouseOverWrapper>
           );
@@ -335,11 +338,14 @@ export default class APITest extends Component {
             rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
             onRowClick={(record) => {
-              // 当map中不存在这条的展开记录 或者这条的展开状态是false时设置为true， 其他情况则设置为false
-              APITestStore.setIsExpand(record.name, !((APITestStore.getIsExpand.has(record.name) && APITestStore.getIsExpand.get(record.name)) && true));
+              APITestStore.setIsExpand(record.name);
+              this.setState({
+                expandedRow: APITestStore.getExpandKeys,
+              });
             }
             }
             expandRowByClick
+            expandedRowKeys={this.state.expandedRow}
           />
         </Content>
       </Page>

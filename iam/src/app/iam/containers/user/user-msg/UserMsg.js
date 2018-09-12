@@ -96,14 +96,14 @@ export default class UserMsg extends Component {
   };
 
   handleCardClick = (id, read) => {
-    // 如果消息未读则发送已读消息的请求
-    if (!read) {
-      UserMsgStore.readMsg([id]);
-      UserMsgStore.setReadLocal(id);
-    }
     setTimeout(() => {
       if (this.state.needExpand) {
         UserMsgStore.setExpandCardId(UserMsgStore.getExpandCardId !== id ? id : null);
+        // 如果消息未读则发送已读消息的请求
+        if (!read) {
+          UserMsgStore.readMsg([id]);
+          UserMsgStore.setReadLocal(id);
+        }
       }
       this.setState({
         needExpand: true,

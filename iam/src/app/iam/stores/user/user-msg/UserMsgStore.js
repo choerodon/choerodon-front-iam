@@ -12,6 +12,8 @@ class UserMsgStore {
 
   @observable selectMsg = new Set();
 
+  @observable loading = false;
+
   @computed
   get getSelectMsg() {
     return this.selectMsg;
@@ -20,6 +22,16 @@ class UserMsgStore {
   @action
   addSelectMsgById(id) {
     this.selectMsg.add(id);
+  }
+
+  @computed
+  get getLoading() {
+    return this.selectMsg;
+  }
+
+  @action
+  setLoading(flag) {
+    this.loading = flag;
   }
 
   @action
@@ -57,6 +69,13 @@ class UserMsgStore {
     this.userInfo = data;
   }
 
+  @action
+  setReadLocal(id) {
+    this.userMsg.forEach((v) => {
+      if (v.id === id) v.read = true;
+    });
+  }
+
   /**
    * 不传data时默认将store中选中的消息设为已读
    * @param data
@@ -80,7 +99,8 @@ class UserMsgStore {
   }
 
   @action
-  loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params) {
+  loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params, showAll) {
+    this.setLoading(true);
     const { columnKey, order } = sort;
     const sorter = [];
     if (columnKey) {
@@ -93,15 +113,17 @@ class UserMsgStore {
     this.filters = filters;
     this.sort = sort;
     this.params = params;
-    return axios.get(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}?${queryString.stringify({
+    return axios.get(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}${showAll ? '' : '/not_read'}?${queryString.stringify({
       page: pagination.current - 1,
       size: pagination.pageSize,
       params: params.join(','),
       sort: sorter.join(','),
     })}`).then((data) => {
-      this.setUserMsg(data.content);
+      this.setUserMsg(data.content ? data.content : data);
+      this.setLoading(false);
     })
       .catch(action((error) => {
+        this.setLoading(false);
         Choerodon.handleResponseError(error);
       }));
   }

@@ -1199,6 +1199,7 @@ const zh_CN = {
   'user.usermsg.markread': '标记为已读',
   'user.usermsg.markreadall': '全部标记为已读',
   'user.usermsg.empty': '已看完所有通知！',
+  'user.usermsg.allempty': '暂无消息',
   'user.usermsg.delete.owntitle': '删除消息记录',
   'user.usermsg.delete.owncontent': '确定要删除选中的{count}条记录吗',
 

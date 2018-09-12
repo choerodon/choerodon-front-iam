@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Select, Table, Tooltip, Modal, Form, Card, Checkbox } from 'choerodon-ui';
+import { Button, List, Spin, Tooltip, Modal, Form, Card, Checkbox } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
 import UserMsgStore from '../../../stores/user/user-msg/UserMsgStore';
-import InMailTemplateStore from '../../../stores/global/inmail-template';
-import User from "../../organization/user/User";
 
 const intlPrefix = 'user.usermsg';
 
@@ -29,13 +27,13 @@ export default class UserMsg extends Component {
 
   componentDidMount() {
     this.loadUserInfo();
-    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, []);
+    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, [], this.state.showAll);
   }
 
-  refresh() {
-    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, []);
+  refresh = () => {
+    UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, [], this.state.showAll);
     UserMsgStore.selectMsg.clear();
-  }
+  };
 
   getUserMsgClass(name) {
     const { showAll } = this.state;
@@ -51,10 +49,10 @@ export default class UserMsg extends Component {
   }
 
   showUserMsg(show) {
-    this.refresh();
     this.setState({
       showAll: show,
-    });
+    },
+    () => this.refresh());
   }
 
   renderMsgTitle(title, id, read, sendTime) {
@@ -97,10 +95,15 @@ export default class UserMsg extends Component {
     });
   };
 
-  handleCardClick = (id) => {
+  handleCardClick = (id, read) => {
     setTimeout(() => {
       if (this.state.needExpand) {
         UserMsgStore.setExpandCardId(UserMsgStore.getExpandCardId !== id ? id : null);
+        // 如果消息未读则发送已读消息的请求
+        if (!read) {
+          UserMsgStore.readMsg([id]);
+          UserMsgStore.setReadLocal(id);
+        }
       }
       this.setState({
         needExpand: true,
@@ -110,38 +113,37 @@ export default class UserMsg extends Component {
 
   loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
-  renderUserMsgCard() {
-    let visiableCardCount = 0;
-    const innerHTML = UserMsgStore.getUserMsg && UserMsgStore.getUserMsg.map(({ content, title, id, read, sendTime }) => {
-      visiableCardCount += read ? 0 : 1;
-      return (
+  renderUserMsgCard(item) {
+    const innerHTML = (
+      <List.Item>
         <Card
-          key={id}
-          className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === id }, { 'c7n-unread-line': !read })}
-          title={this.renderMsgTitle(title, id, read, sendTime)}
-          onHeadClick={() => this.handleCardClick(id)}
-          style={{ display: !read || this.state.showAll ? null : 'none' }}
+          key={item.id}
+          className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === item.id }, { 'c7n-unread-line': !item.read })}
+          title={this.renderMsgTitle(item.title, item.id, item.read, item.sendTime)}
+          onHeadClick={() => this.handleCardClick(item.id, item.read)}
         >
-          <div dangerouslySetInnerHTML={{ __html: `${content}` }} />
+          <div dangerouslySetInnerHTML={{ __html: `${item.content}` }} />
         </Card>
-      );
-    });
-    return (
-      <div>
-        {(visiableCardCount !== 0 || this.state.showAll) ? innerHTML : this.renderEmpty()}
-      </div>
+      </List.Item>
     );
+    return innerHTML;
   }
 
   renderEmpty = () => (
     <div>
       <div className="c7n-user-msg-empty-icon" />
-      <div className="c7n-user-msg-empty-icon-text"><FormattedMessage id="user.usermsg.empty" /></div>
+      <div className="c7n-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} /></div>
     </div>
   );
 
   render() {
     const user = UserMsgStore.getUserInfo;
+    const loadMore = UserMsgStore.getUserMsg.size > 0 ? (
+      <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
+        <Spin />
+        <Button onClick={this.onLoadMore}>loading more</Button>
+      </div>
+    ) : null;
     return (
       <Page>
         <Header
@@ -155,6 +157,7 @@ export default class UserMsg extends Component {
           </Button>
           <Button
             icon="drafts"
+            disabled={UserMsgStore.getSelectMsg.size === 0}
             onClick={() => UserMsgStore.readMsg().then(() => this.refresh())}
           >
             <FormattedMessage id={`${intlPrefix}.markread`} />
@@ -167,6 +170,7 @@ export default class UserMsg extends Component {
           </Button>
           <Button
             icon="delete"
+            disabled={UserMsgStore.getSelectMsg.size === 0}
             onClick={this.handleDelete}
           >
             <FormattedMessage id={'delete'} />
@@ -195,7 +199,17 @@ export default class UserMsg extends Component {
               type="primary"
             ><FormattedMessage id="user.usermsg.all" /></Button>
           </div>
-          {this.renderUserMsgCard()}
+          <List
+            loading={UserMsgStore.getLoading}
+            itemLayout="horizontal"
+            loadMore={loadMore}
+            dataSource={UserMsgStore.getUserMsg}
+            renderItem={item => (
+              this.renderUserMsgCard(item)
+            )}
+          >
+            {UserMsgStore.getUserMsg.length === 0 && !UserMsgStore.getLoading ? this.renderEmpty() : null}
+          </List>
         </Content>
       </Page>
     );

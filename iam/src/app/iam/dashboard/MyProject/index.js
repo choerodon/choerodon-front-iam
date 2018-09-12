@@ -13,12 +13,27 @@ const intlPrefix = 'dashboard.myproject';
 @inject('AppState', 'HeaderStore')
 @observer
 export default class MyProject extends Component {
+  orgId = null;
+
   componentWillMount() {
     this.loadData();
   }
 
-  loadData = () => {
-    ProjectInfoStore.loadData(this.props.AppState.getUserInfo.id, { current: 1, pageSize: 10 }, []);
+  componentWillReceiveProps(nextProps) {
+    const nextOrgId = this.getOrgId(nextProps);
+    if (nextOrgId !== this.orgId) {
+      this.loadData(nextOrgId);
+    }
+  }
+
+  getOrgId(props = this.props) {
+    const { AppState: { currentMenuType: { id: orgId, organizationId } } } = props;
+    return organizationId || orgId;
+  }
+
+  loadData = (orgId = this.getOrgId()) => {
+    this.orgId = orgId;
+    ProjectInfoStore.loadMyProjects(orgId);
   };
 
   handleRowClick({ id, organizationId, name }) {
@@ -45,14 +60,14 @@ export default class MyProject extends Component {
   }
 
   render() {
-    const { projectRolesData, loading } = ProjectInfoStore;
+    const { myProjectData, loading } = ProjectInfoStore;
     return (
       <div className="c7n-iam-dashboard-my-project">
         <section>
           <Table
             loading={loading}
             columns={this.getTableColumns()}
-            dataSource={projectRolesData.slice(0, 5)}
+            dataSource={myProjectData.slice()}
             filterBar={false}
             pagination={false}
             rowKey="code"

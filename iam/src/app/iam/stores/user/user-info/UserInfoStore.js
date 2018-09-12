@@ -36,5 +36,4 @@ class UserInfoStore {
   );
 }
 
-const userInfoStore = new UserInfoStore();
-export default userInfoStore;
+export default new UserInfoStore();

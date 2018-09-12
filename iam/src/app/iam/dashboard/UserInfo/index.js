@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
-import { DashBoardNavBar } from 'choerodon-front-boot';
+import { DashBoardNavBar, Permission } from 'choerodon-front-boot';
 import { Spin } from 'choerodon-ui';
 import UserInfoStore from '../../stores/user/user-info/UserInfoStore';
 import './index.scss';
@@ -18,14 +18,13 @@ export default class UserInfo extends Component {
   }
 
   loadUserInfo = () => {
-    UserInfoStore.setUserInfo(this.props.AppState.getUserInfo);
+    const { getUserInfo } = this.props.AppState;
+    UserInfoStore.setUserInfo(getUserInfo);
   };
 
   render() {
     const { HeaderStore } = this.props;
-    const { getUserInfo: { loginName, realName, email, ldap, organizationId } } = UserInfoStore;
-    const orgData = HeaderStore.getOrgData || [];
-    const { name } = orgData.find(({ id }) => String(id) === String(organizationId)) || {};
+    const { getUserInfo: { loginName, realName, email, ldap, organizationName } } = UserInfoStore;
     return (
       <div className="c7n-iam-dashboard-user-info">
         <dl>
@@ -38,7 +37,7 @@ export default class UserInfo extends Component {
           <dt><FormattedMessage id={`${intlPrefix}.ldap`} /></dt>
           <dd><FormattedMessage id={`${intlPrefix}.ldap.${!!ldap}`} /></dd>
           <dt><FormattedMessage id={`${intlPrefix}.organization`} /></dt>
-          <dd>{name}</dd>
+          <dd>{organizationName}</dd>
         </dl>
         <DashBoardNavBar>
           <Link to="/iam/user-info?type=site"><FormattedMessage id={`${intlPrefix}.redirect`} /></Link>

@@ -5,6 +5,7 @@ import querystring from 'query-string';
 @store('ExecutableProgramStore')
 class ExecutableProgramStore {
   @observable data = [];
+  @observable detail = {};
 
   @action setData(data) {
     this.data = data;
@@ -14,17 +15,26 @@ class ExecutableProgramStore {
     return this.data;
   }
 
+  @action setDetail(data) {
+    this.detail = data;
+  }
+
+  @computed get getDetail() {
+    return this.detail;
+  }
+
   loadData(
     { current, pageSize },
-    { status, email, retryStatus },
+    { code, service, method, description },
     { columnKey = 'id', order = 'descend' },
     params) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
-      status,
-      email,
-      retryStatus,
+      code,
+      service,
+      method,
+      description,
       params,
     };
     if (columnKey) {
@@ -35,8 +45,10 @@ class ExecutableProgramStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/notify/v1/records/emails?${querystring.stringify(queryObj)}`);
+    return axios.get(`/asgard/v1/schedules/methods?${querystring.stringify(queryObj)}`);
   }
+
+  loadProgramDetail = id => axios.get(`/asgard/v1/schedules/methods/${id}`);
 }
 
 const executableProgramStore = new ExecutableProgramStore();

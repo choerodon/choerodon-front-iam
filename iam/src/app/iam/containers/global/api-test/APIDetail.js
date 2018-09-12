@@ -376,7 +376,7 @@ export default class APIDetail extends Component {
         let editableNode;
         if (!record.type) {
           editableNode = (
-            <div style={{ width: '50%' }} className="c7n-TextEditToggle-text">
+            <div style={{ width: '100%' }} className="c7n-TextEditToggle-text">
               <FormItem>
                 {getFieldDecorator('bodyData', {
                   rules: [{

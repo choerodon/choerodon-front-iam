@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import moment from 'moment';
 import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
@@ -59,88 +60,19 @@ const dataSource = {
   empty: false,
 };
 
-// 时间间隔组件
-class TimeInterval extends Component {
-  constructor(props) {
-    super(props);
-    const value = this.props.value || {};
-    this.state = {
-      number: value.number,
-      time: value.time || 'second',
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // Should be a controlled component.
-    if ('value' in nextProps) {
-      const value = nextProps.value;
-      this.setState(value);
-    }
-  }
-
-  handleNumberChange = (e) => {
-    const number = parseInt(e.target.value || 0, 10);
-    if (!('value' in this.props)) {
-      this.setState({ number });
-    }
-    this.triggerChange({ number });
-  }
-
-  handleTimeChange = (time) => {
-    if (!('value' in this.props)) {
-      this.setState({ time });
-    }
-    this.triggerChange({ time });
-  }
-
-  triggerChange = (changedValue) => {
-    // Should provide an event to pass value to Form.
-    const onChange = this.props.onChange;
-    if (onChange) {
-      onChange(Object.assign({}, this.state, changedValue));
-    }
-  }
-
-  render() {
-    const { size } = this.props;
-    const state = this.state;
-    return (
-      <span>
-        <Input
-          label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />}
-          size={size}
-          value={state.number}
-          onChange={this.handleNumberChange}
-          style={{ width: '100px', marginRight: '18px' }}
-        />
-        <Select
-          value={state.time}
-          size={size}
-          style={{ width: '124px' }}
-          className="c7n-create-task-select"
-          onChange={this.handleTimeChange}
-        >
-          <Option value="second">秒</Option>
-          <Option value="minute">分</Option>
-          <Option value="hour">时</Option>
-          <Option value="week">周</Option>
-          <Option value="month">月</Option>
-        </Select>
-      </span>
-    );
-  }
-}
 
 @Form.create()
 @withRouter
 @injectIntl
 @inject('AppState')
-
+@observer
 export default class TaskDetail extends Component {
   state = this.getInitState();
 
   getInitState() {
     return {
+      startTime: null,
+      endTime: null,
       isShowSidebar: false,
       isSubmitting: false,
       selectType: 'create', // 当前侧边栏为创建or详情
@@ -171,6 +103,7 @@ export default class TaskDetail extends Component {
       },
       logFilters: {},
       logParams: [],
+      paramsData: [], // 参数列表的数据
     };
   }
 
@@ -274,7 +207,7 @@ export default class TaskDetail extends Component {
             size="small"
             icon="remove_circle_outline"
             shape="circle"
-            // onClick={this.handleAble.bind(this, record)}
+            onClick={this.handleAble.bind(this, record)}
           />
         </Tooltip>
       );
@@ -288,7 +221,7 @@ export default class TaskDetail extends Component {
             size="small"
             icon="finished"
             shape="circle"
-            // onClick={this.handleAble.bind(this, record)}
+            onClick={this.handleAble.bind(this, record)}
           />
         </Tooltip>
       );
@@ -308,21 +241,21 @@ export default class TaskDetail extends Component {
    * 启停用任务
    * @param record 表格行数据
    */
-  // handleAble = (record) => {
-  //   const { id, objectVersionNumber } = record;
-  //   const { intl } = this.props;
-  //   const status = record.status === 'ENABLE' ? 'disable' : 'enable';
-  //   TaskDetailStore.ableTask(id, objectVersionNumber, status).then((data) => {
-  //     if (data.failed) {
-  //       Choerodon.prompt(data.message);
-  //     } else {
-  //       Choerodon.prompt(intl.formatMessage({ id: `${status}.success` }));
-  //       this.loadTaskDetail();
-  //     }
-  //   }).catch(() => {
-  //     Choerodon.prompt(intl.formatMessage({ id: `${status}.error` }));
-  //   });
-  // }
+  handleAble = (record) => {
+    const { id, objectVersionNumber } = record;
+    const { intl } = this.props;
+    const status = record.status === 'ENABLE' ? 'disable' : 'enable';
+    TaskDetailStore.ableTask(id, objectVersionNumber, status).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        Choerodon.prompt(intl.formatMessage({ id: `${status}.success` }));
+        this.loadTaskDetail();
+      }
+    }).catch(() => {
+      Choerodon.prompt(intl.formatMessage({ id: `${status}.error` }));
+    });
+  }
 
   /**
    * 删除任务
@@ -354,18 +287,21 @@ export default class TaskDetail extends Component {
   handleOpen = (selectType, record = {}) => {
     this.props.form.resetFields();
     this.setState({
-      isShowSidebar: true,
       selectType,
       showLog: false,
       triggerType: 'easy',
     });
     if (selectType === 'create') {
-      setTimeout(() => {
-        this.creatTaskFocusInput.input.focus();
-      }, 10);
+      if (!TaskDetailStore.service.length) {
+        this.loadService();
+      } else {
+        TaskDetailStore.setCurrentService(TaskDetailStore.service[0]);
+        this.loadClass();
+      }
     } else {
       this.setState({
         currentRecord: record,
+        isShowSidebar: true,
       });
     }
   }
@@ -376,6 +312,77 @@ export default class TaskDetail extends Component {
       isShowSidebar: false,
     });
   }
+
+
+  /**
+   * 服务名变换时
+   * @param service 服务名
+   */
+  handleChangeService(service) {
+    const currentService = TaskDetailStore.service.find(item => item.name === service);
+    TaskDetailStore.setCurrentService(currentService);
+    this.loadClass();
+  }
+
+  handleChangeClass(id) {
+    const currentClass = TaskDetailStore.service.find(item => item.id === id);
+    TaskDetailStore.setCurrentClassNames(currentClass);
+    this.loadParamsTable();
+  }
+
+  // 获取所有服务名
+  loadService = () => {
+    TaskDetailStore.loadService().then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        TaskDetailStore.setService(data);
+        const defaultService = data[0];
+        TaskDetailStore.setCurrentService(defaultService);
+        this.loadClass();
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+    });
+  }
+
+  // 获取对应服务名的类名
+  loadClass = () => {
+    const { currentService } = TaskDetailStore;
+    TaskDetailStore.loadClass('asgard-saga-demo').then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        const classNames = [];
+        TaskDetailStore.setClassWithParams(data);
+        data.map(({ method, code, id }) => classNames.push({ method, code, id }));
+        TaskDetailStore.setClassNames(classNames);
+        TaskDetailStore.setCurrentClassNames(classNames[0]);
+        this.loadParamsTable();
+        this.setState({
+          isShowSidebar: true,
+        }, () => {
+          setTimeout(() => {
+            this.creatTaskFocusInput.input.focus();
+          }, 10);
+        });
+      }
+    });
+  }
+
+  loadParamsTable = () => {
+    const { currentClassNames } = TaskDetailStore;
+    TaskDetailStore.loadParams(currentClassNames.id).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setState({
+          paramsData: data.paramsList,
+        });
+      }
+    });
+  }
+
 
   /**
    * 侧边栏tab切换
@@ -400,6 +407,8 @@ export default class TaskDetail extends Component {
 
   // 创建任务切换触发类型
   changeValue(e) {
+    const { resetFields } = this.props.form;
+    resetFields(['simpleRepeatInterval', 'simpleRepeatCount', 'simpleRepeatIntervalUnit', 'cronExpression']);
     this.setState({
       triggerType: e.target.value,
     });
@@ -411,9 +420,17 @@ export default class TaskDetail extends Component {
     if (this.state.selectType === 'create') {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          // this.setState({
-          //   isSubmitting: true,
-          // });
+          const flag = values.triggerType === 'easy';
+          const body = {
+            ...values,
+            startTime: values.startTime.format('YYYY-MM-DD HH:mm:ss'),
+            endTime: values.endTime.format('YYYY-MM-DD HH:mm:ss'),
+            cronExpression: flag ? null : values.cronExpression,
+            simpleRepeatInterval: flag ? values.simpleRepeatInterval : null,
+            simpleRepeatIntervalUnit: flag ? values.simpleRepeatIntervalUnit : null,
+            simpleRepeatCount: flag ? values.simpleRepeatCount : null,
+          };
+          window.console.log(body);
         }
       });
     } else {
@@ -422,6 +439,44 @@ export default class TaskDetail extends Component {
       });
     }
   }
+
+  // disabledDate = (current) => {
+  //   return current && current < moment().endOf('day');
+  // }
+
+  disabledStartDate = (startTime) => {
+    const endTime = this.state.endTime;
+    if (!startTime || !endTime) {
+      return false;
+    }
+    return startTime.valueOf() >= endTime.valueOf();
+  }
+
+  disabledEndDate = (endTime) => {
+    const startTime = this.state.startTime;
+    if (!endTime || !startTime) {
+      return false;
+    }
+    return endTime.valueOf() <= startTime.valueOf();
+  }
+
+  onStartChange = (value) => {
+    this.onChange('startTime', value);
+  }
+
+  onEndChange = (value) => {
+    this.onChange('endTime', value);
+  }
+
+  onChange = (field, value) => {
+    const { setFieldsValue } = this.props.form;
+    this.setState({
+      [field]: value,
+    }, () => {
+      setFieldsValue({ [field]: this.state[field] });
+    });
+  }
+
 
   /**
    * 渲染任务日志列表状态列
@@ -462,10 +517,23 @@ export default class TaskDetail extends Component {
 
   // 渲染创建任务
   renderCreateContent() {
+    const { startTime, endTime, paramsData, selectType, triggerType } = this.state;
     const { intl } = this.props;
-    const { selectType, triggerType } = this.state;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = '512px';
+    const service = TaskDetailStore.service;
+    const classNames = TaskDetailStore.classNames;
+    const columns = [{
+      title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
+      dataIndex: 'name',
+      key: 'name',
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
+      dataIndex: 'defaultValue',
+      key: 'defaultValue',
+      render: text => <span>{`${text}`}</span>,
+    }];
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -502,7 +570,7 @@ export default class TaskDetail extends Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
-              style={{ width: '512px' }}
+              style={{ width: inputWidth }}
             >
               {getFieldDecorator('description', {
                 rules: [{
@@ -520,7 +588,7 @@ export default class TaskDetail extends Component {
               {getFieldDecorator('startTime', {
                 rules: [{
                   required: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.task.description.required` }),
+                  message: intl.formatMessage({ id: `${intlPrefix}.task.start.time.required` }),
                 }],
               })(
                 <DatePicker
@@ -528,6 +596,8 @@ export default class TaskDetail extends Component {
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
                   style={{ width: inputWidth }}
+                  disabledDate={this.disabledStartDate}
+                  onChange={this.onStartChange}
                 />,
               )}
             </FormItem>
@@ -535,16 +605,15 @@ export default class TaskDetail extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('endTime', {
-                rules: [{
-                  required: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.task.description.required` }),
-                }],
+                rules: [],
               })(
                 <DatePicker
                   label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
                   style={{ width: inputWidth }}
+                  disabledDate={this.disabledEndDate}
+                  onChange={this.onEndChange}
                 />,
               )}
             </FormItem>
@@ -567,27 +636,53 @@ export default class TaskDetail extends Component {
             <div style={{ display: triggerType === 'easy' ? 'block' : 'none' }}>
               <FormItem
                 {...formItemLayout}
+                className="c7n-create-task-inline-formitem"
               >
-                {getFieldDecorator('repeateInterval', {
+                {getFieldDecorator('simpleRepeatInterval', {
                   rules: [{
-                    required: true,
-                    message: 'dsadsadasdas',
+                    required: triggerType === 'easy',
+                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.required` }),
+                  }, {
+                    pattern: /^[1-9]\d*$/,
+                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
                   }],
-                  initialValue: { time: 'second' },
+                  validateFirst: true,
                 })(
-                  <TimeInterval />,
+                  <Input style={{ width: '318px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                className="c7n-create-task-inline-formitem c7n-create-task-inline-formitem-select"
+              >
+                {getFieldDecorator('simpleRepeatIntervalUnit', {
+                  rules: [],
+                  initialValue: 'second',
+                })(
+                  <Select
+                    style={{ width: '176px' }}
+                  >
+                    <Option value="second">秒</Option>
+                    <Option value="minute">分</Option>
+                    <Option value="hour">时</Option>
+                    <Option value="day">天</Option>
+                    <Option value="month">月</Option>
+                  </Select>,
                 )}
               </FormItem>
               <FormItem
                 {...formItemLayout}
               >
-                {getFieldDecorator('repeatTime', {
+                {getFieldDecorator('simpleRepeatCount', {
                   rules: [{
-                    required: true,
+                    required: triggerType === 'easy',
                     message: intl.formatMessage({ id: `${intlPrefix}.repeat.time.required` }),
+                  }, {
+                    pattern: /^[1-9]\d*$/,
+                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
                   }],
                 })(
-                  <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
+                  <Input style={{ width: inputWidth }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
                 )}
               </FormItem>
             </div>
@@ -595,9 +690,9 @@ export default class TaskDetail extends Component {
               {...formItemLayout}
               style={{ display: triggerType === 'cron' ? 'block' : 'none' }}
             >
-              {getFieldDecorator('cornExpression', {
+              {getFieldDecorator('cronExpression', {
                 rules: [{
-                  required: true,
+                  required: triggerType === 'cron',
                   message: intl.formatMessage({ id: `${intlPrefix}.cron.expression.required` }),
                 }],
               })(
@@ -613,14 +708,22 @@ export default class TaskDetail extends Component {
                   required: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.cron.expression.required` }),
                 }],
-                initialValue: 'service1',
+                initialValue: TaskDetailStore.getCurrentService.name,
               })(
                 <Select
-                  label={<FormattedMessage id={`${intlPrefix}.service.name`} />}
                   style={{ width: '176px' }}
+                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                  label={<FormattedMessage id={`${intlPrefix}.service.name`} />}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filter
+                  onChange={this.handleChangeService.bind(this)}
                 >
-                  <Option value="service1">service1</Option>
-                  <Option value="service2">service2</Option>
+                  {
+                    service && service.length ? service.map(({ name }) => (
+                      <Option key={name}>{name}</Option>
+                    )) : <Option key="empty">无服务</Option>
+                  }
                 </Select>,
               )}
             </FormItem>
@@ -633,14 +736,31 @@ export default class TaskDetail extends Component {
                   required: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.cron.expression.required` }),
                 }],
-                initialValue: 'classname1',
+                initialValue: TaskDetailStore.currentClassNames.method,
               })(
                 <Select
                   label={<FormattedMessage id={`${intlPrefix}.task.class.name`} />}
                   style={{ width: '318px' }}
+                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                  filterOption={(input, option) => {
+                    const childNode = option.props.children;
+                    if (childNode && React.isValidElement(childNode)) {
+                      return childNode.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                    }
+                    return false;
+                  }}
+                  filter
+                  onChange={this.handleChangeClass.bind(this)}
                 >
-                  <Option value="classname1">classname1</Option>
-                  <Option value="classname2">classname2</Option>
+                  {
+                    classNames && classNames.length ? classNames.map(({ method, code, id }) => (
+                      <Option key={`${method}-${code}`} value={id}>
+                        <Tooltip title={method} placement="right" align={{ offset: [20, 0] }}>
+                          <span style={{ display: 'inline-block', width: '100%' }}>{code}</span>
+                        </Tooltip>
+                      </Option>
+                    )) : <Option key="empty">无任务程序</Option>
+                  }
                 </Select>,
               )}
             </FormItem>
@@ -653,6 +773,10 @@ export default class TaskDetail extends Component {
                   <Table
                     pagination={false}
                     filterBar={false}
+                    columns={columns}
+                    rowKey="name"
+                    dataSource={paramsData}
+                    rowClassName={() => 'editable-row'}
                     style={{ width: inputWidth }}
                   />,
                 )

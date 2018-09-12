@@ -4,6 +4,7 @@ import queryString from 'query-string';
 
 @store('ProjectInfoStore')
 class ProjectInfoStore {
+  @observable myProjectData = [];
   @observable projectRolesData = [];
   @observable loading = false;
   @observable sidebarVisible = false;
@@ -26,6 +27,27 @@ class ProjectInfoStore {
   @action
   hideSideBar() {
     this.sidebarVisible = false;
+  }
+
+  @action
+  loadMyProjects(orgId) {
+    this.loading = true;
+    return axios.get(`/iam/v1/users/self/projects/paging_query?${queryString.stringify({
+      organization_id: orgId,
+      page: 0,
+      size: 5,
+      enabled: true,
+    })}`).then(action((result) => {
+      const { failed, content } = result;
+      if (!failed) {
+        this.myProjectData = content || result;
+      }
+      this.loading = false;
+    }))
+      .catch(action((error) => {
+        Choerodon.handleResponseError(error);
+        this.loading = false;
+      }));
   }
 
   @action
@@ -55,5 +77,4 @@ class ProjectInfoStore {
 
 }
 
-const projectInfoStore = new ProjectInfoStore();
-export default projectInfoStore;
+export default new ProjectInfoStore();

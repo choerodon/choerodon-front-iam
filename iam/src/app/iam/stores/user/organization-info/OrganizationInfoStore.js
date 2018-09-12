@@ -4,6 +4,7 @@ import queryString from 'query-string';
 
 @store('OrganizationInfoStore')
 class OrganizationInfoStore {
+  @observable myOrganizationData = [];
   @observable organizationRolesData = [];
   @observable loading = false;
   @observable sidebarVisible = false;
@@ -26,6 +27,26 @@ class OrganizationInfoStore {
   @action
   hideSideBar() {
     this.sidebarVisible = false;
+  }
+
+  @action
+  loadMyOrganizations() {
+    this.loading = true;
+    return axios.get(`/iam/v1/users/self/organizations/paging_query?${queryString.stringify({
+      page: 0,
+      size: 5,
+      enabled: true,
+    })}`).then(action((result) => {
+      const { failed, content } = result;
+      if (!failed) {
+        this.myOrganizationData = content || result;
+      }
+      this.loading = false;
+    }))
+      .catch(action((error) => {
+        Choerodon.handleResponseError(error);
+        this.loading = false;
+      }));
   }
 
   @action

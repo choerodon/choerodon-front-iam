@@ -18,7 +18,7 @@ export default class MyOrganization extends Component {
   }
 
   loadData = () => {
-    OrganizationInfoStore.loadData(this.props.AppState.getUserInfo.id, { current: 1, pageSize: 10 }, []);
+    OrganizationInfoStore.loadMyOrganizations();
   };
 
   handleRowClick({ id, name }) {
@@ -45,14 +45,14 @@ export default class MyOrganization extends Component {
   }
 
   render() {
-    const { organizationRolesData, loading } = OrganizationInfoStore;
+    const { myOrganizationData, loading } = OrganizationInfoStore;
     return (
       <div className="c7n-iam-dashboard-my-organization">
         <section>
           <Table
             loading={loading}
             columns={this.getTableColumns()}
-            dataSource={organizationRolesData.slice(0, 5)}
+            dataSource={myOrganizationData.slice()}
             filterBar={false}
             pagination={false}
             rowKey="code"

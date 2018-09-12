@@ -147,20 +147,20 @@ class OrganizationStore {
   getOrgById = organizationId =>
     axios.get(`/iam/v1/organizations/${organizationId}`);
 
-  getRolesById(organizationId, userId) {
-    return axios.get(`/iam/v1/organization/${organizationId}/role_members/users/${userId}`);
-  }
+  getRolesById = (organizationId, userId) =>
+    axios.get(`/iam/v1/organization/${organizationId}/role_members/users/${userId}`);
 
   loadMyData(organizationId, userId) {
     axios.all([
       this.getOrgById(organizationId),
       this.getRolesById(organizationId, userId),
-    ]).then(action(([org, roles]) => {
-      this.myOrg = org;
-      this.myRoles = roles;
-    }));
+    ])
+      .then(action(([org, roles]) => {
+        this.myOrg = org;
+        this.myRoles = roles;
+      }))
+      .catch(Choerodon.handleResponseError);
   }
 }
 
-const organizationStore = new OrganizationStore();
-export default organizationStore;
+export default new OrganizationStore();

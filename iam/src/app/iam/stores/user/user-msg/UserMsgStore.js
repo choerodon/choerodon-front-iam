@@ -99,9 +99,8 @@ class UserMsgStore {
   }
 
   @action
-  loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params, showAll) {
+  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
     this.setLoading(true);
-    const { columnKey, order } = sort;
     const sorter = [];
     if (columnKey) {
       sorter.push(columnKey);
@@ -111,7 +110,6 @@ class UserMsgStore {
     }
     this.loading = true;
     this.filters = filters;
-    this.sort = sort;
     this.params = params;
     return axios.get(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}${showAll ? '' : '/not_read'}?${queryString.stringify({
       page: pagination.current - 1,

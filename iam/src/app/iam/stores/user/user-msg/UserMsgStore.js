@@ -2,6 +2,8 @@ import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import queryString from 'query-string';
 
+const PAGELOADSIZE = 5;
+
 @store('UserMsgStore')
 class UserMsgStore {
   @observable userMsg = [];
@@ -13,6 +15,34 @@ class UserMsgStore {
   @observable selectMsg = new Set();
 
   @observable loading = false;
+
+  @observable pagination= {
+    current: 1,
+    pageSize: PAGELOADSIZE,
+    total: 0,
+    totalPages: 0,
+  };
+
+  @observable sort = {
+    columnKey: 'id',
+    order: 'descend',
+  };
+
+  @observable filters = {};
+
+  @observable params = [];
+
+  @observable loadingMore = false;
+
+  @action
+  initPagination() {
+    this.pagination = {
+      current: 1,
+      pageSize: PAGELOADSIZE,
+      total: 0,
+      totalPages: 0,
+    };
+  }
 
   @computed
   get getSelectMsg() {
@@ -27,6 +57,16 @@ class UserMsgStore {
   @computed
   get getLoading() {
     return this.loading;
+  }
+
+  @computed
+  get getLoadingMore() {
+    return this.loadingMore;
+  }
+
+  @action
+  setLoadingMore(flag) {
+    this.loadingMore = flag;
   }
 
   @action
@@ -76,6 +116,11 @@ class UserMsgStore {
     });
   }
 
+  @computed
+  get isNoMore() {
+    return this.pagination.current === this.pagination.totalPages;
+  }
+
   /**
    * 不传data时默认将store中选中的消息设为已读
    * @param data
@@ -99,8 +144,21 @@ class UserMsgStore {
   }
 
   @action
-  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
-    this.setLoading(true);
+  loadMore(showAll) {
+    if (this.pagination.totalPages > this.pagination.current && showAll) {
+      this.setLoadingMore(true);
+      this.pagination.current += 1;
+      this.load(this.pagination, this.filters, this.sort, this.params, showAll).then(action((data) => {
+        this.setUserMsg(this.userMsg.concat(data.content));
+        this.setLoadingMore(false);
+      })).catch(action((error) => {
+        this.setLoadingMore(false);
+        Choerodon.handleResponseError(error);
+      }));
+    }
+  }
+
+  @action load(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
     const sorter = [];
     if (columnKey) {
       sorter.push(columnKey);
@@ -108,7 +166,6 @@ class UserMsgStore {
         sorter.push('desc');
       }
     }
-    this.loading = true;
     this.filters = filters;
     this.params = params;
     return axios.get(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}${showAll ? '' : '/not_read'}?${queryString.stringify({
@@ -116,10 +173,17 @@ class UserMsgStore {
       size: pagination.pageSize,
       params: params.join(','),
       sort: sorter.join(','),
-    })}`).then((data) => {
+    })}`);
+  }
+
+  @action
+  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
+    this.setLoading(true);
+    this.load(pagination, filters, { columnKey, order }, params, showAll).then(action((data) => {
       this.setUserMsg(data.content ? data.content : data);
+      this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
       this.setLoading(false);
-    })
+    }))
       .catch(action((error) => {
         this.setLoading(false);
         Choerodon.handleResponseError(error);

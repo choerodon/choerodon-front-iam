@@ -26,7 +26,7 @@ class UserMsgStore {
 
   @computed
   get getLoading() {
-    return this.selectMsg;
+    return this.loading;
   }
 
   @action

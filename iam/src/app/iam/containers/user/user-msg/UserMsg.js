@@ -7,8 +7,6 @@ import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
 import UserMsgStore from '../../../stores/user/user-msg/UserMsgStore';
-import InMailTemplateStore from '../../../stores/global/inmail-template';
-import User from '../../organization/user/User';
 
 const intlPrefix = 'user.usermsg';
 
@@ -32,10 +30,10 @@ export default class UserMsg extends Component {
     UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, [], this.state.showAll);
   }
 
-  refresh() {
+  refresh = () => {
     UserMsgStore.loadData({ current: 1, pageSize: 100 }, {}, {}, [], this.state.showAll);
     UserMsgStore.selectMsg.clear();
-  }
+  };
 
   getUserMsgClass(name) {
     const { showAll } = this.state;
@@ -134,7 +132,7 @@ export default class UserMsg extends Component {
   renderEmpty = () => (
     <div>
       <div className="c7n-user-msg-empty-icon" />
-      <div className="c7n-user-msg-empty-icon-text"><FormattedMessage id="user.usermsg.empty" /></div>
+      <div className="c7n-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} /></div>
     </div>
   );
 
@@ -202,14 +200,16 @@ export default class UserMsg extends Component {
             ><FormattedMessage id="user.usermsg.all" /></Button>
           </div>
           <List
-            loading={UserMsgStore.loading}
+            loading={UserMsgStore.getLoading}
             itemLayout="horizontal"
             loadMore={loadMore}
             dataSource={UserMsgStore.getUserMsg}
             renderItem={item => (
               this.renderUserMsgCard(item)
             )}
-          />
+          >
+            {UserMsgStore.getUserMsg.length === 0 && !UserMsgStore.getLoading ? this.renderEmpty() : null}
+          </List>
         </Content>
       </Page>
     );

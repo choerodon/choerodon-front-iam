@@ -365,8 +365,6 @@ export default class TaskDetail extends Component {
         Choerodon.prompt(data.message);
       } else {
         TaskDetailStore.setService(data);
-        const defaultService = data[0];
-        TaskDetailStore.setCurrentService(defaultService);
         this.loadClass();
       }
     }).catch((error) => {
@@ -497,6 +495,9 @@ export default class TaskDetail extends Component {
         }
 
         if (!err) {
+          this.setState({
+            isSubmitting: true,
+          });
           const flag = values.triggerType === 'simple-trigger';
           delete values.serviceName;
           const { startTime, endTime, cronExpression, simpleRepeatInterval,
@@ -513,12 +514,22 @@ export default class TaskDetail extends Component {
           TaskDetailStore.createTask(body).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
+              this.setState({
+                isSubmitting: false,
+              });
             } else {
               Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-              this.handleRefresh();
+              this.setState({
+                isSubmitting: false,
+              }, () => {
+                this.handleRefresh();
+              });
             }
           }).catch(() => {
             Choerodon.prompt(intl.formatMessage({ id: 'create.error' }));
+            this.setState({
+              isSubmitting: false,
+            });
           });
         }
       });
@@ -1205,7 +1216,22 @@ export default class TaskDetail extends Component {
       ),
     }];
     return (
-      <Page>
+      <Page
+        service={[
+          'asgard-service.schedule-task.pagingQuery',
+          'asgard-service.schedule-task.create',
+          'asgard-service.schedule-task.check',
+          'asgard-service.schedule-task.cron',
+          'asgard-service.schedule-task.getTaskDetail',
+          'asgard-service.schedule-task.delete',
+          'asgard-service.schedule-task.disable',
+          'asgard-service.schedule-task.enable',
+          'asgard-service.schedule-task-instance.pagingQueryByTaskId',
+          'asgard-service.schedule-method.getMethodByService',
+          'asgard-service.schedule-method.pagingQuery',
+          'manager-service.service.pageAll',
+        ]}
+      >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >

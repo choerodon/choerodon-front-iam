@@ -1,4 +1,17 @@
 .c7n-user-msg {
+  &-list .ant-list-item {
+    padding: 0;
+  }
+  &-list {
+    .ant-spin-spinning {
+      opacity: 1;
+      display: inline-block;
+      height: 100%;
+      max-height: 350px;
+      width: 100%;
+      z-index: 4;
+    }
+  }
   &-empty-icon {
     height: 120px;
     width: 120px;
@@ -114,18 +127,4 @@
   .ant-card-head {
     border-left: 2px solid #3f51b5;
   }
-}
-
-.ant-list-split .ant-list-item {
-  border-bottom: 0;
-  padding: 0;
-}
-
-.ant-spin-spinning {
-  opacity: 1;
-  display: inline-block;
-  height: 100%;
-  max-height: 10px;
-  width: 100%;
-  z-index: 4;
 }

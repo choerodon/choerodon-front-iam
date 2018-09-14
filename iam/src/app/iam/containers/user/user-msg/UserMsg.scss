@@ -120,3 +120,13 @@
   border-bottom: 0;
   padding: 0;
 }
+
+.ant-spin-spinning {
+  opacity: 1;
+  display: inline-block;
+  position: absolute;
+  height: 100%;
+  max-height: 10px;
+  width: 100%;
+  z-index: 4;
+}

@@ -188,8 +188,14 @@ export default class ExecutableProgram extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'method',
       key: 'method',
+      width: '30%',
       filters: [],
       filteredValue: filters.method || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.3}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="description" />,
       dataIndex: 'description',

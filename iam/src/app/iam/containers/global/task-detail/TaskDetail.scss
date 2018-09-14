@@ -18,6 +18,10 @@
 }
 
 .c7n-task-detail-sidebar {
+  &.ant-modal-sidebar .ant-modal-body {
+    height: calc(100% - 121px);
+  }
+
   .c7n-create-task {
     &-radio-container > label:first-child {
       margin-right: 52px;
@@ -51,6 +55,10 @@
     div:last-child {
       color: rgba(0, 0, 0, 0.65);
     }
+
+    &-hide {
+      display: none;
+    }
   }
 
   .c7n-task-log-status {
@@ -71,11 +79,30 @@
   }
 }
 
-.editable-row:hover .editable-cell-value-wrap {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  padding: 4px 11px;
+.c7n-task-deatil-cron-container {
+  font-size: 13px;
+
+  > span {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  li {
+    color: rgba(0,0,0,0.65);
+    margin-bottom: 12px;
+
+    span:first-child {
+      margin-right: 22px;
+    }
+  }
 }
+
+.c7n-task-detail-popover {
+  width: 272px;
+  height: 156px;
+}
+
+
 
 
 

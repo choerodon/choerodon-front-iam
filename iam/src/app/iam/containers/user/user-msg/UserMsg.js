@@ -209,6 +209,7 @@ export default class UserMsg extends Component {
             ><FormattedMessage id="user.usermsg.all" /></Button>
           </div>
           <List
+            className="c7n-user-msg-list"
             loading={UserMsgStore.getLoading}
             itemLayout="horizontal"
             loadMore={this.renderLoadMore()}
@@ -216,9 +217,9 @@ export default class UserMsg extends Component {
             renderItem={item => (
               this.renderUserMsgCard(item)
             )}
-          >
-            {UserMsgStore.getUserMsg.length === 0 && !UserMsgStore.getLoading ? this.renderEmpty() : null}
-          </List>
+            split={false}
+            empty={this.renderEmpty()}
+          />
         </Content>
       </Page>
     );

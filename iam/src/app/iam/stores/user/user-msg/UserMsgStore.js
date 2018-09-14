@@ -14,7 +14,7 @@ class UserMsgStore {
 
   @observable selectMsg = new Set();
 
-  @observable loading = false;
+  @observable loading = true;
 
   @observable pagination= {
     current: 1,
@@ -129,7 +129,7 @@ class UserMsgStore {
   @action
   readMsg(data) {
     data = data === undefined ? [...this.selectMsg] : data;
-    return axios.put(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}/batch_read`, JSON.stringify(data));
+    return axios.put(`/notify/v1/notices/sitemsgs/batch_read?user_id=${this.userInfo.id}`, JSON.stringify(data));
   }
 
   /**
@@ -140,7 +140,7 @@ class UserMsgStore {
   @action
   deleteMsg(data) {
     data = data === undefined ? [...this.selectMsg] : data;
-    return axios.put(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}/batch_delete`, JSON.stringify(data));
+    return axios.put(`/notify/v1/notices/sitemsgs/batch_delete?user_id=${this.userInfo.id}`, JSON.stringify(data));
   }
 
   @action
@@ -168,7 +168,9 @@ class UserMsgStore {
     }
     this.filters = filters;
     this.params = params;
-    return axios.get(`/notify/v1/notices/sitemsgs/users/${this.userInfo.id}${showAll ? '' : '/not_read'}?${queryString.stringify({
+    return axios.get(`/notify/v1/notices/sitemsgs?${queryString.stringify({
+      user_id: this.userInfo.id,
+      read: showAll ? null : false,
       page: pagination.current - 1,
       size: pagination.pageSize,
       params: params.join(','),
@@ -178,6 +180,10 @@ class UserMsgStore {
 
   @action
   loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
+    if (!showAll) {
+      // 在未读消息中显示尽量多的消息
+      pagination.pageSize = 100;
+    }
     this.setLoading(true);
     this.load(pagination, filters, { columnKey, order }, params, showAll).then(action((data) => {
       this.setUserMsg(data.content ? data.content : data);

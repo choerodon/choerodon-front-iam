@@ -22,13 +22,17 @@ const { Option } = Select;
 @inject('AppState')
 @observer
 export default class APITest extends Component {
-  state = APITestStore.getInitData ? APITestStore.getInitData : this.getInitState();
+  state = this.getInitState();
 
   componentDidMount() {
-    if (!APITestStore.getInitData) {
+    if (APITestStore.getInitData === null || APITestStore.getNeedReload) {
       this.loadInitData();
+      this.setState(this.getInitState());
+      APITestStore.clearIsExpand();
+    } else if (!APITestStore.getNeedReload) {
+      this.setState(APITestStore.getInitData);
     }
-    // APITestStore.clearIsExpand();
+    APITestStore.setNeedReload(true);
   }
 
   getInitState() {
@@ -102,10 +106,10 @@ export default class APITest extends Component {
     const newVersions = [];
     if (service && service.length > 0) {
       APITestStore.service.forEach(({ name, value, version }, index) => {
-          if (currentService.version === version) {
-            newVersions.push(version);
-          }
-        },
+        if (currentService.version === version) {
+          newVersions.push(version);
+        }
+      },
       );
       APITestStore.setCurrentVersion(newVersions[0]);
       APITestStore.setVersions(newVersions);
@@ -166,6 +170,7 @@ export default class APITest extends Component {
     this.setState(this.getInitState(), () => {
       APITestStore.setCurrentService(APITestStore.service[0]);
       this.loadApi();
+      APITestStore.clearIsExpand();
     });
   };
 
@@ -175,6 +180,7 @@ export default class APITest extends Component {
    */
   handleChange(serviceName) {
     const currentService = APITestStore.service.find(service => service.value === serviceName);
+    APITestStore.clearIsExpand();
     this.loadVersions();
     APITestStore.setCurrentService(currentService);
     this.setState(this.getInitState(), () => {
@@ -188,6 +194,7 @@ export default class APITest extends Component {
    */
   handleVersionChange(serviceVersion) {
     const currentVersion = APITestStore.versions.find(version => version === serviceVersion);
+    APITestStore.clearIsExpand();
     APITestStore.setCurrentVersion(currentVersion);
     this.setState(this.getInitState(), () => {
       this.loadApi();
@@ -198,6 +205,7 @@ export default class APITest extends Component {
     APITestStore.setApiDetail(record);
     APITestStore.setDetailFlag(true);
     APITestStore.setInitData(this.state); // 用来记录当前的分页状况当前页数等
+    APITestStore.setNeedReload(false);
     const version = APITestStore.getCurrentService.value.split('/')[1];
     const service = APITestStore.getCurrentService.value.split('/')[0];
     const { refController, operationId } = record;

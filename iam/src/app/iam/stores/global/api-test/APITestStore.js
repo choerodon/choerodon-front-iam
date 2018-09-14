@@ -24,6 +24,11 @@ class ApitestStore {
     responses: [],
   };
   @observable initData = null; // 用来缓存APITest列表页的state实现打开新的page然后返回仍在离开时的分页
+  @observable needReload = true; // 只有跳转到api详情界面然后回到api列表才不需要reload
+
+  @action setNeedReload(flag) {
+    this.needReload = flag;
+  }
 
   @action setDetailFlag(flag) {
     this.detailFlag = flag;
@@ -63,6 +68,10 @@ class ApitestStore {
 
   @action setInitData(data) {
     this.initData = data;
+  }
+
+  @computed get getNeedReload() {
+    return this.needReload;
   }
 
   @computed get getInitData() {

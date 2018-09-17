@@ -17,7 +17,6 @@ const { RangePicker } = DatePicker;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const { TabPane } = Tabs;
-const cronTime = ['2018-02-03 12:22:22', '2018-02-03 12:22:22', '2018-02-03 12:22:22'];
 
 @Form.create()
 @withRouter
@@ -29,6 +28,8 @@ export default class TaskDetail extends Component {
 
   getInitState() {
     return {
+      cronTime: [],
+      currentCron: undefined,
       tempTaskId: null,
       startTime: null,
       endTime: null,
@@ -63,7 +64,8 @@ export default class TaskDetail extends Component {
       logFilters: {},
       logParams: [],
       paramsData: [], // 参数列表的数据
-      cronLoading: 'right',
+      paramsLoading: false, // 创建任务参数列表Loading
+      cronLoading: 'empty', // cron popover的状态
     };
   }
 
@@ -109,10 +111,24 @@ export default class TaskDetail extends Component {
     this.loadTaskDetail(pagination, filters, sort, params);
   };
 
-  handleLogPageChange = (pagination, filters, sort, params) => {
-    this.loadLog(pagination, filters, sort, params);
+  /**
+   * 任务信息
+   * @param id 任务ID
+   */
+  loadInfo = (id) => {
+    TaskDetailStore.loadInfo(id).then((data) => {
+      if (data.faield) {
+        Choerodon.prompt(data.message);
+      } else {
+        TaskDetailStore.setInfo(data);
+        this.setState({
+          isShowSidebar: true,
+        });
+      }
+    });
   }
 
+  // 任务日志列表
   loadLog(paginationIn, filtersIn, sortIn, paramsIn) {
     const {
       logPagination: paginationState,
@@ -146,6 +162,10 @@ export default class TaskDetail extends Component {
         logLoading: false,
       });
     });
+  }
+
+  handleLogPageChange = (pagination, filters, sort, params) => {
+    this.loadLog(pagination, filters, sort, params);
   }
 
 
@@ -292,11 +312,22 @@ export default class TaskDetail extends Component {
       triggerType: 'easy',
     });
     if (selectType === 'create') {
+      TaskDetailStore.setCurrentService({});
+      TaskDetailStore.setClassNames([]);
+      TaskDetailStore.setCurrentClassNames({});
+      this.setState({
+        paramsData: [],
+      })
       if (!TaskDetailStore.service.length) {
         this.loadService();
       } else {
-        TaskDetailStore.setCurrentService(TaskDetailStore.service[0]);
-        this.loadClass();
+        this.setState({
+          isShowSidebar: true,
+        }, () => {
+          setTimeout(() => {
+            this.creatTaskFocusInput.input.focus();
+          }, 10);
+        });
       }
     } else {
       this.setState({
@@ -323,20 +354,6 @@ export default class TaskDetail extends Component {
       isShowSidebar: false,
     });
   }
-
-  loadInfo = (id) => {
-    TaskDetailStore.loadInfo(id).then((data) => {
-      if (data.faield) {
-        Choerodon.prompt(data.message);
-      } else {
-        TaskDetailStore.setInfo(data);
-        this.setState({
-          isShowSidebar: true,
-        });
-      }
-    });
-  }
-
 
   /**
    * 服务名变换时
@@ -365,7 +382,13 @@ export default class TaskDetail extends Component {
         Choerodon.prompt(data.message);
       } else {
         TaskDetailStore.setService(data);
-        this.loadClass();
+        this.setState({
+          isShowSidebar: true,
+        }, () => {
+          setTimeout(() => {
+            this.creatTaskFocusInput.input.focus();
+          }, 10);
+        });
       }
     }).catch((error) => {
       Choerodon.handleResponseError(error);
@@ -388,19 +411,15 @@ export default class TaskDetail extends Component {
         } else {
           TaskDetailStore.setClassNames([]);
         }
-        this.setState({
-          isShowSidebar: true,
-        }, () => {
-          setTimeout(() => {
-            this.creatTaskFocusInput.input.focus();
-          }, 10);
-        });
       }
     });
   }
 
   // 获取参数列表
   loadParamsTable = () => {
+    this.setState({
+      paramsLoading: true,
+    });
     const { currentClassNames } = TaskDetailStore;
     if (currentClassNames.id) {
       TaskDetailStore.loadParams(currentClassNames.id).then((data) => {
@@ -411,10 +430,14 @@ export default class TaskDetail extends Component {
             paramsData: data.paramsList,
           });
         }
+        this.setState({
+          paramsLoading: false,
+        });
       });
     } else {
       this.setState({
         paramsData: [],
+        paramsLoading: false,
       });
     }
   }
@@ -452,6 +475,57 @@ export default class TaskDetail extends Component {
       }
     });
   };
+
+  checkcurrentCron = (rule, value, callback) => {
+    TaskDetailStore.checkCron(value).then((data) => {
+      if (data.failed) {
+        callback('cron表达式错误，请重新输入');
+      } else {
+        callback();
+      }
+    });
+  }
+
+  checkCron = () => {
+    const { getFieldValue, setFields } = this.props.form;
+    const cron = getFieldValue('cronExpression');
+    if (this.state.currentCron === cron) {
+      return;
+    } else {
+      this.setState({
+        currentCron: cron,
+      })
+      if (!cron) {
+        this.setState({
+          cronLoading: 'empty',
+        });
+      } else {
+        this.setState({
+          cronLoading: true,
+        });
+
+        TaskDetailStore.checkCron(cron).then((data) => {
+          if (data.failed) {
+            this.setState({
+              cronLoading: false,
+            });
+            // setFields({
+            //   cronExpression: {
+            //     value: cron,
+            //     errors: [new Error('cron表达式错误，请重新输入')],
+            //   },
+            // });
+          } else {
+            this.setState({
+              cronLoading: 'right',
+              cronTime: data,
+            });
+          }
+        });
+      }
+    }
+  }
+
 
   checkIsNumber = (rule, value, callback) => {
     const { intl } = this.props;
@@ -543,10 +617,6 @@ export default class TaskDetail extends Component {
     }
   }
 
-  // disabledDate = (current) => {
-  //   return current && current < moment().endOf('day');
-  // }
-
   disabledStartDate = (startTime) => {
     const endTime = this.state.endTime;
     if (!startTime || !endTime) {
@@ -619,7 +689,7 @@ export default class TaskDetail extends Component {
   }
 
   getCronContent = () => {
-    const { cronLoading } = this.state;
+    const { cronLoading, cronTime } = this.state;
     let content;
     if (cronLoading === 'empty') {
       content = (
@@ -630,18 +700,16 @@ export default class TaskDetail extends Component {
     } else if (cronLoading === true) {
       content = (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Spin />;
+          <Spin />
         </div>);
     } else if (cronLoading === 'right') {
-      const arr = [];
       content = (
         <div className="c7n-task-deatil-cron-container">
           <span>示例</span>
           {
-            cronTime.forEach((value, index) => {
-              const a = <li><span>第{index}次执行时间:</span><span>{value}</span></li>;
-              arr.push(a);
-            })
+            cronTime.map((value, key) => (
+              <li><span>第{key + 1}次执行时间:</span><span>{value}</span></li>
+            ))
           }
         </div>
       );
@@ -695,9 +763,13 @@ export default class TaskDetail extends Component {
               {
                 getFieldDecorator(`params.${record.name}`, {
                   rules: [{
+                    required: text === null,
+                    message: '请输入数字',
+                  }, {
                     validator: this.checkIsNumber,
                   }],
-                  initialValue: text === null ? '' : text,
+                  validateFirst: true,
+                  initialValue: text === null ? undefined : text,
                 })(
                   <InputNumber
                     autoComplete="off"
@@ -792,6 +864,7 @@ export default class TaskDetail extends Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
+              className="c7n-create-task-inline-formitem"
             >
               {getFieldDecorator('startTime', {
                 rules: [{
@@ -801,9 +874,9 @@ export default class TaskDetail extends Component {
               })(
                 <DatePicker
                   label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
+                  style={{ width: '248px' }}
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  style={{ width: inputWidth }}
                   disabledDate={this.disabledStartDate}
                   onChange={this.onStartChange}
                 />,
@@ -811,15 +884,16 @@ export default class TaskDetail extends Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
+              className="c7n-create-task-inline-formitem"
             >
               {getFieldDecorator('endTime', {
                 rules: [],
               })(
                 <DatePicker
                   label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
+                  style={{ width: '248px' }}
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  style={{ width: inputWidth }}
                   disabledDate={this.disabledEndDate}
                   onChange={this.onEndChange}
                 />,
@@ -910,6 +984,7 @@ export default class TaskDetail extends Component {
               </FormItem>
               <Popover content={this.getCronContent()} trigger="click" placement="bottom" overlayClassName="c7n-task-detail-popover">
                 <Icon
+                  onClick={this.checkCron}
                   style={{ position: 'absolute', left: '491px', marginTop: '16px', cursor: 'pointer', display: triggerType === 'cron' ? 'inline-block' : 'none'  }}
                   type="find_in_page"
                 />
@@ -981,6 +1056,7 @@ export default class TaskDetail extends Component {
               )}
             </FormItem>
             <Table
+              loading={this.state.paramsLoading}
               pagination={false}
               filterBar={false}
               columns={columns}

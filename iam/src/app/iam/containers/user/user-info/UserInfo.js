@@ -348,10 +348,7 @@ export default class UserInfo extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content
-          code={intlPrefix}
-          values={{ name: user.loginName }}
-        >
+        <Content>
           {this.renderForm(user)}
         </Content>
       </Page>

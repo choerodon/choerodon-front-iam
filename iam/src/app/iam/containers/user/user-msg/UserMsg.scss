@@ -73,7 +73,7 @@
       margin: 0 auto;
     }
     .ant-card-head {
-      background: #5266d4;
+      background: rgba(0, 0, 0, 0.12);
       height: 48px;
       &-title {
         font-size: 16px;
@@ -81,11 +81,11 @@
       }
     }
     span {
-       color: white;
+       // color: white;
     }
     .ant-checkbox-inner {
-      background-color: #5266d4;
-      border-color: white;
+      // background-color: #5266d4;
+      // border-color: white;
     }
   }
 

@@ -171,10 +171,7 @@ export default class ProjectInfo extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content
-          code={intlPrefix}
-          values={{ name }}
-        >
+        <Content>
           <Table
             loading={loading}
             dataSource={projectRolesData}

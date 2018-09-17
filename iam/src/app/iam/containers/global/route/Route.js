@@ -835,6 +835,7 @@ export default class Route extends Component {
             onChange={this.handlePageChange}
             filters={params}
             rowKey="id"
+            className="c7n-route-table"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar

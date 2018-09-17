@@ -10,6 +10,7 @@ import { Action, axios, Content, Header, Page, Permission } from 'choerodon-fron
 import querystring from 'query-string';
 import ConfigurationStore from '../../../stores/global/configuration';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import './Configuration.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -367,6 +368,7 @@ export default class Configuration extends Component {
             filters={params}
             onChange={this.handlePageChange}
             rowKey="id"
+            className="c7n-configuration-table"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>

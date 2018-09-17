@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page } from 'choerodon-front-boot';
 import querystring from 'query-string';
+import './MicroService.scss';
 
 const intlPrefix = 'global.microservice';
 
@@ -142,6 +143,7 @@ export default class MicroService extends Component {
             filters={params}
             onChange={this.handlePageChange}
             rowKey="serviceName"
+            className="c7n-microservice-table"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>

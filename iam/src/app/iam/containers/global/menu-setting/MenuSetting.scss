@@ -36,4 +36,7 @@ $drop-gradient: rgba(140, 158, 255, 0.16);
   .ant-table-row-spaced:after {
     content: '';
   }
+  .ant-spin-nested-loading {
+    height: 500px;
+  }
 }

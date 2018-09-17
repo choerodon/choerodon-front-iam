@@ -185,10 +185,7 @@ export default class UserMsg extends Component {
             <FormattedMessage id={'delete'} />
           </Button>
         </Header>
-        <Content
-          code="user.usermsg"
-          values={{ name: user.loginName }}
-        >
+        <Content>
           <div className="c7n-user-msg-btns">
             <span className="text">
               <FormattedMessage id="user.usermsg.view" />：

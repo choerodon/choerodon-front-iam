@@ -127,6 +127,8 @@ class TaskDetailStore {
   createTask = body => axios.post('/asgard/v1/schedules/tasks', JSON.stringify(body));
 
   loadInfo = id => axios.get(`/asgard/v1/schedules/tasks/${id}`);
+
+  checkCron = body => axios.post('/asgard/v1/schedules/tasks/cron', body);
 }
 
 

@@ -31,19 +31,15 @@ const intlPrefix = 'memberrole';
 @inject('AppState')
 @observer
 export default class MemberRole extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = this.getInitState();
-  }
+  state = this.getInitState();
 
   getInitState() {
     const { MemberRoleStore, AppState } = this.props;
     MemberRoleStore.loadCurrentMenuType(AppState.currentMenuType, AppState.getUserId);
     return {
       submitting: false,
-      memberDatas: [], // 成员下的角色集合
       sidebar: false,
-      roleData: [], // 当前情况下的所有角色
+      roleData: MemberRoleStore.getRoleData, // 当前情况下的所有角色
       selectType: 'create',
       currentMemberData: [], // 当前成员的角色分配信息
       loading: true,
@@ -53,7 +49,7 @@ export default class MemberRole extends Component {
       selectRoleMemberKeys: [],
       expandedKeys: [],
       validedMembers: {},
-      roleMemberDatas: [],
+      roleMemberDatas: MemberRoleStore.getRoleMemberDatas,
       roleMemberFilters: {},
       roleMemberParams: [],
       memberRoleFilters: {},
@@ -86,10 +82,14 @@ export default class MemberRole extends Component {
 
   componentDidUpdate() {
     this.updateSelectContainer();
+    this.props.MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
+    this.props.MemberRoleStore.setRoleData(this.state.roleData);
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
+    this.props.MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
+    this.props.MemberRoleStore.setRoleData(this.state.roleData);
   }
 
   saveSideBarRef = (node) => {

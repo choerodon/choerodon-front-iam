@@ -15,6 +15,30 @@ class MemberRoleStore {
     noData: true,
   };
 
+  @observable roleData = [];
+
+  @observable roleMemberDatas = [];
+
+  @computed
+  get getRoleData() {
+    return this.roleData;
+  }
+
+  @action
+  setRoleData(data) {
+    this.roleData = data;
+  }
+
+  @computed
+  get getRoleMemberDatas() {
+    return this.roleMemberDatas;
+  }
+
+  @action
+  setRoleMemberDatas(data) {
+    this.roleMemberDatas = data;
+  }
+
   @computed
   get getUploading() {
     return this.uploading;

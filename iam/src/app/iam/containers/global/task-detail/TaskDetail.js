@@ -7,6 +7,7 @@ import { axios, Content, Header, Page, Permission, Action } from 'choerodon-fron
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../../stores/global/task-detail';
+import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
 
 const intlPrefix = 'global.taskdetail';
@@ -476,16 +477,6 @@ export default class TaskDetail extends Component {
     });
   };
 
-  checkcurrentCron = (rule, value, callback) => {
-    TaskDetailStore.checkCron(value).then((data) => {
-      if (data.failed) {
-        callback('cron表达式错误，请重新输入');
-      } else {
-        callback();
-      }
-    });
-  }
-
   checkCron = () => {
     const { getFieldValue, setFields } = this.props.form;
     const cron = getFieldValue('cronExpression');
@@ -648,44 +639,6 @@ export default class TaskDetail extends Component {
     }, () => {
       setFieldsValue({ [field]: this.state[field] });
     });
-  }
-
-
-  /**
-   * 渲染任务日志列表状态列
-   * @param taskStatus
-   * @returns {*}
-   */
-  renderTaskStatus(taskStatus) {
-    let obj = {};
-    switch (taskStatus) {
-      case 'RUNNING':
-        obj = {
-          key: 'running',
-          value: '进行中',
-        };
-        break;
-      case 'FAILED':
-        obj = {
-          key: 'failed',
-          value: '失败',
-        };
-        break;
-      case 'COMPLETED':
-        obj = {
-          key: 'completed',
-          value: '完成',
-        };
-        break;
-      default:
-        break;
-    }
-
-    return (
-      <span className={`c7n-task-log-status ${obj.key}`}>
-        {obj.value}
-      </span>
-    );
   }
 
   getCronContent = () => {
@@ -1157,7 +1110,7 @@ export default class TaskDetail extends Component {
         text: '完成',
       }],
       filteredValue: logFilters.status || [],
-      render: status => this.renderTaskStatus(status),
+      render: text => (<StatusTag name={formatMessage({ id: text.toLowerCase() })} colorCode={text} />),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.instance.id`} />,
       dataIndex: 'serviceInstanceId',

@@ -503,6 +503,9 @@ const zh_CN = {
   source: '来源',
   type: '类型',
   description: '描述',
+  running: '运行中',
+  failed: '失败',
+  completed: '完成',
 
   // type
   global: '全局',

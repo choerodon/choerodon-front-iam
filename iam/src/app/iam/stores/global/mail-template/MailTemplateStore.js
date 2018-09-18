@@ -17,6 +17,10 @@ class MailTemplateStore {
 
   @observable currentDetail = {};
 
+  @observable editorContent = '';
+
+  @observable selectType = 'create';
+
   @action setLoading(flag) {
     this.loading = flag;
   }
@@ -39,6 +43,18 @@ class MailTemplateStore {
 
   @computed get getCurrentDetail() {
     return this.currentDetail;
+  }
+
+  @action setEditorContent(data) {
+    this.editorContent = data;
+  }
+
+  @computed get getEditorContent() {
+    return this.editorContent;
+  }
+
+  @action setSelectType(data) {
+    this.selectType = data;
   }
 
   getMailTemplate() {

@@ -6,7 +6,7 @@ import { axios, Content, Header, Page, Permission, Action } from 'choerodon-fron
 import { withRouter } from 'react-router-dom';
 import ExecutionRecordStore from '../../../stores/global/execution-record';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import './ExecutionRecord.scss';
+import StatusTag from '../../../components/statusTag';
 
 const intlPrefix = 'global.execution';
 const tablePrefix = 'global.taskdetail';
@@ -82,38 +82,6 @@ export default class ExecutionRecord extends Component {
     });
   };
 
-  renderStatus(status) {
-    let obj = {};
-    switch (status) {
-      case 'RUNNING':
-        obj = {
-          key: 'running',
-          value: '进行中',
-        };
-        break;
-      case 'FAILED':
-        obj = {
-          key: 'failed',
-          value: '失败',
-        };
-        break;
-      case 'COMPLETED':
-        obj = {
-          key: 'completed',
-          value: '完成',
-        };
-        break;
-      default:
-        break;
-    }
-
-    return (
-      <span className={`c7n-execution-record-status ${obj.key}`}>
-        {obj.value}
-      </span>
-    );
-  }
-
   render() {
     const { intl } = this.props;
     const { filters, params, pagination, loading } = this.state;
@@ -133,7 +101,7 @@ export default class ExecutionRecord extends Component {
         text: '完成',
       }],
       filteredValue: filters.status || [],
-      render: status => this.renderStatus(status),
+      render: text => (<StatusTag name={intl.formatMessage({ id: text.toLowerCase() })} colorCode={text} />),
     }, {
       title: <FormattedMessage id="name" />,
       dataIndex: 'taskName',

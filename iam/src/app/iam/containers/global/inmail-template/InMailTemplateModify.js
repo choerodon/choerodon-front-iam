@@ -4,8 +4,8 @@ import { Button, Select, Form, Input, Popover, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import MailTemplateStore from '../../../stores/global/mail-template';
-import './MailTemplate.scss';
+import InMailTemplateStore from '../../../stores/global/inmail-template';
+import './InMailTemplate.scss';
 import { beforeTextUpload } from '../../../components/editor/EditorUtils';
 import Editor from '../../../components/editor';
 
@@ -20,7 +20,7 @@ class MailTemplateType {
     this.data = AppState.currentMenuType;
     const { type, id, name } = this.data;
     const codePrefix = type === 'organization' ? 'organization' : 'global';
-    this.code = `${codePrefix}.mailtemplate`;
+    this.code = `${codePrefix}.inmailtemplate`;
     this.values = { name: name || 'Choerodon' };
     this.type = type;
     this.orgId = id;
@@ -33,33 +33,51 @@ class MailTemplateType {
 @injectIntl
 @inject('AppState')
 @observer
-export default class MailTemplateCreate extends Component {
+export default class InMailTemplateModify extends Component {
   state = this.getInitState();
+
+  getInitState() {
+    return {
+      editorContent: null,
+      isSubmitting: false,
+      id: this.props.match.params.id,
+    };
+  }
 
   componentWillMount() {
     this.initMailTemplate();
-    if (!MailTemplateStore.getTemplateType.length) {
+    if (!InMailTemplateStore.getTemplateType.length) {
       this.loadTemplateType();
+    }
+    if (!InMailTemplateStore.getCurrentDetail.type) {
+      this.loadDetail();
     }
   }
 
   componentDidMount() {
-    if (MailTemplateStore.getCurrentDetail.content) {
+    if (InMailTemplateStore.getCurrentDetail.content) {
       this.setState({
-        editorContent: MailTemplateStore.getCurrentDetail.content,
+        editorContent: InMailTemplateStore.getCurrentDetail.content,
       });
     }
   }
 
   componentWillUnmount() {
-    MailTemplateStore.setSelectType('create');
-    MailTemplateStore.setCurrentDetail({});
+    InMailTemplateStore.setSelectType('create');
+    InMailTemplateStore.setCurrentDetail({});
   }
 
-  getInitState() {
-    return {
-      editorContent: null,
-    };
+  loadDetail = () => {
+    InMailTemplateStore.getTemplateDetail(this.state.id, this.mail.type, this.mail.orgId).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        InMailTemplateStore.setCurrentDetail(data);
+        this.setState({
+          editorContent: data.content,
+        });
+      }
+    });
   }
 
   initMailTemplate() {
@@ -67,11 +85,11 @@ export default class MailTemplateCreate extends Component {
   }
 
   loadTemplateType = () => {
-    MailTemplateStore.loadTemplateType(this.mail.type, this.mail.orgId).then((data) => {
+    InMailTemplateStore.loadTemplateType(this.mail.type, this.mail.orgId).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        MailTemplateStore.setTemplateType(data);
+        InMailTemplateStore.setTemplateType(data);
       }
     });
   }
@@ -80,9 +98,9 @@ export default class MailTemplateCreate extends Component {
     let backPath;
     const { type, orgName, orgId } = this.mail;
     if (this.mail.type === 'organization') {
-      backPath = `/iam/mail-template?type=${type}&id=${orgId}&name=${orgName}&organizationId=${orgName}`;
+      backPath = `/iam/inmail-template?type=${type}&id=${orgId}&name=${orgName}&organizationId=${orgName}`;
     } else {
-      backPath = '/iam/mail-template';
+      backPath = '/iam/inmail-template';
     }
     return backPath;
   }
@@ -96,9 +114,9 @@ export default class MailTemplateCreate extends Component {
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
     const path = this.mail.type === 'site' ? '' : `/organizations/${this.mail.orgId}`;
-    axios.get(`notify/v1/notices/emails/templates/check${path}?code=${value}`).then((mes) => {
+    axios.get(`notify/v1/notices/letters/templates/check${path}?code=${value}`).then((mes) => {
       if (mes.failed) {
-        callback(intl.formatMessage({ id: 'mailtemplate.code.exist' }));
+        callback(intl.formatMessage({ id: 'inmailtemplate.code.exist' }));
       } else {
         callback();
       }
@@ -120,7 +138,7 @@ export default class MailTemplateCreate extends Component {
           });
           beforeTextUpload(deltaOps, sendData, this.handleSave, this.state.editorContent);
         } else {
-          Choerodon.prompt(intl.formatMessage({ id: 'mailtemplate.mailcontent.required' }));
+          Choerodon.prompt(intl.formatMessage({ id: 'inmailtemplate.mailcontent.required' }));
         }
       }
     });
@@ -131,13 +149,17 @@ export default class MailTemplateCreate extends Component {
     const { type, orgId } = this.mail;
     const body = {
       ...values,
-      isPredefined: true,
+      content: values.content,
+      id: InMailTemplateStore.getCurrentDetail.id,
+      isPredefined: InMailTemplateStore.getCurrentDetail.isPredefined,
+      objectVersionNumber: InMailTemplateStore.getCurrentDetail.objectVersionNumber,
     };
-    MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
+
+    InMailTemplateStore.updateTemplateDetail(InMailTemplateStore.getCurrentDetail.id, body, type, orgId).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+        Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
         this.goBack();
       }
       this.setState({
@@ -159,7 +181,7 @@ export default class MailTemplateCreate extends Component {
 
   renderContent = () => {
     const { intl } = this.props;
-    const selectType = MailTemplateStore.selectType;
+    const selectType = InMailTemplateStore.selectType;
     const { getFieldDecorator } = this.props.form;
     const { isSubmitting } = this.state;
     const inputWidth = 512;
@@ -167,7 +189,7 @@ export default class MailTemplateCreate extends Component {
     const tipLink = `${docServer}/user-guide/system-configuration/message/variable-description/`;
     const tip = (
       <div className="c7n-mailcontent-icon-container-tip">
-        <FormattedMessage id="mailtemplate.mailcontent.tip" />
+        <FormattedMessage id="inmailtemplate.mailcontent.tip" />
         <a href={tipLink} target="_blank"><span>{intl.formatMessage({ id: 'learnmore' })}</span><Icon type="open_in_new" style={{ fontSize: '13px' }} /></a>
       </div>
     );
@@ -191,14 +213,11 @@ export default class MailTemplateCreate extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: intl.formatMessage({ id: 'mailtemplate.code.required' }),
-            }, {
-              validator: this.checkCode,
+              message: intl.formatMessage({ id: 'inmailtemplate.code.required' }),
             }],
-            validateTrigger: 'onBlur',
-            validateFirst: true,
+            initialValue: InMailTemplateStore.getCurrentDetail.code,
           })(
-            <Input maxLength={15} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} />,
+            <Input disabled maxLength={15} ref={(e) => { this.creatTemplateFocusInput = e; }} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.code" />} />,
           )
           }
         </FormItem>
@@ -209,10 +228,11 @@ export default class MailTemplateCreate extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: intl.formatMessage({ id: 'mailtemplate.name.required' }),
+              message: intl.formatMessage({ id: 'inmailtemplate.name.required' }),
             }],
+            initialValue: InMailTemplateStore.getCurrentDetail.name,
           })(
-            <Input maxLength={32} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.name" />} />,
+            <Input disabled maxLength={32} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.name" />} />,
           )}
         </FormItem>
         <FormItem
@@ -221,18 +241,18 @@ export default class MailTemplateCreate extends Component {
           {getFieldDecorator('type', {
             rules: [{
               required: true,
-              message: intl.formatMessage({ id: 'mailtemplate.type.required' }),
+              message: intl.formatMessage({ id: 'inmailtemplate.type.required' }),
             }],
-            initialValue: MailTemplateStore.getCurrentDetail.type || undefined,
+            initialValue: InMailTemplateStore.getCurrentDetail.type,
           })(
             <Select
               getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-              label={<FormattedMessage id="mailtemplate.type" />}
+              label={<FormattedMessage id="inmailtemplate.type" />}
               style={{ width: inputWidth }}
-              disabled={selectType !== 'create'}
+              disabled
             >
               {
-                MailTemplateStore.templateType.length && MailTemplateStore.templateType.map(({ name, id, code }) => (
+                InMailTemplateStore.templateType.length && InMailTemplateStore.templateType.map(({ name, id, code }) => (
                   <Option key={id} value={code}>{name}</Option>
                 ))
               }
@@ -247,18 +267,18 @@ export default class MailTemplateCreate extends Component {
               rules: [{
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({ id: 'mailtemplate.title.required' }),
+                message: intl.formatMessage({ id: 'inmailtemplate.title.required' }),
               }],
-              initialValue: MailTemplateStore.getCurrentDetail.title || undefined,
+              initialValue: InMailTemplateStore.getCurrentDetail.title,
             })(
-              <Input autoComplete="off" style={{ width: inputWidth }} maxLength={241} label={<FormattedMessage id="mailtemplate.title" />} />,
+              <Input autoComplete="off" style={{ width: inputWidth }} maxLength={241} label={<FormattedMessage id="inmailtemplate.title" />} />,
             )
           }
 
         </FormItem>
         <div style={{ marginBottom: '8px' }}>
           <div className="c7n-mailcontent-icon-container">
-            <span className="c7n-mailcontent-label">{intl.formatMessage({ id: 'mailtemplate.mail.content' })}</span>
+            <span className="c7n-mailcontent-label">{intl.formatMessage({ id: 'inmailtemplate.mail.content' })}</span>
             <Popover
               getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
               placement="right"
@@ -290,7 +310,7 @@ export default class MailTemplateCreate extends Component {
               loading={isSubmitting}
               onClick={this.handleSubmit}
             >
-              <FormattedMessage id="create" />
+              <FormattedMessage id="save" />
             </Button>
           </Permission>
           <Button
@@ -313,12 +333,12 @@ export default class MailTemplateCreate extends Component {
     return (
       <Page>
         <Header
-          title={<FormattedMessage id="mailtemplate.create" />}
+          title={<FormattedMessage id="inmailtemplate.modify" />}
           backPath={this.getBackPath()}
         />
         <Content
-          code={`${this.mail.code}.create`}
-          values={this.mail.values}
+          code={`${this.mail.code}.modify`}
+          values={{ name: InMailTemplateStore.getCurrentDetail.code }}
         >
           {this.renderContent()}
         </Content>

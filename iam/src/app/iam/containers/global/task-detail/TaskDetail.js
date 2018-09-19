@@ -399,7 +399,7 @@ export default class TaskDetail extends Component {
   // 获取对应服务名的类名
   loadClass = () => {
     const { currentService } = TaskDetailStore;
-    TaskDetailStore.loadClass('asgard-saga-demo').then((data) => {
+    TaskDetailStore.loadClass(currentService.name).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {

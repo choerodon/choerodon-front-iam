@@ -10,7 +10,8 @@ const Color = {
 export default class StatusTag extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return !(nextProps.name === this.props.name
-      && nextProps.color === this.props.color);
+      && nextProps.color === this.props.color &&
+    nextProps.colorCode === this.props.colorCode);
   }
 
   render() {
@@ -19,7 +20,7 @@ export default class StatusTag extends Component {
       <div
         className="c7n-iam-status-tag"
         style={{
-          background: color || Color[colorCode],
+          background: color || Color[colorCode] || 'rgba(0, 0, 0, 0.28)',
           ...this.props.style,
         }}
       >

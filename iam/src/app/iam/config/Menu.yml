@@ -150,7 +150,6 @@
         sort: 3
         permission:
         - 'notify-service.pm-template-site.pageSite'
-        - 'notify-service.pm-template-site.pageSite'
         - 'notify-service.pm-template-site.create'
         - 'notify-service.pm-template-site.update'
         - 'notify-service.pm-template-site.query'

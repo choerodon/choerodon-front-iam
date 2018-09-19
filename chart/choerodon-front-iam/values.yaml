@@ -38,6 +38,7 @@ env:
     PRO_COOKIE_SERVER: choerodon.com.cn
     PRO_HTTP: http
     PRO_FILE_SERVER: http://minio.choerodon.com.cn
+    PRO_WEBSOCKET_SERVER: ws://ws.example.com
 
 metrics:
   path: /prometheus

@@ -7,8 +7,6 @@ import querystring from 'query-string';
 
 @store('InMailTemplateStore')
 class InMailTemplateStore {
-  @observable apiData = [];
-
   @observable loading = true;
 
   @observable mailTemplate = [];
@@ -16,6 +14,10 @@ class InMailTemplateStore {
   @observable templateType = [];
 
   @observable currentDetail = {};
+
+  @observable editorContent = '';
+
+  @observable selectType = 'create';
 
   @action setLoading(flag) {
     this.loading = flag;
@@ -39,6 +41,18 @@ class InMailTemplateStore {
 
   @computed get getCurrentDetail() {
     return this.currentDetail;
+  }
+
+  @action setEditorContent(data) {
+    this.editorContent = data;
+  }
+
+  @computed get getEditorContent() {
+    return this.editorContent;
+  }
+
+  @action setSelectType(data) {
+    this.selectType = data;
   }
 
   getMailTemplate() {
@@ -93,7 +107,6 @@ class InMailTemplateStore {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
     return axios.get(`notify/v1/notices/letters/templates/${id}${path}`);
   };
-
 
   updateTemplateDetail = (id, data, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;

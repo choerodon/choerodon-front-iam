@@ -7,8 +7,6 @@ import querystring from 'query-string';
 
 @store('MailTemplateStore')
 class MailTemplateStore {
-  @observable apiData = [];
-
   @observable loading = true;
 
   @observable mailTemplate = [];
@@ -109,7 +107,6 @@ class MailTemplateStore {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
     return axios.get(`notify/v1/notices/emails/templates/${id}${path}`);
   }
-
 
   updateTemplateDetail = (id, data, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;

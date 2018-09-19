@@ -34,6 +34,15 @@ class UserMsgStore {
 
   @observable loadingMore = false;
 
+  @observable needReload = false;
+
+  @action
+  setNeedReload(flag) {
+    this.needReload = flag;
+  }
+
+  @computed get getNeedReload() { return this.needReload; }
+
   @action
   initPagination() {
     this.pagination = {

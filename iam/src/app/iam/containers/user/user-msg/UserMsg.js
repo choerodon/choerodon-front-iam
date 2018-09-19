@@ -100,6 +100,9 @@ export default class UserMsg extends Component {
     setTimeout(() => {
       if (this.state.needExpand) {
         UserMsgStore.setExpandCardId(UserMsgStore.getExpandCardId !== id ? id : null);
+        if (UserMsgStore.getNeedReload && UserMsgStore.getExpandCardId === null) {
+          UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
+        }
         // 如果消息未读则发送已读消息的请求
         if (!read) {
           UserMsgStore.readMsg([id]);
@@ -113,8 +116,9 @@ export default class UserMsg extends Component {
   };
 
   handleMessage = () => {
-    UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
-  }
+    if (UserMsgStore.getExpandCardId === null) UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
+    else UserMsgStore.setNeedReload(true);
+  };
 
   loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
@@ -191,7 +195,7 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <WSHandler messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`} onMessage={this.handleMessage} path={`choerodon:msg/sit-msg/${AppState.userInfo.id}`}>
+          <WSHandler messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`} onMessage={data => this.handleMessage(data)} path={`choerodon:msg/sit-msg/${AppState.userInfo.id}`}>
             <div className="c7n-user-msg-btns">
               <span className="text">
                 <FormattedMessage id="user.usermsg.view" />：

@@ -179,19 +179,19 @@ class UserMsgStore {
   }
 
   @action
-  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
+  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, isWebSocket) {
     if (!showAll) {
       // 在未读消息中显示尽量多的消息
       pagination.pageSize = 100;
     }
-    this.setLoading(true);
+    if (isWebSocket) this.setLoadingMore(true); else this.setLoading(true);
     this.load(pagination, filters, { columnKey, order }, params, showAll).then(action((data) => {
       this.setUserMsg(data.content ? data.content : data);
       this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
-      this.setLoading(false);
+      if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
     }))
       .catch(action((error) => {
-        this.setLoading(false);
+        if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
         Choerodon.handleResponseError(error);
       }));
   }

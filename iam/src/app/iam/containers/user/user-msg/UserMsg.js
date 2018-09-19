@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, List, Spin, Tooltip, Modal, Form, Card, Checkbox } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
+import { axios, Content, Header, Page, Permission, WSHandler } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
@@ -112,6 +112,10 @@ export default class UserMsg extends Component {
     }, 10);
   };
 
+  handleMessage = () => {
+    UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
+  }
+
   loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
   renderUserMsgCard(item) {
@@ -153,6 +157,7 @@ export default class UserMsg extends Component {
 
   render() {
     const user = UserMsgStore.getUserInfo;
+    const { AppState } = this.props;
     return (
       <Page>
         <Header
@@ -186,37 +191,39 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <div className="c7n-user-msg-btns">
-            <span className="text">
-              <FormattedMessage id="user.usermsg.view" />：
-            </span>
-            <Button
-              className={this.getUserMsgClass('unRead')}
-              onClick={() => {
-                this.showUserMsg(false);
-              }}
-              type="primary"
-            ><FormattedMessage id="user.usermsg.unread" /></Button>
-            <Button
-              className={this.getUserMsgClass('all')}
-              onClick={() => {
-                this.showUserMsg(true);
-              }}
-              type="primary"
-            ><FormattedMessage id="user.usermsg.all" /></Button>
-          </div>
-          <List
-            className="c7n-user-msg-list"
-            loading={UserMsgStore.getLoading}
-            itemLayout="horizontal"
-            loadMore={this.renderLoadMore()}
-            dataSource={UserMsgStore.getUserMsg}
-            renderItem={item => (
-              this.renderUserMsgCard(item)
-            )}
-            split={false}
-            empty={this.renderEmpty()}
-          />
+          <WSHandler messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`} onMessage={this.handleMessage} path={`choerodon:msg/sit-msg/${AppState.userInfo.id}`}>
+            <div className="c7n-user-msg-btns">
+              <span className="text">
+                <FormattedMessage id="user.usermsg.view" />：
+              </span>
+              <Button
+                className={this.getUserMsgClass('unRead')}
+                onClick={() => {
+                  this.showUserMsg(false);
+                }}
+                type="primary"
+              ><FormattedMessage id="user.usermsg.unread" /></Button>
+              <Button
+                className={this.getUserMsgClass('all')}
+                onClick={() => {
+                  this.showUserMsg(true);
+                }}
+                type="primary"
+              ><FormattedMessage id="user.usermsg.all" /></Button>
+            </div>
+            <List
+              className="c7n-user-msg-list"
+              loading={UserMsgStore.getLoading}
+              itemLayout="horizontal"
+              loadMore={this.renderLoadMore()}
+              dataSource={UserMsgStore.getUserMsg}
+              renderItem={item => (
+                this.renderUserMsgCard(item)
+              )}
+              split={false}
+              empty={this.renderEmpty()}
+            />
+          </WSHandler>
         </Content>
       </Page>
     );

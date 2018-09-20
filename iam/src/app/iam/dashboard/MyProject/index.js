@@ -72,6 +72,7 @@ export default class MyProject extends Component {
             pagination={false}
             rowKey="code"
             onRow={this.handleRow}
+            empty={(<FormattedMessage id={`${intlPrefix}.no-project`} />)}
           />
         </section>
         <DashBoardNavBar>

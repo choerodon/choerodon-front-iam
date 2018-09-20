@@ -227,7 +227,7 @@ const pageDetail = {
   'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
 
   // 仪表盘配置
-  'global.dashboard-setting.title': '仪表盘配置',
+  'global.dashboard-setting.title': '平台"{name}"的仪表盘配置',
   'global.dashboard-setting.description': '仪表盘为首页所展示的卡片合集，用户可以自定义自己的仪表盘。您可以在此配置仪表盘的卡片。',
   'global.dashboard-setting.link': `${docServer}/user-guide/system-configuration/platform/dashboard-config/`,
   'global.dashboard-setting.modify.title': '对卡片"{name}"进行修改',

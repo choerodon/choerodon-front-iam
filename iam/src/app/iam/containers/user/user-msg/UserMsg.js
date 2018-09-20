@@ -27,8 +27,13 @@ export default class UserMsg extends Component {
 
   componentDidMount() {
     this.loadUserInfo();
-    UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll);
+    const matchId = this.props.location.search.match(/msgId=(\d+)/g);
+    if (matchId) {
+      const id = Number(matchId[0].match(/\d+/g)[0]);
+      UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, false, id);
+    } else UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, false);
   }
+
 
   refresh = () => {
     UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll);
@@ -59,7 +64,11 @@ export default class UserMsg extends Component {
   renderMsgTitle(title, id, read, sendTime) {
     return (
       <div>
-        <Checkbox style={{ verticalAlign: 'text-bottom' }} onChange={() => this.handleCheckboxChange(id)} checked={UserMsgStore.getSelectMsg.has(id)} />
+        <Checkbox
+          style={{ verticalAlign: 'text-bottom' }}
+          onChange={() => this.handleCheckboxChange(id)}
+          checked={UserMsgStore.getSelectMsg.has(id)}
+        />
         <span className={read ? 'c7n-user-msg-read-title' : 'c7n-user-msg-unread-title'}>{title}</span>
         <span className={read ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{sendTime}</span>
         <span className={read ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{read ? '已读' : '未读'}</span>
@@ -127,7 +136,13 @@ export default class UserMsg extends Component {
       <List.Item>
         <Card
           key={item.id}
-          className={classnames('ant-card-wider-padding', { 'c7n-user-msg-card': true }, { active: UserMsgStore.getExpandCardId === item.id }, { 'c7n-unread-line': !item.read })}
+          className={
+            classnames(
+              'ant-card-wider-padding',
+              { 'c7n-user-msg-card': true },
+              { active: UserMsgStore.getExpandCardId === item.id },
+              { 'c7n-unread-line': !item.read },
+            )}
           title={this.renderMsgTitle(item.title, item.id, item.read, item.sendTime)}
           onHeadClick={() => this.handleCardClick(item.id, item.read)}
         >
@@ -195,7 +210,11 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <WSHandler messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`} onMessage={data => this.handleMessage(data)} path={`choerodon:msg/sit-msg/${AppState.userInfo.id}`}>
+          <WSHandler
+            messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`}
+            onMessage={data => this.handleMessage(data)}
+            path={`choerodon:msg/sit-msg/${AppState.userInfo.id}`}
+          >
             <div className="c7n-user-msg-btns">
               <span className="text">
                 <FormattedMessage id="user.usermsg.view" />：

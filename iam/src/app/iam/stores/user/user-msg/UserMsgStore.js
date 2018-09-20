@@ -96,6 +96,7 @@ class UserMsgStore {
   @action
   setExpandCardId(id) {
     this.expandCardId = id;
+    this.setReadLocal(id);
   }
 
   @computed
@@ -187,8 +188,19 @@ class UserMsgStore {
     })}`);
   }
 
+  /**
+   *
+   * @param pagination 分页
+   * @param filters 过滤
+   * @param columnKey
+   * @param order
+   * @param params
+   * @param showAll 为true时load已读和未读消息，为false时只load未读消息
+   * @param isWebSocket 请求是否由webSocket服务器推送
+   * @param msgId 默认展开显示当msgId
+   */
   @action
-  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, isWebSocket) {
+  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, isWebSocket, msgId) {
     if (!showAll) {
       // 在未读消息中显示尽量多的消息
       pagination.pageSize = 100;
@@ -198,6 +210,10 @@ class UserMsgStore {
       this.setUserMsg(data.content ? data.content : data);
       this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
       if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
+      if (msgId) {
+        this.setExpandCardId(msgId);
+        this.readMsg([msgId]);
+      }
     }))
       .catch(action((error) => {
         if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);

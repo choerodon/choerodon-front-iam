@@ -28,6 +28,7 @@ const zh_CN = {
   'dashboard.myproject.name': '项目名称',
   'dashboard.myproject.code': '项目编码',
   'dashboard.myproject.redirect': '转至所有项目信息',
+  'dashboard.myproject.no-project': '当前组织下您没有项目',
 
   // MyOrganization
   'dashboard.myorganization.name': '组织名称',

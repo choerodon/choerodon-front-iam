@@ -87,7 +87,7 @@ class OrganizationStore {
       .then(() => this.loadData());
   }
 
-  checkCode = (value) =>
+  checkCode = value =>
     axios.post('/iam/v1/organizations/check', JSON.stringify({ code: value }));
 
   @action
@@ -147,12 +147,15 @@ class OrganizationStore {
   getOrgById = organizationId =>
     axios.get(`/iam/v1/organizations/${organizationId}`);
 
+  getOrgByIdOrgLevel = organizationId =>
+    axios.get(`/iam/v1/organizations/${organizationId}/org_level`);
+
   getRolesById = (organizationId, userId) =>
     axios.get(`/iam/v1/organization/${organizationId}/role_members/users/${userId}`);
 
   loadMyData(organizationId, userId) {
     axios.all([
-      this.getOrgById(organizationId),
+      this.getOrgByIdOrgLevel(organizationId),
       this.getRolesById(organizationId, userId),
     ])
       .then(action(([org, roles]) => {

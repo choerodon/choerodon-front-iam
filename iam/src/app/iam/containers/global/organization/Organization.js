@@ -6,6 +6,7 @@ import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
@@ -236,7 +237,7 @@ export default class Organization extends Component {
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
-      render: enable => intl.formatMessage({ id: enable ? 'enable' : 'disable' }),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
     }, {
       title: '',
       width: 100,

@@ -9,4 +9,19 @@
   div {
     transform: scale(0.8);
   }
+  &-with-icon {
+    color: #000;
+    i {
+      padding-right: 6px;
+      vertical-align: top;
+    }
+
+    .icon-check_circle {
+      color: #1ab16f;
+    }
+
+    .icon-remove_circle {
+      color: #f44336;
+    }
+  }
 }

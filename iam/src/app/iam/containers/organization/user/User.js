@@ -7,6 +7,7 @@ import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import UserEdit from './UserEdit';
 import './User.scss';
+import StatusTag from '../../../components/statusTag';
 
 const { Sidebar } = Modal;
 const intlPrefix = 'organization.user';
@@ -513,11 +514,7 @@ export default class User extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.enabled`} />,
         key: 'enabled',
-        render: (text, record) => (
-          record.enabled
-            ? <FormattedMessage id="enable" />
-            : <FormattedMessage id="disable" />
-        ),
+        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
         filters: [
           {
             text: intl.formatMessage({ id: 'enable' }),

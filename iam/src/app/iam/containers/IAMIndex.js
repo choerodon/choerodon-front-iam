@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
-import ExecutableProgram from "./global/executable-program/ExecutableProgram";
 
 // global 对应目录
 const apiTest = asyncRouter(() => import('./global/api-test'));

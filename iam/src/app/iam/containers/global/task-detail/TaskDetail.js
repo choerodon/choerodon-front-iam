@@ -318,7 +318,7 @@ export default class TaskDetail extends Component {
       TaskDetailStore.setCurrentClassNames({});
       this.setState({
         paramsData: [],
-      })
+      });
       if (!TaskDetailStore.service.length) {
         this.loadService();
       } else {
@@ -402,16 +402,14 @@ export default class TaskDetail extends Component {
     TaskDetailStore.loadClass(currentService.name).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
+      } else if (data.length) {
+        const classNames = [];
+        data.map(({ method, code, id }) => classNames.push({ method, code, id }));
+        TaskDetailStore.setClassNames(classNames);
+        TaskDetailStore.setCurrentClassNames(classNames[0]);
+        this.loadParamsTable();
       } else {
-        if (data.length) {
-          const classNames = [];
-          data.map(({ method, code, id }) => classNames.push({ method, code, id }));
-          TaskDetailStore.setClassNames(classNames);
-          TaskDetailStore.setCurrentClassNames(classNames[0]);
-          this.loadParamsTable();
-        } else {
-          TaskDetailStore.setClassNames([]);
-        }
+        TaskDetailStore.setClassNames([]);
       }
     });
   }
@@ -478,42 +476,33 @@ export default class TaskDetail extends Component {
   };
 
   checkCron = () => {
-    const { getFieldValue, setFields } = this.props.form;
+    const { getFieldValue } = this.props.form;
     const cron = getFieldValue('cronExpression');
-    if (this.state.currentCron === cron) {
-      return;
+    if (this.state.currentCron === cron) return;
+    this.setState({
+      currentCron: cron,
+    });
+    if (!cron) {
+      this.setState({
+        cronLoading: 'empty',
+      });
     } else {
       this.setState({
-        currentCron: cron,
-      })
-      if (!cron) {
-        this.setState({
-          cronLoading: 'empty',
-        });
-      } else {
-        this.setState({
-          cronLoading: true,
-        });
+        cronLoading: true,
+      });
 
-        TaskDetailStore.checkCron(cron).then((data) => {
-          if (data.failed) {
-            this.setState({
-              cronLoading: false,
-            });
-            // setFields({
-            //   cronExpression: {
-            //     value: cron,
-            //     errors: [new Error('cron表达式错误，请重新输入')],
-            //   },
-            // });
-          } else {
-            this.setState({
-              cronLoading: 'right',
-              cronTime: data,
-            });
-          }
-        });
-      }
+      TaskDetailStore.checkCron(cron).then((data) => {
+        if (data.failed) {
+          this.setState({
+            cronLoading: false,
+          });
+        } else {
+          this.setState({
+            cronLoading: 'right',
+            cronTime: data,
+          });
+        }
+      });
     }
   }
 
@@ -524,7 +513,7 @@ export default class TaskDetail extends Component {
     if (pattern.test(value)) {
       callback();
     } else {
-      callback('请输入数字');
+      callback(intl.formatMessage({ id: `${intlPrefix}.num.required` }));
     }
   }
 
@@ -678,7 +667,7 @@ export default class TaskDetail extends Component {
 
   // 渲染创建任务
   renderCreateContent() {
-    const { startTime, endTime, paramsData, selectType, triggerType } = this.state;
+    const { triggerType } = this.state;
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = '512px';
@@ -705,7 +694,7 @@ export default class TaskDetail extends Component {
                 <Select>
                   <Option value={true}>true</Option>
                   <Option value={false}>false</Option>
-                  <Option value={null} style={{ display: text === null ? 'none' : 'block' }}> </Option>
+                  <Option value={null} style={{ display: text === null ? 'none' : 'block' }} />
                 </Select>,
               )
             }
@@ -717,16 +706,20 @@ export default class TaskDetail extends Component {
                 getFieldDecorator(`params.${record.name}`, {
                   rules: [{
                     required: text === null,
-                    message: '请输入数字',
+                    message: intl.formatMessage({ id: `${intlPrefix}.num.required` }),
                   }, {
                     validator: this.checkIsNumber,
                   }],
                   validateFirst: true,
                   initialValue: text === null ? undefined : text,
                 })(
-                  <InputNumber
-                    autoComplete="off"
-                  />,
+                  <div className="c7n-taskdetail-text">
+                    <InputNumber
+                      onFocus={this.inputOnFocus}
+                      autoComplete="off"
+                    />
+                    <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
+                  </div>,
                 )
               }
             </FormItem>);
@@ -738,13 +731,17 @@ export default class TaskDetail extends Component {
                   rules: [{
                     required: text === null,
                     whitespace: true,
-                    message: '无默认值时必填',
+                    message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
                   }],
                   initialValue: text === null ? '' : text,
                 })(
-                  <Input
-                    autoComplete="off"
-                  />,
+                  <div className="c7n-taskdetail-text" style={{ width: '80%' }}>
+                    <Input
+                      onFocus={this.inputOnFocus}
+                      autoComplete="off"
+                    />
+                    <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
+                  </div>,
                 )
               }
             </FormItem>);
@@ -938,7 +935,8 @@ export default class TaskDetail extends Component {
               <Popover content={this.getCronContent()} trigger="click" placement="bottom" overlayClassName="c7n-task-detail-popover">
                 <Icon
                   onClick={this.checkCron}
-                  style={{ position: 'absolute', left: '491px', marginTop: '16px', cursor: 'pointer', display: triggerType === 'cron' ? 'inline-block' : 'none'  }}
+                  style={{ display: triggerType === 'cron' ? 'inline-block' : 'none' }}
+                  className="c7n-task-detail-popover-icon"
                   type="find_in_page"
                 />
               </Popover>

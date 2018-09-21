@@ -6,12 +6,10 @@ import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import InMailTemplateStore from '../../../stores/global/inmail-template';
 import './InMailTemplate.scss';
-import { beforeTextUpload } from '../../../components/editor/EditorUtils';
 import Editor from '../../../components/editor';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-const { TextArea } = Input;
 
 class MailTemplateType {
   constructor(context) {
@@ -128,15 +126,13 @@ export default class InMailTemplateModify extends Component {
     const { intl } = this.props;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const deltaOps = this.editor.getDelta();
-        const sendData = { ...values };
         const pattern = /^((<[^(>|img)]+>)*\s*)*$/g;
         // 判断富文本编辑器是否为空
         if (this.state.editorContent && (!pattern.test(this.state.editorContent))) {
           this.setState({
             isSubmitting: true,
           });
-          beforeTextUpload(deltaOps, sendData, this.handleSave, this.state.editorContent);
+          this.handleSave(values);
         } else {
           Choerodon.prompt(intl.formatMessage({ id: 'inmailtemplate.mailcontent.required' }));
         }
@@ -149,7 +145,7 @@ export default class InMailTemplateModify extends Component {
     const { type, orgId } = this.mail;
     const body = {
       ...values,
-      content: values.content,
+      content: this.state.editorContent,
       id: InMailTemplateStore.getCurrentDetail.id,
       isPredefined: InMailTemplateStore.getCurrentDetail.isPredefined,
       objectVersionNumber: InMailTemplateStore.getCurrentDetail.objectVersionNumber,
@@ -181,16 +177,16 @@ export default class InMailTemplateModify extends Component {
 
   renderContent = () => {
     const { intl } = this.props;
-    const selectType = InMailTemplateStore.selectType;
     const { getFieldDecorator } = this.props.form;
     const { isSubmitting } = this.state;
     const inputWidth = 512;
-    const docServer = 'http://v0-9.choerodon.io/zh/docs';
-    const tipLink = `${docServer}/user-guide/system-configuration/message/variable-description/`;
     const tip = (
       <div className="c7n-mailcontent-icon-container-tip">
         <FormattedMessage id="inmailtemplate.mailcontent.tip" />
-        <a href={tipLink} target="_blank"><span>{intl.formatMessage({ id: 'learnmore' })}</span><Icon type="open_in_new" style={{ fontSize: '13px' }} /></a>
+        <a href={intl.formatMessage({ id: 'mailtemplate.mailcontent.tip.link' })} target="_blank">
+          <span>{intl.formatMessage({ id: 'learnmore' })}</span>
+          <Icon type="open_in_new" style={{ fontSize: '13px' }} />
+        </a>
       </div>
     );
 
@@ -217,7 +213,7 @@ export default class InMailTemplateModify extends Component {
             }],
             initialValue: InMailTemplateStore.getCurrentDetail.code,
           })(
-            <Input disabled maxLength={15} ref={(e) => { this.creatTemplateFocusInput = e; }} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.code" />} />,
+            <Input disabled maxLength={15} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.code" />} />,
           )
           }
         </FormItem>

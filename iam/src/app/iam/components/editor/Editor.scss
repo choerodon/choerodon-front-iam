@@ -70,7 +70,6 @@
     }
   }
 
-
   .c7n-editor-changedHTML-container-content {
     width: 100%;
     height: 276px;
@@ -84,5 +83,54 @@
     text-align: left;
     white-space: pre-wrap;
     word-wrap: break-word;
+  }
+}
+
+.c7n-iam-editor-modal {
+  width: 560px;
+  height: 547px;
+
+  &-preview-top {
+    margin-top: 20px;
+    vertical-align: middle;
+
+    &-btn {
+      position: absolute;
+      top: 80px;
+      right: 25px;
+      margin-left: 17px;
+      vertical-align: middle;
+      color: #3F51B5;
+    }
+  }
+
+  &-preview-content {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 32px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.08);
+    z-index: 40;
+  }
+
+  &-preview-pic {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    top: 0;
+    left: 0;
+    background: transparent;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: 41;
+  }
+
+  &-preview-sentence {
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.54);
   }
 }

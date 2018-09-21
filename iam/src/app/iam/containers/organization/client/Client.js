@@ -34,10 +34,6 @@ const formItemNumLayout = {
     sm: { span: 10 },
   },
 };
-/**
- * 分页加载条数
- * @type {number}
- */
 
 @Form.create({})
 @withRouter
@@ -78,6 +74,7 @@ export default class Client extends Component {
   componentDidMount() {
     this.loadClient();
   }
+
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       this.loadClient();
@@ -170,6 +167,8 @@ export default class Client extends Component {
   };
 
   openSidebar = (status, record = {}) => {
+    const { resetFields } = this.props.form;
+    resetFields();
     this.setState({
       status,
       visible: true,
@@ -190,16 +189,10 @@ export default class Client extends Component {
     }, 100);
   };
 
-  closeSidebar = (nochange = '') => {
-    const { resetFields } = this.props.form;
-    resetFields();
+  closeSidebar = () => {
     this.setState({
       visible: false,
       submitting: false,
-    }, () => {
-      if (nochange !== 'nochange') {
-        this.loadClient();
-      }
     });
   };
 
@@ -261,8 +254,7 @@ export default class Client extends Component {
     const { status, selectData } = this.state;
     form.validateFieldsAndScroll((err, data, modify) => {
       if (!err) {
-        const menuType = AppState.currentMenuType;
-        const organizationId = menuType.id;
+        const organizationId = AppState.currentMenuType.id;
         const dataType = data;
         if (dataType.authorizedGrantTypes) {
           dataType.authorizedGrantTypes = dataType.authorizedGrantTypes.join(',');
@@ -274,18 +266,26 @@ export default class Client extends Component {
           });
           ClientStore.createClient(organizationId, { ...dataType })
             .then((value) => {
-              if (value) {
+              if (value.failed) {
+                Choerodon.prompt(value.message);
+                this.setState({
+                  submitting: false,
+                });
+              } else {
+                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
                 this.closeSidebar();
-                Choerodon.prompt(intl.formatMessage({ id: 'add.success' }));
+                this.handleRefresh();
               }
-            })
-            .catch((error) => {
-              Choerodon.handleResponseError(error);
+            }).catch(() => {
+              Choerodon.prompt(intl.formatMessage({ id: 'create.error' }));
+              this.setState({
+                submitting: false,
+              });
             });
         } else if (status === 'edit') {
           if (!modify) {
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-            this.closeSidebar('nochange');
+            this.closeSidebar();
             return;
           }
           if (dataType.scope) {
@@ -301,23 +301,31 @@ export default class Client extends Component {
           if (dataType.additionalInformation === '') {
             dataType.additionalInformation = undefined;
           }
-          ClientStore.updateClient(selectData.organizationId,
-            {
-              ...data,
-              authorizedGrantTypes: dataType.authorizedGrantTypes,
-              objectVersionNumber: client.objectVersionNumber,
-              organizationId,
-            },
-            selectData.id)
+
+          const body = {
+            ...data,
+            authorizedGrantTypes: dataType.authorizedGrantTypes,
+            objectVersionNumber: client.objectVersionNumber,
+            organizationId,
+          };
+
+          ClientStore.updateClient(selectData.organizationId, body, selectData.id)
             .then((value) => {
-              if (value) {
-                this.closeSidebar();
+              if (value.failed) {
+                Choerodon.prompt(value.message);
+                this.setState({
+                  submitting: false,
+                });
+              } else {
                 Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+                this.closeSidebar();
+                this.loadClient();
               }
-            })
-            .catch((error) => {
-              this.closeSidebar();
-              Choerodon.handleResponseError(error);
+            }).catch(() => {
+              this.setState({
+                submitting: false,
+              });
+              Choerodon.prompt(intl.formatMessage({ id: 'modify.error' }));
             });
         }
       }

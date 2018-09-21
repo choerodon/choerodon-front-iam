@@ -4,7 +4,7 @@ import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const index = asyncRouter(() => (import('./MailTemplate')), () => import('../../../stores/global/mail-template'));
 const create = asyncRouter(() => import('./MailTemplateCreate'));
-const modify = asyncRouter(() => import('./MailTemplateModify'))
+const modify = asyncRouter(() => import('./MailTemplateModify'));
 
 const Index = ({ match }) => (
   <Switch>

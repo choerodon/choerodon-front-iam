@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import RootUserStore from '../../../stores/global/root-user/RootUserStore';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
+import StatusTag from '../../../components/statusTag';
 
 const { Sidebar } = Modal;
 const intlPrefix = 'global.rootuser';
@@ -175,7 +176,7 @@ export default class RootUser extends Component {
         title: <FormattedMessage id={`${intlPrefix}.status.enabled`} />,
         key: 'enabled',
         dataIndex: 'enabled',
-        render: enabled => intl.formatMessage({ id: enabled ? 'enable' : 'disable' }),
+        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
         filters: [{
           text: intl.formatMessage({ id: 'enable' }),
           value: 'true',

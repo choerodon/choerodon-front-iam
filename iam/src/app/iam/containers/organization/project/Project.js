@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import './Project.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -420,7 +421,7 @@ export default class Project extends Component {
       }],
       filteredValue: filters.enabled || [],
       key: 'enabled',
-      render: text => <span className="titleNameStyle">{intl.formatMessage({ id: text ? 'enable' : 'disable' })}</span>,
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
     }, {
       title: '',
       key: 'action',

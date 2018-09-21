@@ -6,12 +6,10 @@ import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import MailTemplateStore from '../../../stores/global/mail-template';
 import './MailTemplate.scss';
-import { beforeTextUpload } from '../../../components/editor/EditorUtils';
 import Editor from '../../../components/editor';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-const { TextArea } = Input;
 
 class MailTemplateType {
   constructor(context) {
@@ -110,15 +108,13 @@ export default class MailTemplateCreate extends Component {
     const { intl } = this.props;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const deltaOps = this.editor.getDelta();
-        const sendData = { ...values };
         const pattern = /^((<[^(>|img)]+>)*\s*)*$/g;
         // 判断富文本编辑器是否为空
         if (this.state.editorContent && (!pattern.test(this.state.editorContent))) {
           this.setState({
             isSubmitting: true,
           });
-          beforeTextUpload(deltaOps, sendData, this.handleSave, this.state.editorContent);
+          this.handleSave(values);
         } else {
           Choerodon.prompt(intl.formatMessage({ id: 'mailtemplate.mailcontent.required' }));
         }
@@ -131,6 +127,7 @@ export default class MailTemplateCreate extends Component {
     const { type, orgId } = this.mail;
     const body = {
       ...values,
+      content: this.state.editorContent,
       isPredefined: true,
     };
     MailTemplateStore.createTemplate(body, type, orgId).then((data) => {
@@ -163,12 +160,13 @@ export default class MailTemplateCreate extends Component {
     const { getFieldDecorator } = this.props.form;
     const { isSubmitting } = this.state;
     const inputWidth = 512;
-    const docServer = 'http://v0-9.choerodon.io/zh/docs';
-    const tipLink = `${docServer}/user-guide/system-configuration/message/variable-description/`;
     const tip = (
       <div className="c7n-mailcontent-icon-container-tip">
         <FormattedMessage id="mailtemplate.mailcontent.tip" />
-        <a href={tipLink} target="_blank"><span>{intl.formatMessage({ id: 'learnmore' })}</span><Icon type="open_in_new" style={{ fontSize: '13px' }} /></a>
+        <a href={intl.formatMessage({ id: 'mailtemplate.mailcontent.tip.link' })} target="_blank">
+          <span>{intl.formatMessage({ id: 'learnmore' })}</span>
+          <Icon type="open_in_new" style={{ fontSize: '13px' }} />
+        </a>
       </div>
     );
 

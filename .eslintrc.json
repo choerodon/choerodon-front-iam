@@ -72,6 +72,7 @@
     "react/destructuring-assignment": "off",
     "react/jsx-filename-extension": "off",
     "react/jsx-no-target-blank": "off",
+    "react/button-has-type": "off",
     "react/jsx-no-bind": [
       "error",
       {

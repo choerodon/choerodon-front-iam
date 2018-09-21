@@ -4,7 +4,7 @@ import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const index = asyncRouter(() => (import('./InMailTemplate')), () => import('../../../stores/global/inmail-template'));
 const create = asyncRouter(() => import('./InMailTemplateCreate'));
-const modify = asyncRouter(() => import('./InMailTemplateModify'))
+const modify = asyncRouter(() => import('./InMailTemplateModify'));
 
 const Index = ({ match }) => (
   <Switch>

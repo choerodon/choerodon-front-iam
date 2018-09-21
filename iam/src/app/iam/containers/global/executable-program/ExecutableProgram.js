@@ -95,7 +95,7 @@ export default class ExecutableProgram extends Component {
   openSidebar = (record) => {
     this.setState({
       classLoading: true,
-    })
+    });
     ExecutableProgramStore.loadProgramDetail(record.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);

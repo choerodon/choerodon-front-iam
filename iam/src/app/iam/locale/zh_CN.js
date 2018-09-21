@@ -422,6 +422,11 @@ const pageDetail = {
   'user.permissioninfo.description': '{description}',
   'user.permissioninfo.link': '{link}',
 
+  // 富文本编辑器
+  'editor.add.pic': '添加图片',
+  'editor.pic.url': '图片URL',
+  'editor.view': '浏览',
+  'editor.pic.url.required': '请输入图片URL',
 };
 
 /* eslint-disable-next-line */
@@ -666,6 +671,9 @@ const zh_CN = {
   'global.taskdetail.delete.title': '删除任务',
   'global.taskdetail.delete.content': '确定要删除任务"{name}"吗',
   'global.taskdetail.noprogram': '无可选任务程序时，无法创建任务',
+  'global.taskdetail.num.required': '请输入数字',
+  'global.taskdetail.default.required': '无默认值时必填',
+
 
   // 执行记录
   'global.execution.header.title': '执行记录',
@@ -864,6 +872,7 @@ const zh_CN = {
   'mailtemplate.title.required': '请输入邮件标题',
   'mailtemplate.mail.content': '邮件内容',
   'mailtemplate.code.exist': '模板编码已存在，请输入其他模板编码',
+  'mailtemplate.mailcontent.tip.link': `${docServer}/user-guide/system-configuration/message/variable-description/`,
   'mailtemplate.mailcontent.tip': '模板中的参数变量通过`${}`进行替换，在发送时，将`${}`替换成对应的实际变量。登录名:${loginName}',
   'mailtemplate.mailcontent.required': '邮件模板内容不可为空',
 

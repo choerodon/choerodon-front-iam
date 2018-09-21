@@ -15,8 +15,6 @@ import {
 import InMailTemplateStore from '../../../stores/global/inmail-template';
 import './InMailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-const intlPrefix = 'global.inmailtemplate';
-
 
 // 公用方法类
 class MailTemplateType {

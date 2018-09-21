@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { Icon } from 'choerodon-ui';
+import PropTypes from 'prop-types';
 import './statusTag.scss';
 
 const Color = {
   RUNNING: '#4d90fe',
   FAILED: '#f44336',
-  COMPLETED: '#1BC123',
+  COMPLETED: '#00BF96',
+  DEFAULT: '#b8b8b8',
 };
 
 const IconType = {
@@ -14,6 +16,19 @@ const IconType = {
 };
 
 export default class StatusTag extends Component {
+  static propTypes = {
+    name: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.bool,
+    ]),
+    color: PropTypes.string,
+    colorCode: PropTypes.string,
+  }
+
+  static defaultProps = {
+    colorCode: 'DEFAULT',
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return !(nextProps.name === this.props.name
       && nextProps.color === this.props.color &&
@@ -42,11 +57,11 @@ export default class StatusTag extends Component {
       <div
         className="c7n-iam-status-tag"
         style={{
-          background: color || Color[colorCode] || 'rgba(0, 0, 0, 0.28)',
+          background: color || Color[colorCode],
           ...this.props.style,
         }}
       >
-        <div>{ name || '' }</div>
+        <div>{name}</div>
       </div>
     );
   }

@@ -257,6 +257,7 @@ class DashboardSetting extends Component {
                     this.editFocusInput = e;
                   }}
                   maxLength={32}
+                  showLengthInfo={false}
                 />,
               )
             }
@@ -278,6 +279,7 @@ class DashboardSetting extends Component {
                   label={<FormattedMessage id={`${intlPrefix}.card.title`} />}
                   style={{ width: inputWidth }}
                   maxLength={32}
+                  showLengthInfo={false}
                 />,
               )
             }

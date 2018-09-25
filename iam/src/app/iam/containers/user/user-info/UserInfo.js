@@ -184,6 +184,7 @@ export default class UserInfo extends Component {
               label={<FormattedMessage id={`${intlPrefix}.loginname`} />}
               style={{ width: inputWidth }}
               maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -208,6 +209,7 @@ export default class UserInfo extends Component {
               style={{ width: inputWidth }}
               ref={(e) => { this.editFocusInput = e; }}
               maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -239,6 +241,7 @@ export default class UserInfo extends Component {
               label={<FormattedMessage id={`${intlPrefix}.email`} />}
               style={{ width: inputWidth }}
               maxLength={64}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -254,6 +257,7 @@ export default class UserInfo extends Component {
               label={<FormattedMessage id={`${intlPrefix}.phone`} />}
               style={{ width: inputWidth }}
               maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>

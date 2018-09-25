@@ -143,7 +143,7 @@ export default class Project extends Component {
         if (!err) {
           data = {
             code,
-            name,
+            name: name.trim(),
             organizationId,
           };
           this.setState({ submitting: true });
@@ -176,7 +176,7 @@ export default class Project extends Component {
             return;
           }
           data = {
-            name,
+            name: name.trim(),
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,

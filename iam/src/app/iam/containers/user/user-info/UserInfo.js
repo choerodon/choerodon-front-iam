@@ -83,6 +83,10 @@ export default class UserInfo extends Component {
     const originUser = UserInfoStore.getUserInfo;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values, modify) => {
+      Object.keys(values).forEach((key) => {
+        // 去除form提交的数据中的全部前后空格
+        if (typeof values[key] === 'string') values[key] = values[key].trim();
+      });
       if (!err) {
         this.setState({
           submitting: true,
@@ -94,6 +98,7 @@ export default class UserInfo extends Component {
         };
         UserInfoStore.updateUserInfo(user).then((data) => {
           if (data) {
+            this.props.form.resetFields();
             UserInfoStore.setUserInfo(data);
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
             this.setState({ submitting: false });

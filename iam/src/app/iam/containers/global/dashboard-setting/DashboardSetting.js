@@ -52,6 +52,10 @@ class DashboardSetting extends Component {
   handleOk = () => {
     const { form, intl, DashboardStore, DashboardSettingStore } = this.props;
     form.validateFields((error, values, modify) => {
+      Object.keys(values).forEach((key) => {
+        // 去除form提交的数据中的全部前后空格
+        if (typeof values[key] === 'string') values[key] = values[key].trim();
+      });
       if (!error) {
         if (modify || DashboardSettingStore.needUpdateRoles) {
           DashboardSettingStore.updateData(values).then((data) => {

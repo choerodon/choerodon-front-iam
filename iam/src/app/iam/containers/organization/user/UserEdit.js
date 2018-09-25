@@ -204,6 +204,7 @@ export default class UserEdit extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      data.realName = data.realName.trim();
       if (!err) {
         const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop, OnUnchangedSuccess = noop, intl } = this.props;
         const menuType = AppState.currentMenuType;

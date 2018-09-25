@@ -222,7 +222,7 @@ export default class MenuSetting extends Component {
             menu = {
               code,
               icon,
-              name,
+              name: name.trim(),
               default: false,
               level: type,
               type: 'dir',
@@ -235,7 +235,7 @@ export default class MenuSetting extends Component {
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.create.success` }));
             break;
           case 'edit':
-            selectMenuDetail.name = name;
+            selectMenuDetail.name = name.trim();
             selectMenuDetail.icon = icon;
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.modify.success` }));
             break;

@@ -78,6 +78,10 @@ export default class Organization extends Component {
     e.preventDefault();
     const { form, intl, OrganizationStore, HeaderStore } = this.props;
     form.validateFields((err, values, modify) => {
+      Object.keys(values).forEach((key) => {
+        // 去除form提交的数据中的全部前后空格
+        if (typeof values[key] === 'string') values[key] = values[key].trim();
+      });
       if (!err) {
         OrganizationStore.createOrUpdateOrg(values, modify, HeaderStore)
           .then((message) => {

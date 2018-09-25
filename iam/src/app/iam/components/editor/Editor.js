@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './Editor.scss';
-import QuillDeltaToHtmlConverter from 'quill-delta-to-html';
 import { Modal, Input, Button, Form } from 'choerodon-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
@@ -14,7 +13,6 @@ Quill.register(Align, true);
 const Size = Quill.import('attributors/style/size');
 Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px'];
 Quill.register(Size, true);
-
 
 const CustomToolbar = () => (
   <div id="toolbar">
@@ -32,6 +30,15 @@ const CustomToolbar = () => (
       <select className="ql-color" />
     </span>
     <span className="ql-formats">
+      <select className="ql-header">
+        <option selected></option>
+        <option value="1">H1</option>
+        <option value="2">H2</option>
+        <option value="3">H3</option>
+        <option value="4">H4</option>
+        <option value="5">H5</option>
+        <option value="6">H6</option>
+      </select>
       <select className="ql-font" />
       <select className="ql-size">
         <option value="10px" />
@@ -122,6 +129,7 @@ export default class Editor extends Component {
     'bold',
     'italic',
     'underline',
+    'header',
     'list',
     'bullet',
     'link',

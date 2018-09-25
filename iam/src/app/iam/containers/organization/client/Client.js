@@ -253,6 +253,10 @@ export default class Client extends Component {
     const { form, AppState, intl } = this.props;
     const { status, selectData } = this.state;
     form.validateFieldsAndScroll((err, data, modify) => {
+      Object.keys(data).forEach((key) => {
+        // 去除form提交的数据中的全部前后空格
+        if (typeof data[key] === 'string') data[key] = data[key].trim();
+      });
       if (!err) {
         const organizationId = AppState.currentMenuType.id;
         const dataType = data;

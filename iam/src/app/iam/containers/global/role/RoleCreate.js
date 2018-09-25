@@ -155,7 +155,7 @@ export default class CreateRole extends Component {
           const labelValues = this.props.form.getFieldValue('label');
           const labelIds = labelValues && labelValues.map(labelId => ({ id: labelId }));
           const role = {
-            name: this.props.form.getFieldValue('name'),
+            name: this.props.form.getFieldValue('name').trim(),
             modified: this.props.form.getFieldValue('modified'),
             enabled: this.props.form.getFieldValue('enabled'),
             code: `role/${RoleStore.getChosenLevel}/custom/${this.props.form.getFieldValue('code').trim()}`,

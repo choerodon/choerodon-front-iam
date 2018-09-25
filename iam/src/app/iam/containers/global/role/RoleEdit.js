@@ -143,7 +143,7 @@ export default class EditRole extends Component {
           const labelValues = this.props.form.getFieldValue('label');
           const labelIds = labelValues && labelValues.map(labelId => ({ id: labelId }));
           const role = {
-            name: this.props.form.getFieldValue('name'),
+            name: this.props.form.getFieldValue('name').trim(),
             editable: this.props.form.getFieldValue('isEdit'),
             enabled: this.props.form.getFieldValue('isEnable'),
             code: this.props.form.getFieldValue('code'),

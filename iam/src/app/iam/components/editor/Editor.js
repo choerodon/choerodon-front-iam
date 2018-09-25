@@ -94,13 +94,10 @@ export default class Editor extends Component {
 
   // 点击code按钮
   changeToHtml = () => {
-    const { delta } = this.state;
+    const { delta, originalHtml } = this.state;
     if (delta) {
-      const deltaOps = JSON.parse(JSON.stringify(delta));
-      const converter = new QuillDeltaToHtmlConverter(deltaOps.ops, {});
-      const html = converter.convert();
       this.setState({
-        htmlString: html,
+        htmlString: originalHtml,
         isShowHtmlContainer: true,
       });
     } else {
@@ -273,7 +270,10 @@ export default class Editor extends Component {
         />
         <div className="c7n-editor-changedHTML-container" style={{ display: isShowHtmlContainer ? 'block' : 'none' }}>
           <div className="c7n-editor-changedHTML-container-toolbar">
-            <span onClick={this.backEdit}>{'<< 返回可视化编辑'}</span>
+            <span onClick={this.backEdit}>
+              {'<< '}
+              <FormattedMessage id="editor.back.gui" />
+            </span>
           </div>
           <textarea className="c7n-editor-changedHTML-container-content" onChange={this.handleChangedHTML} value={htmlString} />
         </div>

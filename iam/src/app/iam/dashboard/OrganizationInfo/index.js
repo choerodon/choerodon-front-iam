@@ -30,7 +30,7 @@ export default class OrganizationInfo extends Component {
           <dd>{code}</dd>
           <dt><FormattedMessage id={`${intlPrefix}.role`} /></dt>
           <dd>
-            {myRoles.map(({ name }) => name).join(', ')}
+            {myRoles.length ? myRoles.map(({ name }) => name).join(', ') : '无'}
           </dd>
           <dt><FormattedMessage id={`${intlPrefix}.projects`} /></dt>
           <dd>{projectCount}</dd>

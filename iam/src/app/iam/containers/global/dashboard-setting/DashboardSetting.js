@@ -118,15 +118,18 @@ class DashboardSetting extends Component {
             {text}
           </MouseOverWrapper>
         ),
-      },
-      {
+      }, {
+        title: <FormattedMessage id={`${intlPrefix}.namespace`} />,
+        dataIndex: 'namespace',
+        key: 'namespace',
+        width: '15%',
+      }, {
         title: <FormattedMessage id={`${intlPrefix}.code`} />,
         dataIndex: 'code',
         key: 'code',
-        width: '20%',
+        width: '15%',
         filters: [],
         filteredValue: filters.code || [],
-        render: (text, { namespace }) => `${namespace}-${text}`,
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.card.title`} />,

@@ -410,6 +410,9 @@ export default class TaskDetail extends Component {
         this.loadParamsTable();
       } else {
         TaskDetailStore.setClassNames([]);
+        this.setState({
+          paramsData: [],
+        });
       }
     });
   }
@@ -733,18 +736,24 @@ export default class TaskDetail extends Component {
                     whitespace: true,
                     message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
                   }],
-                  initialValue: text === null ? '' : text,
+                  initialValue: text,
                 })(
-                  <div className="c7n-taskdetail-text" style={{ width: '80%' }}>
-                    <Input
-                      onFocus={this.inputOnFocus}
-                      autoComplete="off"
-                    />
-                    <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
-                  </div>,
+                  <Input
+                    onFocus={this.inputOnFocus}
+                    autoComplete="off"
+                  />,
                 )
               }
             </FormItem>);
+        }
+
+        if (record.type !== 'Boolean') {
+          editableNode = (
+            <div className="c7n-taskdetail-text">
+              {editableNode}
+              <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
+            </div>
+          );
         }
         return editableNode;
       },

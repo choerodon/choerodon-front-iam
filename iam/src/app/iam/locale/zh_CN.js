@@ -988,6 +988,7 @@ const zh_CN = {
   'global.dashboard-setting.sidebar.title': '修改卡片',
   'global.dashboard-setting.name': '卡片名称',
   'global.dashboard-setting.name.required': '请输入卡片名称',
+  'global.dashboard-setting.namespace': '命名空间',
   'global.dashboard-setting.code': '卡片编码',
   'global.dashboard-setting.icon': '卡片图标',
   'global.dashboard-setting.level': '卡片层级',

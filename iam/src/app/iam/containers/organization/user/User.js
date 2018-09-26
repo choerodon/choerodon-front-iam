@@ -221,6 +221,15 @@ export default class User extends Component {
           this.handleUploadInfo(true);
         } else if (status === 'error') {
           Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
+        }
+        if (response && response.failed === true) {
+          Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
         }
         if (!fileLoading) {
           this.setState({
@@ -239,14 +248,26 @@ export default class User extends Component {
     const { UserStore, AppState: { currentMenuType, getUserId: userId } } = this.props;
     const { id: organizationId } = currentMenuType;
 
+    const { fileLoading } = this.state;
+    const uploadInfo = UserStore.getUploadInfo || {};
+    if (uploadInfo.finished !== null && fileLoading) {
+      this.setState({
+        fileLoading: false,
+      });
+    }
     if (immediately) {
       UserStore.handleUploadInfo(organizationId, userId);
       return;
     }
-    this.timer = setTimeout(() => {
-      this.timer = 0;
+    if (uploadInfo.finished !== null) {
+      clearInterval(this.timer);
+      return;
+    }
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
       UserStore.handleUploadInfo(organizationId, userId);
-    }, 9000);
+      this.loadUser();
+    }, 2000);
   }
 
   getSidebarText() {

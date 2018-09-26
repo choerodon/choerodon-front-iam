@@ -1,78 +1,68 @@
 /**
- * 表格hover显示全部内容
+ * hover 显示全称
  */
 
 import React, { Component } from 'react';
 import { Tooltip } from 'choerodon-ui';
 import PropTypes from 'prop-types';
 
-export default class MouseOverWrapper extends Component {
+export default class MouserOverWrapper extends Component {
   static propTypes = {
     text: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
     ]),
-    width: PropTypes.number.isRequired,
+    width: PropTypes.oneOfType([
+      PropTypes.string.isRequired,
+      PropTypes.number.isRequired,
+    ]),
   };
 
   static defaultProps = {
     text: '',
   };
 
-  chineseLength =(str) => {
-    let len = 0;
+  strLength = (str) => {
+    const len = { cL: 0, nL: 0, uL: 0, lL: 0, ol: 0, dL: 0, xL: 0, gL: 0 };
     for (let i = 0; i < str.length; i += 1) {
-      if (str.charCodeAt(i) >= 256) {
-        len += 1;
+      if (str.charCodeAt(i) >= 19968) {
+        len.cL += 1; // 中文
+      } else if (str.charCodeAt(i) >= 48 && str.charCodeAt(i) <= 57) {
+        len.nL += 1; // 0-9
+      } else if (str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 90) {
+        len.uL += 1; // A-Z
+      } else if (str.charCodeAt(i) >= 97 && str.charCodeAt(i) <= 122) {
+        len.lL += 1; // a-z
+      } else if (str.charCodeAt(i) === 46) {
+        len.dL += 1; // .
+      } else if (str.charCodeAt(i) === 45) {
+        len.gL += 1; // -
+      } else if (str.charCodeAt(i) === 47 || str.charCodeAt(i) === 92) {
+        len.xL += 1; // / \
+      } else {
+        len.ol += 1;
       }
     }
-    return len;
-  };
-
-  numberLength =(str) => {
-    let len = 0;
-    for (let i = 0; i < str.length; i += 1) {
-      if (str.charCodeAt(i) >= 48 && str.charCodeAt(i) <= 57) {
-        len += 1;
-      }
-    }
-    return len;
+    return len.cL * 13 + len.nL * 7.09 + len.uL * 8.7 + len.lL * 6.8 + len.ol * 8 + len.dL * 3.78 + len.gL * 6.05 + len.xL * 4.58;
   };
 
   render() {
     const { text, width, className, style } = this.props;
-    const menuWidth = document.getElementsByClassName('common-menu')[0].offsetWidth;
+    const menuWidth = document.getElementsByClassName('common-menu')[0].offsetWidth || 40;
     const iWidth = window.innerWidth - 48 - menuWidth;
+    const maxWidth = typeof width === 'number' ? iWidth * width : width.slice(0, -2);
     const textStyle = {
-      maxWidth: iWidth * width,
+      maxWidth: `${maxWidth}px`,
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
     };
-
     let domWidth = 0;
-    let len = 0;
     if (text) {
-      if (typeof text === 'number') {
-        len = text.toString().length;
-      } else if (text === true) {
-        len = 4;
-      } else if (text === false) {
-        len = 5;
-      } else {
-        len = text.length;
-      }
+      domWidth = this.strLength(text.toString());
     }
-
-    if (text && len) {
-      const chineselen = this.chineseLength(text) * 13;
-      const numberlen = this.numberLength(text) * 7.09;
-      const otherLen = (text.length - this.chineseLength(text) - this.numberLength(text)) * 8;
-      domWidth = chineselen + numberlen + otherLen;
-    }
-
     Object.assign(textStyle, style);
-    if (text && domWidth <= iWidth * width) {
+    if (text && domWidth <= maxWidth) {
       return <div style={textStyle} className={className}> {this.props.children}</div>;
     } else {
       return (<Tooltip title={text} placement="topLeft">

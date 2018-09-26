@@ -113,8 +113,6 @@ class DashboardSetting extends Component {
         width: '20%',
         filters: [],
         filteredValue: filters.name || [],
-        sorter: true,
-        sortOrder: columnKey === 'name' && order,
         render: text => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
@@ -128,18 +126,12 @@ class DashboardSetting extends Component {
         width: '20%',
         filters: [],
         filteredValue: filters.code || [],
-        sorter: true,
-        sortOrder: columnKey === 'code' && order,
         render: (text, { namespace }) => `${namespace}-${text}`,
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.card.title`} />,
         dataIndex: 'title',
         key: 'title',
-        filters: [],
-        filteredValue: filters.title || [],
-        sorter: true,
-        sortOrder: columnKey === 'title' && order,
         render: text => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
@@ -171,8 +163,6 @@ class DashboardSetting extends Component {
           },
         ],
         filteredValue: filters.level || [],
-        sorter: true,
-        sortOrder: columnKey === 'level' && order,
         render: text => (
           <FormattedMessage id={`${intlPrefix}.level.${text}`} />
         ),

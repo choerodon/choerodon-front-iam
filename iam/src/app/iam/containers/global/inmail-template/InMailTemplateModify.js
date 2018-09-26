@@ -213,7 +213,7 @@ export default class InMailTemplateModify extends Component {
             }],
             initialValue: InMailTemplateStore.getCurrentDetail.code,
           })(
-            <Input disabled maxLength={15} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.code" />} />,
+            <Input disabled autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.code" />} />,
           )
           }
         </FormItem>
@@ -228,7 +228,7 @@ export default class InMailTemplateModify extends Component {
             }],
             initialValue: InMailTemplateStore.getCurrentDetail.name,
           })(
-            <Input disabled maxLength={32} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.name" />} />,
+            <Input disabled autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.name" />} />,
           )}
         </FormItem>
         <FormItem
@@ -264,10 +264,13 @@ export default class InMailTemplateModify extends Component {
                 required: true,
                 whitespace: true,
                 message: intl.formatMessage({ id: 'inmailtemplate.title.required' }),
+              }, {
+                max: 241,
+                message: intl.formatMessage({ id: 'inmailtemplate.title.titlemaxmsg' }),
               }],
               initialValue: InMailTemplateStore.getCurrentDetail.title,
             })(
-              <Input autoComplete="off" style={{ width: inputWidth }} maxLength={241} label={<FormattedMessage id="inmailtemplate.title" />} />,
+              <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.title" />} />,
             )
           }
 
@@ -311,10 +314,7 @@ export default class InMailTemplateModify extends Component {
           </Permission>
           <Button
             funcType="raised"
-            onClick={() => {
-              const { resetFields } = this.props.form;
-              resetFields();
-            }}
+            onClick={this.goBack}
             disabled={isSubmitting}
             style={{ color: '#3F51B5' }}
           >

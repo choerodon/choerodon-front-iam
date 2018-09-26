@@ -191,12 +191,18 @@ export default class MailTemplateCreate extends Component {
               whitespace: true,
               message: intl.formatMessage({ id: 'mailtemplate.code.required' }),
             }, {
+              max: 14,
+              message: intl.formatMessage({ id: 'mailtemplate.code.codemaxmsg' }),
+            }, {
+              pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
+              message: intl.formatMessage({ id: 'mailtemplate.code.codepatternmsg' }),
+            }, {
               validator: this.checkCode,
             }],
             validateTrigger: 'onBlur',
             validateFirst: true,
           })(
-            <Input maxLength={15} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} />,
+            <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.code" />} />,
           )
           }
         </FormItem>
@@ -208,9 +214,14 @@ export default class MailTemplateCreate extends Component {
               required: true,
               whitespace: true,
               message: intl.formatMessage({ id: 'mailtemplate.name.required' }),
+            }, {
+              max: 30,
+              message: intl.formatMessage({ id: 'mailtemplate.name.namemaxmsg' }),
             }],
+            validateTrigger: 'onBlur',
+            validateFirst: true,
           })(
-            <Input maxLength={32} autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.name" />} />,
+            <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.name" />} />,
           )}
         </FormItem>
         <FormItem
@@ -246,10 +257,13 @@ export default class MailTemplateCreate extends Component {
                 required: true,
                 whitespace: true,
                 message: intl.formatMessage({ id: 'mailtemplate.title.required' }),
+              }, {
+                max: 241,
+                message: intl.formatMessage({ id: 'mailtemplate.title.titlemaxmsg' }),
               }],
               initialValue: MailTemplateStore.getCurrentDetail.title || undefined,
             })(
-              <Input autoComplete="off" style={{ width: inputWidth }} maxLength={241} label={<FormattedMessage id="mailtemplate.title" />} />,
+              <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="mailtemplate.title" />} />,
             )
           }
 
@@ -293,10 +307,7 @@ export default class MailTemplateCreate extends Component {
           </Permission>
           <Button
             funcType="raised"
-            onClick={() => {
-              const { resetFields } = this.props.form;
-              resetFields();
-            }}
+            onClick={this.goBack}
             disabled={isSubmitting}
             style={{ color: '#3F51B5' }}
           >

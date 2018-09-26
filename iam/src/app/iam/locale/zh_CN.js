@@ -71,46 +71,46 @@ const pageDetail = {
   // 任务明细
   'global.taskdetail.title': '平台"{name}"的任务明细',
   'global.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
-  'global.taskdetail.link': `${docServer}/user-guide/system-configuration/job/job-detail/`,
+  'global.taskdetail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
 
   'global.taskdetail.create.title': '在平台"{name}"中创建任务',
   'global.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
-  'global.taskdetail.create.link': `${docServer}/user-guide/system-configuration/job/job-detail/`,
+  'global.taskdetail.create.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
 
   'global.taskdetail.detail.title': '"{name}"的任务详情',
   'global.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
-  'global.taskdetail.detail.link': `${docServer}/user-guide/system-configuration/job/job-detail/`,
+  'global.taskdetail.detail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
 
   // 执行记录
   'global.execution.title': '平台"{name}"的执行记录',
   'global.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
-  'global.execution.link': `${docServer}/user-guide/system-configuration/job/execution-record/`,
+  'global.execution.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
 
   // 可执行程序
   'global.executable.program.title': '平台"{name}"的可执行程序',
   'global.executable.program.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
-  'global.executable.program.link': `${docServer}/user-guide/system-configuration/job/job-class/`,
+  'global.executable.program.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
 
-  'global.executable.program.class.title': '"{name}"的程序详情',
+  'global.executable.program.class.title': '"{name}"的参数详情',
   'global.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
-  'global.executable.program.class.link': `${docServer}/user-guide/system-configuration/job/job-class/`,
+  'global.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
 
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
   'global.microservice.description': '大型应用程序由一个或多个微服务组成。微服务可被独立部署，且为松耦合。每个微服务是专注于单一责任与功能的小型功能区块。',
-  'global.microservice.link': `${docServer}/user-guide/system-configuration/microservice-management/microservice/`,
+  'global.microservice.link': `${docServer}/user-guide/microservice-development/microservice-management/microservice/`,
 
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
   'global.configuration.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
-  'global.configuration.link': `${docServer}/user-guide/system-configuration/microservice-management/config/`,
+  'global.configuration.link': `${docServer}/user-guide/microservice-development/microservice-management/config/`,
 
   'global.configuration.create.title': '在平台"{name}"中创建配置',
   'global.configuration.create.description': '一个配置属于一个微服务。请先选择一个配置对应的微服务，再选择该微服务下的已有配置为配置模版。您可自定义您的配置版本。系统将自动生成您的配置ID。',
-  'global.configuration.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.configuration.create.link': `${docServer}/user-guide/microservice-development/microservice-management/config/`,
   'global.configuration.create.base.title': '在平台"{name}"中创建配置',
   'global.configuration.create.base.description': '您可自定义您的配置版本。系统将自动生成您的配置ID。',
-  'global.configuration.create.base.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.configuration.create.base.link': `${docServer}/user-guide/microservice-development/microservice-management/config/`,
 
   'global.configuration.modify.title': '对配置"{name}"进行修改',
   'global.configuration.modify.description': '配置管理用来集中管理应用的当前环境的配置，配置修改后能够实时推送到应用端。',
@@ -122,38 +122,38 @@ const pageDetail = {
   // 实例管理
   'global.instance.title': '平台"{name}"的实例管理',
   'global.instance.description': '实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。',
-  'global.instance.link': `${docServer}/user-guide/system-configuration/microservice-management/instance/`,
+  'global.instance.link': `${docServer}/user-guide/microservice-development/microservice-management/instance/`,
 
   'global.instance.detail.title': '实例"{name}"的实例详情',
   'global.instance.detail.description': '实例属于一个微服务。您可以在此查看实例的详细信息。',
-  'global.instance.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/instance/`,
+  'global.instance.detail.link': `${docServer}/user-guide/microservice-development/microservice-management/instance/`,
 
 
   // 路由管理
   'global.route.title': '平台"{name}"的路由管理',
   'global.route.description': '路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。',
-  'global.route.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.route.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
 
   'global.route.create.title': '在平台"{name}"中创建路由',
   'global.route.create.description': '请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。',
-  'global.route.create.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.route.create.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
 
   'global.route.modify.title': '对路由"{name}"进行修改',
   'global.route.modify.description': '您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。',
-  'global.route.modify.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.route.modify.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
 
   'global.route.detail.title': '查看路由"{name}"的详情',
   'global.route.detail.description': '预定义路由为平台初始化设置，您不能修改预定义路由。',
-  'global.route.detail.link': `${docServer}/user-guide/system-configuration/microservice-management/route/`,
+  'global.route.detail.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
 
   // API测试
   'global.apitest.title': '平台"{name}"的API测试',
   'global.apitest.description': 'API属于一个微服务。请先选择一个微服务，查看该微服务下的API信息。',
-  'global.apitest.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.apitest.link': `${docServer}/user-guide/microservice-development/api-management/api-test/`,
 
   'global.apitest.detail.title': 'API"{name}"的测试',
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
-  'global.apitest.detail.link': `${docServer}/user-guide/system-configuration/api-management/api-test/`,
+  'global.apitest.detail.link': `${docServer}/user-guide/microservice-development/api-management/api-test/`,
   'global.apitest.version': '版本',
 
   // 发送设置
@@ -213,18 +213,20 @@ const pageDetail = {
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
-  'global.saga.link': `${docServer}/user-guide/system-configuration/global-transaction/saga/`,
+  'global.saga.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
+
   'global.saga.detail.title': '查看事务定义"{name}"的详情',
   'global.saga.detail.description': '您可以在此查看事务定义图、事务定义Json。',
-  'global.saga.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga/`,
+  'global.saga.detail.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
 
   // 事务实例
   'global.saga-instance.title': '平台"{name}"的事务实例',
   'global.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
-  'global.saga-instance.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
+  'global.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
+
   'global.saga-instance.detail.title': '查看事务实例"{name}"的详情',
   'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
-  'global.saga-instance.detail.link': `${docServer}/user-guide/system-configuration/global-transaction/saga-instance/`,
+  'global.saga-instance.detail.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
 
   // 仪表盘配置
   'global.dashboard-setting.title': '平台"{name}"的仪表盘配置',
@@ -686,7 +688,7 @@ const zh_CN = {
   'global.executable.program.belong.service': '所属微服务',
   'global.executable.program.name': '程序名',
   'global.executable.program.online.instance.count': '在线实例数',
-  'global.executable.program.program.header.title': '程序详情',
+  'global.executable.program.program.header.title': '参数详情',
   'global.executable.program.params.list': '参数列表',
   'global.executable.program.params.json': 'JSON',
   'global.executable.program.params.name': '参数名称',
@@ -862,9 +864,13 @@ const zh_CN = {
   'mailtemplate.create': '创建模板',
   'mailtemplate.modify': '修改模板',
   'mailtemplate.code': '模板编码',
+  'mailtemplate.code.codemaxmsg': '模板编码不能超过14个字符',
+  'mailtemplate.code.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'mailtemplate.name': '模板名称',
+  'mailtemplate.name.namemaxmsg': '模板名称不能超过30个字符',
   'mailtemplate.type': '邮件类型',
   'mailtemplate.title': '邮件标题',
+  'mailtemplate.title.titlemaxmsg': '邮件标题不能超过241个字符',
   'mailtemplate.predefined': '预定义',
   'mailtemplate.selfdefined': '自定义',
   'mailtemplate.code.required': '请输入模板编码',
@@ -888,9 +894,13 @@ const zh_CN = {
   'inmailtemplate.create': '创建模板',
   'inmailtemplate.modify': '修改模板',
   'inmailtemplate.code': '模板编码',
+  'inmailtemplate.code.codemaxmsg': '模板编码不能超过14个字符',
+  'inmailtemplate.code.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'inmailtemplate.name': '模板名称',
+  'inmailtemplate.name.namemaxmsg': '模板名称不能超过30个字符',
   'inmailtemplate.type': '站内信类型',
   'inmailtemplate.title': '站内信标题',
+  'inmailtemplate.title.titlemaxmsg': '站内信标题不能超过241个字符',
   'inmailtemplate.predefined': '预定义',
   'inmailtemplate.selfdefined': '自定义',
   'inmailtemplate.code.required': '请输入模板编码',

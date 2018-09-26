@@ -266,7 +266,7 @@ export default class User extends Component {
     clearInterval(this.timer);
     this.timer = setInterval(() => {
       UserStore.handleUploadInfo(organizationId, userId);
-      this.init();
+      this.loadUser();
     }, 2000);
   }
 

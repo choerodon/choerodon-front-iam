@@ -264,9 +264,6 @@ export default class MailTemplateModify extends Component {
                 required: true,
                 whitespace: true,
                 message: intl.formatMessage({ id: 'mailtemplate.title.required' }),
-              }, {
-                max: 241,
-                message: intl.formatMessage({ id: 'mailtemplate.title.titlemaxmsg' }),
               }],
               initialValue: MailTemplateStore.getCurrentDetail.title,
             })(

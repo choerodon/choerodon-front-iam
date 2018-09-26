@@ -21,8 +21,8 @@ const rootUser = asyncRouter(() => import('./global/root-user'));
 const route = asyncRouter(() => import('./global/route'));
 const saga = asyncRouter(() => import('./global/saga'));
 const sagaInstance = asyncRouter(() => import('./global/saga-instance'));
-const smsTemplate = asyncRouter(() => import('./global/sms-template'));
-const smsSetting = asyncRouter(() => import('./global/sms-setting'));
+// const smsTemplate = asyncRouter(() => import('./global/sms-template'));
+// const smsSetting = asyncRouter(() => import('./global/sms-setting'));
 const dashboardSetting = asyncRouter(() => import('./global/dashboard-setting'));
 const sendSetting = asyncRouter(() => import('./global/send-setting'));
 const taskDetail = asyncRouter(() => import('./global/task-detail'));
@@ -75,8 +75,6 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/route`} component={route} />
           <Route path={`${match.url}/saga`} component={saga} />
           <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
-          <Route path={`${match.url}/sms-template`} component={smsTemplate} />
-          <Route path={`${match.url}/sms-setting`} component={smsSetting} />
           <Route path={`${match.url}/task-detail`} component={taskDetail} />
           <Route path={`${match.url}/execution-record`} component={executionRecord} />
           <Route path={`${match.url}/executable-program`} component={executableProgram} />

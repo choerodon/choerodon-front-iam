@@ -189,13 +189,6 @@ export default class UserMsg extends Component {
             <FormattedMessage id="refresh" />
           </Button>
           <Button
-            icon="drafts"
-            disabled={UserMsgStore.getSelectMsg.size === 0}
-            onClick={() => UserMsgStore.readMsg().then(() => this.refresh())}
-          >
-            <FormattedMessage id={`${intlPrefix}.markread`} />
-          </Button>
-          <Button
             icon="all_read"
             onClick={() => UserMsgStore.userMsg && UserMsgStore.readMsg(UserMsgStore.userMsg.map(v => v.id)).then(() => this.refresh())}
           >
@@ -206,7 +199,7 @@ export default class UserMsg extends Component {
             disabled={UserMsgStore.getSelectMsg.size === 0}
             onClick={this.handleDelete}
           >
-            <FormattedMessage id={'delete'} />
+            <FormattedMessage id={'delete.all'} />
           </Button>
         </Header>
         <Content>

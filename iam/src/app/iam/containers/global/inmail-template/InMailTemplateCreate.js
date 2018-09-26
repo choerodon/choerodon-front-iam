@@ -179,12 +179,6 @@ export default class InMailTemplateCreate extends Component {
               whitespace: true,
               message: intl.formatMessage({ id: 'inmailtemplate.code.required' }),
             }, {
-              max: 14,
-              message: intl.formatMessage({ id: 'inmailtemplate.code.codemaxmsg' }),
-            }, {
-              pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
-              message: intl.formatMessage({ id: 'inmailtemplate.code.codepatternmsg' }),
-            }, {
               validator: this.checkCode,
             }],
             validateTrigger: 'onBlur',
@@ -202,12 +196,7 @@ export default class InMailTemplateCreate extends Component {
               required: true,
               whitespace: true,
               message: intl.formatMessage({ id: 'inmailtemplate.name.required' }),
-            }, {
-              max: 30,
-              message: intl.formatMessage({ id: 'inmailtemplate.name.namemaxmsg' }),
             }],
-            validateTrigger: 'onBlur',
-            validateFirst: true,
           })(
             <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="inmailtemplate.name" />} />,
           )}
@@ -245,9 +234,6 @@ export default class InMailTemplateCreate extends Component {
                 required: true,
                 whitespace: true,
                 message: intl.formatMessage({ id: 'inmailtemplate.title.required' }),
-              }, {
-                max: 241,
-                message: intl.formatMessage({ id: 'inmailtemplate.title.titlemaxmsg' }),
               }],
               initialValue: InmailTemplateStore.getCurrentDetail.title || undefined,
             })(

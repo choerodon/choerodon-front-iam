@@ -1057,7 +1057,7 @@ export default class MemberRole extends Component {
     const { MemberRoleStore } = this.props;
     const { fileLoading } = this.state;
     const uploadInfo = MemberRoleStore.getUploadInfo || {};
-    if (uploadInfo.finished && fileLoading) {
+    if (uploadInfo.finished !== null && fileLoading) {
       this.setState({
         fileLoading: false,
       });
@@ -1066,7 +1066,7 @@ export default class MemberRole extends Component {
       MemberRoleStore.handleUploadInfo();
       return;
     }
-    if (uploadInfo.finished) {
+    if (uploadInfo.finished !== null) {
       clearInterval(this.timer);
       return;
     }

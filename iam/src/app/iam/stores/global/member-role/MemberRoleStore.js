@@ -107,7 +107,7 @@ class MemberRoleStore {
   @action
   handleUploadInfo = () => {
     const { type, id, name } = this.data;
-    axios.get(`${this.urlMemberRole}/upload/history?user_id=${this.userId}`).then((data) => {
+    axios.get(`${this.urlMemberRole}/users/${this.userId}/upload/history`).then((data) => {
       if (!data) {
         this.setUploadInfo({ noData: true });
         this.setUploading(false);

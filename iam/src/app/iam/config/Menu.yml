@@ -171,7 +171,7 @@
 
 # 任务调度
 "task-dispatch":
-  icon: work_log
+  icon: task_schedule
   sort: 5
   site:
     - "task-detail":

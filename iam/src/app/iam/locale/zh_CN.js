@@ -1037,7 +1037,7 @@ const zh_CN = {
   'organization.ldap.disable.content': '确定要停用LDAP吗？停用LDAP后，之前所同步的用户将无法登录平台，且无法使用测试连接和同步用户功能。',
   'organization.ldap.connect': '测试连接',
   'organization.ldap.syncuser': '同步用户',
-  'organization.ldap.hostname.tip': '运行 LDAP 的服务器主机名。例如：ldap.example.com',
+  'organization.ldap.hostname.tip': '运行 LDAP 的服务器主机名。例如：ldap://example.com',
   'organization.ldap.ssl.tip': '是否使用SSL会对端口号有影响',
   'organization.ldap.basedn.tip': 'LDAP目录树的最顶部的根，从根节点搜索用户。例如：cn=users,dc=example,dc=com',
   'organization.ldap.loginname.tip': '用户登录到 LDAP。例如：user@domain.name 或 cn =用户, dc =域、dc =名称',

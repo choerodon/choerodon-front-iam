@@ -20,6 +20,9 @@ The basic module has 3 levels, which have the following functions:
     * Password Policy Management
     * Role Assignments function at organization level
     * Mail Template at organization level
+    * Inmail Template at organization level
+    * Send Setting at organization level
+    * Message Record at organization level
  * Global layout:
     * User Info
     * Change Password
@@ -35,13 +38,19 @@ The basic module has 3 levels, which have the following functions:
     * Config Management
     * Route Management
     * Role Assignments function at global level
-    * Mail Template at organization level
+    * Mail Template at global level
     * Saga Instance
     * Saga Define
     * Role Tag
     * Mailbox Setting
     * API Test
     * Dashboard Setting
+    * Send Setting at global level
+    * Message Record at global level
+    * Inmail Template at global level
+    * Task Detail
+    * Execution Record
+    * Executable Program
 
 ## Development build
 

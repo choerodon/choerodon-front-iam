@@ -48,7 +48,7 @@ export default class MouserOverWrapper extends Component {
 
   render() {
     const { text, width, className, style } = this.props;
-    const menuWidth = document.getElementsByClassName('common-menu')[0].offsetWidth || 40;
+    const menuWidth = document.getElementsByClassName('common-menu')[0].offsetWidth || 250;
     const iWidth = window.innerWidth - 48 - menuWidth;
     const maxWidth = typeof width === 'number' ? iWidth * width : width.slice(0, -2);
     const textStyle = {

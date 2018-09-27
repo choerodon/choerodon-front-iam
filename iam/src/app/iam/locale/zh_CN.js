@@ -884,7 +884,7 @@ const zh_CN = {
   'inmailtemplate.header.title': '站内信模板',
   'inmailtemplate.table.name': '模板名称',
   'inmailtemplate.table.code': '编码',
-  'inmailtemplate.table.mailtype': '短信类型',
+  'inmailtemplate.table.mailtype': '邮件类型',
   'inmailtemplate.table.fromtype': '来源',
   'inmailtemplate.delete.owntitle': '删除站内信模板',
   'inmailtemplate.delete.owncontent': '确定要删除站内信模板"{name}"吗？',

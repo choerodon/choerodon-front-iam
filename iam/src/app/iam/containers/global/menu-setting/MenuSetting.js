@@ -398,7 +398,8 @@ export default class MenuSetting extends Component {
               style={{ width: inputWidth }}
               disabled={selectType === 'edit'}
               ref={(e) => { this.addDirFocusInput = e; }}
-              maxLength={32}
+              maxLength={64}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -420,6 +421,7 @@ export default class MenuSetting extends Component {
               style={{ width: inputWidth }}
               ref={(e) => { this.changeMenuFocusInput = e; }}
               maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>

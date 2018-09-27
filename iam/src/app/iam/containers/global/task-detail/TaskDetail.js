@@ -801,6 +801,7 @@ export default class TaskDetail extends Component {
                 <Input
                   ref={(e) => { this.creatTaskFocusInput = e; }}
                   maxLength={15}
+                  showLengthInfo={false}
                   autoComplete="off"
                   style={{ width: inputWidth }}
                   label={<FormattedMessage id={`${intlPrefix}.task.name`} />}

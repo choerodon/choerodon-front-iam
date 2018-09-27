@@ -243,7 +243,7 @@ export default class InMailTemplateModify extends Component {
           })(
             <Select
               getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-              label={<FormattedMessage id="inmailtemplate.type" />}
+              label={<FormattedMessage id="inmailtemplate.table.mailtype" />}
               style={{ width: inputWidth }}
               disabled
             >

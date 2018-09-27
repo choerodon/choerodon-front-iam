@@ -225,7 +225,7 @@ export default class MailTemplateCreate extends Component {
           })(
             <Select
               getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-              label={<FormattedMessage id="mailtemplate.type" />}
+              label={<FormattedMessage id="mailtemplate.table.mailtype" />}
               style={{ width: inputWidth }}
               disabled={selectType !== 'create'}
             >

@@ -272,7 +272,7 @@ export default class MailTemplate extends Component {
       filters: [],
       filteredValue: filters.code || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.1}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),

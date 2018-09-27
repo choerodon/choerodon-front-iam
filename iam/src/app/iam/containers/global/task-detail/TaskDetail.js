@@ -1138,7 +1138,7 @@ export default class TaskDetail extends Component {
       <Content
         className="sidebar-content"
         code={`${intlPrefix}.detail`}
-        values={{ name: '名称测试' }}
+        values={{ name: info.name }}
       >
         <Tabs activeKey={showLog ? 'log' : 'info'} onChange={this.handleTabChange}>
           <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.info`} />} key="info" />

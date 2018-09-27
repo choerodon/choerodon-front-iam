@@ -204,7 +204,7 @@ export default class UserMsg extends Component {
         </Header>
         <Content>
           <WSHandler
-            messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`}
+            messageKey={`choerodon:msg:site-msg:${AppState.userInfo.id}`}
             onMessage={data => this.handleMessage(data)}
           >
             <div className="c7n-user-msg-btns">

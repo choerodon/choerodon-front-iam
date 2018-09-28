@@ -470,7 +470,6 @@ export default class PasswordPolicy extends Component {
                 {getFieldDecorator('maxCheckCaptcha', {
                   rules: [{
                     pattern: /^([1-9]\d*|[0]{1,1})$/,
-                    type: 'number',
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
                   initialValue: passwordPolicy && passwordPolicy.enableCaptcha ?
@@ -508,8 +507,7 @@ export default class PasswordPolicy extends Component {
               <FormItem>
                 {getFieldDecorator('maxErrorTime', {
                   rules: [{
-                    pattern: /^[1-9]\d*|0$/,
-                    type: 'number',
+                    pattern: /^([1-9]\d*|[0]{1,1})$/,
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
                   initialValue: passwordPolicy && passwordPolicy.enableLock ?
@@ -527,8 +525,7 @@ export default class PasswordPolicy extends Component {
               <FormItem>
                 {getFieldDecorator('lockedExpireTime', {
                   rules: [{
-                    pattern: /^[1-9]\d*|0$/,
-                    type: 'number',
+                    pattern: /^([1-9]\d*|[0]{1,1})$/,
                     message: intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }),
                   }],
                   initialValue: passwordPolicy && passwordPolicy.enableLock ?

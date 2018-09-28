@@ -175,14 +175,7 @@ export default class PasswordPolicy extends Component {
     const { intl } = this.props;
     const { getFieldValue } = this.props.form;
     const maxLength = getFieldValue('maxLength');
-    const digitsCount = getFieldValue('digitsCount');
-    const lowercaseCount = getFieldValue('lowercaseCount');
-    const uppercaseCount = getFieldValue('uppercaseCount');
-    const specialCharCount = getFieldValue('specialCharCount');
     if (value > maxLength) callback(intl.formatMessage({ id: `${inputPrefix}.min.lessthan.more` }));
-    if (digitsCount + lowercaseCount + uppercaseCount + specialCharCount < value) {
-      callback(intl.formatMessage({ id: `${inputPrefix}.min.length` }));
-    }
     callback();
   }
 

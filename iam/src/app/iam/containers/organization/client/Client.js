@@ -618,7 +618,6 @@ export default class Client extends Component {
         key: 'name',
         filters: [],
         filteredValue: filters.name || [],
-        sorter: (a, b) => a.name.localeCompare(b.serviceNamee, 'zh-Hans-CN', { sensitivity: 'accent' }),
       },
       {
         title: intl.formatMessage({ id: `${intlPrefix}.granttypes` }),

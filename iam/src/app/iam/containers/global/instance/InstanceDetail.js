@@ -135,7 +135,6 @@ export default class InstanceDetail extends Component {
           <AceEditor
             readOnly="nocursor"
             value={configInfo}
-            style={{ height: '650px', width: '100%' }}
           />
         </div>
         <div>
@@ -143,7 +142,6 @@ export default class InstanceDetail extends Component {
           <AceEditor
             readOnly="nocursor"
             value={envinfo}
-            style={{ height: '650px', width: '100%' }}
           />
         </div>
       </div>

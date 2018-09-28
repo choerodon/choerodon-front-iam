@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { Button, Select, Form, Input, Popover, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { axios, Content, Header, Page } from 'choerodon-front-boot';
 import MailTemplateStore from '../../../stores/global/mail-template';
 import './MailTemplate.scss';
 import Editor from '../../../components/editor';
@@ -281,16 +281,14 @@ export default class MailTemplateCreate extends Component {
         </div>
         <div className="divider" />
         <div className="btn-group">
-          <Permission service={['iam-service.password-policy.update']}>
-            <Button
-              funcType="raised"
-              type="primary"
-              loading={isSubmitting}
-              onClick={this.handleSubmit}
-            >
-              <FormattedMessage id="create" />
-            </Button>
-          </Permission>
+          <Button
+            funcType="raised"
+            type="primary"
+            loading={isSubmitting}
+            onClick={this.handleSubmit}
+          >
+            <FormattedMessage id="create" />
+          </Button>
           <Button
             funcType="raised"
             onClick={this.goBack}

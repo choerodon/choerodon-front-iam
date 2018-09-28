@@ -1070,8 +1070,11 @@ export default class TaskDetail extends Component {
       key: formatMessage({ id: `${intlPrefix}.trigger.type` }),
       value: info.triggerType === 'simple-trigger' ? '简单任务' : 'Cron任务',
     }, {
+      key: formatMessage({ id: `${intlPrefix}.cron.expression` }),
+      value: info.cronExpression,
+    }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.interval` }),
-      value: `${info.simpleRepeatInterval}${unit}`,
+      value: info.triggerType === 'simple-trigger' ? `${info.simpleRepeatInterval}${unit}` : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.time` }),
       value: info.simpleRepeatCount,

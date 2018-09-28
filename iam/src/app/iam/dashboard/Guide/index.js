@@ -5,7 +5,7 @@ import './index.scss';
 export default class Guide extends Component {
   render() {
     return (
-      <div className="c7n-iam-dashboard-document">
+      <div className="c7n-iam-dashboard-guide">
         <ul>
           <li>
             <a target="choerodon" href="http://choerodon.io/zh/docs/quick-start/project/">创建一个项目</a>

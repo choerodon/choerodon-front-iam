@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { observable, action, configure } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row, Spin, InputNumber } from 'choerodon-ui';
@@ -19,12 +20,18 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const { TabPane } = Tabs;
 
+configure({ enforceActions: false });
+
 @Form.create()
 @withRouter
 @injectIntl
 @inject('AppState')
 @observer
 export default class TaskDetail extends Component {
+  @observable startTimes = null;
+
+  @observable endTimes = null;
+
   state = this.getInitState();
 
   getInitState() {
@@ -305,12 +312,17 @@ export default class TaskDetail extends Component {
    * @param selectType create/detail
    * @param record 列表行数据
    */
+  @action
   handleOpen = (selectType, record = {}) => {
     this.props.form.resetFields();
+    this.startTimes = null;
+    this.endTimes = null;
     this.setState({
       selectType,
       showLog: false,
       triggerType: 'easy',
+      startTime: null,
+      endTime: null,
     });
     if (selectType === 'create') {
       TaskDetailStore.setCurrentService({});
@@ -600,12 +612,17 @@ export default class TaskDetail extends Component {
     }
   }
 
+  // 时间选择器处理
   disabledStartDate = (startTime) => {
     const endTime = this.state.endTime;
     if (!startTime || !endTime) {
       return false;
     }
-    return startTime.valueOf() >= endTime.valueOf();
+    if (endTime.format().split('T')[1] === '00:00:00+08:00') {
+      return startTime.format().split('T')[0] >= endTime.format().split('T')[0];
+    } else {
+      return startTime.format().split('T')[0] > endTime.format().split('T')[0];
+    }
   }
 
   disabledEndDate = (endTime) => {
@@ -614,6 +631,74 @@ export default class TaskDetail extends Component {
       return false;
     }
     return endTime.valueOf() <= startTime.valueOf();
+  }
+
+  range = (start, end) => {
+    const result = [];
+    for (let i = start; i < end; i += 1) {
+      result.push(i);
+    }
+    return result;
+  }
+
+  @action
+  disabledDateStartTime = (date) => {
+    this.startTimes = date;
+    if (date && this.endTimes && this.endTimes.day() === date.day()) {
+      if (this.endTimes.hour() === date.hour() && this.endTimes.minute() === date.minute()) {
+        return {
+          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
+          disabledMinutes: () => this.range(this.endTimes.minute() + 1, 60),
+          disabledSeconds: () => this.range(this.endTimes.second(), 60),
+        };
+      } else if (this.endTimes.hour() === date.hour()) {
+        return {
+          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
+          disabledMinutes: () => this.range(this.endTimes.minute() + 1, 60),
+        };
+      } else {
+        return {
+          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
+        };
+      }
+    }
+  }
+
+  @action
+  clearStartTimes = (status) => {
+    if (!status) {
+      this.endTimes = null;
+    }
+  }
+
+  @action
+  clearEndTimes = (status) => {
+    if (!status) {
+      this.startTimes = null;
+    }
+  }
+
+  @action
+  disabledDateEndTime = (date) => {
+    this.endTimes = date;
+    if (date && this.startTimes && this.startTimes.day() === date.day()) {
+      if (this.startTimes.hour() === date.hour() && this.startTimes.minute() === date.minute()) {
+        return {
+          disabledHours: () => this.range(0, this.startTimes.hour()),
+          disabledMinutes: () => this.range(0, this.startTimes.minute()),
+          disabledSeconds: () => this.range(0, this.startTimes.second() + 1),
+        };
+      } else if (this.startTimes.hour() === date.hour()) {
+        return {
+          disabledHours: () => this.range(0, this.startTimes.hour()),
+          disabledMinutes: () => this.range(0, this.startTimes.minute()),
+        };
+      } else {
+        return {
+          disabledHours: () => this.range(0, this.startTimes.hour()),
+        };
+      }
+    }
   }
 
   onStartChange = (value) => {
@@ -695,7 +780,7 @@ export default class TaskDetail extends Component {
                 initialValue: text,
               })(
                 <Select>
-                  <Option value={true}>true</Option>
+                  <Option value>true</Option>
                   <Option value={false}>false</Option>
                   <Option value={null} style={{ display: text === null ? 'none' : 'block' }} />
                 </Select>,
@@ -835,10 +920,12 @@ export default class TaskDetail extends Component {
                 <DatePicker
                   label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
                   style={{ width: '248px' }}
-                  showTime
                   format="YYYY-MM-DD HH:mm:ss"
                   disabledDate={this.disabledStartDate}
+                  disabledTime={this.disabledDateStartTime}
+                  showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                   onChange={this.onStartChange}
+                  onOpenChange={this.clearStartTimes}
                 />,
               )}
             </FormItem>
@@ -852,10 +939,12 @@ export default class TaskDetail extends Component {
                 <DatePicker
                   label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
                   style={{ width: '248px' }}
-                  showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  disabledDate={this.disabledEndDate}
+                  disabledDate={this.disabledEndDate.bind(this)}
+                  disabledTime={this.disabledDateEndTime.bind(this)}
+                  showTime={{ defaultValue: moment() }}
                   onChange={this.onEndChange}
+                  onOpenChange={this.clearEndTimes}
                 />,
               )}
             </FormItem>
@@ -951,80 +1040,83 @@ export default class TaskDetail extends Component {
                 />
               </Popover>
             </div>
-            <FormItem
-              {...formItemLayout}
-              className="c7n-create-task-inline-formitem"
-            >
-              {getFieldDecorator('serviceName', {
-                rules: [{
-                  required: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.service.required` }),
-                }],
-                initialValue: TaskDetailStore.getCurrentService.name,
-              })(
-                <Select
-                  style={{ width: '176px' }}
-                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                  label={<FormattedMessage id={`${intlPrefix}.service.name`} />}
-                  filterOption={(input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                  filter
-                  onChange={this.handleChangeService.bind(this)}
-                >
-                  {
-                    service && service.length ? service.map(({ name }) => (
-                      <Option key={name}>{name}</Option>
-                    )) : <Option key="empty">无服务</Option>
-                  }
-                </Select>,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              className="c7n-create-task-inline-formitem"
-            >
-              {getFieldDecorator('methodId', {
-                rules: [{
-                  required: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.task.class.required` }),
-                }],
-                initialValue: TaskDetailStore.classNames.length ? TaskDetailStore.currentClassNames.id : 'empty',
-              })(
-                <Select
-                  label={<FormattedMessage id={`${intlPrefix}.task.class.name`} />}
-                  style={{ width: '318px' }}
-                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                  filterOption={(input, option) => {
-                    const childNode = option.props.children;
-                    if (childNode && React.isValidElement(childNode)) {
-                      return childNode.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            <div className="c7n-task-deatil-params-container">
+              <FormItem
+                {...formItemLayout}
+                className="c7n-create-task-inline-formitem"
+              >
+                {getFieldDecorator('serviceName', {
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage({ id: `${intlPrefix}.service.required` }),
+                  }],
+                  initialValue: TaskDetailStore.getCurrentService.name,
+                })(
+                  <Select
+                    style={{ width: '176px' }}
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    label={<FormattedMessage id={`${intlPrefix}.service.name`} />}
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    filter
+                    onChange={this.handleChangeService.bind(this)}
+                  >
+                    {
+                      service && service.length ? service.map(({ name }) => (
+                        <Option key={name}>{name}</Option>
+                      )) : <Option key="empty">无服务</Option>
                     }
-                    return false;
-                  }}
-                  filter
-                  onChange={this.handleChangeClass.bind(this)}
-                >
-                  {
-                    classNames && classNames.length ? classNames.map(({ method, code, id }) => (
-                      <Option key={`${method}-${code}`} value={id}>
-                        <Tooltip title={method} placement="right" align={{ offset: [20, 0] }}>
-                          <span style={{ display: 'inline-block', width: '100%' }}>{code}</span>
-                        </Tooltip>
-                      </Option>
-                    )) : <Option key="empty" value="empty">无任务程序</Option>
-                  }
-                </Select>,
-              )}
-            </FormItem>
-            <Table
-              loading={this.state.paramsLoading}
-              pagination={false}
-              filterBar={false}
-              columns={columns}
-              rowKey="name"
-              dataSource={this.state.paramsData}
-              style={{ width: inputWidth }}
-            />
+                  </Select>,
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                style={{ marginRight: '0' }}
+                className="c7n-create-task-inline-formitem"
+              >
+                {getFieldDecorator('methodId', {
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage({ id: `${intlPrefix}.task.class.required` }),
+                  }],
+                  initialValue: TaskDetailStore.classNames.length ? TaskDetailStore.currentClassNames.id : 'empty',
+                })(
+                  <Select
+                    label={<FormattedMessage id={`${intlPrefix}.task.class.name`} />}
+                    style={{ width: '292px' }}
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    filterOption={(input, option) => {
+                      const childNode = option.props.children;
+                      if (childNode && React.isValidElement(childNode)) {
+                        return childNode.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                      }
+                      return false;
+                    }}
+                    filter
+                    onChange={this.handleChangeClass.bind(this)}
+                  >
+                    {
+                      classNames && classNames.length ? classNames.map(({ method, code, id }) => (
+                        <Option key={`${method}-${code}`} value={id}>
+                          <Tooltip title={method} placement="right" align={{ offset: [20, 0] }}>
+                            <span style={{ display: 'inline-block', width: '100%' }}>{code}</span>
+                          </Tooltip>
+                        </Option>
+                      )) : <Option key="empty" value="empty">无任务程序</Option>
+                    }
+                  </Select>,
+                )}
+              </FormItem>
+              <Table
+                loading={this.state.paramsLoading}
+                pagination={false}
+                filterBar={false}
+                columns={columns}
+                rowKey="name"
+                dataSource={this.state.paramsData}
+                style={{ width: '488px', marginRight: '0' }}
+              />
+            </div>
           </Form>
         </div>
       </Content>

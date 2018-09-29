@@ -6,6 +6,8 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Action, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import RoleStore from '../../../stores/global/role/RoleStore';
 import './Role.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
 
 const intlPrefix = 'global.role';
 @Form.create({})
@@ -202,18 +204,30 @@ export default class Role extends Component {
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
+      width: '25%',
       filters: [],
       sorter: true,
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
+      width: '25%',
       filters: [],
       sorter: true,
       sortOrder: columnKey === 'code' && order,
       filteredValue: filters.code || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="level" />,
       dataIndex: 'level',
@@ -259,7 +273,7 @@ export default class Role extends Component {
         text: intl.formatMessage({ id: 'disable' }),
         value: 'false',
       }],
-      render: text => intl.formatMessage({ id: text ? 'enable' : 'disable' }),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
       sorter: true,
       sortOrder: columnKey === 'enabled' && order,
       filteredValue: filters.enabled || [],

@@ -17,3 +17,33 @@ dashboard:
     description: "公告"
     level: site
     sort: 3
+  - code: "UserInfo"
+    icon: person
+    title: "我的信息"
+    description: "我的信息"
+    level: site
+    sort: 4
+  - code: "ProjectInfo"
+    icon: project
+    title: "项目信息"
+    description: "项目信息"
+    level: project
+    sort: 5
+  - code: "OrganizationInfo"
+    icon: domain
+    title: "组织信息"
+    description: "组织信息"
+    level: organization
+    sort: 6
+  - code: "MyProject"
+    icon: project_list
+    title: "我的项目"
+    description: "我的项目"
+    level: site
+    sort: 7
+  - code: "MyOrganization"
+    icon: domain_list
+    title: "我的组织"
+    description: "我的组织"
+    level: site
+    sort: 8

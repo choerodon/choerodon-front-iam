@@ -17,4 +17,3 @@ const Index = ({ match }) => (
 );
 
 export default Index;
-

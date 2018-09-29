@@ -8,8 +8,13 @@ const config = {
   },
   cookieServer: '', //  子域名token共享
   server: 'https://api.choerodon.com.cn',
+  fileServer: 'http://minio.staging.saas.hand-china.com',
+  webSocketServer: 'ws://notify.staging.saas.hand-china.com',
   dashboard: {
-    iam: 'src/app/iam/dashboard/*',
+    iam: {
+      components: 'src/app/iam/dashboard/*',
+      locale: 'src/app/iam/locale/dashboard/*',
+    },
   },
 };
 

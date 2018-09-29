@@ -7,6 +7,8 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import './Project.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -141,7 +143,7 @@ export default class Project extends Component {
         if (!err) {
           data = {
             code,
-            name,
+            name: name.trim(),
             organizationId,
           };
           this.setState({ submitting: true });
@@ -174,7 +176,7 @@ export default class Project extends Component {
             return;
           }
           data = {
-            name,
+            name: name.trim(),
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,
@@ -303,7 +305,7 @@ export default class Project extends Component {
             name: this.state.projectDatas.code,
           },
         };
-      default :
+      default:
         return {};
     }
   }
@@ -345,6 +347,8 @@ export default class Project extends Component {
                 label={<FormattedMessage id={`${intlPrefix}.code`} />}
                 style={{ width: inputWidth }}
                 ref={(e) => { this.createFocusInput = e; }}
+                maxLength={14}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>) : null}
@@ -364,6 +368,8 @@ export default class Project extends Component {
                 label={<FormattedMessage id={`${intlPrefix}.name`} />}
                 style={{ width: inputWidth }}
                 ref={(e) => { this.editFocusInput = e; }}
+                maxLength={32}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>
@@ -387,15 +393,24 @@ export default class Project extends Component {
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
-      sorter: (a, b) => (a.name > b.name ? 1 : 0),
-      render: (text, record) => <span>{text}</span>,
+      width: '35%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
-      sorter: (a, b) => (a.code > b.code ? 1 : 0),
+      width: '35%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
@@ -408,7 +423,7 @@ export default class Project extends Component {
       }],
       filteredValue: filters.enabled || [],
       key: 'enabled',
-      render: text => <span className="titleNameStyle">{intl.formatMessage({ id: text ? 'enable' : 'disable' })}</span>,
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
     }, {
       title: '',
       key: 'action',

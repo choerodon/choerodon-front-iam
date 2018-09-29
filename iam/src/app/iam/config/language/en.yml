@@ -22,11 +22,16 @@
 "global-transaction.saga-instance": "Saga Instance"
 
 "msg-center": "Message Center"
+"msg-center.send-setting": "Send Setting"
 "msg-center.mail-template": "Mail Template"
-"msg-center.sms-template": "SMS Template"
+"msg-center.inmail-template": "Website Mail Template"
 "msg-center.mail-setting": "Mail Config"
-"msg-center.sms-setting": "SMS Config"
 "msg-center.msg-record": "Message Record"
+
+"task-dispatch": "Task Dispatch"
+"task-dispatch.task-detail": "Task Detail"
+"task-dispatch.execution-record": "Execution Record"
+"task-dispatch.task-classname": "Executable Program"
 
 "rentsetting": "Organization settings"
 # organization
@@ -37,6 +42,11 @@
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "Password Policy"
 "rentsetting.mail-template-organization": "Mail Template"
+
+"msg-center-organization": "Message Center"
+"msg-center-organization.send-setting-organization": "Send Setting"
+"msg-center-organization.mail-template-organization": "Mail Template"
+"msg-center-organization.msg-record-organization": "Message Record"
 
 "prosetting": "Project Manage"
 # project
@@ -49,4 +59,4 @@
 "usercenter.password": "Password Modification"
 "usercenter.organization-info": "Organization Information"
 "usercenter.project-info": "Project Information"
-
+"usercenter.user-msg": "Message Notification"

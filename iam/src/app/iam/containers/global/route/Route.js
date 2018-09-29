@@ -6,6 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import { inject, observer } from 'mobx-react';
 import './Route.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
@@ -569,6 +570,8 @@ export default class Route extends Component {
                 style={{ width: inputWidth }}
                 disabled={!createValidate}
                 ref={(e) => { this.createRouteFocusInput = e; }}
+                maxLength={64}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>
@@ -747,14 +750,26 @@ export default class Route extends Component {
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
+      width: '20%',
       filters: [],
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.path`} />,
       dataIndex: 'path',
       key: 'path',
+      width: '20%',
       filters: [],
       filteredValue: filters.path || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.service`} />,
       dataIndex: 'serviceId',
@@ -821,6 +836,7 @@ export default class Route extends Component {
             onChange={this.handlePageChange}
             filters={params}
             rowKey="id"
+            className="c7n-route-table"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar

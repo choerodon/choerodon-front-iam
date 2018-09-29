@@ -17,7 +17,7 @@
     - "menu-management":
         icon: view_list
         Routes: /iam/menu-setting
-        sort: 2
+        sort: 6
         permission:
           - 'iam-service.menu.create'
           - 'iam-service.menu.saveListTree'
@@ -27,13 +27,13 @@
     - "role-label":
         icon: role_tag
         Routes: /iam/role-label
-        sort: 3
+        sort: 2
         permission:
           - 'iam-service.label.listByType'
     - "role":
         icon: assignment_ind
         Routes: /iam/role
-        sort: 4
+        sort: 3
         permission:
           - 'iam-service.role.create'
           - 'iam-service.role.createBaseOnRoles'
@@ -48,7 +48,7 @@
     - "member-role-global":
         icon: person_add
         Routes: /iam/member-role
-        sort: 5
+        sort: 4
         permission:
           - 'iam-service.role-member.createOrUpdateOnSiteLevel'
           - 'iam-service.role-member.deleteOnSiteLevel'
@@ -58,7 +58,7 @@
     - "root-user":
         icon: root
         Routes: /iam/root-user
-        sort: 6
+        sort: 5
         permission:
           - 'iam-service.user.pagingQueryAdminUsers'
           - 'iam-service.user.addDefaultUsers'
@@ -75,7 +75,7 @@
 # 微服务管理
 "microservice":
   icon: micro
-  sort: 2
+  sort: 3
   site:
     - "micro":
         icon: microservice
@@ -114,43 +114,101 @@
 # api管理
 "api":
   icon: API
-  sort: 3
+  sort: 2
   site:
-  - "api-test":
-      icon: APItest
-      Routes: /iam/api-test
-      sort: 1
-      permission:
-      - 'manager-service.service.pageManager'
+    - "api-test":
+        icon: APItest
+        Routes: /iam/api-test
+        sort: 1
+        permission:
+        - 'manager-service.service.pageManager'
 
 # 消息中心
 "msg-center":
   icon: center
-  sort: 4
+  sort: 6
   site:
-  - "mail-template":
-      icon: application_model
-      Routes: /iam/mail-template
-      sort: 1
-      permission:
-      - 'notify-service.email-template-site.pageSite'
-      - 'notify-service.email-template-site.create'
-      - 'notify-service.email-template-site.update'
-      - 'notify-service.email-template-site.query'
-      - 'notify-service.send-setting-site.listNames'
-  - "mail-setting":
-      icon: contact_mail
-      Routes: /iam/mail-setting
-      sort: 2
-      permission:
-      - 'notify-service.config.selectEmail'
-      - 'notify-service.config.testEmailConnect'
-      - 'notify-service.config.updateEmail'
+    - "send-setting":
+        icon: mail_set
+        Routes: /iam/send-setting
+        sort: 1
+        permission:
+        - 'notify-service.send-setting-site.pageSite'
+    - "mail-template":
+        icon: application_model
+        Routes: /iam/mail-template
+        sort: 2
+        permission:
+        - 'notify-service.email-template-site.pageSite'
+        - 'notify-service.email-template-site.create'
+        - 'notify-service.email-template-site.update'
+        - 'notify-service.email-template-site.query'
+        - 'notify-service.send-setting-site.listNames'
+    - "inmail-template":
+        icon: inmail_template
+        Routes: /iam/inmail-template
+        sort: 3
+        permission:
+        - 'notify-service.pm-template-site.pageSite'
+        - 'notify-service.pm-template-site.create'
+        - 'notify-service.pm-template-site.update'
+        - 'notify-service.pm-template-site.query'
+        - 'notify-service.send-setting-site.listNames'
+    - "mail-setting":
+        icon: contact_mail
+        Routes: /iam/mail-setting
+        sort: 4
+        permission:
+        - 'notify-service.config.selectEmail'
+        - 'notify-service.config.testEmailConnect'
+        - 'notify-service.config.updateEmail'
+    - "msg-record":
+        icon: speaker_notes
+        Routes: /iam/msg-record
+        sort: 5
+        permission:
+        - 'notify-service.message-record-site.pageEmail'
+
+# 任务调度
+"task-dispatch":
+  icon: task_schedule
+  sort: 5
+  site:
+    - "task-detail":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - 'asgard-service.schedule-task.pagingQuery'
+          - 'asgard-service.schedule-task.create'
+          - 'asgard-service.schedule-task.check'
+          - 'asgard-service.schedule-task.cron'
+          - 'asgard-service.schedule-task.getTaskDetail'
+          - 'asgard-service.schedule-task.delete'
+          - 'asgard-service.schedule-task.disable'
+          - 'asgard-service.schedule-task.enable'
+          - 'asgard-service.schedule-task-instance.pagingQueryByTaskId'
+          - 'asgard-service.schedule-method.getMethodByService'
+          - 'asgard-service.schedule-method.pagingQuery'
+          - 'manager-service.service.pageAll'
+    - "execution-record":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - 'asgard-service.schedule-task-instance.pagingQuery'
+    - "task-classname":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - 'asgard-service.schedule-method.getParams'
+          - 'asgard-service.schedule-method.pagingQuery'
 
 # 事务管理
 "global-transaction":
   icon: developer_board
-  sort: 6
+  sort: 4
   site:
     - "saga":
         icon: saga_define
@@ -241,6 +299,7 @@
         icon: application_model
         Routes: /iam/mail-template
         sort: 7
+        delete: true
         permission:
           - 'notify-service.email-template-org.pageOrganization'
           - 'notify-service.email-template-org.create'
@@ -248,6 +307,35 @@
           - 'notify-service.email-template-org.delete'
           - 'notify-service.email-template-org.query'
           - 'notify-service.send-setting-org.listNames'
+
+# 组织层消息中心
+"msg-center-organization":
+  icon: center
+  sort: 3
+  organization:
+    - "send-setting-organization":
+        icon: mail_set
+        Routes: /iam/send-setting
+        sort: 1
+        permission:
+          - 'notify-service.send-setting-org.pageOrganization'
+    - "mail-template-organization":
+        icon: application_model
+        Routes: /iam/mail-template
+        sort: 2
+        permission:
+          - 'notify-service.email-template-org.pageOrganization'
+          - 'notify-service.email-template-org.create'
+          - 'notify-service.email-template-org.update'
+          - 'notify-service.email-template-org.delete'
+          - 'notify-service.email-template-org.query'
+          - 'notify-service.send-setting-org.listNames'
+    - "msg-record-organization":
+        icon: speaker_notes
+        Routes: /iam/msg-record
+        sort: 4
+        permission:
+          - 'notify-service.message-record-org.pageEmail'
 
 # 项目设置
 "prosetting":
@@ -305,3 +393,9 @@
         sort: 4
         permission:
           - 'iam-service.user.listProjectAndRoleById'
+    - "user-msg":
+        icon: message_notification
+        Routes: /iam/user-msg
+        sort: 5
+        permission:
+        - 'iam-service.user.listProjectAndRoleById'

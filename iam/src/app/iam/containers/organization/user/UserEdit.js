@@ -204,6 +204,7 @@ export default class UserEdit extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      data.realName = data.realName.trim();
       if (!err) {
         const { AppState, edit, onSubmit = noop, onSuccess = noop, onError = noop, OnUnchangedSuccess = noop, intl } = this.props;
         const menuType = AppState.currentMenuType;
@@ -290,6 +291,8 @@ export default class UserEdit extends Component {
                 disabled={edit}
                 style={{ width: inputWidth }}
                 ref={(e) => { this.createFocusInput = e; }}
+                maxLength={32}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>
@@ -315,6 +318,8 @@ export default class UserEdit extends Component {
                   rows={1}
                   style={{ width: inputWidth }}
                   ref={(e) => { this.editFocusInput = e; }}
+                  maxLength={32}
+                  showLengthInfo={false}
                 />,
               )
             }
@@ -345,6 +350,8 @@ export default class UserEdit extends Component {
                 autoComplete="off"
                 label={intl.formatMessage({ id: `${intlPrefix}.email` })}
                 style={{ width: inputWidth }}
+                maxLength={64}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>
@@ -374,6 +381,7 @@ export default class UserEdit extends Component {
                   label={intl.formatMessage({ id: `${intlPrefix}.password` })}
                   type="password"
                   style={{ width: inputWidth }}
+                  showPasswordEye
                 />,
               )}
             </FormItem>
@@ -400,6 +408,7 @@ export default class UserEdit extends Component {
                   type="password"
                   style={{ width: inputWidth }}
                   onBlur={this.handleRePasswordBlur}
+                  showPasswordEye
                 />,
               )}
             </FormItem>

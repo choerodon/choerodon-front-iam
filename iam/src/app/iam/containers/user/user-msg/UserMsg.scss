@@ -1,0 +1,130 @@
+.c7n-user-msg {
+  &-list .ant-list-item {
+    padding: 0;
+  }
+  &-list {
+    .ant-spin-spinning {
+      opacity: 1;
+      display: inline-block;
+      height: 100%;
+      max-height: 350px;
+      width: 100%;
+      z-index: 4;
+    }
+  }
+  &-empty-icon {
+    height: 120px;
+    width: 120px;
+    margin: 80px auto 0;
+    background-image: url('./icon/empty.svg');
+    background-repeat: no-repeat;
+    background-size: auto 120px;
+  }
+  &-empty-icon-text {
+    margin: 0 auto;
+    text-align: center;
+    color: #747474;
+    font-size: 15px;
+    font-weight: 400;
+    padding-top: 20px;
+  }
+  &-btns {
+    width: 96%;
+    margin: auto;
+    margin-bottom: 24px;
+    .text {
+      display: inline-block;
+      margin-right: 15px;
+    }
+    button:nth-child(2) {
+      border-radius: 2px 0 0 2px;
+    }
+    button:nth-child(3) {
+      border-radius: 0 2px 2px 0;
+    }
+    button.active {
+      background: rgba(140, 158, 255, 0.2);
+    }
+  }
+
+  &-read {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.54);
+    line-height: 20px;
+    float: right;
+    &-title {
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+  &-unread {
+    font-size: 13px;
+    color: #000;
+    float: right;
+  }
+
+  &-card.active {
+    width: 100%;
+    margin: 16px 0;
+    margin-right: 0;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.12);
+    .ant-card-body {
+      display: block;
+      width: 76vw;
+      margin: 0 auto;
+    }
+    .ant-card-head {
+      background: rgba(0, 0, 0, 0.12);
+      height: 48px;
+      &-title {
+        font-size: 16px;
+        padding: 12px 0;
+      }
+    }
+    span {
+       // color: white;
+    }
+    .ant-checkbox-inner {
+      // background-color: #5266d4;
+      // border-color: white;
+    }
+  }
+
+  &-card {
+    width: 96%;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.29);
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.20);
+    // margin-top: 16px;
+    .ant-card-body {
+      display: none;
+    }
+    span:nth-child(3) {
+      padding-left: 72px;
+      font-weight: 500;
+    }
+    span:nth-child(4) {
+      font-weight: 500;
+    }
+    .ant-card-head {
+      .unread {
+        border-left: 2px solid #3f51b5;
+      }
+      cursor: pointer;
+      height: 30px;
+      min-height: 30px;
+      &-title {
+        font-size: 13px;
+        padding: 5px 0;
+      }
+      .ant-checkbox {
+        color: rgba(0, 0, 0, 0.56);
+      }
+    }
+  }
+}
+
+.c7n-unread-line {
+  .ant-card-head {
+    border-left: 2px solid #3f51b5;
+  }
+}

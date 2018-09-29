@@ -28,6 +28,7 @@ export default class SagaImg extends Component {
       activeTab: instance ? 'run' : '',
       jsonTitle: false, // 是否展示input output
       data,
+      intervals: [],
     };
   }
 
@@ -44,6 +45,11 @@ export default class SagaImg extends Component {
 
   componentDidMount() {
     this.addScrollEventListener();
+  }
+
+  componentWillUnmount() {
+    const { intervals } = this.state;
+    clearInterval(intervals);
   }
 
 
@@ -97,16 +103,19 @@ export default class SagaImg extends Component {
   }
 
   reload() {
-    const { data: { id } } = this.state;
+    const { data: { id }, intervals } = this.state;
     const { instance } = this.props;
     const store = instance ? SagaInstanceStore : SagaStore;
     store.loadDetailData(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        const { tasks } = data;
+        const { tasks, status } = data;
         this.setState({ data });
         this.getLineData(tasks);
+        if (status !== 'RUNNING') {
+          clearInterval(intervals);
+        }
       }
     });
   }
@@ -234,12 +243,16 @@ export default class SagaImg extends Component {
   }
 
   handleRetry = () => {
-    const { task: { id } } = this.state;
+    const { task: { id }, intervals } = this.state;
     const { intl: { formatMessage } } = this.props;
     SagaInstanceStore.retry(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
+        clearInterval(intervals);
+        this.setState({
+          intervals: setInterval(() => this.reload(), 2000),
+        });
         this.reload();
         Choerodon.prompt(formatMessage({ id: `${intlPrefix}.task.retry.success` }));
       }
@@ -384,6 +397,18 @@ export default class SagaImg extends Component {
     };
     return (
       <div className="c7n-saga-task-run">
+        <div className="c7n-saga-task-btns">
+          {instanceLock && (status === 'RUNNING' || status === 'FAILED') && (
+            <span onClick={this.handleUnLock}>
+              <Icon type="lock_open" />
+              {formatMessage({ id: `${intlPrefix}.task.unlock` })}
+            </span>)}
+          {status === 'FAILED' && (
+            <span onClick={this.handleRetry}>
+              <Icon type="sync" />
+              {formatMessage({ id: `${intlPrefix}.task.retry` })}
+            </span>)}
+        </div>
         <div className="c7n-saga-task-detail">
           <div className="c7n-saga-task-detail-content">
             {list.map(({ key, value }) => <div key={`task-run-${key}`}>{key}: {value}</div>)}
@@ -407,18 +432,6 @@ export default class SagaImg extends Component {
                 </div>
               </div>)}
           </div>
-        </div>
-        <div className="c7n-saga-task-btns">
-          {instanceLock && (status === 'RUNNING' || status === 'FAILED') && (
-            <span onClick={this.handleUnLock}>
-              <Icon type="lock_open" />
-              {formatMessage({ id: `${intlPrefix}.task.unlock` })}
-            </span>)}
-          {status === 'FAILED' && (
-            <span onClick={this.handleRetry}>
-              <Icon type="sync" />
-              {formatMessage({ id: `${intlPrefix}.task.retry` })}
-            </span>)}
         </div>
       </div>
     );

@@ -4,10 +4,10 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import UserEdit from './UserEdit';
-
 import './User.scss';
-
+import StatusTag from '../../../components/statusTag';
 
 const { Sidebar } = Modal;
 const intlPrefix = 'organization.user';
@@ -131,7 +131,6 @@ export default class User extends Component {
     const organizationId = menuType.id;
     if (record.enabled) {
       // 禁用
-      // debugger;
       UserStore.UnenableUser(organizationId, record.id, !record.enabled).then(() => {
         Choerodon.prompt(intl.formatMessage({ id: 'disable.success' }));
         this.loadUser();
@@ -222,6 +221,15 @@ export default class User extends Component {
           this.handleUploadInfo(true);
         } else if (status === 'error') {
           Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
+        }
+        if (response && response.failed === true) {
+          Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
         }
         if (!fileLoading) {
           this.setState({
@@ -240,14 +248,26 @@ export default class User extends Component {
     const { UserStore, AppState: { currentMenuType, getUserId: userId } } = this.props;
     const { id: organizationId } = currentMenuType;
 
+    const { fileLoading } = this.state;
+    const uploadInfo = UserStore.getUploadInfo || {};
+    if (uploadInfo.finished !== null && fileLoading) {
+      this.setState({
+        fileLoading: false,
+      });
+    }
     if (immediately) {
       UserStore.handleUploadInfo(organizationId, userId);
       return;
     }
-    this.timer = setTimeout(() => {
-      this.timer = 0;
+    if (uploadInfo.finished !== null) {
+      clearInterval(this.timer);
+      return;
+    }
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
       UserStore.handleUploadInfo(organizationId, userId);
-    }, 9000);
+      this.loadUser();
+    }, 2000);
   }
 
   getSidebarText() {
@@ -454,14 +474,26 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.loginname`} />,
         dataIndex: 'loginName',
         key: 'loginName',
+        width: '15%',
         filters: [],
         filteredValue: filters.loginName || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       }, {
         title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
+        width: '15%',
         filters: [],
         filteredValue: filters.realName || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.source`} />,
@@ -503,11 +535,8 @@ export default class User extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.enabled`} />,
         key: 'enabled',
-        render: (text, record) => (
-          record.enabled
-            ? <FormattedMessage id="enable" />
-            : <FormattedMessage id="disable" />
-        ),
+        dataIndex: 'enabled',
+        render: text => (<StatusTag mode="icon" name={intl.formatMessage({ id: text ? 'enable' : 'disable' })} colorCode={text ? 'COMPLETED' : 'FAILED'} />),
         filters: [
           {
             text: intl.formatMessage({ id: 'enable' }),

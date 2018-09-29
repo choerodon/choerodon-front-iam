@@ -28,4 +28,13 @@
     margin: 0 22px 1px 1px;
     width: 49%;
   }
+  .CodeMirror {
+    height: auto;
+  }
+  .CodeMirror-scroll {
+    /* Set scrolling behaviour here */
+    overflow: auto;
+    // max-height: 800px;
+    max-height: calc(100vh - 360px);
+  }
 }

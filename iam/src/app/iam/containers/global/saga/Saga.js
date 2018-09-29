@@ -8,6 +8,7 @@ import jsonFormat from '../../../common/json-format';
 import SagaStore from '../../../stores/global/saga/SagaStore';
 import './style/saga.scss';
 import './style/json.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'global.saga';
 const { Sidebar } = Modal;
@@ -113,9 +114,15 @@ export default class Saga extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.code`} />,
         key: 'code',
+        width: '30%',
         dataIndex: 'code',
         filters: [],
         filteredValue: filters.code || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.2}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.service`} />,
@@ -127,9 +134,15 @@ export default class Saga extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.desc`} />,
         key: 'description',
+        width: '40%',
         dataIndex: 'description',
         filters: [],
         filteredValue: filters.description || [],
+        render: text => (
+          <MouseOverWrapper text={text} width={0.3}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: '',

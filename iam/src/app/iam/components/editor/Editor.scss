@@ -1,6 +1,8 @@
 .react-quill-editor {
-  img {
-    max-width: 400px;
+  position: relative;
+
+  .ql-changeToHtml {
+    margin-top: -3px;
   }
 }
 
@@ -19,3 +21,116 @@
   $i: $i + 1;
 }
 
+.ql-snow .ql-tooltip[data-mode=link]::before {
+  content: "输入链接:";
+}
+
+.ql-snow .ql-tooltip::before {
+  content: "访问链接:";
+}
+
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+  content: '保存';
+}
+
+.ql-snow .ql-tooltip a.ql-action::after {
+  content: '编辑';
+}
+
+.ql-snow .ql-tooltip a.ql-remove::before {
+  content: '移除链接';
+}
+
+.c7n-editor-changedHTML-container {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 320px;
+  border: 1px solid #ccc;
+  line-height: 1.42;
+  outline: none;
+  background: #fff;
+
+  &-toolbar {
+    border-bottom: 2px solid #ccc;
+    height: 42px;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    line-height: 42px;
+    padding-left: 16px;
+    background: #fff;
+
+    span {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    span:hover {
+      color: #06c;
+    }
+  }
+
+  .c7n-editor-changedHTML-container-content {
+    width: 100%;
+    height: 276px;
+    padding: 12px 15px;
+    outline: none;
+    border: none;
+    overflow-y: auto;
+    -o-tab-size: 4;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
+
+.c7n-iam-editor-modal {
+  width: 560px;
+  height: 547px;
+
+  &-preview-top {
+    margin-top: 20px;
+    vertical-align: middle;
+
+    &-btn {
+      position: absolute;
+      top: 80px;
+      right: 25px;
+      margin-left: 17px;
+      vertical-align: middle;
+      color: #3F51B5;
+    }
+  }
+
+  &-preview-content {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 32px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.08);
+    z-index: 40;
+  }
+
+  &-preview-pic {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    top: 0;
+    left: 0;
+    background: transparent;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: 41;
+  }
+
+  &-preview-sentence {
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}

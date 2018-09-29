@@ -10,15 +10,29 @@ class DashboardSettingStore {
   @observable pagination = {
     current: 1,
     pageSize: 10,
+    total: 0,
   };
   @observable filters = {};
   @observable sort = {};
   @observable params = [];
-  @observable total = 0;
   @observable editData = {};
+  @observable needRoles = false;
+  @observable currentRoles = [];
+  @observable roleMap = new Map();
+  @observable needUpdateRoles = false;
 
   refresh() {
     this.loadData({ current: 1, pageSize: 10 }, {}, {}, []);
+  }
+
+  @action
+  setNeedUpdateRoles(flag) {
+    this.needUpdateRoles = flag;
+  }
+
+  @action
+  setNeedRoles(flag) {
+    this.needRoles = flag;
   }
 
   @action
@@ -39,11 +53,15 @@ class DashboardSettingStore {
   @action
   updateData(values) {
     this.loading = true;
-    return axios.post(`/iam/v1/dashboards/${this.editData.id}`, JSON.stringify(Object.assign({}, this.editData, values)))
+    const rolesQuery = values.roleIds || this.needUpdateRoles === this.editData.roleIds ? '' : '?update_role=true';
+    this.editData.needRoles = this.needRoles;
+    return axios.post(`/iam/v1/dashboards/${this.editData.id}${rolesQuery}`, JSON.stringify(Object.assign({}, this.editData, values)))
       .then(action((data) => {
         Object.assign(this.editData, data);
+        if (this.editData.roleIds === null) this.editData.roleIds = values.roleIds; // 在没有更新roleIds的时候data中的roleIds会为空，不修改不应该置为空而是应该不变。
         this.loading = false;
         this.sidebarVisible = false;
+        this.needUpdateRoles = false;
         return data;
       }))
       .catch(action((error) => {
@@ -75,11 +93,13 @@ class DashboardSettingStore {
       params: params.join(','),
       sort: sorter.join(','),
     })}`)
-      .then(action(({ failed, content, size, totalElements }) => {
+      .then(action(({ failed, content, totalElements }) => {
         if (!failed) {
           this.dashboardData = content;
-          this.pagination = pagination;
-          this.total = totalElements;
+          this.pagination = {
+            ...pagination,
+            total: totalElements,
+          };
         }
         this.loading = false;
       }))

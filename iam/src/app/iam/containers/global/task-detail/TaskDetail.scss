@@ -1,0 +1,137 @@
+.c7n-task-container-status {
+  i {
+    padding-right: 6px;
+    vertical-align: top;
+  }
+
+  .enabled {
+    color: #1ab16f;
+  }
+
+  .disabled {
+    color: #F44336;
+  }
+
+  .end {
+    color: #FFB100;
+  }
+}
+
+.c7n-task-detail-sidebar {
+  &.ant-modal-sidebar .ant-modal-body {
+    height: calc(100% - 121px);
+  }
+
+  .c7n-create-task {
+    &-radio-container > label:first-child {
+      margin-right: 52px;
+    }
+
+    &-select {
+      position: relative;
+      top: 6px;
+    }
+
+    &-inline-formitem {
+      display: inline-block;
+
+      &-select {
+        margin-top: 13px;
+      }
+    }
+
+    div.c7n-create-task-inline-formitem {
+      margin-right: 18px;
+    }
+  }
+
+  .c7n-task-detail-row {
+    margin-bottom: 12px;
+
+    div:first-child {
+      width: 11.5%;
+    }
+
+    div:last-child {
+      color: rgba(0, 0, 0, 0.65);
+    }
+
+    &-hide {
+      display: none;
+    }
+  }
+
+  .c7n-task-deatil-params-container {
+    margin-top: 39px;
+    width: 512px;
+    padding: 24px 12px 32px;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+  }
+}
+
+.c7n-task-deatil-cron-container {
+  font-size: 13px;
+
+  > span {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  li {
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 12px;
+
+    span:first-child {
+      margin-right: 22px;
+    }
+  }
+}
+
+.c7n-task-detail-popover {
+  width: 272px;
+  height: 156px;
+
+  &-icon {
+    position: absolute;
+    left: 491px;
+    margin-top: 16px;
+    cursor: pointer;
+  }
+}
+
+.c7n-taskdetail-text {
+  cursor: text;
+  position: relative;
+  padding: 0 20px 2px 0;
+}
+
+.c7n-taskdetail-text .c7n-taskdetail-text-icon {
+  color: rgba(0, 0, 0, .65);
+  display: none;
+}
+
+.c7n-taskdetail-text:hover .c7n-taskdetail-text-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: block;
+  z-index: 10;
+  transform: translateY(-50%);
+}
+
+.ant-input-focus + .c7n-taskdetail-text-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: block;
+  z-index: 10;
+  transform: translateY(-50%);
+}
+
+
+
+
+
+
+

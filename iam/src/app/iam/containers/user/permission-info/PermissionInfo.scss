@@ -1,0 +1,23 @@
+.c7n-permission-info {
+  &-code {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+    width: 60%;
+    overflow: hidden;
+  }
+
+  &-table {
+    table{
+      table-layout:fixed;
+    }
+  }
+
+  &-description {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40%;
+    width: 40%;
+    overflow: hidden;
+  }
+}

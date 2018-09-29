@@ -7,6 +7,7 @@ import { Button, Col, Form, Input, Modal, Row, Select, Table, Tooltip } from 'ch
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, axios } from 'choerodon-front-boot';
 import RoleStore from '../../../stores/global/role/RoleStore';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './Role.scss';
 
 const { Option } = Select;
@@ -154,7 +155,7 @@ export default class CreateRole extends Component {
           const labelValues = this.props.form.getFieldValue('label');
           const labelIds = labelValues && labelValues.map(labelId => ({ id: labelId }));
           const role = {
-            name: this.props.form.getFieldValue('name'),
+            name: this.props.form.getFieldValue('name').trim(),
             modified: this.props.form.getFieldValue('modified'),
             enabled: this.props.form.getFieldValue('enabled'),
             code: `role/${RoleStore.getChosenLevel}/custom/${this.props.form.getFieldValue('code').trim()}`,
@@ -329,6 +330,8 @@ export default class CreateRole extends Component {
                       width: '512px',
                     }}
                     disabled={level === ''}
+                    maxLength={64}
+                    showLengthInfo={false}
                   />,
                 )}
               </FormItem>
@@ -351,6 +354,8 @@ export default class CreateRole extends Component {
                     style={{
                       width: '512px',
                     }}
+                    maxLength={64}
+                    showLengthInfo={false}
                   />,
                 )}
               </FormItem>
@@ -405,17 +410,27 @@ export default class CreateRole extends Component {
                 {...formItemLayout}
               >
                 <Table
-                  style={{
-                    width: '512px',
-                  }}
+                  className="c7n-role-permission-table"
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
+                    width: '50%',
                     dataIndex: 'code',
                     key: 'code',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.5}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
+                    width: '50%',
                     dataIndex: 'description',
                     key: 'description',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.5}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }]}
                   dataSource={selectedPermission || []}
                   filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
@@ -473,17 +488,27 @@ export default class CreateRole extends Component {
                 code={`${intlPrefix}.create.addpermission`}
               >
                 <Table
-                  style={{
-                    width: '512px',
-                  }}
+                  className="c7n-role-permission-table"
                   columns={[{
                     title: <FormattedMessage id={`${intlPrefix}.permission.code`} />,
+                    width: '50%',
                     dataIndex: 'code',
                     key: 'code',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.4}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }, {
                     title: <FormattedMessage id={`${intlPrefix}.permission.desc`} />,
+                    width: '50%',
                     dataIndex: 'description',
                     key: 'description',
+                    render: text => (
+                      <MouseOverWrapper text={text} width={0.4}>
+                        {text}
+                      </MouseOverWrapper>
+                    ),
                   }]}
                   rowKey="id"
                   dataSource={data}

@@ -10,6 +10,10 @@ export default class Announcement extends Component {
         <ul>
           <li>
             <Icon type="volume_up" />
+            <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/changelog_v0.9/">Choerodon 发布0.9.0</a>
+          </li>
+          <li>
+            <Icon type="volume_up" />
             <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/changelog_v0.8/">Choerodon 发布0.8.0</a>
           </li>
           <li>

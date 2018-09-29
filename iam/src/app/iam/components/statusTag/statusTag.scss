@@ -1,0 +1,27 @@
+.c7n-iam-status-tag {
+  color: #fff;
+  display: inline-block;
+  font-size: 13px;
+  border-radius: 2px;
+  text-align: center;
+  padding: 0 2px;
+
+  div {
+    transform: scale(0.8);
+  }
+  &-with-icon {
+    color: #000;
+    i {
+      padding-right: 6px;
+      vertical-align: top;
+    }
+
+    .icon-check_circle {
+      color: #1ab16f;
+    }
+
+    .icon-remove_circle {
+      color: #f44336;
+    }
+  }
+}

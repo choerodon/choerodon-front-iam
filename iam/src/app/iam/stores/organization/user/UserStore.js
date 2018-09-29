@@ -152,7 +152,8 @@ class UserStore {
   }
 
   handleUploadInfo = (organizationId, userId) => {
-    axios.get(`/iam/v1/organizations/${organizationId}/upload/history?user_id=${userId}`).then((data) => {
+    const timestamp = new Date().getTime();
+    axios.get(`/iam/v1/organizations/${organizationId}/users/${userId}/upload/history?t=${timestamp}`).then((data) => {
       if (!data) {
         this.setUploadInfo({ noData: true });
         this.setUploading(false);

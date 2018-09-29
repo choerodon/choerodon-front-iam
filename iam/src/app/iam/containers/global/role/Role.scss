@@ -1,3 +1,12 @@
+.c7n-role {
+  &-permission-table{
+    table{
+      table-layout:fixed;
+    }
+  }
+}
+
+
 .choerodon-role {
   .choerodon-loading {
     display: inherit;
@@ -16,6 +25,21 @@
 
   .show {
     display: block;
+  }
+
+  &-code {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+    width: 60%;
+    overflow: hidden;
+  }
+  &-description{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40%;
+    width: 40%;
+    overflow: hidden;
   }
 }
 

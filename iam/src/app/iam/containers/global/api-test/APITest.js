@@ -12,6 +12,7 @@ import querystring from 'query-string';
 import classnames from 'classnames';
 import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'global.apitest';
 const { Option } = Select;
@@ -24,7 +25,14 @@ export default class APITest extends Component {
   state = this.getInitState();
 
   componentDidMount() {
-    this.loadInitData();
+    if (APITestStore.getInitData === null || APITestStore.getNeedReload) {
+      this.loadInitData();
+      this.setState(this.getInitState());
+      APITestStore.clearIsExpand();
+    } else if (!APITestStore.getNeedReload) {
+      this.setState(APITestStore.getInitData);
+    }
+    APITestStore.setNeedReload(true);
   }
 
   getInitState() {
@@ -40,6 +48,7 @@ export default class APITest extends Component {
       },
       filters: {},
       params: [],
+      expandedRow: [],
     };
   }
 
@@ -53,6 +62,19 @@ export default class APITest extends Component {
     ) : <Option value="empty">无服务</Option>;
   }
 
+  /* 微服务版本下拉框 */
+  getVersionList() {
+    const { versions, currentService } = APITestStore;
+    return versions && versions.length > 0 ? (
+
+      APITestStore.versions.map((version, index) => (
+        <Option key={index}><Tooltip title={version} placement="right" align={{ offset: [20, 0] }}>
+          <span style={{ display: 'inline-block', width: '100%' }}>{version}</span>
+        </Tooltip></Option>),
+      )
+    ) : <Option value="empty">无版本</Option>;
+  }
+
   loadInitData = () => {
     APITestStore.setLoading(true);
     APITestStore.loadService().then((res) => {
@@ -63,21 +85,39 @@ export default class APITest extends Component {
         const services = res.map(({ location, name }) => ({
           name: name.split(':')[1],
           value: `${name.split(':')[0]}/${location.split('=')[1]}`,
+          version: location.split('=')[1],
         }));
         APITestStore.setService(services);
         if (!APITestStore.detailFlag) {
           APITestStore.setApiToken(null);
           APITestStore.setUserInfo(null);
           APITestStore.setCurrentService(services[0]);
+          APITestStore.setCurrentVersion(services[0].version);
         } else {
           APITestStore.setDetailFlag(false);
         }
         this.loadApi();
       }
     });
+  };
+
+  loadVersions = () => {
+    const { service, currentService } = APITestStore;
+    const newVersions = [];
+    if (service && service.length > 0) {
+      APITestStore.service.forEach(({ name, value, version }, index) => {
+        if (currentService.version === version) {
+          newVersions.push(version);
+        }
+      },
+      );
+      APITestStore.setCurrentVersion(newVersions[0]);
+      APITestStore.setVersions(newVersions);
+    }
   }
 
   loadApi = (paginationIn, filtersIn, paramsIn) => {
+    this.loadVersions(); // 在加载前根据store里的currentVerison加载版本
     APITestStore.setLoading(true);
     const {
       pagination: paginationState,
@@ -88,7 +128,7 @@ export default class APITest extends Component {
     const params = paramsIn || paramsState;
     const filters = filtersIn || filtersState;
     const serviceName = APITestStore.getCurrentService.value.split('/')[0];
-    const version = APITestStore.getCurrentService.value.split('/')[1];
+    const version = APITestStore.getCurrentVersion; // 修改为获取当前版本号的api
     this.fetch(serviceName, version, pagination, params)
       .then((data) => {
         APITestStore.setApiData(data.content);
@@ -130,6 +170,7 @@ export default class APITest extends Component {
     this.setState(this.getInitState(), () => {
       APITestStore.setCurrentService(APITestStore.service[0]);
       this.loadApi();
+      APITestStore.clearIsExpand();
     });
   };
 
@@ -139,7 +180,22 @@ export default class APITest extends Component {
    */
   handleChange(serviceName) {
     const currentService = APITestStore.service.find(service => service.value === serviceName);
+    APITestStore.clearIsExpand();
+    this.loadVersions();
     APITestStore.setCurrentService(currentService);
+    this.setState(this.getInitState(), () => {
+      this.loadApi();
+    });
+  }
+
+  /**
+   * 微服务版本下拉框改变事件
+   * @param serviceName 服务名称
+   */
+  handleVersionChange(serviceVersion) {
+    const currentVersion = APITestStore.versions.find(version => version === serviceVersion);
+    APITestStore.clearIsExpand();
+    APITestStore.setCurrentVersion(currentVersion);
     this.setState(this.getInitState(), () => {
       this.loadApi();
     });
@@ -148,6 +204,8 @@ export default class APITest extends Component {
   goDetail(record) {
     APITestStore.setApiDetail(record);
     APITestStore.setDetailFlag(true);
+    APITestStore.setInitData(this.state); // 用来记录当前的分页状况当前页数等
+    APITestStore.setNeedReload(false);
     const version = APITestStore.getCurrentService.value.split('/')[1];
     const service = APITestStore.getCurrentService.value.split('/')[0];
     const { refController, operationId } = record;
@@ -161,11 +219,17 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       dataIndex: 'name',
       key: 'name',
-      className: 'c7n-apitest-name',
+      width: '20%',
       render: (text, data) => {
         const { name, method } = data;
         if (name) {
-          return <span>{name}</span>;
+          // 控制展开的箭头
+          return (
+            <MouseOverWrapper text={name} width={0.18}>
+              <span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.has(name)) ? 'expanded' : 'collapsed'}`)} />
+              <span>{name}</span>
+            </MouseOverWrapper>
+          );
         } else {
           return (
             <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>
@@ -175,33 +239,43 @@ export default class APITest extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
       dataIndex: 'url',
+      width: '35%',
       key: 'url',
-      className: 'c7n-apitest-url',
       render: (text, record) => (
-        <Tooltip
-          title={text}
-          placement="bottomLeft"
-          overlayStyle={{ wordBreak: 'break-all' }}
-        >
-          <div className="urlContainer">{text}</div>
-        </Tooltip>
+        <MouseOverWrapper text={text} width={0.3}>
+          {text}
+        </MouseOverWrapper>
       ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
+      width: '30%',
       key: 'remark',
-      // width: 475,
       render: (text, data) => {
         const { description, remark } = data;
         if (remark) {
-          return remark;
+          return (<MouseOverWrapper text={remark} width={0.26}>
+            {remark}
+          </MouseOverWrapper>);
         } else {
           return description;
         }
       },
     }, {
+      width: 160,
+      title: <FormattedMessage id={`${intlPrefix}.available.range`} />,
+      dataIndex: 'innerInterface',
+      key: 'innerInterface',
+      render: (text) => {
+        if (text === true) {
+          return <span>内部</span>;
+        } else if (text === false) {
+          return <span>外部</span>;
+        }
+      },
+    }, {
       title: '',
-      width: 100,
+      width: 56,
       key: 'action',
       align: 'right',
       render: (text, record) => {
@@ -238,7 +312,7 @@ export default class APITest extends Component {
           values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
         >
           <Select
-            style={{ width: '512px', marginBottom: '32px' }}
+            style={{ width: '247px', marginBottom: '32px' }}
             value={APITestStore.currentService.value}
             getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             onChange={this.handleChange.bind(this)}
@@ -247,6 +321,16 @@ export default class APITest extends Component {
             filter
           >
             {this.getOptionList()}
+          </Select>
+          <Select
+            readOnly
+            style={{ width: '247px', marginBottom: '32px', marginLeft: '18px' }}
+            value={APITestStore.currentVersion}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+            onChange={this.handleVersionChange.bind(this)}
+            label={<FormattedMessage id={`${intlPrefix}.version`} />}
+          >
+            {this.getVersionList()}
           </Select>
           <Table
             className="c7n-api-table"
@@ -260,6 +344,15 @@ export default class APITest extends Component {
             onChange={this.handlePageChange}
             rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+            onRowClick={(record) => {
+              APITestStore.setIsExpand(record.name);
+              this.setState({
+                expandedRow: APITestStore.getExpandKeys,
+              });
+            }
+            }
+            expandRowByClick
+            expandedRowKeys={this.state.expandedRow}
           />
         </Content>
       </Page>

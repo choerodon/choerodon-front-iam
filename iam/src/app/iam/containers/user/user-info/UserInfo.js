@@ -83,6 +83,10 @@ export default class UserInfo extends Component {
     const originUser = UserInfoStore.getUserInfo;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values, modify) => {
+      Object.keys(values).forEach((key) => {
+        // 去除form提交的数据中的全部前后空格
+        if (typeof values[key] === 'string') values[key] = values[key].trim();
+      });
       if (!err) {
         this.setState({
           submitting: true,
@@ -94,6 +98,7 @@ export default class UserInfo extends Component {
         };
         UserInfoStore.updateUserInfo(user).then((data) => {
           if (data) {
+            this.props.form.resetFields();
             UserInfoStore.setUserInfo(data);
             Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
             this.setState({ submitting: false });
@@ -183,6 +188,8 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.loginname`} />}
               style={{ width: inputWidth }}
+              maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -206,6 +213,8 @@ export default class UserInfo extends Component {
               label={<FormattedMessage id={`${intlPrefix}.name`} />}
               style={{ width: inputWidth }}
               ref={(e) => { this.editFocusInput = e; }}
+              maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -236,6 +245,8 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.email`} />}
               style={{ width: inputWidth }}
+              maxLength={64}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -250,6 +261,8 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.phone`} />}
               style={{ width: inputWidth }}
+              maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -344,10 +357,7 @@ export default class UserInfo extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content
-          code={intlPrefix}
-          values={{ name: user.loginName }}
-        >
+        <Content>
           {this.renderForm(user)}
         </Content>
       </Page>

@@ -1,19 +1,18 @@
-
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip, Upload, Spin } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
-import querystring from 'query-string';
-import MemberLabel, { validateMember } from '../../../components/memberLabel/MemberLabel';
+import MemberRoleType, { pageSize } from './MemberRoleType';
+import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import './MemberRole.scss';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
-const pageSize = 10;
 const FormItemNumLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -24,147 +23,7 @@ const FormItemNumLayout = {
     sm: { span: 10 },
   },
 };
-
-// 公用方法类
-class MemberRoleType {
-  constructor(context) {
-    this.context = context;
-    const { AppState } = this.context.props;
-    this.data = AppState.currentMenuType;
-    const { type, id, name } = this.data;
-    let apiGetway = `/iam/v1/${type}s/${id}`;
-    let codePrefix;
-    switch (type) {
-      case 'organization':
-        codePrefix = 'organization';
-        break;
-      case 'project':
-        codePrefix = 'project';
-        break;
-      case 'site':
-        codePrefix = 'global';
-        apiGetway = `/iam/v1/${type}`;
-        break;
-      default:
-        break;
-    }
-    this.code = `${codePrefix}.memberrole`;
-    this.values = { name: name || 'Choerodon' };
-    this.urlUsers = `${apiGetway}/role_members/users`;
-    this.urlRoles = `${apiGetway}/role_members/users/roles`;
-    this.urlRoleMember = `${apiGetway}/role_members`;
-    this.urlDeleteMember = `${apiGetway}/role_members/delete`;
-    this.urlUserCount = `${apiGetway}/role_members/users/count`;
-    this.roleId = id || 0;
-  }
-
-  // fetch分配角色（post）
-  fetchRoleMember(memberIds, body, isEdit) {
-    let str = `member_ids=${memberIds.join(',')}`;
-    if (isEdit === true) {
-      str += '&is_edit=true';
-    }
-    return axios.post(`${this.urlRoleMember}?${str}`, JSON.stringify(body));
-  }
-
-  // delete分配角色（delete)
-  deleteRoleMember(body) {
-    const { id } = this.data;
-    body.sourceId = id || 0;
-    return axios.post(this.urlDeleteMember, JSON.stringify(body));
-  }
-
-  // 根据用户名查询memberId
-  searchMemberId(loginName) {
-    if (loginName) {
-      return axios.get(`/iam/v1/users?login_name=${loginName}`);
-    }
-  }
-
-  searchMemberIds(loginNames) {
-    const promises = loginNames.map((index, value) => this.searchMemberId(index));
-    return axios.all(promises);
-  }
-
-  loadRoleMemberData(roleData, { current }, { loginName, realName }, params) {
-    const { id: roleId, users, name } = roleData;
-    const body = {
-      loginName: loginName && loginName[0],
-      realName: realName && realName[0],
-      param: params,
-    };
-    const queryObj = { role_id: roleId, size: pageSize, page: current - 1 };
-    roleData.loading = true;
-    return axios.post(`${this.urlUsers}?${querystring.stringify(queryObj)}`,
-      JSON.stringify(body))
-      .then(({ content }) => {
-        roleData.users = users.concat(content.map((member) => {
-          member.roleId = roleId;
-          member.roleName = name;
-          return member;
-        }));
-        delete roleData.loading;
-        this.context.forceUpdate();
-      });
-  }
-
-  loadMemberDatas({ pageSize: size, current }, { loginName, realName, roles }, params) {
-    const body = {
-      loginName: loginName && loginName[0],
-      roleName: roles && roles[0],
-      realName: realName && realName[0],
-      param: params,
-    };
-    const queryObj = { size, page: current - 1, sort: 'id' };
-    return axios.post(`${this.urlRoles}?${querystring.stringify(queryObj)}`, JSON.stringify(body));
-  }
-
-  loadRoleMemberDatas({ loginName, realName, name }) {
-    const body = {
-      roleName: name && name[0],
-      loginName: loginName && loginName[0],
-      realName: realName && realName[0],
-    };
-    return axios.post(this.urlUserCount, JSON.stringify(body));
-  }
-
-  // 多路请求
-  fetch() {
-    const { memberRolePageInfo, memberRoleFilters, roleMemberFilters, expandedKeys, params, roleMemberParams } = this.context.state;
-    this.context.setState({
-      loading: true,
-    });
-    return axios.all([
-      this.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params),
-      this.loadRoleMemberDatas(roleMemberFilters),
-    ]).then(([{ content, totalElements, number }, roleData]) => {
-      this.context.setState({
-        memberDatas: content,
-        expandedKeys,
-        roleMemberDatas: roleData.filter((role) => {
-          role.users = role.users || [];
-          if (role.userCount > 0) {
-            if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
-              this.loadRoleMemberData(role, {
-                current: 1,
-                pageSize,
-              }, roleMemberFilters, roleMemberParams);
-            }
-            return true;
-          }
-          return false;
-        }),
-        roleData,
-        loading: false,
-        memberRolePageInfo: {
-          total: totalElements,
-          current: number + 1,
-          pageSize,
-        },
-      });
-    });
-  }
-}
+const intlPrefix = 'memberrole';
 
 @Form.create({})
 @withRouter
@@ -172,17 +31,15 @@ class MemberRoleType {
 @inject('AppState')
 @observer
 export default class MemberRole extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = this.getInitState();
-  }
+  state = this.getInitState();
 
   getInitState() {
+    const { MemberRoleStore, AppState } = this.props;
+    MemberRoleStore.loadCurrentMenuType(AppState.currentMenuType, AppState.getUserId);
     return {
       submitting: false,
-      memberDatas: [], // 成员下的角色集合
       sidebar: false,
-      roleData: [], // 当前情况下的所有角色
+      roleData: MemberRoleStore.getRoleData, // 当前情况下的所有角色
       selectType: 'create',
       currentMemberData: [], // 当前成员的角色分配信息
       loading: true,
@@ -192,7 +49,7 @@ export default class MemberRole extends Component {
       selectRoleMemberKeys: [],
       expandedKeys: [],
       validedMembers: {},
-      roleMemberDatas: [],
+      roleMemberDatas: MemberRoleStore.getRoleMemberDatas,
       roleMemberFilters: {},
       roleMemberParams: [],
       memberRoleFilters: {},
@@ -204,6 +61,8 @@ export default class MemberRole extends Component {
       roleMemberFilterRole: [],
       roleIds: [],
       params: [],
+      overflow: false,
+      fileLoading: false,
     };
   }
 
@@ -217,6 +76,41 @@ export default class MemberRole extends Component {
     this.init();
   }
 
+  componentDidMount() {
+    this.updateSelectContainer();
+  }
+
+  componentDidUpdate() {
+    this.updateSelectContainer();
+    this.props.MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
+    this.props.MemberRoleStore.setRoleData(this.state.roleData);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    this.props.MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
+    this.props.MemberRoleStore.setRoleData(this.state.roleData);
+  }
+
+  saveSideBarRef = (node) => {
+    if (node) {
+      this.sidebarBody = findDOMNode(node).parentNode;
+    }
+  };
+
+  updateSelectContainer() {
+    const body = this.sidebarBody;
+    if (body) {
+      const { overflow } = this.state;
+      const bodyOverflow = body.clientHeight < body.scrollHeight;
+      if (bodyOverflow !== overflow) {
+        this.setState({
+          overflow: bodyOverflow,
+        });
+      }
+    }
+  }
+
   reload = () => {
     this.setState(this.getInitState(), () => {
       this.init();
@@ -228,7 +122,7 @@ export default class MemberRole extends Component {
     return intl.formatMessage({
       id,
     }, values);
-  }
+  };
 
   // 创建编辑角色 状态
   getOption = (current) => {
@@ -239,8 +133,8 @@ export default class MemberRole extends Component {
           options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
         } else {
           options.push(
-            <Option value={id} key={id}>
-              <Tooltip title={code} placement="topLeft">
+            <Option value={id} key={id} title={name}>
+              <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
                 <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
               </Tooltip>
             </Option>,
@@ -290,7 +184,7 @@ export default class MemberRole extends Component {
   }
 
   getRoleFormItems = () => {
-    const { selectType, roleIds } = this.state;
+    const { selectType, roleIds, overflow } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItems = roleIds.map((id, index) => {
       const key = id === undefined ? `role-index-${index}` : String(id);
@@ -308,9 +202,10 @@ export default class MemberRole extends Component {
           initialValue: id,
         })(
           <Select
+            className="member-role-select"
             style={{ width: 300 }}
             label={<FormattedMessage id="memberrole.role.label" />}
-            getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+            getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
             filterOption={(input, option) => {
               const childNode = option.props.children;
               if (childNode && React.isValidElement(childNode)) {
@@ -318,7 +213,9 @@ export default class MemberRole extends Component {
               }
               return false;
             }}
-            onChange={(value) => { roleIds[index] = value; }}
+            onChange={(value) => {
+              roleIds[index] = value;
+            }}
             filter
           >
             {this.getOption(id)}
@@ -424,18 +321,54 @@ export default class MemberRole extends Component {
       return <FormattedMessage id="memberrole.add" />;
     } else if (selectType === 'edit') {
       return <FormattedMessage id="memberrole.modify" />;
+    } else if (selectType === 'upload') {
+      return <FormattedMessage id="memberrole.upload" />;
     }
   }
+
+  getUploadOkText = () => {
+    const { fileLoading } = this.state;
+    const { MemberRoleStore } = this.props;
+    const uploading = MemberRoleStore.getUploading;
+    if (fileLoading === true) {
+      return '上传中...';
+    } else if (uploading) {
+      return '导入中...';
+    } else {
+      return '上传';
+    }
+  }
+
 
   getHeader() {
     const { selectType, currentMemberData } = this.state;
     const { code, values } = this.roles;
     const modify = selectType === 'edit';
     return {
-      code: modify ? `${code}.modify` : `${code}.add`,
+      className: 'sidebar-content',
+      ref: this.saveSideBarRef,
+      code: this.getHeaderCode(),
       values: modify ? { name: currentMemberData.loginName } : values,
     };
   }
+
+  getHeaderCode = () => {
+    const { selectType } = this.state;
+    const { code } = this.roles;
+    let codeType = '';
+    switch (selectType) {
+      case 'edit':
+        codeType = 'modify';
+        break;
+      case 'create':
+        codeType = 'add';
+        break;
+      default:
+        codeType = 'upload';
+        break;
+    }
+    return `${code}.${codeType}`;
+  };
 
   getAddOtherBtn(disabled) {
     return (
@@ -445,22 +378,163 @@ export default class MemberRole extends Component {
     );
   }
 
+  renderForm = () => (
+    <Form layout="vertical">
+      {this.getProjectNameDom()}
+      {this.getRoleFormItems()}
+    </Form>
+  );
+
+  renderUpload = () => (
+    <Content
+      {...this.getHeader()}
+    >
+      <div>
+        <div style={{ width: '512px' }}>
+          {this.getUploadInfo()}
+        </div>
+        <div style={{ display: 'none' }}>
+          <Upload {...this.getUploadProps()}>
+            <Button className="c7n-user-upload-hidden" />
+          </Upload>
+        </div>
+      </div>
+    </Content>
+  );
+
   getSidebarContent() {
-    const { roleData = [], roleIds } = this.state;
-    const header = this.getHeader();
+    const { roleData = [], roleIds, selectType } = this.state;
     const disabled = roleIds.findIndex((id, index) => id === undefined) !== -1
       || !roleData.filter(({ enabled, id }) => enabled && roleIds.indexOf(id) === -1).length;
     return (
       <Content
-        className="sidebar-content"
-        {...header}
+        {...this.getHeader()}
       >
-        <Form layout="vertical">
-          {this.getProjectNameDom()}
-          {this.getRoleFormItems()}
-        </Form>
+        {this.renderForm()}
         {this.getAddOtherBtn(disabled)}
       </Content>);
+  }
+
+  getSpentTime = (startTime, endTime) => {
+    const { intl } = this.props;
+    const timeUnit = {
+      day: intl.formatMessage({ id: 'day' }),
+      hour: intl.formatMessage({ id: 'hour' }),
+      minute: intl.formatMessage({ id: 'minute' }),
+      second: intl.formatMessage({ id: 'second' }),
+    };
+    const spentTime = new Date(endTime).getTime() - new Date(startTime).getTime(); // 时间差的毫秒数
+    // 天数
+    const days = Math.floor(spentTime / (24 * 3600 * 1000));
+    // 小时
+    const leave1 = spentTime % (24 * 3600 * 1000); //  计算天数后剩余的毫秒数
+    const hours = Math.floor(leave1 / (3600 * 1000));
+    // 分钟
+    const leave2 = leave1 % (3600 * 1000); //  计算小时数后剩余的毫秒数
+    const minutes = Math.floor(leave2 / (60 * 1000));
+    // 秒数
+    const leave3 = leave2 % (60 * 1000); //  计算分钟数后剩余的毫秒数
+    const seconds = Math.round(leave3 / 1000);
+    const resultDays = days ? (days + timeUnit.day) : '';
+    const resultHours = hours ? (hours + timeUnit.hour) : '';
+    const resultMinutes = minutes ? (minutes + timeUnit.minute) : '';
+    const resultSeconds = seconds ? (seconds + timeUnit.second) : '';
+    return resultDays + resultHours + resultMinutes + resultSeconds;
+  };
+
+
+  getUploadInfo = () => {
+    const { MemberRoleStore } = this.props;
+    const { fileLoading } = this.state;
+    const uploadInfo = MemberRoleStore.getUploadInfo || {};
+    const uploading = MemberRoleStore.getUploading;
+    const container = [];
+
+    if (uploading) { // 如果正在导入
+      container.push(this.renderLoading());
+      this.handleUploadInfo();
+      if (fileLoading) {
+        this.setState({
+          fileLoading: false,
+        });
+      }
+    } else if (fileLoading) { // 如果还在上传
+      container.push(this.renderLoading());
+    } else if (!uploadInfo.noData) {
+      const failedStatus = uploadInfo.finished ? 'detail' : 'error';
+      container.push(
+        <p key={'upload.lasttime'}>
+          <FormattedMessage id={'upload.lasttime'} />
+          {uploadInfo.beginTime}
+          （<FormattedMessage id={'upload.spendtime'} />
+          {this.getSpentTime(uploadInfo.beginTime, uploadInfo.endTime)}）
+        </p>,
+        <p key={'upload.time'}>
+          <FormattedMessage
+            id={'upload.time'}
+            values={{
+              successCount: <span className="success-count">{uploadInfo.successfulCount || 0}</span>,
+              failedCount: <span className="failed-count">{uploadInfo.failedCount || 0}</span>,
+            }}
+          />
+          {uploadInfo.url && (
+            <span className={`download-failed-${failedStatus}`}>
+              <a href={uploadInfo.url}>
+                <FormattedMessage id={`download.failed.${failedStatus}`} />
+              </a>
+            </span>
+          )}
+        </p>,
+      );
+    } else {
+      container.push(<p key={'upload.norecord'}><FormattedMessage id={'upload.norecord'} /></p>);
+    }
+    return (
+      <div className="c7n-user-upload-container">
+        {container}
+      </div>
+    );
+  };
+
+  /**
+   *  application/vnd.ms-excel 2003-2007
+   *  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 2010
+   */
+  getUploadProps = () => {
+    const { intl, MemberRoleStore } = this.props;
+    return {
+      multiple: false,
+      name: 'file',
+      accept: 'application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      action: `${process.env.API_HOST}${MemberRoleStore.urlRoleMember}/batch_import`,
+      headers: {
+        Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
+      },
+      showUploadList: false,
+      onChange: ({ file }) => {
+        const { status, response } = file;
+        const { fileLoading } = this.state;
+        if (status === 'done') {
+          this.handleUploadInfo(true);
+        } else if (status === 'error') {
+          Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
+        }
+        if (response && response.failed === true) {
+          Choerodon.prompt(`${response.message}`);
+          this.setState({
+            fileLoading: false,
+          });
+        }
+        if (!fileLoading) {
+          this.setState({
+            fileLoading: status === 'uploading',
+          });
+        }
+      },
+    };
   }
 
   isModify = () => {
@@ -475,7 +549,19 @@ export default class MemberRole extends Component {
       }
     }
     return false;
-  }
+  };
+
+  handleDownLoad = () => {
+    const { MemberRoleStore } = this.props;
+    MemberRoleStore.downloadTemplate().then((result) => {
+      const blob = new Blob([result], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const linkElement = document.getElementById('c7n-user-download-template');
+      linkElement.setAttribute('href', url);
+      linkElement.click();
+    });
+  };
 
   // ok 按钮保存
   handleOk = (e) => {
@@ -646,10 +732,17 @@ export default class MemberRole extends Component {
 
   renderMemberTable() {
     const { selectMemberRoles, roleMemberDatas, memberRolePageInfo, memberDatas, memberRoleFilters, loading } = this.state;
-    const filtersRole = roleMemberDatas.map(({ name }) => ({
+    const filtersRoleObj = {};
+    let filtersRole = roleMemberDatas.map(({ name }) => ({
       value: name,
       text: name,
     }));
+
+    filtersRole = filtersRole.reduce((item, next) => {
+      filtersRoleObj[next.value] ? '' : filtersRoleObj[next.value] = true && item.push(next);
+      return item;
+    }, []);
+
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     const columns = [
       {
@@ -792,10 +885,15 @@ export default class MemberRole extends Component {
   renderRoleTable() {
     const { roleMemberDatas, roleMemberFilterRole, selectRoleMemberKeys, expandedKeys, roleMemberParams, roleMemberFilters, loading } = this.state;
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
-    const filtersData = roleMemberDatas.map(({ name }) => ({
+    let filtersData = roleMemberDatas.map(({ name }) => ({
       value: name,
       text: name,
     }));
+    const filtersDataObj = {};
+    filtersData = filtersData.reduce((item, next) => {
+      filtersDataObj[next.value] ? '' : filtersDataObj[next.value] = true && item.push(next);
+      return item;
+    }, []);
     let dataSource = roleMemberDatas;
     if (roleMemberFilterRole && roleMemberFilterRole.length) {
       dataSource = roleMemberDatas.filter(({ name }) => roleMemberFilterRole.some(role => name.indexOf(role) !== -1));
@@ -939,6 +1037,74 @@ export default class MemberRole extends Component {
     }
   };
 
+
+  /**
+   * 上传按钮点击时触发
+   */
+  handleUpload = () => {
+    this.handleUploadInfo(true);
+    this.setState({
+      sidebar: true,
+      selectType: 'upload',
+    });
+  };
+
+  /**
+   * immediately为false时设置2秒查询一次接口，若有更新删除定时器并更新列表
+   * @param immediately
+   */
+  handleUploadInfo = (immediately) => {
+    const { MemberRoleStore } = this.props;
+    const { fileLoading } = this.state;
+    const uploadInfo = MemberRoleStore.getUploadInfo || {};
+    if (uploadInfo.finished !== null && fileLoading) {
+      this.setState({
+        fileLoading: false,
+      });
+    }
+    if (immediately) {
+      MemberRoleStore.handleUploadInfo();
+      return;
+    }
+    if (uploadInfo.finished !== null) {
+      clearInterval(this.timer);
+      return;
+    }
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
+      MemberRoleStore.handleUploadInfo();
+      this.init();
+    }, 2000);
+  };
+
+  upload = (e) => {
+    e.stopPropagation();
+    const { MemberRoleStore } = this.props;
+    const uploading = MemberRoleStore.getUploading;
+    const { fileLoading } = this.state;
+    if (uploading || fileLoading) {
+      return;
+    }
+    const uploadElement = document.getElementsByClassName('c7n-user-upload-hidden')[0];
+    uploadElement.click();
+  };
+
+  renderLoading() {
+    const { intl: { formatMessage } } = this.props;
+    const { fileLoading } = this.state;
+    return (
+      <div className="c7n-user-uploading-container" key="c7n-user-uploading-container">
+        <div className="loading">
+          <Spin size="large" />
+        </div>
+        <p className="text">{formatMessage({
+          id: `${intlPrefix}.${fileLoading ? 'fileloading' : 'uploading'}.text` })}
+        </p>
+        {!fileLoading && (<p className="tip">{formatMessage({ id: `${intlPrefix}.uploading.tip` })}</p>)}
+      </div>
+    );
+  }
+
   getMemberRoleClass(name) {
     const { showMember } = this.state;
     if (name === 'member') {
@@ -971,7 +1137,9 @@ export default class MemberRole extends Component {
   }
 
   render() {
-    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting } = this.state;
+    const { MemberRoleStore } = this.props;
+    const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting, fileLoading } = this.state;
+    const uploading = MemberRoleStore.getUploading;
     const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');
     const { createService, deleteService } = this.getPermission();
     return (
@@ -1007,6 +1175,19 @@ export default class MemberRole extends Component {
               icon="playlist_add"
             >
               <FormattedMessage id="add" />
+            </Button>
+            <Button
+              onClick={this.handleDownLoad}
+              icon="get_app"
+            >
+              <FormattedMessage id={'download.template'} />
+              <a id="c7n-user-download-template" href="" onClick={(event) => { event.stopPropagation(); }} download="userTemplate.xlsx" />
+            </Button>
+            <Button
+              icon="file_upload"
+              onClick={this.handleUpload}
+            >
+              <FormattedMessage id={'upload.file'} />
             </Button>
           </Permission>
           <Permission
@@ -1054,17 +1235,17 @@ export default class MemberRole extends Component {
           <Sidebar
             title={this.getSidebarTitle()}
             visible={sidebar}
-            okText={okText}
-            cancelText={<FormattedMessage id="cancel" />}
-            onOk={this.handleOk}
+            okText={selectType === 'upload' ? this.getUploadOkText() : okText}
+            confirmLoading={uploading && fileLoading && submitting}
+            cancelText={<FormattedMessage id={selectType === 'upload' ? 'close' : 'cancel'} />}
+            onOk={selectType === 'upload' ? this.upload : this.handleOk}
             onCancel={this.closeSidebar}
-            confirmLoading={submitting}
           >
-            {roleData.length ? this.getSidebarContent() : null}
+            {roleData.length && this.state.selectType !== 'upload' ? this.getSidebarContent() : null}
+            {this.state.selectType === 'upload' ? this.renderUpload() : null}
           </Sidebar>
         </Content>
       </Page>
     );
   }
 }
-

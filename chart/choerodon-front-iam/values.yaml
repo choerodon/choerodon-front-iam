@@ -16,6 +16,7 @@ preJob:
       username: choerodon
       password: 123456
       dbname: iam_service
+      enabledelete: true
 
 service:
   enable: false
@@ -36,6 +37,8 @@ env:
     PRO_HEADER_TITLE_NAME: Choerodon
     PRO_COOKIE_SERVER: choerodon.com.cn
     PRO_HTTP: http
+    PRO_FILE_SERVER: http://minio.choerodon.com.cn
+    PRO_WEBSOCKET_SERVER: ws://ws.example.com
 
 metrics:
   path: /prometheus

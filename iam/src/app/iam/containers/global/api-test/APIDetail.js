@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
@@ -6,7 +7,6 @@ import { Form, Table, Input, Button, Select, Tabs, Spin, Tooltip, Icon, Modal } 
 import { injectIntl, FormattedMessage } from 'react-intl';
 import querystring from 'query-string';
 import classnames from 'classnames';
-import _ from 'lodash';
 import Hjson from 'hjson';
 import './APITest.scss';
 import jsonFormat from '../../../common/json-format';
@@ -132,7 +132,7 @@ export default class APIDetail extends Component {
 
   getDetail() {
     const { intl } = this.props;
-    const { method, url, remark, consumes, produces } = APITestStore.getApiDetail;
+    const { code, method, url, remark, consumes, produces } = APITestStore.getApiDetail;
     const keyArr = ['请求方式', '路径', '描述', 'Action', '权限层级', '是否为登录可访问', '是否为公开权限', '请求格式', '响应格式'];
     const tableValue = keyArr.map(item => ({
       name: item,
@@ -160,7 +160,10 @@ export default class APIDetail extends Component {
     if (roles) {
       tableValue.splice(5, 0, ...roles);
     }
-
+    tableValue.unshift({
+      name: '权限编码',
+      value: code,
+    });
 
     const infoColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.property`} />,
@@ -373,7 +376,7 @@ export default class APIDetail extends Component {
         let editableNode;
         if (!record.type) {
           editableNode = (
-            <div style={{ width: '50%' }}>
+            <div style={{ width: '100%' }} className="c7n-iam-TextEditToggle-text">
               <FormItem>
                 {getFieldDecorator('bodyData', {
                   rules: [{
@@ -384,6 +387,7 @@ export default class APIDetail extends Component {
                   <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
                 )}
               </FormItem>
+              <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
             </div>);
         } else if (record.type === 'boolean') {
           editableNode = (
@@ -415,9 +419,12 @@ export default class APIDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
-                  <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />,
-                )}
+                  <div className="c7n-iam-TextEditToggle-text">
+                    <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />
+                    <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
+                  </div>)}
               </FormItem>
+
             </div>);
         } else if (record.type === 'file') {
           editableNode = (
@@ -439,8 +446,9 @@ export default class APIDetail extends Component {
                   message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                 }],
               })(
-                <div style={{ width: '50%' }}>
-                  <Input autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                <div style={{ width: '50%' }} className="c7n-iam-TextEditToggle-text">
+                  <Input onFocus={this.inputOnFocus} autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                  <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
                 </div>,
               )}
             </FormItem>
@@ -691,7 +699,7 @@ export default class APIDetail extends Component {
     this.setState({
       query,
     });
-    query = _.replace(query, '&', '?');
+    query = query.replace('&', '?');
     this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
   };
 
@@ -727,7 +735,7 @@ export default class APIDetail extends Component {
                   <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.detail`} />} key="detail">
                     {this.getDetail()}
                   </TabPane>
-                  <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.test`} />} key="test">
+                  <TabPane tab={<FormattedMessage id={`${intlPrefix}.interface.test`} />} key="test" disabled={APITestStore.getApiDetail.innerInterface}>
                     {this.getTest()}
                   </TabPane>
                 </Tabs>

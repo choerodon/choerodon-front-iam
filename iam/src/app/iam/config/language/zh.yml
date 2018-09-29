@@ -22,12 +22,16 @@
 "global-transaction.saga-instance": "事务实例"
 
 "msg-center": "消息中心"
+"msg-center.send-setting": "发送设置"
 "msg-center.mail-template": "邮件模板"
-"msg-center.sms-template": "短信模板"
+"msg-center.inmail-template": "站内信模板"
 "msg-center.mail-setting": "邮箱配置"
-"msg-center.sms-setting": "短信配置"
 "msg-center.msg-record": "消息记录"
 
+"task-dispatch": "任务调度"
+"task-dispatch.task-detail": "任务明细"
+"task-dispatch.execution-record": "执行记录"
+"task-dispatch.task-classname": "可执行程序"
 
 "rentsetting": 组织设置
 # organization
@@ -38,6 +42,11 @@
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "密码策略"
 "rentsetting.mail-template-organization": "邮件模板"
+
+"msg-center-organization": "消息中心"
+"msg-center-organization.send-setting-organization": "发送设置"
+"msg-center-organization.mail-template-organization": "邮件模板"
+"msg-center-organization.msg-record-organization": "消息记录"
 
 "prosetting": 项目设置
 # project
@@ -50,3 +59,4 @@
 "usercenter.password": "修改密码"
 "usercenter.organization-info": "组织信息"
 "usercenter.project-info": "项目信息"
+"usercenter.user-msg": "消息通知"

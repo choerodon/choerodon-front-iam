@@ -3,104 +3,167 @@
  */
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import queryString from 'query-string';
 
 @store('OrganizationStore')
 class OrganizationStore {
   @observable orgData = [];
-  @observable totalSize;
-  @observable totalPage;
-  @observable isLoading = true;
-
-  constructor(totalPage = 1, totalSize = 0) {
-    this.totalPage = totalPage;
-    this.totalSize = totalSize;
-  }
-
-  @action setTotalSize(totalSize) {
-    this.totalSize = totalSize;
-  }
-
-  @computed get getTotalSize() {
-    return this.totalSize;
-  }
-
-  @action setTotalPage(totalPage) {
-    this.totalPage = totalPage;
-  }
-
-  @computed get getTotalPage() {
-    return this.totalPage;
-  }
-
-  @action setOrgData(data) {
-    this.orgData = data;
-  }
-
-  @computed get getOrgData() {
-    return this.orgData.slice();
-  }
-
-  @action changeLoading(flag) {
-    this.isLoading = flag;
-  }
-
-  @computed get getIsLoading() {
-    return this.isLoading;
-  }
-
-  loadOrg = (organizationId, page, state) => {
-    this.changeLoading(true);
-    if (state) {
-      if (state.code === '') {
-        return axios.get(`/iam/v1/organizations/list?page=${page}&size=10&param=${state.input}`).then((data) => {
-          if (data) {
-            this.setOrgData(data.content);
-            // this.setTotalPage(data.totalPages);
-            // this.setTotalSize(data.totalElements);
-          }
-          this.changeLoading(false);
-        });
-      } else {
-        return axios.get(`/iam/v1/organizations/list?page=${page}&size=10&${state.code}=${state.input}`).then((data) => {
-          if (data) {
-            this.setProjectData(data.content);
-            this.setTotalPage(data.totalPages);
-            this.setTotalSize(data.totalElements);
-          }
-          this.changeLoading(false);
-        });
-      }
-    } else {
-      return axios.get(`/iam/v1/organizations/list?page=${page}&size=10`).then((data) => {
-        if (data) {
-          this.setOrgData(data);
-          // this.setTotalPage(data.totalPages);
-          // this.setTotalSize(data.totalElements);
-        }
-        this.changeLoading(false);
-      });
-    }
+  @observable loading = false;
+  @observable submitting = false;
+  @observable show;
+  @observable sidebarVisible = false;
+  @observable pagination = {
+    current: 1,
+    pageSize: 10,
+    total: 0,
   };
-  enableProject(orgId, projectId, data) {
-    return axios.put(`/uaa/v1/organization/${orgId}/projects/${projectId}`, data);
+  @observable filters = {};
+  @observable sort = {};
+  @observable params = [];
+  @observable editData = {};
+  @observable myOrg = {};
+  @observable myRoles = [];
+
+  @action
+  setEditData(data) {
+    this.editData = data;
   }
-  checkProjectName = organizationId =>
-    axios.get(`/uaa/v1/organization/${organizationId}/projects/self`);
 
-  checkProjectCode = (organizationId, codes) =>
-    axios.get(`/uaa/v1/organization/${organizationId}/projects/code?code=${codes}`);
+  @action
+  showSideBar() {
+    this.sidebarVisible = true;
+  }
 
-  createOrg = (organizationId, projectData) =>
-    axios.post(`/uaa/v1/organization/${organizationId}/projects`, JSON.stringify(projectData));
+  @action
+  hideSideBar() {
+    this.sidebarVisible = false;
+  }
 
-  updateOrg = (organizationId, Data) =>
-    axios.put(`/iam/v1/organizations/${organizationId}`, JSON.stringify(Data));
+  refresh() {
+    this.loadData({ current: 1, pageSize: 10 }, {}, {}, []);
+  }
+
+  @action
+  loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params) {
+    const { columnKey, order } = sort;
+    const sorter = [];
+    if (columnKey) {
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+    }
+    this.loading = true;
+    this.filters = filters;
+    this.sort = sort;
+    this.params = params;
+    return axios.get(`/iam/v1/organizations?${queryString.stringify({
+      page: pagination.current - 1,
+      size: pagination.pageSize,
+      name: filters.name,
+      code: filters.code,
+      enabled: filters.enabled,
+      params: params.join(','),
+      sort: sorter.join(','),
+    })}`)
+      .then(action(({ failed, content, totalElements }) => {
+        if (!failed) {
+          this.orgData = content;
+          this.pagination = {
+            ...pagination,
+            total: totalElements,
+          };
+        }
+        this.loading = false;
+      }))
+      .catch(action((error) => {
+        Choerodon.handleResponseError(error);
+        this.loading = false;
+      }));
+  }
+
+  toggleDisable(id, enabled) {
+    return axios.put(`/iam/v1/organizations/${id}/${enabled ? 'disable' : 'enable'}`)
+      .then(() => this.loadData());
+  }
+
+  checkCode = value =>
+    axios.post('/iam/v1/organizations/check', JSON.stringify({ code: value }));
+
+  @action
+  createOrUpdateOrg({ code, name }, modify, HeaderStore) {
+    const { show, editData: { id, code: originCode, objectVersionNumber } } = this;
+    const isCreate = show === 'create';
+    if (!modify && !isCreate) {
+      return Promise.resolve('modify.success');
+    } else {
+      let url;
+      let body;
+      let message;
+      let method;
+      if (isCreate) {
+        url = '/org/v1/organizations';
+        body = {
+          name,
+          code,
+        };
+        message = 'create.success';
+        method = 'post';
+      } else {
+        url = `/iam/v1/organizations/${id}`;
+        body = {
+          name,
+          objectVersionNumber,
+          code: originCode,
+        };
+        message = 'modify.success';
+        method = 'put';
+      }
+      this.submitting = true;
+      return axios[method](url, JSON.stringify(body))
+        .then(action((data) => {
+          this.submitting = false;
+          if (data.failed) {
+            return data.message;
+          } else {
+            this.sidebarVisible = false;
+            if (isCreate) {
+              this.refresh();
+              HeaderStore.addOrg(data);
+            } else {
+              this.loadData();
+              HeaderStore.updateOrg(data);
+            }
+            return message;
+          }
+        }))
+        .catch(action((error) => {
+          this.submitting = false;
+          Choerodon.handleResponseError(error);
+        }));
+    }
+  }
 
   getOrgById = organizationId =>
     axios.get(`/iam/v1/organizations/${organizationId}`);
 
-  deleteOrgById = (organizationId, id) =>
-    axios.delete(`/uaa/v1/organization/${organizationId}/projects/${id}`);
+  getOrgByIdOrgLevel = organizationId =>
+    axios.get(`/iam/v1/organizations/${organizationId}/org_level`);
+
+  getRolesById = (organizationId, userId) =>
+    axios.get(`/iam/v1/organization/${organizationId}/role_members/users/${userId}`);
+
+  loadMyData(organizationId, userId) {
+    axios.all([
+      this.getOrgByIdOrgLevel(organizationId),
+      this.getRolesById(organizationId, userId),
+    ])
+      .then(action(([org, roles]) => {
+        this.myOrg = org;
+        this.myRoles = roles;
+      }))
+      .catch(Choerodon.handleResponseError);
+  }
 }
-const organizationStore = new OrganizationStore();
-export default organizationStore;
+
+export default new OrganizationStore();

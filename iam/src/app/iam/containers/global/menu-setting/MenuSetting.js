@@ -222,7 +222,7 @@ export default class MenuSetting extends Component {
             menu = {
               code,
               icon,
-              name,
+              name: name.trim(),
               default: false,
               level: type,
               type: 'dir',
@@ -235,7 +235,7 @@ export default class MenuSetting extends Component {
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.create.success` }));
             break;
           case 'edit':
-            selectMenuDetail.name = name;
+            selectMenuDetail.name = name.trim();
             selectMenuDetail.icon = icon;
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.modify.success` }));
             break;
@@ -246,8 +246,7 @@ export default class MenuSetting extends Component {
           sidebar: false,
           menuGroup,
           tempDirs,
-        })
-        ;
+        });
       }
     });
   };
@@ -399,6 +398,8 @@ export default class MenuSetting extends Component {
               style={{ width: inputWidth }}
               disabled={selectType === 'edit'}
               ref={(e) => { this.addDirFocusInput = e; }}
+              maxLength={64}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -419,6 +420,8 @@ export default class MenuSetting extends Component {
               label={<FormattedMessage id={`${intlPrefix}.directory.name`} />}
               style={{ width: inputWidth }}
               ref={(e) => { this.changeMenuFocusInput = e; }}
+              maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -640,9 +643,9 @@ export default class MenuSetting extends Component {
         if (type === 'menu') {
           icon = 'dehaze';
         } else if (!dft) {
-          icon = 'custom_Directory';
-        } else {
           icon = 'folder';
+        } else {
+          icon = 'custom_Directory';
         }
         return (
           <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>

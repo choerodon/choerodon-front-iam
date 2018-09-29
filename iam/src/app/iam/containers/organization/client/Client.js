@@ -405,6 +405,7 @@ export default class Client extends Component {
               disabled={status === 'edit'}
               ref={(e) => { this.createFocusInput = e; }}
               maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>

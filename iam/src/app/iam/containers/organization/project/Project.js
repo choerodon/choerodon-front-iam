@@ -348,6 +348,7 @@ export default class Project extends Component {
                 style={{ width: inputWidth }}
                 ref={(e) => { this.createFocusInput = e; }}
                 maxLength={14}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>) : null}
@@ -368,6 +369,7 @@ export default class Project extends Component {
                 style={{ width: inputWidth }}
                 ref={(e) => { this.editFocusInput = e; }}
                 maxLength={32}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>

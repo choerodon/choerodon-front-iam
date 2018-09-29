@@ -1169,7 +1169,7 @@ export default class TaskDetail extends Component {
       value: info.triggerType === 'simple-trigger' ? `${info.simpleRepeatInterval}${unit}` : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.time` }),
-      value: info.simpleRepeatCount,
+      value: info.simpleRepeatCount + 1,
     }, {
       key: formatMessage({ id: `${intlPrefix}.last.execution.time` }),
       value: info.lastExecTime,

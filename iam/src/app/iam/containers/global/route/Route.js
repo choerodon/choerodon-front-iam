@@ -571,6 +571,7 @@ export default class Route extends Component {
                 disabled={!createValidate}
                 ref={(e) => { this.createRouteFocusInput = e; }}
                 maxLength={64}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>

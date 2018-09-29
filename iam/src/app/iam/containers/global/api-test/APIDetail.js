@@ -376,7 +376,7 @@ export default class APIDetail extends Component {
         let editableNode;
         if (!record.type) {
           editableNode = (
-            <div style={{ width: '100%' }} className="c7n-TextEditToggle-text">
+            <div style={{ width: '100%' }} className="c7n-iam-TextEditToggle-text">
               <FormItem>
                 {getFieldDecorator('bodyData', {
                   rules: [{
@@ -387,7 +387,7 @@ export default class APIDetail extends Component {
                   <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
                 )}
               </FormItem>
-              <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
+              <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
             </div>);
         } else if (record.type === 'boolean') {
           editableNode = (
@@ -419,9 +419,9 @@ export default class APIDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                   }],
                 })(
-                  <div className="c7n-TextEditToggle-text">
+                  <div className="c7n-iam-TextEditToggle-text">
                     <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />
-                    <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
+                    <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
                   </div>)}
               </FormItem>
 
@@ -446,9 +446,9 @@ export default class APIDetail extends Component {
                   message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
                 }],
               })(
-                <div style={{ width: '50%' }} className="c7n-TextEditToggle-text">
+                <div style={{ width: '50%' }} className="c7n-iam-TextEditToggle-text">
                   <Input onFocus={this.inputOnFocus} autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
-                  <Icon type="mode_edit" className="c7n-TextEditToggle-text-icon" />
+                  <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
                 </div>,
               )}
             </FormItem>

@@ -292,6 +292,7 @@ export default class UserEdit extends Component {
                 style={{ width: inputWidth }}
                 ref={(e) => { this.createFocusInput = e; }}
                 maxLength={32}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>
@@ -318,6 +319,7 @@ export default class UserEdit extends Component {
                   style={{ width: inputWidth }}
                   ref={(e) => { this.editFocusInput = e; }}
                   maxLength={32}
+                  showLengthInfo={false}
                 />,
               )
             }
@@ -349,6 +351,7 @@ export default class UserEdit extends Component {
                 label={intl.formatMessage({ id: `${intlPrefix}.email` })}
                 style={{ width: inputWidth }}
                 maxLength={64}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>

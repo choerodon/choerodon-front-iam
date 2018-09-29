@@ -163,6 +163,7 @@ export default class Organization extends Component {
                     autoComplete="off"
                     style={{ width: inputWidth }}
                     maxLength={14}
+                    showLengthInfo={false}
                   />,
                 )}
               </FormItem>
@@ -184,6 +185,7 @@ export default class Organization extends Component {
                 autoComplete="off"
                 style={{ width: inputWidth }}
                 maxLength={32}
+                showLengthInfo={false}
               />,
             )}
           </FormItem>

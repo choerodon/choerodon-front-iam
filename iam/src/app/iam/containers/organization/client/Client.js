@@ -405,6 +405,7 @@ export default class Client extends Component {
               disabled={status === 'edit'}
               ref={(e) => { this.createFocusInput = e; }}
               maxLength={32}
+              showLengthInfo={false}
             />,
           )}
         </FormItem>
@@ -618,7 +619,6 @@ export default class Client extends Component {
         key: 'name',
         filters: [],
         filteredValue: filters.name || [],
-        sorter: (a, b) => a.name.localeCompare(b.serviceNamee, 'zh-Hans-CN', { sensitivity: 'accent' }),
       },
       {
         title: intl.formatMessage({ id: `${intlPrefix}.granttypes` }),

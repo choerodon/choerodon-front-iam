@@ -1,4 +1,4 @@
-const docServer = 'http://v0-9.choerodon.io/zh/docs';
+const docServer = 'http://v0-10.choerodon.io/zh/docs';
 
 const pageDetail = {
   // menusetting
@@ -663,7 +663,7 @@ const zh_CN = {
   'global.taskdetail.repeat.interval': '重复间隔',
   'global.taskdetail.repeat.required': '请输入重复间隔',
   'global.taskdetail.repeat.pattern': '请输入正整数',
-  'global.taskdetail.repeat.time': '重复次数',
+  'global.taskdetail.repeat.time': '执行次数',
   'global.taskdetail.repeat.time.required': '请输入重复次数',
   'global.taskdetail.detail.header.title': '任务详情',
   'global.taskdetail.task.info': '任务信息',
@@ -858,7 +858,7 @@ const zh_CN = {
   'mailtemplate.header.title': '邮件模板',
   'mailtemplate.table.name': '模板名称',
   'mailtemplate.table.code': '编码',
-  'mailtemplate.table.mailtype': '邮件类型',
+  'mailtemplate.table.mailtype': '触发类型',
   'mailtemplate.table.fromtype': '来源',
   'mailtemplate.delete.owntitle': '删除邮件模板',
   'mailtemplate.delete.owncontent': '确定要删除邮件模板"{name}"吗？',
@@ -884,7 +884,7 @@ const zh_CN = {
   'inmailtemplate.header.title': '站内信模板',
   'inmailtemplate.table.name': '模板名称',
   'inmailtemplate.table.code': '编码',
-  'inmailtemplate.table.mailtype': '短信类型',
+  'inmailtemplate.table.mailtype': '触发类型',
   'inmailtemplate.table.fromtype': '来源',
   'inmailtemplate.delete.owntitle': '删除站内信模板',
   'inmailtemplate.delete.owncontent': '确定要删除站内信模板"{name}"吗？',

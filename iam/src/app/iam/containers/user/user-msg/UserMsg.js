@@ -109,7 +109,7 @@ export default class UserMsg extends Component {
     setTimeout(() => {
       if (this.state.needExpand) {
         UserMsgStore.setExpandCardId(UserMsgStore.getExpandCardId !== id ? id : null);
-        if (UserMsgStore.getNeedReload && UserMsgStore.getExpandCardId === null) {
+        if (UserMsgStore.getNeedReload && UserMsgStore.getExpandCardId === null && !this.state.showAll) {
           UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
         }
         // 如果消息未读则发送已读消息的请求
@@ -204,7 +204,7 @@ export default class UserMsg extends Component {
         </Header>
         <Content>
           <WSHandler
-            messageKey={`choerodon:msg:sit-msg:${AppState.userInfo.id}`}
+            messageKey={`choerodon:msg:site-msg:${AppState.userInfo.id}`}
             onMessage={data => this.handleMessage(data)}
           >
             <div className="c7n-user-msg-btns">

@@ -304,12 +304,6 @@ export default class Configuration extends Component {
           text: intl.formatMessage({ id: `${intlPrefix}.create.base` }),
           action: this.createByThis.bind(this, record),
         }, {
-          service: ['manager-service.config.updateConfigDefault'],
-          type: 'site',
-          icon: '',
-          text: intl.formatMessage({ id: `${intlPrefix}.setdefault` }),
-          action: this.setDefaultConfig.bind(this, record.id),
-        }, {
           service: ['manager-service.config.updateConfig'],
           type: 'site',
           icon: '',
@@ -323,6 +317,12 @@ export default class Configuration extends Component {
             icon: '',
             text: intl.formatMessage({ id: 'delete' }),
             action: this.deleteConfig.bind(this, record),
+          }, {
+            service: ['manager-service.config.updateConfigDefault'],
+            type: 'site',
+            icon: '',
+            text: intl.formatMessage({ id: `${intlPrefix}.setdefault` }),
+            action: this.setDefaultConfig.bind(this, record.id),
           });
         }
         return <Action data={actionsDatas} />;

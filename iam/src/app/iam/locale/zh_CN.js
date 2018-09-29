@@ -663,7 +663,7 @@ const zh_CN = {
   'global.taskdetail.repeat.interval': '重复间隔',
   'global.taskdetail.repeat.required': '请输入重复间隔',
   'global.taskdetail.repeat.pattern': '请输入正整数',
-  'global.taskdetail.repeat.time': '重复次数',
+  'global.taskdetail.repeat.time': '执行次数',
   'global.taskdetail.repeat.time.required': '请输入重复次数',
   'global.taskdetail.detail.header.title': '任务详情',
   'global.taskdetail.task.info': '任务信息',

@@ -104,7 +104,7 @@ class ProjectStore {
     axios.get(`/iam/v1/organizations/${organizationId}/projects?param=${id}`);
 
   getRolesById(organizationId, userId) {
-    return axios.get(`/iam/v1/project/${organizationId}/role_members/users/${userId}`);
+    return axios.get(`/iam/v1/projects/${organizationId}/role_members/users/${userId}`);
   }
 
   loadMyData = (organizationId, userId) => {

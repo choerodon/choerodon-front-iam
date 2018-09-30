@@ -151,7 +151,7 @@ class OrganizationStore {
     axios.get(`/iam/v1/organizations/${organizationId}/org_level`);
 
   getRolesById = (organizationId, userId) =>
-    axios.get(`/iam/v1/organization/${organizationId}/role_members/users/${userId}`);
+    axios.get(`/iam/v1/organizations/${organizationId}/role_members/users/${userId}`);
 
   loadMyData(organizationId, userId) {
     axios.all([

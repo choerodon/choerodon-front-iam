@@ -1123,16 +1123,20 @@ export default class MemberRole extends Component {
     const { type } = AppState.currentMenuType;
     let createService = ['iam-service.role-member.createOrUpdateOnSiteLevel'];
     let deleteService = ['iam-service.role-member.deleteOnSiteLevel'];
+    let importService = ['iam-service.role-member.import2MemberRoleOnSite'];
     if (type === 'organization') {
       createService = ['iam-service.role-member.createOrUpdateOnOrganizationLevel'];
       deleteService = ['iam-service.role-member.deleteOnOrganizationLevel'];
+      importService = ['iam-service.role-member.import2MemberRoleOnOrganization'];
     } else if (type === 'project') {
       createService = ['iam-service.role-member.createOrUpdateOnProjectLevel'];
       deleteService = ['iam-service.role-member.deleteOnProjectLevel'];
+      importService = ['iam-service.role-member.import2MemberRoleOnProject'];
     }
     return {
       createService,
       deleteService,
+      importService,
     };
   }
 
@@ -1141,7 +1145,7 @@ export default class MemberRole extends Component {
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting, fileLoading } = this.state;
     const uploading = MemberRoleStore.getUploading;
     const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');
-    const { createService, deleteService } = this.getPermission();
+    const { createService, deleteService, importService } = this.getPermission();
     return (
       <Page
         service={[
@@ -1176,6 +1180,10 @@ export default class MemberRole extends Component {
             >
               <FormattedMessage id="add" />
             </Button>
+          </Permission>
+          <Permission
+            service={importService}
+          >
             <Button
               onClick={this.handleDownLoad}
               icon="get_app"

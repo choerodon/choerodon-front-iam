@@ -518,6 +518,8 @@ const zh_CN = {
   running: '运行中',
   failed: '失败',
   completed: '完成',
+  predefined: '预定义',
+  custom: '自定义',
 
   // type
   global: '全局',

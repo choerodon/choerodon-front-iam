@@ -7,6 +7,7 @@ import querystring from 'query-string';
 import { inject, observer } from 'mobx-react';
 import './Route.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from "../../../components/statusTag";
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
@@ -398,29 +399,6 @@ export default class Route extends Component {
   }
 
   /**
-   * 渲染列表路由来源
-   * @param record 当前行数据
-   */
-
-  renderBuiltIn(record) {
-    if (record.builtIn) {
-      return (
-        <div className="iconStyle">
-          <Icon type="settings" />
-          <FormattedMessage id={`${intlPrefix}.builtin.predefined`} />
-        </div>
-      );
-    } else {
-      return (
-        <div className="iconStyle">
-          <Icon type="av_timer" />
-          <FormattedMessage id={`${intlPrefix}.builtin.custom`} />
-        </div>
-      );
-    }
-  }
-
-  /**
    * 渲染列表操作按钮
    * @param record 当前行数据
    */
@@ -788,7 +766,12 @@ export default class Route extends Component {
         value: 'false',
       }],
       filteredValue: filters.builtIn || [],
-      render: (text, record) => this.renderBuiltIn(record),
+      render: (text, record) => (
+        <StatusTag
+          mode="icon"
+          name={intl.formatMessage({ id: record.builtIn ? 'predefined' : 'custom' })}
+          colorCode={record.builtIn ? 'PREDEFINE' : 'CUSTOM'}
+        />),
     }, {
       title: '',
       width: '100px',

@@ -15,6 +15,7 @@ import {
 import MailTemplateStore from '../../../stores/global/mail-template';
 import './MailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from "../../../components/statusTag";
 
 
 // 公用方法类
@@ -184,25 +185,6 @@ export default class MailTemplate extends Component {
     });
   }
 
-
-  renderBuiltIn = (isPredefined) => {
-    if (isPredefined) {
-      return (
-        <div>
-          <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id="mailtemplate.predefined" />
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id="mailtemplate.selfdefined" />
-        </div>
-      );
-    }
-  }
-
   // 跳转至创建页
   createMailTemplate() {
     const { type, orgId, orgName } = this.mail;
@@ -294,7 +276,12 @@ export default class MailTemplate extends Component {
       dataIndex: 'isPredefined',
       key: 'isPredefined',
       width: '30%',
-      render: isPredefined => this.renderBuiltIn(isPredefined),
+      render: isPredefined => (
+        <StatusTag
+          mode="icon"
+          name={intl.formatMessage({ id: isPredefined ? 'predefined' : 'custom' })}
+          colorCode={isPredefined ? 'PREDEFINE' : 'CUSTOM'}
+        />),
       filteredValue: filters.isPredefined || [],
       filters: [{
         text: intl.formatMessage({ id: 'mailtemplate.predefined' }),

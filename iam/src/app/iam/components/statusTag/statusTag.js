@@ -12,10 +12,13 @@ const Color = {
 
 const IconType = {
   COMPLETED: 'check_circle',
-  FAILED: 'remove_circle',
+  FAILED: 'cancel',
   ENABLE: 'check_circle',
   DISABLE: 'remove_circle',
   FINISHED: 'state_over',
+  RUNNING: 'timelapse',
+  PREDEFINE: 'settings',
+  CUSTOM: 'av_timer',
 };
 
 export default class StatusTag extends Component {

@@ -11,6 +11,7 @@ import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import MsgRecordStore from '../../../stores/global/msg-record';
 import './MsgRecord.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from "../../../components/statusTag";
 
 // 公用方法类
 class MsgRecordType {
@@ -115,35 +116,6 @@ export default class APITest extends Component {
     });
   };
 
-  renderStatus(status) {
-    let obj = {};
-    if (status === 'COMPLETED') {
-      obj = {
-        icon: 'check_circle',
-        value: '完成',
-        color: '#00bfa5',
-      };
-    } else {
-      obj = {
-        icon: 'cancel',
-        value: '失败',
-        color: '#f44336',
-      };
-    }
-    return (
-      <span>
-        <Icon
-          type={obj.icon}
-          style={{
-            paddingRight: '6px',
-            verticalAlign: 'top',
-            color: `${obj.color}`,
-          }}
-        />{obj.value}
-      </span>
-    );
-  }
-
   // 重发
   retry(record) {
     const { intl } = this.props;
@@ -167,7 +139,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id="msgrecord.status" />,
       dataIndex: 'status',
       key: 'status',
-      render: status => this.renderStatus(status),
+      render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
       filters: [{
         value: 'COMPLETED',
         text: '完成',

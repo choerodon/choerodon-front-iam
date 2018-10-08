@@ -163,24 +163,6 @@ export default class Role extends Component {
     });
   };
 
-  renderBuiltIn(record) {
-    if (record.builtIn) {
-      return (
-        <div>
-          <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id={`${intlPrefix}.builtin.predefined`} />
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id={`${intlPrefix}.builtin.custom`} />
-        </div>
-      );
-    }
-  }
-
   renderLevel(text) {
     if (text === 'organization') {
       return <FormattedMessage id="organization" />;
@@ -258,7 +240,12 @@ export default class Role extends Component {
         text: intl.formatMessage({ id: `${intlPrefix}.builtin.custom` }),
         value: 'false',
       }],
-      render: (text, record) => this.renderBuiltIn(record),
+      render: (text, record) => (
+        <StatusTag
+          mode="icon"
+          name={intl.formatMessage({ id: record.builtIn ? 'predefined' : 'custom' })}
+          colorCode={record.builtIn ? 'PREDEFINE' : 'CUSTOM'}
+        />),
       sorter: true,
       sortOrder: columnKey === 'builtIn' && order,
       filteredValue: filters.builtIn || [],

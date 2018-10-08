@@ -504,6 +504,9 @@ const zh_CN = {
   'disable.error': '停用失败',
   'upload.error': '上传失败',
 
+  // finished
+  finished: '结束',
+
   // 统一字段
   name: '名称',
   code: '编码',

@@ -13,6 +13,9 @@ const Color = {
 const IconType = {
   COMPLETED: 'check_circle',
   FAILED: 'remove_circle',
+  ENABLE: 'check_circle',
+  DISABLE: 'remove_circle',
+  FINISHED: 'state_over',
 };
 
 export default class StatusTag extends Component {

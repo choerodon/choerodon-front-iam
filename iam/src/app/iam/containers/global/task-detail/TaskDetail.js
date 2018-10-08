@@ -184,42 +184,6 @@ export default class TaskDetail extends Component {
   };
 
   /**
-   * 渲染任务明细列表状态列
-   * @param status
-   * @returns {*}
-   */
-  renderStatus(status) {
-    let obj = {};
-    let type;
-    if (status === 'ENABLE') {
-      obj = {
-        key: 'enabled',
-        value: '启用',
-      };
-      type = 'check_circle';
-    } else if (status === 'DISABLE') {
-      obj = {
-        key: 'disabled',
-        value: '停用',
-      };
-      type = 'remove_circle';
-    } else {
-      obj = {
-        key: 'end',
-        value: '结束',
-      };
-      type = 'state_over';
-    }
-
-    return (
-      <span className="c7n-task-container-status">
-        <Icon type={type} className={`${obj.key}`} />
-        <span>{obj.value}</span>
-      </span>
-    );
-  }
-
-  /**
    * 渲染任务明细列表启停用按钮
    * @param record 表格行数据
    * @returns {*}
@@ -1169,7 +1133,7 @@ export default class TaskDetail extends Component {
       value: info.triggerType === 'simple-trigger' ? `${info.simpleRepeatInterval}${unit}` : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.time` }),
-      value: info.simpleRepeatCount + 1,
+      value: info.simpleRepeatCount,
     }, {
       key: formatMessage({ id: `${intlPrefix}.last.execution.time` }),
       value: info.lastExecTime,
@@ -1304,16 +1268,16 @@ export default class TaskDetail extends Component {
       key: 'status',
       filters: [{
         value: 'ENABLE',
-        text: '启用',
+        text: intl.formatMessage({ id: 'enable' }),
       }, {
         value: 'DISABLE',
-        text: '停用',
+        text: intl.formatMessage({ id: 'disable' }),
       }, {
         value: 'FINISHED',
-        text: '结束',
+        text: intl.formatMessage({ id: 'finished' }),
       }],
       filteredValue: filters.status || [],
-      render: status => this.renderStatus(status),
+      render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
     }, {
       title: '',
       key: 'action',

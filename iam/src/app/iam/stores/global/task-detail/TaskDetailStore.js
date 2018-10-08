@@ -59,6 +59,7 @@ class TaskDetailStore {
 
   @action setInfo(data) {
     this.info = data;
+    if (this.info.simpleRepeatCount != null) this.info.simpleRepeatCount += 1;
   }
 
   @action setCurrentTask(data) {

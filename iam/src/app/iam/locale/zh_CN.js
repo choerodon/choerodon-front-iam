@@ -237,6 +237,7 @@ const pageDetail = {
   'global.dashboard-setting.modify.link': '',
   'global.dashboard-setting.role': '卡片角色',
   'global.dashboard-setting.open-role': '开启角色控制',
+  'global.dashboard-setting.close-role': '关闭角色控制',
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
   'organization.project.description': '项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。',

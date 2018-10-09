@@ -2,7 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import queryString from 'query-string';
 
-const PAGELOADSIZE = 5;
+const PAGELOADSIZE = 10;
 
 @store('UserMsgStore')
 class UserMsgStore {
@@ -20,7 +20,8 @@ class UserMsgStore {
     current: 1,
     pageSize: PAGELOADSIZE,
     total: 0,
-    totalPages: 0,
+    onChange: this.paginationChange,
+    onShowSizeChange: this.paginationChange,
   };
 
   @observable sort = {
@@ -50,7 +51,20 @@ class UserMsgStore {
       pageSize: PAGELOADSIZE,
       total: 0,
       totalPages: 0,
+      onChange: this.paginationChange,
+      onShowSizeChange: this.paginationChange,
     };
+  }
+
+  @action paginationChange = (current, pageSize) => {
+    this.pagination.current = current;
+    this.pagination.pageSize = pageSize;
+    this.loadData(this.pagination, {}, {}, {}, true, false);
+  }
+
+  @computed
+  get getPagination() {
+    return this.pagination;
   }
 
   @computed
@@ -153,21 +167,6 @@ class UserMsgStore {
     return axios.put(`/notify/v1/notices/sitemsgs/batch_delete?user_id=${this.userInfo.id}`, JSON.stringify(data));
   }
 
-  @action
-  loadMore(showAll) {
-    if (this.pagination.totalPages > this.pagination.current && showAll) {
-      this.setLoadingMore(true);
-      this.pagination.current += 1;
-      this.load(this.pagination, this.filters, this.sort, this.params, showAll).then(action((data) => {
-        this.setUserMsg(this.userMsg.concat(data.content));
-        this.setLoadingMore(false);
-      })).catch(action((error) => {
-        this.setLoadingMore(false);
-        Choerodon.handleResponseError(error);
-      }));
-    }
-  }
-
   @action load(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
     const sorter = [];
     if (columnKey) {
@@ -183,7 +182,6 @@ class UserMsgStore {
       read: showAll ? null : false,
       page: pagination.current - 1,
       size: pagination.pageSize,
-      params: params.join(','),
       sort: sorter.join(','),
     })}`);
   }
@@ -214,6 +212,14 @@ class UserMsgStore {
         this.setExpandCardId(msgId);
         this.readMsg([msgId]);
       }
+      this.pagination = {
+        ...pagination,
+        total: data.totalElements,
+        pageSize: this.pagination.pageSize,
+        onChange: this.pagination.onChange,
+        onShowSizeChange: this.pagination.onShowSizeChange,
+      };
+      this.setLoading(false);
     }))
       .catch(action((error) => {
         if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);

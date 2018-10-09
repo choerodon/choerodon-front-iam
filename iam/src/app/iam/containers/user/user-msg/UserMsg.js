@@ -30,13 +30,13 @@ export default class UserMsg extends Component {
     const matchId = this.props.location.search.match(/msgId=(\d+)/g);
     if (matchId) {
       const id = Number(matchId[0].match(/\d+/g)[0]);
-      UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, false, id);
-    } else UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, false);
+      UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false, id);
+    } else UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
   }
 
 
   refresh = () => {
-    UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll);
+    UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll);
     UserMsgStore.selectMsg.clear();
     UserMsgStore.initPagination();
   };
@@ -110,7 +110,7 @@ export default class UserMsg extends Component {
       if (this.state.needExpand) {
         UserMsgStore.setExpandCardId(UserMsgStore.getExpandCardId !== id ? id : null);
         if (UserMsgStore.getNeedReload && UserMsgStore.getExpandCardId === null && !this.state.showAll) {
-          UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
+          UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, true);
         }
         // 如果消息未读则发送已读消息的请求
         if (!read) {
@@ -125,7 +125,7 @@ export default class UserMsg extends Component {
   };
 
   handleMessage = () => {
-    if (UserMsgStore.getExpandCardId === null) UserMsgStore.loadData({ current: 1, pageSize: 5 }, {}, {}, [], this.state.showAll, true);
+    if (UserMsgStore.getExpandCardId === null) UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, true);
     else UserMsgStore.setNeedReload(true);
   };
 
@@ -160,23 +160,11 @@ export default class UserMsg extends Component {
     </div>
   );
 
-  onLoadMore = () => {
-    UserMsgStore.loadMore(this.state.showAll);
-  };
-
-  renderLoadMore = () => (UserMsgStore.getUserMsg.length > 0 ? (
-    <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px', color: 'rgba(0, 0, 0, 0.54)' }}>
-      {UserMsgStore.getLoadingMore && <Spin />}
-      {!UserMsgStore.getLoadingMore && this.state.showAll && !UserMsgStore.getLoading && !UserMsgStore.isNoMore &&
-        <Button type="primary" funcType="raised" onClick={this.onLoadMore}> <FormattedMessage id={`${intlPrefix}.load-more`} /></Button>
-      }
-      {UserMsgStore.isNoMore && !UserMsgStore.getLoadingMore ? <FormattedMessage id={`${intlPrefix}.nomore`} /> : null}
-    </div>
-  ) : null);
-
   render() {
     const user = UserMsgStore.getUserInfo;
     const { AppState } = this.props;
+    const { showAll } = this.state;
+    const pagination = UserMsgStore.getPagination;
     return (
       <Page>
         <Header
@@ -230,7 +218,7 @@ export default class UserMsg extends Component {
               className="c7n-user-msg-list"
               loading={UserMsgStore.getLoading}
               itemLayout="horizontal"
-              loadMore={this.renderLoadMore()}
+              pagination={showAll ? pagination : false}
               dataSource={UserMsgStore.getUserMsg}
               renderItem={item => (
                 this.renderUserMsgCard(item)

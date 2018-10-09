@@ -520,10 +520,11 @@ export default class APIDetail extends Component {
             <span className="info">{intl.formatMessage({ id: `${intlPrefix}.authorize.account` })}：</span>
             <span className="info">{APITestStore.getUserInfo || this.props.AppState.getUserInfo.loginName}</span>
             <Button
-              funcType="raised"
+              funcType="flat"
               type="primary"
               htmlType="submit"
               onClick={this.openAuthorizeModal}
+              icon="mode_edit"
             >
               {intl.formatMessage({ id: `${intlPrefix}.authorize.change` })}
             </Button>

@@ -6,7 +6,7 @@ import './statusTag.scss';
 const Color = {
   RUNNING: '#4d90fe',
   FAILED: '#f44336',
-  COMPLETED: '#00BF96',
+  COMPLETED: '#00BFA5',
   DEFAULT: '#b8b8b8',
 };
 

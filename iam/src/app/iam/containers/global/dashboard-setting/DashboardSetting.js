@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { toJS } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, IconSelect, Input, Modal, Select, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Icon, IconSelect, Input, Modal, Select, Table, Tooltip, Radio } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './DashboardSetting.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import RoleStore from '../../../stores/global/role/RoleStore';
 
+const RadioGroup = Radio.Group;
 const { Sidebar } = Modal;
 const { Option } = Select;
 
@@ -281,6 +282,25 @@ class DashboardSetting extends Component {
               )
             }
           </FormItem>
+          <FormItem {...formItemLayout}>
+            {
+              getFieldDecorator('icon', {
+                initialValue: icon,
+              })(
+                <IconSelect
+                  label={<FormattedMessage id={`${intlPrefix}.icon`} />}
+                  style={{ width: inputWidth }}
+                  showArrow
+                />,
+              )
+            }
+          </FormItem>
+          <FormItem {...formItemLayout}>
+            <RadioGroup onChange={this.handleRoleClick} value={needRoles}>
+              <Radio value={true}><FormattedMessage id={`${intlPrefix}.open-role`} /></Radio>
+              <Radio value={false}><FormattedMessage id={`${intlPrefix}.close-role`} /></Radio>
+            </RadioGroup>
+          </FormItem>
           <FormItem
             {...formItemLayout}
           >
@@ -301,37 +321,6 @@ class DashboardSetting extends Component {
                 {this.renderRoleSelect()}
               </Select>,
             )}
-            <Button
-              size="small"
-              icon="delete"
-              shape="circle"
-              onClick={this.handleRoleClick}
-              className={'delete-role'}
-              style={{
-                display: needRoles ? 'inline-block' : 'none',
-              }}
-            />
-            <Button
-              type="primary"
-              funcType="raised"
-              onClick={this.handleRoleClick}
-              style={{
-                display: !needRoles ? 'inline-block' : 'none',
-              }}
-            ><FormattedMessage id={`${intlPrefix}.open-role`} /></Button>
-          </FormItem>
-          <FormItem {...formItemLayout}>
-            {
-              getFieldDecorator('icon', {
-                initialValue: icon,
-              })(
-                <IconSelect
-                  label={<FormattedMessage id={`${intlPrefix}.icon`} />}
-                  style={{ width: inputWidth }}
-                  showArrow
-                />,
-              )
-            }
           </FormItem>
         </Form>
       </Content>

@@ -1183,6 +1183,7 @@ const zh_CN = {
   'user.userinfo.email.pattern.msg': '请输入正确的邮箱',
   'user.userinfo.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
   'user.userinfo.phone': '手机',
+  'user.userinfo.phone.pattern.msg': '请输入正确的手机号',
   'user.userinfo.language': '语言',
   'user.userinfo.language.zhcn': '简体中文',
   'user.userinfo.language.enus': 'English',

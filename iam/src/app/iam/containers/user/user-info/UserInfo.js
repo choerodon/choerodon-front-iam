@@ -256,6 +256,13 @@ export default class UserInfo extends Component {
           <Icon type="phone_iphone" className="form-icon" />
           {getFieldDecorator('phone', {
             initialValue: phone,
+            rules: [
+              {
+                pattern: /^1\d{10}$/,
+                whitespace: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }),
+              },
+            ],
           })(
             <Input
               autoComplete="off"

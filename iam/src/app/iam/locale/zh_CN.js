@@ -534,6 +534,10 @@ const zh_CN = {
   'global.organization.description': '组织是项目的上一级。通过组织您可以管理项目、用户。您可以创建组织，创建后平台默认您是这个组织的组织管理员。',
   'global.organization.name': '组织名称',
   'global.organization.code': '组织编码',
+  'global.organization.region': '组织所在地',
+  'global.organization.owner': '组织所有者',
+  'global.organization.phone': '手机号码',
+  'global.organization.mailbox': '邮箱',
   'global.organization.status.enabled': '启用状态',
   'global.organization.modify': '修改组织',
   'global.organization.modify.title': '对组织"{name}"进行修改',
@@ -546,6 +550,9 @@ const zh_CN = {
   'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'global.organization.namerequiredmsg': '请输入组织名称',
   'global.organization.project.count': '项目数量',
+  'global.organization.detail': '组织信息',
+  'global.organization.detail.title': '查看组织"{name}"的组织信息',
+  'global.organization.detail.description': '您可以在此查看组织和组织管理员的基本信息。',
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',

@@ -273,13 +273,12 @@ export default class UserEdit extends Component {
                   required: true,
                   whitespace: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
-                },
-                {
+                }, {
+                  pattern: /^[0-9a-zA-Z]+$/,
+                  message: intl.formatMessage({ id: `${intlPrefix}.loginname.pattern.msg` }),
+                }, {
                   validator: this.checkUsername,
                 },
-                // {
-                //   validator: this.validateToPassword,
-                // },
               ],
               validateTrigger: 'onBlur',
               initialValue: userInfo.loginName,

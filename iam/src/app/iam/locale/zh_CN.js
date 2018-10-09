@@ -1145,6 +1145,7 @@ const zh_CN = {
   'organization.user.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
   'organization.user.addinfo.pattern.msg': '请输入json格式的数据',
   'organization.user.loginname.require.msg': '请输入登录名',
+  'organization.user.loginname.pattern.msg': '登录名只能包含数字和字母',
   'organization.user.realname.require.msg': '请输入用户名',
   'organization.user.email.require.msg': '请输入邮箱',
   'organization.user.email.pattern.msg': '请输入正确的邮箱',

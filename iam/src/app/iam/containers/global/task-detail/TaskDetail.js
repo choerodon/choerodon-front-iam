@@ -929,43 +929,46 @@ export default class TaskDetail extends Component {
               )}
             </FormItem>
             <div style={{ display: triggerType === 'easy' ? 'block' : 'none' }}>
-              <FormItem
-                {...formItemLayout}
+              <div className="c7n-create-task-set-task">
+                <FormItem
+                  {...formItemLayout}
+                  className="c7n-create-task-inline-formitem"
+                >
+                  {getFieldDecorator('simpleRepeatInterval', {
+                    rules: [{
+                      required: triggerType === 'easy',
+                      message: intl.formatMessage({ id: `${intlPrefix}.repeat.required` }),
+                    }, {
+                      pattern: /^[1-9]\d*$/,
+                      message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
+                    }],
+                    validateFirst: true,
+                  })(
+                    <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  className="c7n-create-task-inline-formitem c7n-create-task-inline-formitem-select"
+                >
+                  {getFieldDecorator('simpleRepeatIntervalUnit', {
+                    rules: [],
+                    initialValue: 'SECONDS',
+                  })(
+                    <Select
+                      style={{ width: '124px' }}
+                      getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    >
+                      <Option value="SECONDS">秒</Option>
+                      <Option value="MINUTES">分</Option>
+                      <Option value="HOURS">时</Option>
+                      <Option value="DAYS">天</Option>
+                    </Select>,
+                  )}
+                </FormItem>
+              </div>
+              <FormItem 
                 className="c7n-create-task-inline-formitem"
-              >
-                {getFieldDecorator('simpleRepeatInterval', {
-                  rules: [{
-                    required: triggerType === 'easy',
-                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.required` }),
-                  }, {
-                    pattern: /^[1-9]\d*$/,
-                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
-                  }],
-                  validateFirst: true,
-                })(
-                  <Input style={{ width: '318px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
-                )}
-              </FormItem>
-              <FormItem
-                {...formItemLayout}
-                className="c7n-create-task-inline-formitem c7n-create-task-inline-formitem-select"
-              >
-                {getFieldDecorator('simpleRepeatIntervalUnit', {
-                  rules: [],
-                  initialValue: 'SECONDS',
-                })(
-                  <Select
-                    style={{ width: '176px' }}
-                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                  >
-                    <Option value="SECONDS">秒</Option>
-                    <Option value="MINUTES">分</Option>
-                    <Option value="HOURS">时</Option>
-                    <Option value="DAYS">天</Option>
-                  </Select>,
-                )}
-              </FormItem>
-              <FormItem
                 {...formItemLayout}
               >
                 {getFieldDecorator('simpleRepeatCount', {
@@ -977,7 +980,7 @@ export default class TaskDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
                   }],
                 })(
-                  <Input style={{ width: inputWidth }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
+                  <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
                 )}
               </FormItem>
             </div>

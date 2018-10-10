@@ -29,11 +29,12 @@ export default class StatusTag extends Component {
     ]),
     color: PropTypes.string,
     colorCode: PropTypes.string,
-  }
+    iconType: PropTypes.string,
+  };
 
   static defaultProps = {
     colorCode: 'DEFAULT',
-  }
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     return !(nextProps.name === this.props.name
@@ -42,7 +43,7 @@ export default class StatusTag extends Component {
   }
 
   renderIconMode() {
-    const { name, colorCode } = this.props;
+    const { name, colorCode, iconType } = this.props;
 
     return (
       <span
@@ -51,7 +52,7 @@ export default class StatusTag extends Component {
           ...this.props.style,
         }}
       >
-        <Icon type={[IconType[colorCode]]} />
+        <Icon type={iconType || [IconType[colorCode]]} />
         <span>{ name || '' }</span>
       </span>
     );

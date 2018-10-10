@@ -7,6 +7,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import './DashboardSetting.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import RoleStore from '../../../stores/global/role/RoleStore';
+import StatusTag from '../../../components/statusTag';
 
 const RadioGroup = Radio.Group;
 const { Sidebar } = Modal;
@@ -39,6 +40,15 @@ class DashboardSetting extends Component {
   componentWillMount() {
     this.fetchData();
   }
+
+  handleDisable = (record) => {
+    const { intl, DashboardSettingStore } = this.props;
+    DashboardSettingStore.dashboardDisable(record)
+      .then(() => {
+        Choerodon.prompt(intl.formatMessage({ id: record.enabled ? 'disable.success' : 'enable.success' }));
+      })
+      .catch(Choerodon.handleResponseError);
+  };
 
   handleRoleClick = () => {
     const { DashboardSettingStore } = this.props;
@@ -136,18 +146,13 @@ class DashboardSetting extends Component {
         title: <FormattedMessage id={`${intlPrefix}.card.title`} />,
         dataIndex: 'title',
         key: 'title',
-        render: text => (
-          <MouseOverWrapper text={text} width={0.1}>
-            {text}
-          </MouseOverWrapper>
-        ),
-      },
-      {
-        title: <FormattedMessage id={`${intlPrefix}.icon`} />,
-        dataIndex: 'icon',
-        key: 'icon',
-        render: text => (
-          <Icon type={text} style={{ fontSize: 20 }} />
+        render: (text, record) => (
+          <div>
+            <Icon type={record.icon} style={{ fontSize: 20, marginRight: '6px' }} />
+            <MouseOverWrapper text={text} width={0.1} style={{ display: 'inline' }}>
+              {text}
+            </MouseOverWrapper>
+          </div>
         ),
       },
       {
@@ -172,6 +177,20 @@ class DashboardSetting extends Component {
         ),
       },
       {
+        title: <FormattedMessage id="status" />,
+        dataIndex: 'enabled',
+        key: 'enabled',
+        filters: [{
+          text: intl.formatMessage({ id: 'enable' }),
+          value: 'true',
+        }, {
+          text: intl.formatMessage({ id: 'disable' }),
+          value: 'false',
+        }],
+        filteredValue: filters.enabled || [],
+        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+      },
+      {
         title: '',
         width: 100,
         key: 'action',
@@ -187,6 +206,17 @@ class DashboardSetting extends Component {
                 icon="mode_edit"
                 size="small"
                 onClick={() => this.editCard(record)}
+              />
+            </Tooltip>
+            <Tooltip
+              title={<FormattedMessage id={record.enabled ? 'disable' : 'enable'} />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon={record.enabled ? 'remove_circle_outline' : 'finished'}
+                shape="circle"
+                onClick={() => this.handleDisable(record)}
               />
             </Tooltip>
           </Permission>
@@ -297,7 +327,7 @@ class DashboardSetting extends Component {
           </FormItem>
           <FormItem {...formItemLayout}>
             <RadioGroup onChange={this.handleRoleClick} value={needRoles}>
-              <Radio value={true}><FormattedMessage id={`${intlPrefix}.open-role`} /></Radio>
+              <Radio value><FormattedMessage id={`${intlPrefix}.open-role`} /></Radio>
               <Radio value={false}><FormattedMessage id={`${intlPrefix}.close-role`} /></Radio>
             </RadioGroup>
           </FormItem>

@@ -1189,7 +1189,7 @@ export default class MemberRole extends Component {
               icon="get_app"
             >
               <FormattedMessage id={'download.template'} />
-              <a id="c7n-user-download-template" href="" onClick={(event) => { event.stopPropagation(); }} download="userTemplate.xlsx" />
+              <a id="c7n-user-download-template" href="" onClick={(event) => { event.stopPropagation(); }} download="roleAssignment.xlsx" />
             </Button>
             <Button
               icon="file_upload"

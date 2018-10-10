@@ -10,6 +10,8 @@ import StatusTag from '../../../components/statusTag';
 import classnames from 'classnames';
 import './Organization.scss';
 
+const ORGANIZATION_TYPE = 'organization';
+const PROJECT_TYPE = 'project';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -114,12 +116,13 @@ export default class Organization extends Component {
   };
 
   handleDisable = ({ enabled, id }) => {
-    const { intl, OrganizationStore } = this.props;
+    const { intl, OrganizationStore, HeaderStore, AppState } = this.props;
+    const userId = AppState.getUserId;
     OrganizationStore.toggleDisable(id, enabled)
       .then(() => {
         Choerodon.prompt(intl.formatMessage({ id: enabled ? 'disable.success' : 'enable.success' }));
-      })
-      .catch(Choerodon.handleResponseError);
+        HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId);
+      }).catch(Choerodon.handleResponseError);
   };
 
   /**

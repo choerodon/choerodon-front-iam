@@ -167,9 +167,11 @@ export default class CreateRole extends Component {
           RoleStore.createRole(role)
             .then((data) => {
               this.setState({ submitting: false });
-              if (data) {
+              if (data && !data.failed) {
                 Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
                 this.linkToChange('/iam/role');
+              } else {
+                Choerodon.prompt(data.message);
               }
             })
             .catch((errors) => {

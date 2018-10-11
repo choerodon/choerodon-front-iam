@@ -258,7 +258,7 @@ export default class UserInfo extends Component {
             initialValue: phone,
             rules: [
               {
-                pattern: /^1\d{10}$/,
+                pattern: /^1[3-9]\d{9}$/,
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }),
               },

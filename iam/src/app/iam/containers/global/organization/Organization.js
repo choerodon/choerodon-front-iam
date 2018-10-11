@@ -232,7 +232,7 @@ export default class Organization extends Component {
                     max: 15,
                     message: intl.formatMessage({ id: 'global.organization.codemaxmsg' }),
                   }, {
-                    pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
+                    pattern: /^[a-z]([a-z0-9]|-(?!-))*[a-z0-9]$/,
                     message: intl.formatMessage({ id: 'global.organization.codepatternmsg' }),
                   }, {
                     validator: this.checkCode,
@@ -247,7 +247,7 @@ export default class Organization extends Component {
                     label={<FormattedMessage id="global.organization.code" />}
                     autoComplete="off"
                     style={{ width: inputWidth }}
-                    maxLength={14}
+                    maxLength={15}
                     showLengthInfo={false}
                   />,
                 )}

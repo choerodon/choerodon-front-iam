@@ -548,7 +548,7 @@ const zh_CN = {
   'global.organization.onlymsg': '组织编码已存在，请输入其他组织编码',
   'global.organization.coderequiredmsg': '请输入组织编码',
   'global.organization.codemaxmsg': '组织编码不能超过15个字符',
-  'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
   'global.organization.namerequiredmsg': '请输入组织名称',
   'global.organization.project.count': '项目数量',
   'global.organization.detail': '组织信息',
@@ -1010,7 +1010,7 @@ const zh_CN = {
   // 项目管理
   'organization.project.code.exist.msg': '项目编码已存在，请输入其他项目编码',
   'organization.project.code.require.msg': '请输入项目编码',
-  'organization.project.code.pattern.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'organization.project.code.pattern.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
   'organization.project.code.length.msg': '项目编码不能超过14个字符',
   'organization.project.create': '创建项目',
   'organization.project.modify': '修改项目',

@@ -133,37 +133,54 @@ export default class APIDetail extends Component {
   getDetail() {
     const { intl } = this.props;
     const { code, method, url, remark, consumes, produces } = APITestStore.getApiDetail;
-    const keyArr = ['请求方式', '路径', '描述', 'Action', '权限层级', '是否为登录可访问', '是否为公开权限', '请求格式', '响应格式'];
-    const tableValue = keyArr.map(item => ({
-      name: item,
-    }));
     const desc = APITestStore.getApiDetail.description || '[]';
     const responseDataExample = APITestStore.getApiDetail
     && APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
+    window.console.log(handledDescWithComment);
     handledDescWithComment = jsonFormat(handledDescWithComment);
     const handledDesc = Hjson.parse(desc);
     const { permission = { roles: [] } } = handledDesc;
     const roles = permission.roles.length && permission.roles.map(item => ({
-      name: '默认角色',
+      name: intl.formatMessage({ id: `${intlPrefix}.default.role` }),
       value: item,
     }));
-    tableValue[0].value = method;
-    tableValue[1].value = url;
-    tableValue[2].value = remark;
-    tableValue[3].value = permission && permission.action;
-    tableValue[4].value = permission && permission.permissionLevel;
-    tableValue[5].value = permission && permission.permissionLogin ? '是' : '否';
-    tableValue[6].value = permission && permission.permissionPublic ? '是' : '否';
-    tableValue[7].value = consumes[0];
-    tableValue[8].value = produces[0];
+
+    const tableValue = [{
+      name: intl.formatMessage({ id: `${intlPrefix}.code` }),
+      value: code,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.method` }),
+      value: method,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.url` }),
+      value: url,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.remark` }),
+      value: remark,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.action` }),
+      value: permission && permission.action,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.level` }),
+      value: permission && permission.permissionLevel,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.login.accessible` }),
+      value: permission && permission.permissionLogin ? '是' : '否',
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.public.permission` }),
+      value: permission && permission.permissionPublic ? '是' : '否',
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.request.format` }),
+      value: consumes[0],
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.response.format` }),
+      value: produces[0],
+    }];
+
     if (roles) {
       tableValue.splice(5, 0, ...roles);
     }
-    tableValue.unshift({
-      name: '权限编码',
-      value: code,
-    });
 
     const infoColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.property`} />,

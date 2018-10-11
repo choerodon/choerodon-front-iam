@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Prompt } from 'react-router-dom';
 import { Button, Form, Icon, IconSelect, Input, Modal, Table, Tabs, Tooltip } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -14,6 +14,8 @@ const intlPrefix = 'global.menusetting';
 let currentDropOverItem;
 let currentDropSide;
 let dropItem;
+let edited;
+let saved;
 
 function dropSideClassName(side) {
   return `drop-row-${side}`;
@@ -60,6 +62,7 @@ export default class MenuSetting extends Component {
       loading: false,
       submitting: false,
       menuGroup: {},
+      prevMenuGroup: {},
       type: 'site',
       selectType: 'create',
       sidebar: false,
@@ -73,8 +76,18 @@ export default class MenuSetting extends Component {
 
   componentWillMount() {
     this.initMenu();
+    edited = null;
+    saved = null;
   }
-
+  componentWillUpdate(nextProps, nextState) {
+    if (saved) {
+      edited = false;
+    } else if (JSON.stringify(nextState.prevMenuGroup) !== JSON.stringify(nextState.menuGroup)) {
+      edited = true;
+    } else {
+      edited = false;
+    }
+  }
   // 初始化类型
   initMenu(type) {
     const { menuGroup, type: typeState } = this.state;
@@ -83,9 +96,11 @@ export default class MenuSetting extends Component {
     axios.get(`/iam/v1/menus/tree?level=${type}`)
       .then((value) => {
         menuGroup[type] = normalizeMenus(value);
+        // 深拷贝
         this.setState({
           menuGroup,
           loading: false,
+          prevMenuGroup: JSON.parse(JSON.stringify(menuGroup)),
         });
       })
       .catch((error) => {
@@ -489,7 +504,7 @@ export default class MenuSetting extends Component {
   // 拖拽开始
   handleDragtStart(dragData, e) {
     e.dataTransfer.setData('text', 'choerodon');
-    document.body.ondrop = function (event) {
+    document.body.ondrop = (event) => {
       event.preventDefault();
       event.stopPropagation();
     };
@@ -597,27 +612,32 @@ export default class MenuSetting extends Component {
   // 储存菜单
   saveMenu = () => {
     const { intl } = this.props;
-    const { type, menuGroup } = this.state;
-    this.setState({ submitting: true });
-    axios.post(`/iam/v1/menus/tree?level=${type}`, JSON.stringify(adjustSort(menuGroup[type])))
-      .then((menus) => {
-        this.setState({ submitting: false });
-        if (menus.failed) {
-          Choerodon.prompt(menus.message);
-        } else {
-          MenuStore.setMenuData(_.cloneDeep(menus), type);
-          Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
-          menuGroup[type] = normalizeMenus(menus);
-          this.setState({
-            menuGroup,
-            tempDirs: [],
-          });
-        }
-      })
-      .catch((error) => {
-        Choerodon.handleResponseError(error);
-        this.setState({ submitting: false });
-      });
+    const { type, menuGroup, prevMenuGroup } = this.state;
+    if (prevMenuGroup !== menuGroup) {
+      this.setState({ submitting: true });
+      axios.post(`/iam/v1/menus/tree?level=${type}`, JSON.stringify(adjustSort(menuGroup[type])))
+        .then((menus) => {
+          this.setState({ submitting: false });
+          if (menus.failed) {
+            Choerodon.prompt(menus.message);
+          } else {
+            MenuStore.setMenuData(_.cloneDeep(menus), type);
+            Choerodon.prompt(intl.formatMessage({
+              id: 'save.success',
+            }));
+            saved = true;
+            menuGroup[type] = normalizeMenus(menus);
+            this.setState({
+              menuGroup,
+              tempDirs: [],
+            });
+          }
+        })
+        .catch((error) => {
+          Choerodon.handleResponseError(error);
+          this.setState({ submitting: false });
+        });
+    }
   };
 
   getOkText = (selectType) => {
@@ -632,8 +652,10 @@ export default class MenuSetting extends Component {
   };
 
   render() {
+    const { intl } = this.props;
     const menuType = this.props.AppState.currentMenuType.type;
     const { menuGroup, type: typeState, selectType, sidebar, submitting, loading } = this.state;
+    const promptMsg = intl.formatMessage({ id: `${intlPrefix}.prompt.inform.message` });
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.directory`} />,
       dataIndex: 'name',
@@ -764,6 +786,7 @@ export default class MenuSetting extends Component {
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
+          <Prompt message={promptMsg} when={edited} />
           <Permission service={['iam-service.menu.create']}>
             <Button
               onClick={this.addDir}

@@ -317,7 +317,7 @@ export default class Project extends Component {
                 max: 14,
                 message: intl.formatMessage({ id: `${intlPrefix}.code.length.msg` }),
               }, {
-                pattern: /^[a-z]([a-z0-9]|-(?!-))*[a-z0-9]$/,
+                pattern: /^[a-z](([a-z0-9]|-(?!-))*[a-z0-9])*$/,
                 message: intl.formatMessage({ id: `${intlPrefix}.code.pattern.msg` }),
               }, {
                 validator: this.checkCode,

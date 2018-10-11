@@ -5,9 +5,9 @@ import { withRouter } from 'react-router-dom';
 import { Button, Form, Input, Modal, Table, Tooltip, Row, Col } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import classnames from 'classnames';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
-import classnames from 'classnames';
 import './Organization.scss';
 
 const ORGANIZATION_TYPE = 'organization';
@@ -170,7 +170,7 @@ export default class Organization extends Component {
   }
 
   renderSidebarDetail() {
-    const { intl: { formatMessage }, form: { getFieldDecorator }, OrganizationStore: { show, editData } } = this.props;
+    const { intl: { formatMessage }, OrganizationStore: { editData } } = this.props;
     const infoList = [{
       key: formatMessage({ id: `${intlPrefix}.name` }),
       value: 123,
@@ -181,7 +181,10 @@ export default class Organization extends Component {
       key: formatMessage({ id: `${intlPrefix}.region` }),
       value: 123,
     }, {
-      key: formatMessage({ id: `${intlPrefix}.owner` }),
+      key: formatMessage({ id: `${intlPrefix}.owner.login.name` }),
+      value: 123,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.owner.user.name` }),
       value: 123,
     }, {
       key: formatMessage({ id: `${intlPrefix}.phone` }),
@@ -232,7 +235,7 @@ export default class Organization extends Component {
                     max: 15,
                     message: intl.formatMessage({ id: 'global.organization.codemaxmsg' }),
                   }, {
-                    pattern: /^[a-z]([a-z0-9]|-(?!-))*[a-z0-9]$/,
+                    pattern: /^[a-z](([a-z0-9]|-(?!-))*[a-z0-9])*$/,
                     message: intl.formatMessage({ id: 'global.organization.codepatternmsg' }),
                   }, {
                     validator: this.checkCode,
@@ -278,8 +281,9 @@ export default class Organization extends Component {
             {...formItemLayout}
           >
             {
-              getFieldDecorator('region', {
+              getFieldDecorator('address', {
                 rules: [],
+                initialValue: show === 'create' ? undefined : editData.address,
               })(
                 <Input
                   label={<FormattedMessage id="global.organization.region" />}

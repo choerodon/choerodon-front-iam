@@ -106,7 +106,7 @@ export default class APITest extends Component {
     const newVersions = [];
     if (service && service.length > 0) {
       APITestStore.service.forEach(({ name, value, version }, index) => {
-        if (currentService.version === version) {
+        if (currentService.name === name) {
           newVersions.push(version);
         }
       },

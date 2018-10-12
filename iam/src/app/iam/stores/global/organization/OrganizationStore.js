@@ -23,6 +23,12 @@ class OrganizationStore {
   @observable editData = {};
   @observable myOrg = {};
   @observable myRoles = [];
+  @observable partDetail = {};
+
+  @action
+  setPartDetail(data) {
+    this.partDetail = data;
+  }
 
   @action
   setEditData(data) {
@@ -169,6 +175,15 @@ class OrganizationStore {
       }))
       .catch(Choerodon.handleResponseError);
   }
+
+  loadOrgDetail = id => axios.get(`/iam/v1/organizations/${id}`).then((data) => {
+    if (data.failed) {
+      return data.message;
+    } else {
+      this.setPartDetail(data);
+      this.showSideBar();
+    }
+  }).catch(Choerodon.handleResponseError);
 }
 
 export default new OrganizationStore();

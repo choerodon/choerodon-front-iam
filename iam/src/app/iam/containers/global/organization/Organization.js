@@ -83,10 +83,15 @@ export default class Organization extends Component {
     const { OrganizationStore } = this.props;
     runInAction(() => {
       OrganizationStore.setEditData(data);
+      OrganizationStore.loadOrgDetail(data.id).then((message) => {
+        if (message) {
+          Choerodon.prompt(message);
+        }
+      });
       OrganizationStore.show = 'detail';
-      OrganizationStore.showSideBar();
     });
   }
+
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -170,28 +175,28 @@ export default class Organization extends Component {
   }
 
   renderSidebarDetail() {
-    const { intl: { formatMessage }, OrganizationStore: { editData } } = this.props;
+    const { intl: { formatMessage }, OrganizationStore: { editData, partDetail } } = this.props;
     const infoList = [{
       key: formatMessage({ id: `${intlPrefix}.name` }),
-      value: 123,
+      value: editData.name,
     }, {
       key: formatMessage({ id: `${intlPrefix}.code` }),
-      value: 123,
+      value: editData.code,
     }, {
       key: formatMessage({ id: `${intlPrefix}.region` }),
-      value: 123,
+      value: editData.address ? editData.address : '无',
     }, {
       key: formatMessage({ id: `${intlPrefix}.owner.login.name` }),
-      value: 123,
+      value: partDetail.ownerLoginName,
     }, {
       key: formatMessage({ id: `${intlPrefix}.owner.user.name` }),
-      value: 123,
+      value: partDetail.ownerRealName,
     }, {
       key: formatMessage({ id: `${intlPrefix}.phone` }),
-      value: 123,
+      value: partDetail.email ? partDetail.email : '无',
     }, {
       key: formatMessage({ id: `${intlPrefix}.mailbox` }),
-      value: 123,
+      value: partDetail.phone,
     }];
     return (
       <Content

@@ -414,7 +414,6 @@ export default class Organization extends Component {
       <Page
         service={[
           'iam-service.organization.list',
-          'iam-service.organization.check',
           'iam-service.organization.query',
           'organization-service.organization.create',
           'iam-service.organization.update',

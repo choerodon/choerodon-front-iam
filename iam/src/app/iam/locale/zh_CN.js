@@ -1310,6 +1310,20 @@ const zh_CN = {
   'download.failed.detail': '点击下载失败详情',
   'download.failed.error': '失败详情文件丢失，无法下载',
 
+  // 注册组织
+  'register.organization.step1.title': '填写组织信息',
+  'register.organization.step2.title': '填写负责人信息',
+  'register.organization.step3.title': '邮箱验证',
+  'register.organization.step4.title': '完成注册',
+  'register.organization.step.next': '下一步',
+  'register.organization.step.prev': '上一步',
+  'register.organization.phone': '手机号码',
+  'register.organization.phone.require.msg': '请输入手机号码',
+  'register.organization.email': '邮箱',
+  'register.organization.captcha': '验证码',
+  'register.organization.captcha.require.msg': '请输入验证码',
+
+
   // page
   ...pageDetail,
 

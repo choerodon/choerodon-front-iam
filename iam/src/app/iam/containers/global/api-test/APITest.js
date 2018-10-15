@@ -88,6 +88,7 @@ export default class APITest extends Component {
           version: location.split('=')[1],
         }));
         APITestStore.setService(services);
+        // 判断是否从详情页面跳转
         if (!APITestStore.detailFlag) {
           APITestStore.setApiToken(null);
           APITestStore.setUserInfo(null);
@@ -344,12 +345,13 @@ export default class APITest extends Component {
             onChange={this.handlePageChange}
             rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
-            onRowClick={(record) => {
-              APITestStore.setIsExpand(record.name);
-              this.setState({
-                expandedRow: APITestStore.getExpandKeys,
-              });
-            }
+            onRow={record =>
+              ({ onClick: () => {
+                APITestStore.setIsExpand(record.name);
+                this.setState({
+                  expandedRow: APITestStore.getExpandKeys,
+                });
+              } })
             }
             expandRowByClick
             expandedRowKeys={this.state.expandedRow}

@@ -9,7 +9,6 @@
         permission:
           - 'iam-service.organization.list'
           - 'organization-service.organization.create'
-          - 'iam-service.organization.check'
           - 'iam-service.organization.query'
           - 'iam-service.organization.update'
           - 'iam-service.organization.disableOrganization'

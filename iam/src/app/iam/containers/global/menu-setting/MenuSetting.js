@@ -10,6 +10,7 @@ import './MenuSetting.scss';
 
 const { MenuStore } = stores;
 const intlPrefix = 'global.menusetting';
+const STRING_DEVIDER = '__@.@__';
 
 let currentDropOverItem;
 let currentDropSide;
@@ -655,7 +656,8 @@ export default class MenuSetting extends Component {
     const { intl } = this.props;
     const menuType = this.props.AppState.currentMenuType.type;
     const { menuGroup, type: typeState, selectType, sidebar, submitting, loading } = this.state;
-    const promptMsg = intl.formatMessage({ id: `${intlPrefix}.prompt.inform.message` });
+    // Prompt 只能传单个字符串，所以用 STRING_DEVIDER 对 title 和 msg 进行了分离
+    const promptMsg = intl.formatMessage({ id: `${intlPrefix}.prompt.inform.title` }) + STRING_DEVIDER + intl.formatMessage({ id: `${intlPrefix}.prompt.inform.message` });
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.directory`} />,
       dataIndex: 'name',

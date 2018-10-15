@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './index.scss';
 import { StepFooter, StepBar } from 'choerodon-front-boot';
 
 export default class Guide extends Component {

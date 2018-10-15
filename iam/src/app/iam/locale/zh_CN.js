@@ -590,7 +590,8 @@ const zh_CN = {
   'global.menusetting.menu.withoutpermission': '此菜单无对应权限',
   'global.menusetting.menu.permission': '菜单所具有权限:',
   'global.menusetting.delete.disable.tooltip': '该目录下有菜单，将菜单移空后即可删除目录',
-  'global.menusetting.prompt.inform.message': '确定要离开此页面吗？',
+  'global.menusetting.prompt.inform.title': '离开此页',
+  'global.menusetting.prompt.inform.message': '此页面修改项尚未保存，确定要离开此页面？',
 
   // 角色标签
   'global.rolelabel.header.title': '角色标签',

@@ -16,6 +16,12 @@ const config = {
       locale: 'src/app/iam/locale/dashboard/*',
     },
   },
+  guide: {
+    iam: {
+      components: 'src/app/iam/guide/*',
+      locale: 'src/app/iam/locale/guide/*',
+    },
+  },
 };
 
 module.exports = config;

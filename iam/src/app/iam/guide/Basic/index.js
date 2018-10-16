@@ -38,7 +38,7 @@ export default class Basic extends Component {
             <p>组织是项目的上一级。通过组织您可以管理项目、用户。</p>
             <p>您可以使用组织创建表单来创建组织，创建后平台默认您是这个组织的组织管理员。</p>
             <ol>
-              <li>点击<GuideMask highLight="icon-settings" level={2}>管理</GuideMask>，进入组织管理页面。</li>
+              <li>点击<GuideMask highLight="icon-settings" level={1}>管理</GuideMask>，进入组织管理页面。</li>
               <li>点击 <GuideMask highLight="icon-playlist_add" level={1}>创建组织</GuideMask>，输入组织信息。</li>
             </ol>
           </div>

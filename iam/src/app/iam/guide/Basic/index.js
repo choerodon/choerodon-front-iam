@@ -4,7 +4,7 @@ import './index.scss';
 import { Button, Icon } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { injectIntl } from 'react-intl';
-import { StepFooter, StepBar } from 'choerodon-front-boot';
+import { StepFooter, StepBar, GuideMask } from 'choerodon-front-boot';
 
 @inject('GuideStore')
 @injectIntl
@@ -38,8 +38,8 @@ export default class Basic extends Component {
             <p>组织是项目的上一级。通过组织您可以管理项目、用户。</p>
             <p>您可以使用组织创建表单来创建组织，创建后平台默认您是这个组织的组织管理员。</p>
             <ol>
-              <li>点击<Link to="/iam/organization">管理</Link>，进入组织管理页面。</li>
-              <li>点击创建组织，输入组织信息。</li>
+              <li>点击<GuideMask highLight="icon-settings" level={2}>管理</GuideMask>，进入组织管理页面。</li>
+              <li>点击 <GuideMask highLight="icon-playlist_add" level={1}>创建组织</GuideMask>，输入组织信息。</li>
             </ol>
           </div>
         );
@@ -50,7 +50,7 @@ export default class Basic extends Component {
             <h3>选择组织</h3>
             <p>通过选择项目，您可以切换到您要进入的组织</p>
             <ol>
-              <li>点击<a>选择项目</a>，进入选择表单。</li>
+              <li>点击<GuideMask highLight="c7n-boot-header-menu-type-button">选择项目</GuideMask>，进入选择表单。</li>
               <li>点击您要进入的组织。</li>
             </ol>
           </div>
@@ -63,8 +63,8 @@ export default class Basic extends Component {
             <p>项目是最小粒度的管理层次。</p>
             <p>您可以在组织下创建项目，则创建的项目属于这个组织。</p>
             <ol>
-              <li>点击左侧菜单栏，选择组织设置下的<a>项目管理</a>，进入组织管理页面。</li>
-              <li>点击<a>创建项目</a>，输入项目信息。</li>
+              <li>点击左侧<GuideMask highLight="c7n-boot-header-logo-menu-icon">菜单栏</GuideMask>，选择<GuideMask highLight="icon-IAM" level={2}>组织设置</GuideMask>下的<GuideMask highLight="icon-manage_project" level={2}>项目管理</GuideMask>，进入组织管理页面。</li>
+              <li>点击<GuideMask highLight="icon-playlist_add" level={1}>创建项目</GuideMask>，输入项目信息。</li>
             </ol>
           </div>
         );
@@ -76,8 +76,8 @@ export default class Basic extends Component {
             <p>用户是平台的使用者。</p>
             <p>您可以在组织下创建用户，则用户属于这个组织。您也可以通过模板批量导入用户。</p>
             <ol>
-              <li>点击<a>用户管理</a>，进入用户管理表单。</li>
-              <li>点击创建用户，输入用户信息，完成创建。</li>
+              <li>点击<GuideMask highLight="icon-manage_person" level={2}>用户管理</GuideMask>，进入用户管理表单。</li>
+              <li>点击<GuideMask highLight="icon-playlist_add" level={1}>创建用户</GuideMask>，输入用户信息，完成创建。</li>
             </ol>
           </div>
         );
@@ -89,8 +89,8 @@ export default class Basic extends Component {
             <p>角色分配是给成员分配角色。</p>
             <p>您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。</p>
             <ol>
-              <li>点击<a>组织角色分配</a>，进入组织角色分配表单。</li>
-              <li>点击<a>添加</a>，输入用户角色信息，完成组织角色分配。</li>
+              <li>点击<GuideMask highLight="icon-person_add" level={2}>组织角色分配</GuideMask>，进入组织角色分配表单。</li>
+              <li>点击<GuideMask highLight="icon-playlist_add" level={1}>添加</GuideMask>，输入用户角色信息，完成组织角色分配。</li>
             </ol>
           </div>
         );
@@ -101,7 +101,7 @@ export default class Basic extends Component {
             <h3>选择项目</h3>
             <p>通过选择项目，您可以切换到您要进入的项目</p>
             <ol>
-              <li>点击<a>选择项目</a>，进入选择表单。</li>
+              <li>点击<GuideMask highLight="c7n-boot-header-menu-type-button">选择项目</GuideMask>，进入选择表单。</li>
               <li>点击您要进入的项目。</li>
             </ol>
           </div>
@@ -114,8 +114,8 @@ export default class Basic extends Component {
             <p>角色分配是给成员分配角色。</p>
             <p>您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。</p>
             <ol>
-              <li>点击左侧菜单栏，选择项目设置下的<a>项目角色分配表单</a>。</li>
-              <li>点击<a>添加</a>，输入用户角色信息，完成项目角色分配。</li>
+              <li>点击左侧<GuideMask highLight="c7n-boot-header-logo-menu-icon">菜单栏</GuideMask>，选择项目设置下的<GuideMask highLight="icon-person_add" level={2}>项目角色分配</GuideMask>表单。</li>
+              <li>点击<GuideMask highLight="icon-playlist_add" level={1}>添加</GuideMask>，输入用户角色信息，完成项目角色分配。</li>
             </ol>
           </div>
         );

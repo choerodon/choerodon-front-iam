@@ -20,11 +20,10 @@ instance.interceptors.request.use(
   },
 );
 
-instance.interceptors.response.use((res) => {
-  return res.data;
-}, (error) => {
-  window.console.log(error);
-});
+instance.interceptors.response.use(res => res.data,
+  (error) => {
+    window.console.log(error);
+  });
 
 @store('RegisterOrgStore')
 class RegisterOrgStore {

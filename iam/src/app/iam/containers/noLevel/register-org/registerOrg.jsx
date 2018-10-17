@@ -210,7 +210,7 @@ export default class registerOrg extends Component {
   clearTimer = (timer) => {
     this.setState({
       interval: 0,
-    })
+    });
     clearInterval(timer);
   }
 

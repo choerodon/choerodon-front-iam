@@ -193,10 +193,10 @@ export default class Organization extends Component {
       value: partDetail.ownerRealName,
     }, {
       key: formatMessage({ id: `${intlPrefix}.phone` }),
-      value: partDetail.email ? partDetail.email : '无',
+      value: partDetail.ownerEmail ? partDetail.ownerEmail : '无',
     }, {
       key: formatMessage({ id: `${intlPrefix}.mailbox` }),
-      value: partDetail.phone,
+      value: partDetail.ownerPhone,
     }];
     return (
       <Content
@@ -385,7 +385,7 @@ export default class Organization extends Component {
               />
             </Tooltip>
           </Permission>
-          <Permission>
+          <Permission service={['iam-service.organization.query']}>
             <Tooltip
               title={<FormattedMessage id="detail" />}
               placement="bottom"

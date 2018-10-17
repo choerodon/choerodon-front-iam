@@ -137,7 +137,6 @@ export default class APIDetail extends Component {
     const responseDataExample = APITestStore.getApiDetail
     && APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
     let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
-    window.console.log(handledDescWithComment);
     handledDescWithComment = jsonFormat(handledDescWithComment);
     const handledDesc = Hjson.parse(desc);
     const { permission = { roles: [] } } = handledDesc;
@@ -626,20 +625,8 @@ export default class APIDetail extends Component {
         APITestStore.setIsShowResult(false);
         this.responseNode.scrollTop = 0;
         this.curlNode.scrollLeft = 0;
-        if ('bodyData' in values) {
-          instance[APITestStore.getApiDetail.method](this.state.requestUrl,
-            Hjson.parse(values.bodyData || '')).then(function (res) {
-            this.setState({
-              isSending: false,
-            });
-            APITestStore.setIsShowResult(true);
-          }).catch((error) => {
-            this.setState({
-              isSending: false,
-            });
-            APITestStore.setIsShowResult(true);
-          });
-        } else if (this.fileInput) {
+        if (this.fileInput) {
+          window.console.log(123);
           const formData = new FormData();
           formData.append('file', this.fileInput.files[0]);
           instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData)
@@ -654,6 +641,19 @@ export default class APIDetail extends Component {
               });
               APITestStore.setIsShowResult(true);
             });
+        } else if ('bodyData' in values) {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl,
+            Hjson.parse(values.bodyData || '')).then(function (res) {
+            this.setState({
+              isSending: false,
+            });
+            APITestStore.setIsShowResult(true);
+          }).catch((error) => {
+            this.setState({
+              isSending: false,
+            });
+            APITestStore.setIsShowResult(true);
+          });
         } else {
           instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
             this.setState({

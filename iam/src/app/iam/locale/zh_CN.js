@@ -1322,7 +1322,14 @@ const zh_CN = {
   'register.organization.email': '邮箱',
   'register.organization.captcha': '验证码',
   'register.organization.captcha.require.msg': '请输入验证码',
-
+  'register.organization.password.min.msg': '密码至少为6位',
+  'register.organization.password.pattern.msg': '密码由数字或大小写字母组成',
+  'register.organization.code': '组织编码',
+  'register.organization.coderequiredmsg': '请输入组织编码',
+  'register.organization.codemaxmsg': '组织编码不能超过15个字符',
+  'register.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
+  'register.organization.name': '组织名称',
+  'register.organization.namerequiredmsg': '请输入组织名称',
 
   // page
   ...pageDetail,

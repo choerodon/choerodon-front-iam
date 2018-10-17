@@ -1,14 +1,15 @@
 .c7n-registerorg-bg {
   width: 100%;
   height: 100%;
-  padding-top: 9.8%;
-  padding-bottom: 3%;
+  padding-top: 9.8vh;
+  padding-bottom: 3vh;
   background: url('./icon/bg.svg') no-repeat;
   background-size: cover;
 
   .c7n-registerorg-container {
     width: 75%;
-    padding: 70px 80px 70px;
+    height: 78vh;
+    padding: 6.8vh 80px 0;
     margin: auto;
     background: #fff;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
@@ -22,7 +23,7 @@
     }
 
     &-title {
-      margin: 20px auto 64px;
+      margin: 2vh auto 6vh;
       text-align: center;
       font-size: 20px;
       color: rgba(0, 0, 0, 0.65);
@@ -30,11 +31,12 @@
   }
 
   .c7n-registerorg-content {
-    margin: 60px auto 0;
+    margin: 5.8vh auto 0;
     width: 512px;
+    position: relative;
 
     .c7n-registerorg-btn-group {
-      margin-top: 32px;
+      position: absolute;
 
       button:first-child {
         margin-right: 12px;

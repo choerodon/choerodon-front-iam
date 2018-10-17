@@ -268,7 +268,7 @@ export default class UserInfo extends Component {
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.phone`} />}
               style={{ width: inputWidth }}
-              maxLength={32}
+              maxLength={11}
               showLengthInfo={false}
             />,
           )}

@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './registerOrg.scss';
-import OrganizationStore from '../../../stores/global/organization';
+import RegsiterOrgStore from '../../../stores/noLevel/register-org';
 
 const { Step } = Steps;
 const FormItem = Form.Item;
@@ -21,6 +21,7 @@ const formItemLayout = {
   },
 };
 
+
 @Form.create()
 @withRouter
 @injectIntl
@@ -30,9 +31,9 @@ export default class registerOrg extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 1,
-      name: null,
-      code: null,
+      current: 3,
+      organizationName: null,
+      organizationCode: null,
       address: null,
       loginName: null,
       realName: null,
@@ -40,6 +41,8 @@ export default class registerOrg extends Component {
       phone: null,
       password: null,
       rePassword: null,
+      rePasswordDirty: false,
+      interval: 0, // 发送验证码冷却时间
     };
   }
 
@@ -71,6 +74,16 @@ export default class registerOrg extends Component {
     }
     return status;
   };
+
+  /**
+   * 上一步
+   * @param index
+   */
+  changeStep = (index) => {
+    this.setState({ current: index });
+    window.console.log(this.state);
+  };
+
 
   handleSubmitFirstStep = () => {
     const { form } = this.props;
@@ -119,14 +132,14 @@ export default class registerOrg extends Component {
 
 
   /**
-   * 组织编码校验
+   * 组织编码唯一性校验
    * @param rule 表单校验规则
    * @param value 组织编码
    * @param callback 回调函数
    */
   checkCode = (rule, value, callback) => {
     const { intl } = this.props;
-    OrganizationStore.checkCode(value)
+    RegsiterOrgStore.checkCode(value)
       .then(({ failed }) => {
         if (failed) {
           callback(intl.formatMessage({ id: 'global.organization.onlymsg' }));
@@ -136,35 +149,111 @@ export default class registerOrg extends Component {
       });
   };
 
+  /**
+   * 登录名唯一性校验
+   * @param rule
+   * @param loginname
+   * @param callback
+   */
+  checkUsername = (rule, loginname, callback) => {
+    const { intl } = this.props;
+    RegsiterOrgStore.checkLoginrname(loginname)
+      .then(({ failed }) => {
+        if (failed) {
+          callback(intl.formatMessage({ id: 'organization.user.name.exist.msg' }));
+        } else {
+          callback();
+        }
+      });
+  };
+
+  /**
+   * 邮箱唯一性检验
+   * @param rule
+   * @param email
+   * @param callback
+   */
+  checkEmailAddress = (rule, email, callback) => {
+    const { intl } = this.props;
+    RegsiterOrgStore.checkEmailAddress(email)
+      .then(({ failed }) => {
+        if (failed) {
+          callback(intl.formatMessage({ id: 'organization.user.email.used.msg' }));
+        } else {
+          callback();
+        }
+      });
+  };
+
+  validateToNextPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if (value && this.state.rePasswordDirty) {
+      form.validateFields(['rePassword'], { force: true });
+    }
+    callback();
+  };
+
+  checkRepassword = (rule, value, callback) => {
+    const { intl, form } = this.props;
+    if (value && value !== form.getFieldValue('password')) {
+      callback(intl.formatMessage({ id: 'organization.user.password.unrepeat.msg' }));
+    } else {
+      callback();
+    }
+  };
+
+  handleRePasswordBlur = (e) => {
+    const value = e.target.value;
+    this.setState({ rePasswordDirty: this.state.rePasswordDirty || !!value });
+  };
+
+  clearTimer = (timer) => {
+    this.setState({
+      interval: 0,
+    })
+    clearInterval(timer);
+  }
+
+  // 发送验证码
+  handleSendCaptcha = () => {
+    RegsiterOrgStore.sendCaptcha(this.state.email).then((res) => {
+      window.console.log(res);
+    }).catch(() => {
+      Choerodon.prompt('发送失败');
+    });
+  }
+
 
   // 渲染第一步
   handleRenderFirstStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const { organizationCode, organizationName, address } = this.state;
     return (
-      <Form className="c7n-registerorg-content">
+      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmitFirstStep}>
         <FormItem
           {...formItemLayout}
         >
-          {getFieldDecorator('code', {
+          {getFieldDecorator('organizationCode', {
             rules: [{
               required: true,
               whitespace: true,
-              message: intl.formatMessage({ id: 'global.organization.coderequiredmsg' }),
+              message: intl.formatMessage({ id: `${intlPrefix}.coderequiredmsg` }),
             }, {
               max: 15,
-              message: intl.formatMessage({ id: 'global.organization.codemaxmsg' }),
+              message: intl.formatMessage({ id: `${intlPrefix}.codemaxmsg` }),
             }, {
               pattern: /^[a-z](([a-z0-9]|-(?!-))*[a-z0-9])*$/,
-              message: intl.formatMessage({ id: 'global.organization.codepatternmsg' }),
+              message: intl.formatMessage({ id: `${intlPrefix}.codepatternmsg` }),
             }, {
               validator: this.checkCode,
             }],
             validateTrigger: 'onBlur',
             validateFirst: true,
+            initialValue: organizationCode,
           })(
             <Input
-              label={<FormattedMessage id="global.organization.code" />}
+              label={<FormattedMessage id={`${intlPrefix}.code`} />}
               autoComplete="off"
               style={{ width: inputWidth }}
               maxLength={15}
@@ -175,16 +264,17 @@ export default class registerOrg extends Component {
         <FormItem
           {...formItemLayout}
         >
-          {getFieldDecorator('name', {
+          {getFieldDecorator('organizationName', {
             rules: [{
               required: true,
-              message: intl.formatMessage({ id: 'global.organization.namerequiredmsg' }),
+              message: intl.formatMessage({ id: `${intlPrefix}.namerequiredmsg` }),
               whitespace: true,
             }],
             validateTrigger: 'onBlur',
+            initialValue: organizationName,
           })(
             <Input
-              label={<FormattedMessage id="global.organization.name" />}
+              label={<FormattedMessage id={`${intlPrefix}.name`} />}
               autoComplete="off"
               style={{ width: inputWidth }}
               maxLength={32}
@@ -198,6 +288,7 @@ export default class registerOrg extends Component {
           {
             getFieldDecorator('address', {
               rules: [],
+              initialValue: address,
             })(
               <Input
                 label={<FormattedMessage id="global.organization.region" />}
@@ -206,15 +297,14 @@ export default class registerOrg extends Component {
               />,
             )}
         </FormItem>
-        <div className="c7n-registerorg-btn-group">
-          <Button
-            type="primary"
-            funcType="raised"
-            onClick={this.handleSubmitFirstStep}
-          >
-            <FormattedMessage id={`${intlPrefix}.step.next`} />
-          </Button>
-        </div>
+        <Button
+          type="primary"
+          htmlType="submit"
+          funcType="raised"
+          className="c7n-registerorg-btn-group"
+        >
+          <FormattedMessage id={`${intlPrefix}.step.next`} />
+        </Button>
       </Form>
     );
   }
@@ -223,9 +313,10 @@ export default class registerOrg extends Component {
   handleRenderSecStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const { loginName, realName, email, phone, password, rePassword } = this.state;
     const userPrefix = 'organization.user';
     return (
-      <Form className="c7n-registerorg-content">
+      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmitSecStep}>
         <FormItem
           {...formItemLayout}
         >
@@ -242,8 +333,10 @@ export default class registerOrg extends Component {
                 validator: this.checkUsername,
               },
             ],
+            initialValue: loginName,
             validateTrigger: 'onBlur',
             validateFirst: true,
+
           })(
             <Input
               autoComplete="off"
@@ -266,12 +359,12 @@ export default class registerOrg extends Component {
                   message: intl.formatMessage({ id: `${userPrefix}.realname.require.msg` }),
                 },
               ],
+              initialValue: realName,
             })(
               <Input
                 autoComplete="off"
                 label={intl.formatMessage({ id: `${userPrefix}.realname` })}
                 type="text"
-                rows={1}
                 style={{ width: inputWidth }}
                 maxLength={32}
                 showLengthInfo={false}
@@ -281,6 +374,7 @@ export default class registerOrg extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
+          className="c7n-registerorg-form-item c7n-registerorg-form-item-left"
         >
           {getFieldDecorator('email', {
             rules: [
@@ -299,11 +393,12 @@ export default class registerOrg extends Component {
             ],
             validateTrigger: 'onBlur',
             validateFirst: true,
+            initialValue: email,
           })(
             <Input
               autoComplete="off"
+              style={{ width: '247px' }}
               label={intl.formatMessage({ id: `${userPrefix}.email` })}
-              style={{ width: inputWidth }}
               maxLength={64}
               showLengthInfo={false}
             />,
@@ -311,6 +406,7 @@ export default class registerOrg extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
+          className="c7n-registerorg-form-item"
         >
           {getFieldDecorator('phone', {
             rules: [
@@ -319,14 +415,20 @@ export default class registerOrg extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.phone.require.msg` }),
               },
+              {
+                pattern: /^1[3-9]\d{9}$/,
+                whitespace: true,
+                message: intl.formatMessage({ id: 'user.userinfo.phone.pattern.msg' }),
+              },
             ],
+            initialValue: phone,
           })(
             <Input
               autoComplete="off"
               label={intl.formatMessage({ id: `${intlPrefix}.phone` })}
-              style={{ width: inputWidth }}
-              maxLength={64}
+              maxLength={11}
               showLengthInfo={false}
+              style={{ width: '247px' }}
             />,
           )}
         </FormItem>
@@ -341,11 +443,16 @@ export default class registerOrg extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${userPrefix}.password.require.msg` }),
               }, {
-                validator: this.checkPassword,
+                min: 6,
+                message: intl.formatMessage({ id: `${intlPrefix}.password.min.msg` }),
+              }, {
+                pattern: /^[0-9a-zA-Z]+$/,
+                message: intl.formatMessage({ id: `${intlPrefix}.password.pattern.msg` }),
               }, {
                 validator: this.validateToNextPassword,
               },
             ],
+            initialValue: password,
             validateFirst: true,
           })(
             <Input
@@ -370,6 +477,7 @@ export default class registerOrg extends Component {
               }, {
                 validator: this.checkRepassword,
               }],
+            initialValue: rePassword,
             validateFirst: true,
           })(
             <Input
@@ -386,12 +494,13 @@ export default class registerOrg extends Component {
           <Button
             type="primary"
             funcType="raised"
-            onClick={this.handleSubmitSecStep}
+            htmlType="submit"
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
           <Button
             funcType="raised"
+            onClick={this.changeStep.bind(this, 1)}
           >
             <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
@@ -404,8 +513,9 @@ export default class registerOrg extends Component {
   handleRenderThirdStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const { interval } = this.state;
     return (
-      <Form className="c7n-registerorg-content">
+      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmitThirdStep}>
         <FormItem
           {...formItemLayout}
         >
@@ -452,19 +562,22 @@ export default class registerOrg extends Component {
         <Button
           funcType="raised"
           className="c7n-registerorg-captcha-btn"
+          onClick={this.handleSendCaptcha}
+          loading={interval > 0}
         >
-          发送验证码
+          {interval === 0 ? '发送验证码' : `${interval}秒后重试`}
         </Button>
         <div className="c7n-registerorg-btn-group">
           <Button
             type="primary"
             funcType="raised"
-            onClick={this.handleSubmitThirdStep}
+            htmlType="submit"
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
           <Button
             funcType="raised"
+            onClick={this.changeStep.bind(this, 2)}
           >
             <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>

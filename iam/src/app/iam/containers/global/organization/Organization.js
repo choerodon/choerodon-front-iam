@@ -193,10 +193,10 @@ export default class Organization extends Component {
       value: partDetail.ownerRealName,
     }, {
       key: formatMessage({ id: `${intlPrefix}.phone` }),
-      value: partDetail.ownerEmail ? partDetail.ownerEmail : '无',
+      value: partDetail.ownerPhone ? partDetail.ownerPhone : '无',
     }, {
       key: formatMessage({ id: `${intlPrefix}.mailbox` }),
-      value: partDetail.ownerPhone,
+      value: partDetail.ownerEmail,
     }];
     return (
       <Content

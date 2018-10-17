@@ -33,7 +33,9 @@ class RegisterOrgStore {
 
   checkEmailAddress = email => instance.post('/iam/v1/users/check', JSON.stringify({ email }));
 
-  sendCaptcha = email => instance.get(`/org/v1/organizations/send/email_captcha/?email=${email}`);
+  sendCaptcha = email => instance.get(`/org/v1/organizations/send/email_captcha?email=${email}`);
+
+  registerOrg = body => instance.post('/org/v1/organizations/register', JSON.stringify(body));
 }
 
 const registerOrgStore = new RegisterOrgStore();

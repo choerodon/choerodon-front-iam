@@ -53,7 +53,7 @@
   .boolean,
   .undefined,
   .null {
-    color: #00BFA5;
+    color: #00bfa5;
   }
   .comment {
     color: rgba(0, 0, 0, 0.56);
@@ -306,11 +306,26 @@
 
   .c7n-apitest-modal-icon {
     height: 30px;
-    width: 172px;
-    margin: 0 auto;
-    background-image: url('./icon/choerodon_logo_color.svg');
+    width: 30px;
+    margin-right: 10px;
+    // background-image: url('./icon/choerodon_logo_color.svg');
     background-repeat: no-repeat;
     background-size: auto 31px;
+    line-height: 30px;
+    font-size: 22px;
+  }
+
+  .c7n-apitest-modal-icon-content {
+    display: flex;
+    justify-content: center;
+  }
+
+  .c7n-apitest-modal-default-icon {
+    background-image: url('./icon/choerodon_logo_color.svg');
+  }
+
+  .c7n-apitest-modal-icon-title {
+    font-size: 22px;
   }
 
   .c7n-apitest-modal-title {

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './registerOrg.scss';
+import _ from 'lodash';
 import RegsiterOrgStore from '../../../stores/noLevel/register-org';
 
 const { Step } = Steps;
@@ -31,7 +32,7 @@ export default class registerOrg extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 3,
+      current: 1,
       organizationName: null,
       organizationCode: null,
       address: null,
@@ -40,9 +41,11 @@ export default class registerOrg extends Component {
       email: null,
       phone: null,
       password: null,
+      captcha: null,
       rePassword: null,
       rePasswordDirty: false,
       interval: 0, // 发送验证码冷却时间
+      submitLoading: false, // 提交表单时下一步按钮的状态
     };
   }
 
@@ -81,51 +84,49 @@ export default class registerOrg extends Component {
    */
   changeStep = (index) => {
     this.setState({ current: index });
-    window.console.log(this.state);
   };
 
-
-  handleSubmitFirstStep = () => {
-    const { form } = this.props;
+  /**
+   * 提交表单
+   * @param step 当前步骤
+   */
+  handleSubmit = (step) => {
+    const { form, intl } = this.props;
     form.validateFields((err, values) => {
       Object.keys(values).forEach((key) => {
         if (typeof values[key] === 'string') values[key] = values[key].trim();
       });
       if (!err) {
         this.setState({
-          ...values,
-          current: 2,
+          submitLoading: true,
         });
-      }
-    });
-  }
-
-  handleSubmitSecStep = () => {
-    const { form } = this.props;
-    form.validateFields((err, values) => {
-      Object.keys(values).forEach((key) => {
-        if (typeof values[key] === 'string') values[key] = values[key].trim();
-      });
-      if (!err) {
-        this.setState({
-          ...values,
-          current: 3,
-        });
-      }
-    });
-  }
-
-  handleSubmitThirdStep = () => {
-    const { form } = this.props;
-    form.validateFields((err, values) => {
-      Object.keys(values).forEach((key) => {
-        if (typeof values[key] === 'string') values[key] = values[key].trim();
-      });
-      if (!err) {
-        this.setState({
-          ...values,
-          current: 4,
-        });
+        if (step === 1 || step === 2) {
+          this.setState({
+            ...values,
+            current: step + 1,
+            submitLoading: false,
+          });
+        } else {
+          this.setState({
+            captcha: values.captcha,
+          }, () => {
+            const body = _.omit({ ...this.state }, ['rePassword', 'rePasswordDirty', 'current', 'interval', 'submitLoading']);
+            body.address = body.address || null;
+            RegsiterOrgStore.registerOrg(body).then(({ failed }) => {
+              if (failed) {
+                Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.register.failed` }));
+                this.setState({
+                  submitLoading: false,
+                });
+              } else {
+                this.setState({
+                  current: step + 1,
+                  submitLoading: false,
+                });
+              }
+            });
+          });
+        }
       }
     });
   }
@@ -142,7 +143,7 @@ export default class registerOrg extends Component {
     RegsiterOrgStore.checkCode(value)
       .then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({ id: 'global.organization.onlymsg' }));
+          callback(intl.formatMessage({ id: `${intlPrefix}.onlymsg` }));
         } else {
           callback();
         }
@@ -160,7 +161,7 @@ export default class registerOrg extends Component {
     RegsiterOrgStore.checkLoginrname(loginname)
       .then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({ id: 'organization.user.name.exist.msg' }));
+          callback(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
         } else {
           callback();
         }
@@ -178,13 +179,19 @@ export default class registerOrg extends Component {
     RegsiterOrgStore.checkEmailAddress(email)
       .then(({ failed }) => {
         if (failed) {
-          callback(intl.formatMessage({ id: 'organization.user.email.used.msg' }));
+          callback(intl.formatMessage({ id: `${intlPrefix}.email.used.msg` }));
         } else {
           callback();
         }
       });
   };
 
+  /**
+   * 密码和确认密码的关联校验
+   * @param rule
+   * @param value
+   * @param callback
+   */
   validateToNextPassword = (rule, value, callback) => {
     const form = this.props.form;
     if (value && this.state.rePasswordDirty) {
@@ -193,10 +200,16 @@ export default class registerOrg extends Component {
     callback();
   };
 
+  /**
+   * 确认密码校验
+   * @param rule
+   * @param value
+   * @param callback
+   */
   checkRepassword = (rule, value, callback) => {
     const { intl, form } = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(intl.formatMessage({ id: 'organization.user.password.unrepeat.msg' }));
+      callback(intl.formatMessage({ id: `${intlPrefix}.password.unrepeat.msg` }));
     } else {
       callback();
     }
@@ -207,6 +220,10 @@ export default class registerOrg extends Component {
     this.setState({ rePasswordDirty: this.state.rePasswordDirty || !!value });
   };
 
+  /**
+   * 清楚倒计时定时器
+   * @param timer
+   */
   clearTimer = (timer) => {
     this.setState({
       interval: 0,
@@ -216,10 +233,29 @@ export default class registerOrg extends Component {
 
   // 发送验证码
   handleSendCaptcha = () => {
-    RegsiterOrgStore.sendCaptcha(this.state.email).then((res) => {
-      window.console.log(res);
+    const { intl } = this.props;
+    RegsiterOrgStore.sendCaptcha(this.state.email).then(({ remainingSecond, successful }) => {
+      if (successful) {
+        Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.send.success` }));
+      }
+
+      if (remainingSecond !== null) {
+        this.setState({
+          interval: remainingSecond,
+        }, () => {
+          const timer = setInterval(() => {
+            this.setState({
+              interval: this.state.interval - 1,
+            }, () => {
+              if (this.state.interval <= 0) {
+                this.clearTimer(timer);
+              }
+            });
+          }, 1000);
+        });
+      }
     }).catch(() => {
-      Choerodon.prompt('发送失败');
+      Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.send.failed` }));
     });
   }
 
@@ -228,9 +264,9 @@ export default class registerOrg extends Component {
   handleRenderFirstStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { organizationCode, organizationName, address } = this.state;
+    const { organizationCode, organizationName, address, submitLoading } = this.state;
     return (
-      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmitFirstStep}>
+      <Form className="c7n-registerorg-content" name="firstStepForm" onSubmit={this.handleSubmit.bind(this, 1)}>
         <FormItem
           {...formItemLayout}
         >
@@ -291,7 +327,7 @@ export default class registerOrg extends Component {
               initialValue: address,
             })(
               <Input
-                label={<FormattedMessage id="global.organization.region" />}
+                label={<FormattedMessage id={`${intlPrefix}.region`} />}
                 autoComplete="off"
                 style={{ width: inputWidth }}
               />,
@@ -302,6 +338,7 @@ export default class registerOrg extends Component {
           htmlType="submit"
           funcType="raised"
           className="c7n-registerorg-btn-group"
+          loading={submitLoading}
         >
           <FormattedMessage id={`${intlPrefix}.step.next`} />
         </Button>
@@ -313,10 +350,10 @@ export default class registerOrg extends Component {
   handleRenderSecStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { loginName, realName, email, phone, password, rePassword } = this.state;
+    const { loginName, realName, email, phone, password, rePassword, submitLoading } = this.state;
     const userPrefix = 'organization.user';
     return (
-      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmitSecStep}>
+      <Form className="c7n-registerorg-content" name="secondStepForm" onSubmit={this.handleSubmit.bind(this, 2)}>
         <FormItem
           {...formItemLayout}
         >
@@ -325,10 +362,10 @@ export default class registerOrg extends Component {
               {
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({ id: `${userPrefix}.loginname.require.msg` }),
+                message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
               }, {
                 pattern: /^[0-9a-zA-Z]+$/,
-                message: intl.formatMessage({ id: `${userPrefix}.loginname.pattern.msg` }),
+                message: intl.formatMessage({ id: `${intlPrefix}.loginname.pattern.msg` }),
               }, {
                 validator: this.checkUsername,
               },
@@ -340,7 +377,7 @@ export default class registerOrg extends Component {
           })(
             <Input
               autoComplete="off"
-              label={intl.formatMessage({ id: `${userPrefix}.loginname` })}
+              label={intl.formatMessage({ id: `${intlPrefix}.loginname` })}
               style={{ width: inputWidth }}
               maxLength={32}
               showLengthInfo={false}
@@ -356,14 +393,14 @@ export default class registerOrg extends Component {
                 {
                   required: true,
                   whitespace: true,
-                  message: intl.formatMessage({ id: `${userPrefix}.realname.require.msg` }),
+                  message: intl.formatMessage({ id: `${intlPrefix}.realname.require.msg` }),
                 },
               ],
               initialValue: realName,
             })(
               <Input
                 autoComplete="off"
-                label={intl.formatMessage({ id: `${userPrefix}.realname` })}
+                label={intl.formatMessage({ id: `${intlPrefix}.realname` })}
                 type="text"
                 style={{ width: inputWidth }}
                 maxLength={32}
@@ -381,11 +418,11 @@ export default class registerOrg extends Component {
               {
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({ id: `${userPrefix}.email.require.msg` }),
+                message: intl.formatMessage({ id: `${intlPrefix}.email.require.msg` }),
               },
               {
                 type: 'email',
-                message: intl.formatMessage({ id: `${userPrefix}.email.pattern.msg` }),
+                message: intl.formatMessage({ id: `${intlPrefix}.email.pattern.msg` }),
               },
               {
                 validator: this.checkEmailAddress,
@@ -398,7 +435,7 @@ export default class registerOrg extends Component {
             <Input
               autoComplete="off"
               style={{ width: '247px' }}
-              label={intl.formatMessage({ id: `${userPrefix}.email` })}
+              label={intl.formatMessage({ id: `${intlPrefix}.email` })}
               maxLength={64}
               showLengthInfo={false}
             />,
@@ -418,7 +455,7 @@ export default class registerOrg extends Component {
               {
                 pattern: /^1[3-9]\d{9}$/,
                 whitespace: true,
-                message: intl.formatMessage({ id: 'user.userinfo.phone.pattern.msg' }),
+                message: intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }),
               },
             ],
             initialValue: phone,
@@ -441,7 +478,7 @@ export default class registerOrg extends Component {
               {
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({ id: `${userPrefix}.password.require.msg` }),
+                message: intl.formatMessage({ id: `${intlPrefix}.password.require.msg` }),
               }, {
                 min: 6,
                 message: intl.formatMessage({ id: `${intlPrefix}.password.min.msg` }),
@@ -457,7 +494,7 @@ export default class registerOrg extends Component {
           })(
             <Input
               autoComplete="off"
-              label={intl.formatMessage({ id: `${userPrefix}.password` })}
+              label={intl.formatMessage({ id: `${intlPrefix}.password` })}
               type="password"
               style={{ width: '247px' }}
               showPasswordEye
@@ -473,7 +510,7 @@ export default class registerOrg extends Component {
               {
                 required: true,
                 whitespace: true,
-                message: intl.formatMessage({ id: `${userPrefix}.repassword.require.msg` }),
+                message: intl.formatMessage({ id: `${intlPrefix}.repassword.require.msg` }),
               }, {
                 validator: this.checkRepassword,
               }],
@@ -482,7 +519,7 @@ export default class registerOrg extends Component {
           })(
             <Input
               autoComplete="off"
-              label={intl.formatMessage({ id: `${userPrefix}.repassword` })}
+              label={intl.formatMessage({ id: `${intlPrefix}.repassword` })}
               type="password"
               style={{ width: '247px' }}
               onBlur={this.handleRePasswordBlur}
@@ -495,6 +532,7 @@ export default class registerOrg extends Component {
             type="primary"
             funcType="raised"
             htmlType="submit"
+            loading={submitLoading}
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
@@ -513,9 +551,9 @@ export default class registerOrg extends Component {
   handleRenderThirdStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { interval } = this.state;
+    const { interval, captcha, submitLoading } = this.state;
     return (
-      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmitThirdStep}>
+      <Form className="c7n-registerorg-content" name="thirdStepForm" onSubmit={this.handleSubmit.bind(this, 3)}>
         <FormItem
           {...formItemLayout}
         >
@@ -550,11 +588,12 @@ export default class registerOrg extends Component {
                   message: intl.formatMessage({ id: `${intlPrefix}.captcha.require.msg` }),
                 },
               ],
+              initialValue: captcha,
             })(
               <Input
                 autoComplete="off"
                 label={intl.formatMessage({ id: `${intlPrefix}.captcha` })}
-                style={{ width: '400px' }}
+                style={{ width: '370px' }}
               />,
             )
           }
@@ -565,13 +604,14 @@ export default class registerOrg extends Component {
           onClick={this.handleSendCaptcha}
           loading={interval > 0}
         >
-          {interval === 0 ? '发送验证码' : `${interval}秒后重试`}
+          {interval === 0 ? intl.formatMessage({ id: `${intlPrefix}.send.captcha` }) : intl.formatMessage({ id: `${intlPrefix}.send.retry.seconds` }, { interval })}
         </Button>
         <div className="c7n-registerorg-btn-group">
           <Button
             type="primary"
             funcType="raised"
             htmlType="submit"
+            loading={submitLoading}
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
@@ -587,25 +627,33 @@ export default class registerOrg extends Component {
   }
 
   // 渲染第四步
-  handleRenderFourthStep = () => {
-    const { intl } = this.props;
-    return (
-      <div className="c7n-registerorg-content-fourth">
-        <div className="c7n-registerorg-content-fourth-title">
-          <Icon type="finished" className="c7n-registerorg-success-icon" />
-          <span>恭喜</span>
-        </div>
-        <div className="c7n-registerorg-content-fourth-msg">
-          您的组织{this.state.name}注册成功
-        </div>
-        <Button
-          type="primary"
-          funcType="raised"
-        >
-          直接登录
-        </Button>
+  handleRenderFourthStep = () => (
+    <div className="c7n-registerorg-content-fourth">
+      <div className="c7n-registerorg-content-fourth-title">
+        <Icon type="finished" className="c7n-registerorg-success-icon" />
+        <FormattedMessage id={`${intlPrefix}.congratulations`} />
       </div>
-    );
+      <div className="c7n-registerorg-content-fourth-msg">
+        <FormattedMessage id={`${intlPrefix}.register.success`} values={{ name: this.state.organizationName }} />
+      </div>
+      <Button
+        type="primary"
+        funcType="raised"
+        onClick={this.login}
+      >
+        <FormattedMessage id={`${intlPrefix}.login`} />
+      </Button>
+    </div>
+  )
+
+  // 直接登录
+  login = () => {
+    const token = Choerodon.getAccessToken();
+    if (token) {
+      Choerodon.logout();
+    } else {
+      Choerodon.authorize();
+    }
   }
 
 
@@ -615,7 +663,9 @@ export default class registerOrg extends Component {
       <div className="c7n-registerorg-bg">
         <div className="c7n-registerorg-container">
           <div className="c7n-registerorg-container-icon" />
-          <div className="c7n-registerorg-container-title">注册组织</div>
+          <div className="c7n-registerorg-container-title">
+            <FormattedMessage id={`${intlPrefix}.register.organization`} />
+          </div>
           <div className="c7n-registerorg-container-steps">
             <Steps current={current}>
               <Step

@@ -708,6 +708,7 @@ export default class registerOrg extends Component {
             {current === 4 && this.handleRenderFourthStep()}
           </div>
         </div>
+        <div className="c7n-registerorg-copyright">Copyright &copy; The choerodon Author&reg;. All rights reserved.</div>
       </div>
     );
   }

@@ -626,7 +626,6 @@ export default class APIDetail extends Component {
         this.responseNode.scrollTop = 0;
         this.curlNode.scrollLeft = 0;
         if (this.fileInput) {
-          window.console.log(123);
           const formData = new FormData();
           formData.append('file', this.fileInput.files[0]);
           instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData)

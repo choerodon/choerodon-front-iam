@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer, trace } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Icon, Input, Select, Spin, Upload, Popover } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Select, Spin, Upload, Popover, Modal } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './SystemSetting.scss';
@@ -11,6 +11,7 @@ const prefixClas = 'c7n-iam-system-setting';
 const limitSize = 1024;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const confirm = Modal.confirm;
 const cardContentFavicon = (
   <div>
     <p><FormattedMessage id={`${intlPrefix}.favicon.tips`} /></p>
@@ -55,7 +56,7 @@ export default class SystemSetting extends Component {
   state = {
     loading: false,
     submitting: false,
-  }
+  };
   componentWillMount() {
     this.init();
   }
@@ -75,6 +76,22 @@ export default class SystemSetting extends Component {
     },
     );
     Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.reset` }));
+  };
+  showDeleteConfirm = () => {
+    let that = this;
+    const { intl } = this.props;
+    confirm({
+      title: intl.formatMessage({ id: `${intlPrefix}.reset.confirm.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.reset.confirm.content` }),
+      okText: intl.formatMessage({ id: `yes` }),
+      okType: 'danger',
+      cancelText: intl.formatMessage({ id: `no` }),
+      onOk() {
+        that.handleReset();
+      },
+      onCancel() {
+      },
+    });
   };
   faviconContainer() {
     const { SystemSettingStore } = this.props;
@@ -178,9 +195,10 @@ export default class SystemSetting extends Component {
         systemLogo: SystemSettingStore.getLogo,
       };
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
+      debugger;
       if (Object.keys(prevSetting).length) {
         if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
-          SystemSettingStore.putUserSetting(submitSetting);
+          SystemSettingStore.putUserSetting(submitSetting).then(() => window.location.reload(true));
         } else {
           Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.conflict` }));
           this.setState({
@@ -189,12 +207,8 @@ export default class SystemSetting extends Component {
           return;
         }
       } else {
-        SystemSettingStore.postUserSetting(submitSetting);
+        SystemSettingStore.postUserSetting(submitSetting).then(() => window.location.reload(true));
       }
-      this.setState({
-        submitting: false,
-      });
-      Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.success` }));
     });
   };
 
@@ -361,7 +375,7 @@ export default class SystemSetting extends Component {
             <FormattedMessage id="refresh" />
           </Button>
           <Button
-            onClick={this.handleReset}
+            onClick={this.showDeleteConfirm}
             icon="swap_horiz"
           >
             <FormattedMessage id="reset" />

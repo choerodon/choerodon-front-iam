@@ -34,11 +34,11 @@ class SystemSettingStore {
   }
   @action
   putUserSetting(data) {
-    axios.put('/iam/v1/system/setting', data);
+    return axios.put('/iam/v1/system/setting', data);
   }
   @action
   postUserSetting(data) {
-    axios.post('/iam/v1/system/setting', data);
+    return axios.post('/iam/v1/system/setting', data);
   }
   @action
   resetUserSetting() {

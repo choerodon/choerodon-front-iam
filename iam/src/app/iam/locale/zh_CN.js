@@ -1024,7 +1024,6 @@ const zh_CN = {
   'global.system-setting.header': '系统设置',
   'global.system-setting.title': '对平台的自定义设置',
   'global.system-setting.description': '设置平台的名称、logo，用以用户认出您的企业。',
-  'global.system-setting.link': 'http://www.baidu.com',
   'global.system-setting.file.size.limit': '图标大小不能大于{size}',
   'global.system-setting.favicon': '平台徽标',
   'global.system-setting.favicon.error': '请填写您的平台徽标',
@@ -1045,6 +1044,8 @@ const zh_CN = {
   'global.system-setting.name.tips': '企业平台全称，显示为网页标题',
   'global.system-setting.save.success': '保存成功',
   'global.system-setting.save.conflict': '未进行修改',
+  'global.system-setting.reset.confirm.title': '确认要重置自定义设置吗？',
+  'global.system-setting.reset.confirm.content': '您的自定义设置将被全部删除',
   'global.system-setting.reset': '重置成功',
   // 组织层
   // 项目管理

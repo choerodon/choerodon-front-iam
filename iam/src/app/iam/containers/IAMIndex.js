@@ -13,6 +13,7 @@ const instance = asyncRouter(() => import('./global/instance'));
 const inmailTemplate = asyncRouter(() => import('./global/inmail-template'));
 const mailTemplate = asyncRouter(() => import('./global/mail-template'));
 const mailSetting = asyncRouter(() => import('./global/mail-setting'));
+const systemSetting = asyncRouter(() => import('./global/system-setting'));
 const memberRole = asyncRouter(() => import('./global/member-role'));
 const menuSetting = asyncRouter(() => import('./global/menu-setting'));
 const msgRecord = asyncRouter(() => import('./global/msg-record'));
@@ -70,6 +71,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/msg-record`} component={msgRecord} />
           <Route path={`${match.url}/mail-template`} component={mailTemplate} />
           <Route path={`${match.url}/mail-setting`} component={mailSetting} />
+          <Route path={`${match.url}/system-setting`} component={systemSetting} />
           <Route path={`${match.url}/send-setting`} component={sendSetting} />
           <Route path={`${match.url}/microservice`} component={microService} />
           <Route path={`${match.url}/organization`} component={organization} />

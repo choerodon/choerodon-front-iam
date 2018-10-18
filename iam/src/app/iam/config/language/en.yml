@@ -2,6 +2,7 @@
 # site
 "iam.organization": "Organization"
 "iam.menu-management": "Menu Setting"
+"iam.system-setting": "System Config"
 "iam.role-label": "Role Label"
 "iam.role": "Role"
 "iam.member-role-global": "Role Assignment"

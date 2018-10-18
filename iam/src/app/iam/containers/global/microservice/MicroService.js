@@ -103,7 +103,7 @@ export default class MicroService extends Component {
 
   render() {
     const { loading, content, sort: { columnKey, order }, filters, pagination, params } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'serviceName',
@@ -133,7 +133,7 @@ export default class MicroService extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             loading={loading}

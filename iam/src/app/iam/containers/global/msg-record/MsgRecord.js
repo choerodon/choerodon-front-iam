@@ -11,7 +11,7 @@ import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import MsgRecordStore from '../../../stores/global/msg-record';
 import './MsgRecord.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from "../../../components/statusTag";
+import StatusTag from '../../../components/statusTag';
 
 // 公用方法类
 class MsgRecordType {
@@ -132,7 +132,7 @@ export default class APITest extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const retryService = this.getPermission();
     const { sort: { columnKey, order }, filters, params, pagination, loading } = this.state;
     const columns = [{
@@ -233,7 +233,7 @@ export default class APITest extends Component {
         </Header>
         <Content
           code={this.msgrecord.code}
-          values={{ name: `${this.msgrecord.values.name || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             columns={columns}

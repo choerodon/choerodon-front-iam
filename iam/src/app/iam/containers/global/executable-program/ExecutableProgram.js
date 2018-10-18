@@ -169,7 +169,7 @@ export default class ExecutableProgram extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { sort: { columnKey, order }, filters, params, pagination, loading, isShowSidebar, showJson, programName } = this.state;
     const data = ExecutableProgramStore.getData.slice();
     const columns = [{
@@ -239,6 +239,7 @@ export default class ExecutableProgram extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             loading={loading}

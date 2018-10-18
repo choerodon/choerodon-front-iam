@@ -83,7 +83,7 @@ export default class ExecutionRecord extends Component {
   };
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { filters, params, pagination, loading } = this.state;
     const recordData = ExecutionRecordStore.getData.slice();
     const columns = [{
@@ -159,6 +159,7 @@ export default class ExecutionRecord extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             loading={loading}

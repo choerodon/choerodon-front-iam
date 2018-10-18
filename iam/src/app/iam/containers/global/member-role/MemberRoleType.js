@@ -30,7 +30,7 @@ export default class MemberRoleType {
         break;
     }
     this.code = `${codePrefix}.memberrole`;
-    this.values = { name: name || 'Choerodon' };
+    this.values = { name: name || AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' };
     this.urlUsers = `${apiGetway}/role_members/users`;
     this.urlRoles = `${apiGetway}/role_members/users/roles`;
     this.urlRoleMember = `${apiGetway}/role_members`;

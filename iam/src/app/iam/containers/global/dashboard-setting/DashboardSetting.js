@@ -358,7 +358,7 @@ class DashboardSetting extends Component {
   }
 
   render() {
-    const { DashboardSettingStore, intl } = this.props;
+    const { AppState, DashboardSettingStore, intl } = this.props;
     const { pagination, params, loading, dashboardData, sidebarVisible } = DashboardSettingStore;
     return (
       <Page
@@ -376,7 +376,10 @@ class DashboardSetting extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code={intlPrefix}>
+        <Content
+          code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+        >
           <Table
             loading={loading}
             className="dashboard-table"

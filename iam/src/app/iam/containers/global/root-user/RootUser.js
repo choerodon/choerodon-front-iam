@@ -282,6 +282,7 @@ export default class RootUser extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           {this.renderTable()}
           <Sidebar
@@ -296,6 +297,7 @@ export default class RootUser extends Component {
             <Content
               className="sidebar-content"
               code={`${intlPrefix}.add`}
+              values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
             >
               <Form layout="vertical">
                 <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`} />} style={{ marginTop: '-15px' }} form={form} />

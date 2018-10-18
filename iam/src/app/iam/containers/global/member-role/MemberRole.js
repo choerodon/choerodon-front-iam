@@ -94,6 +94,7 @@ export default class MemberRole extends Component {
 
   saveSideBarRef = (node) => {
     if (node) {
+      /* eslint-disable-next-line */
       this.sidebarBody = findDOMNode(node).parentNode;
     }
   };
@@ -739,6 +740,7 @@ export default class MemberRole extends Component {
     }));
 
     filtersRole = filtersRole.reduce((item, next) => {
+      /* eslint-disable-next-line */
       filtersRoleObj[next.value] ? '' : filtersRoleObj[next.value] = true && item.push(next);
       return item;
     }, []);
@@ -891,6 +893,7 @@ export default class MemberRole extends Component {
     }));
     const filtersDataObj = {};
     filtersData = filtersData.reduce((item, next) => {
+      /* eslint-disable-next-line */
       filtersDataObj[next.value] ? '' : filtersDataObj[next.value] = true && item.push(next);
       return item;
     }, []);
@@ -1141,7 +1144,7 @@ export default class MemberRole extends Component {
   }
 
   render() {
-    const { MemberRoleStore } = this.props;
+    const { MemberRoleStore, AppState } = this.props;
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting, fileLoading } = this.state;
     const uploading = MemberRoleStore.getUploading;
     const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');

@@ -213,7 +213,7 @@ export default class APITest extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { pagination, params } = this.state;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
@@ -309,7 +309,7 @@ export default class APITest extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Select
             style={{ width: '247px', marginBottom: '32px' }}

@@ -27,7 +27,7 @@ class SendSettingType {
     const { type, id, name } = this.data;
     const codePrefix = type === 'organization' ? 'organization' : 'global';
     this.code = `${codePrefix}.sendsetting`;
-    this.values = { name: name || AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' };
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
     this.type = type;
     this.orgId = id;
   }

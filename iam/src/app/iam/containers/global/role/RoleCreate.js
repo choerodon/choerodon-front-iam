@@ -276,7 +276,7 @@ export default class CreateRole extends Component {
         />
         <Content
           code={`${intlPrefix}.create`}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <div>
             <Form layout="vertical">

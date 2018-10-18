@@ -504,7 +504,7 @@ export default class Route extends Component {
     if (show === 'create') {
       code = `${intlPrefix}.create`;
       values = {
-        name: `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}`,
+        name: `${AppState.getSiteInfo.systemName || 'Choerodon'}`,
       };
     } else if (show === 'edit') {
       code = `${intlPrefix}.modify`;
@@ -810,7 +810,7 @@ export default class Route extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Table
             columns={columns}

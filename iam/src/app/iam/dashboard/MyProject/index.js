@@ -41,11 +41,9 @@ export default class MyProject extends Component {
     history.push(`/?type=project&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
   }
 
-  handleRow = (record) => {
-    return {
-      onClick: this.handleRowClick.bind(this, record),
-    };
-  };
+  handleRow = record => ({
+    onClick: this.handleRowClick.bind(this, record),
+  });
 
   getTableColumns() {
     return [{

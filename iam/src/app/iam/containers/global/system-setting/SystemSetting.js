@@ -78,14 +78,14 @@ export default class SystemSetting extends Component {
     Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.reset` }));
   };
   showDeleteConfirm = () => {
-    let that = this;
+    const that = this;
     const { intl } = this.props;
     confirm({
       title: intl.formatMessage({ id: `${intlPrefix}.reset.confirm.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.reset.confirm.content` }),
-      okText: intl.formatMessage({ id: `yes` }),
+      okText: intl.formatMessage({ id: 'yes' }),
       okType: 'danger',
-      cancelText: intl.formatMessage({ id: `no` }),
+      cancelText: intl.formatMessage({ id: 'no' }),
       onOk() {
         that.handleReset();
       },
@@ -103,7 +103,7 @@ export default class SystemSetting extends Component {
             className={`${prefixClas}-avatar-button`}
             name="file"
             showUploadList={false}
-            accept="image/jpeg, image/png, image/jpg"
+            accept="image/jpeg, image/png, image/jpg，image/gif"
             beforeUpload={this.beforeUpload}
             action="http://api.staging.saas.hand-china.com/iam/v1/system/setting/upload/favicon"
             onChange={this.handleFaviconChange}
@@ -164,14 +164,33 @@ export default class SystemSetting extends Component {
   getLanguageOptions() {
     return [
       <Option key="zh_CN" value="zh_CN"><FormattedMessage id={`${intlPrefix}.language.zhcn`} /></Option>,
-      // <Option key="en_US" value="en_US"><FormattedMessage id={`${intlPrefix}.language.enus`}/></Option>,
+      <Option disabled key="en_US" value="en_US"><FormattedMessage id={`${intlPrefix}.language.enus`} /></Option>,
     ];
   }
-  validateToPassword = (rule, value, callback) => {
-    if (/^[a-zA-Z0-9]{6,15}$/.test(value)) {
-      callback();
+  getByteLen = (val) => {
+    let len = 0;
+    val = val.split('');
+    val.forEach((v) => {
+      if (v.match(/[^\x00-\xff]/ig) != null) {
+        len += 2;
+      } else {
+        len += 1;
+      }
+    });
+    return len;
+  };
+  validateToInputName = (rule, value, callback) => {
+    if (this.getByteLen(value) > 18) {
+      callback('简称需要小于 9 个汉字或 18 个英文字母');
     } else {
+      callback();
+    }
+  };
+  validateToPassword = (rule, value, callback) => {
+    if (!(/^[a-zA-Z0-9]{6,15}$/.test(value))) {
       callback('密码至少为6位数字或字母组成');
+    } else {
+      callback();
     }
   };
   handleSubmit = (e) => {
@@ -195,7 +214,6 @@ export default class SystemSetting extends Component {
         systemLogo: SystemSettingStore.getLogo,
       };
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
-      debugger;
       if (Object.keys(prevSetting).length) {
         if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
           SystemSettingStore.putUserSetting(submitSetting).then(() => window.location.reload(true));
@@ -204,7 +222,6 @@ export default class SystemSetting extends Component {
           this.setState({
             submitting: false,
           });
-          return;
         }
       } else {
         SystemSettingStore.postUserSetting(submitSetting).then(() => window.location.reload(true));
@@ -247,14 +264,19 @@ export default class SystemSetting extends Component {
         >
           {getFieldDecorator('systemName', {
             initialValue: systemName,
-            rules: [{ required: true, message: intl.formatMessage({ id: `${intlPrefix}.systemName.error` }) }],
+            rules: [{
+              required: true,
+              message: intl.formatMessage({ id: `${intlPrefix}.systemName.error` }),
+            }, {
+              validator: this.validateToInputName,
+            }],
           })(
             <Input
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.systemName`} />}
               ref={(e) => { this.editFocusInput = e; }}
-              maxLength={20}
-              showLengthInfo
+              maxLength={18}
+              showLengthInfo={false}
               suffix={cardTitle}
             />,
           )}

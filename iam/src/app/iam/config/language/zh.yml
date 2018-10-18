@@ -2,6 +2,7 @@
 # site
 "iam.organization": "组织管理"
 "iam.menu-management": "菜单配置"
+"iam.system-setting": "系统配置"
 "iam.role-label": "角色标签"
 "iam.role": "角色管理"
 "iam.member-role-global": "平台角色分配"

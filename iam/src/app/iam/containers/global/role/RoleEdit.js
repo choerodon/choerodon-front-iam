@@ -226,7 +226,7 @@ export default class EditRole extends Component {
       currentPermission,
       submitting,
     } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { level, name, code, labels, builtIn } = roleData;
     const origin = RoleStore.getCanChosePermission;
     const data = level ? origin[level].slice() : [];
@@ -253,7 +253,7 @@ export default class EditRole extends Component {
           />
           <Content
             code={`${intlPrefix}.modify`}
-            value={{ name }}
+            values={{ name }}
           >
             <Form layout="vertical">
               <FormItem

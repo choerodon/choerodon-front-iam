@@ -283,13 +283,14 @@ export default class MenuSetting extends Component {
   // 创建3个状态的sidebar渲染
   getSidebarContent(selectType) {
     const { selectMenuDetail: { name } } = this.state;
+    const { AppState } = this.props;
     let formDom;
     let code;
     let values;
     switch (selectType) {
       case 'create':
         code = `${intlPrefix}.create`;
-        values = { name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
+        values = { name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` };
         formDom = this.getDirNameDom();
         break;
       case 'edit':
@@ -653,7 +654,7 @@ export default class MenuSetting extends Component {
   };
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const menuType = this.props.AppState.currentMenuType.type;
     const { menuGroup, type: typeState, selectType, sidebar, submitting, loading } = this.state;
     // Prompt 只能传单个字符串，所以用 STRING_DEVIDER 对 title 和 msg 进行了分离
@@ -806,6 +807,7 @@ export default class MenuSetting extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`} />} key="site" />

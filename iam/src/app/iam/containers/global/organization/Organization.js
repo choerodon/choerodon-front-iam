@@ -217,13 +217,13 @@ export default class Organization extends Component {
   }
 
   renderSidebarContent() {
-    const { intl, form: { getFieldDecorator }, OrganizationStore: { show, editData } } = this.props;
+    const { intl, form: { getFieldDecorator }, OrganizationStore: { show, editData }, AppState } = this.props;
 
     return (
       <Content
         className="sidebar-content"
         code={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}
-        values={{ name: show === 'create' ? `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}` }}
+        values={{ name: show === 'create' ? `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}` }}
       >
         <Form>
           {
@@ -408,6 +408,7 @@ export default class Organization extends Component {
       intl, OrganizationStore: {
         params, loading, pagination, sidebarVisible, submitting, show, orgData,
       },
+      AppState,
     } = this.props;
 
     return (
@@ -439,6 +440,7 @@ export default class Organization extends Component {
         </Header>
         <Content
           code="global.organization"
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             columns={this.getTableColumns()}

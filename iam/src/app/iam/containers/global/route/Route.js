@@ -7,7 +7,7 @@ import querystring from 'query-string';
 import { inject, observer } from 'mobx-react';
 import './Route.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from "../../../components/statusTag";
+import StatusTag from '../../../components/statusTag';
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
@@ -479,7 +479,7 @@ export default class Route extends Component {
 
   /* 渲染侧边栏内容 */
   renderSidebarContent() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { show, sidebarData, filterSensitive, helper } = this.state;
     const formItemLayout = {
@@ -504,7 +504,7 @@ export default class Route extends Component {
     if (show === 'create') {
       code = `${intlPrefix}.create`;
       values = {
-        name: process.env.HEADER_TITLE_NAME || 'Choerodon',
+        name: `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}`,
       };
     } else if (show === 'edit') {
       code = `${intlPrefix}.modify`;
@@ -810,6 +810,7 @@ export default class Route extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             columns={columns}

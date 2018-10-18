@@ -7,7 +7,7 @@ import SagaImg from '../saga/SagaImg';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
 import './style/saga-instance.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from "../../../components/statusTag";
+import StatusTag from '../../../components/statusTag';
 
 const intlPrefix = 'global.saga-instance';
 const { Sidebar } = Modal;
@@ -230,6 +230,7 @@ export default class SagaInstance extends Component {
 
   render() {
     const { data, activeTab } = this.state;
+    const { AppState } = this.props;
     return (
       <Page
         className="c7n-saga-instance"
@@ -248,6 +249,7 @@ export default class SagaInstance extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <div className="c7n-saga-instance-btns">
             <span className="text">

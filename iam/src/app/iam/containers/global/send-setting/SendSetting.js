@@ -27,7 +27,7 @@ class SendSettingType {
     const { type, id, name } = this.data;
     const codePrefix = type === 'organization' ? 'organization' : 'global';
     this.code = `${codePrefix}.sendsetting`;
-    this.values = { name: name || 'Choerodon' };
+    this.values = { name: name || AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' };
     this.type = type;
     this.orgId = id;
   }
@@ -367,7 +367,7 @@ export default class SendSetting extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const modifyService = this.getPermission();
     const { sort: { columnKey, order }, filters, params, pagination, loading, visible, submitting } = this.state;
     const columns = [{

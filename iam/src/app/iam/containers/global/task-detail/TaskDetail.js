@@ -720,7 +720,7 @@ export default class TaskDetail extends Component {
   // 渲染创建任务
   renderCreateContent() {
     const { triggerType } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = '512px';
     const service = TaskDetailStore.service;
@@ -827,7 +827,7 @@ export default class TaskDetail extends Component {
       <Content
         className="sidebar-content"
         code={`${intlPrefix}.create`}
-        values={{ name: process.env.HEADER_TITLE_NAME || 'Choerodon' }}
+        values={{ name: `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
       >
         <div>
           <Form
@@ -1242,7 +1242,7 @@ export default class TaskDetail extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
     const TaskData = TaskDetailStore.getData.slice();
     const columns = [{
@@ -1349,6 +1349,7 @@ export default class TaskDetail extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             loading={loading}

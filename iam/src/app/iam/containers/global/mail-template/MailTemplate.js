@@ -15,7 +15,7 @@ import {
 import MailTemplateStore from '../../../stores/global/mail-template';
 import './MailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from "../../../components/statusTag";
+import StatusTag from '../../../components/statusTag';
 
 
 // 公用方法类
@@ -27,7 +27,7 @@ class MailTemplateType {
     const { type, id, name } = this.data;
     const codePrefix = type === 'organization' ? 'organization' : 'global';
     this.code = `${codePrefix}.mailtemplate`;
-    this.values = { name: name || 'Choerodon' };
+    this.values = { name: name || AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' };
     this.type = type;
     this.orgId = id;
     this.orgName = name;

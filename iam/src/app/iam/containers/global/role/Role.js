@@ -174,7 +174,7 @@ export default class Role extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { sort: { columnKey, order }, pagination, filters, params } = this.state;
     const selectedRowKeys = this.getSelectedRowKeys();
     const columns = [{
@@ -359,6 +359,7 @@ export default class Role extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <Table
             columns={columns}

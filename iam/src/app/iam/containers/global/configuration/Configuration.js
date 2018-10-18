@@ -242,7 +242,7 @@ export default class Configuration extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.id`} />,
@@ -357,7 +357,7 @@ export default class Configuration extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           {this.filterBar}
           <Table

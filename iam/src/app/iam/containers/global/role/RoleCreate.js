@@ -249,7 +249,7 @@ export default class CreateRole extends Component {
 
   render() {
     const { currentPermission, firstLoad, submitting, initLevel } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -276,6 +276,7 @@ export default class CreateRole extends Component {
         />
         <Content
           code={`${intlPrefix}.create`}
+          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
         >
           <div>
             <Form layout="vertical">

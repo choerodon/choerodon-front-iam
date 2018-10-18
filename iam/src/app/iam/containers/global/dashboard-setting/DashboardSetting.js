@@ -378,7 +378,7 @@ class DashboardSetting extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Table
             loading={loading}

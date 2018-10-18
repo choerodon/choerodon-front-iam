@@ -136,9 +136,9 @@ export default class AuthorizeModal extends Component {
     return (
       <div className="c7n-apitest-modal">
         <div className="c7n-apitest-modal-icon-content">
-          <div className={classnames('c7n-apitest-modal-icon', siteInfo.systemLogo === '' ? 'c7n-apitest-modal-default-icon' : null)}
-               style={{ backgroundImage: siteInfo.systemLogo !== '' ? `url(${siteInfo.systemLogo})` : null }} />
-          <div className="c7n-apitest-modal-icon-title">{siteInfo.systemName}</div>
+          <div className={classnames('c7n-apitest-modal-icon', !siteInfo.systemLogo ? 'c7n-apitest-modal-default-icon' : null)}
+               style={{ backgroundImage: siteInfo.systemLogo ? `url(${siteInfo.systemLogo})` : null }} />
+          <div className="c7n-apitest-modal-icon-title">{siteInfo.systemName ? siteInfo.systemName : 'Choerodon'}</div>
         </div>
 
         <div className="c7n-apitest-modal-title"><FormattedMessage id={`${intlPrefix}.authorize.title`} /></div>

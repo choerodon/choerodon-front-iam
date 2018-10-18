@@ -26,11 +26,9 @@ export default class MyOrganization extends Component {
     history.push(`/?type=organization&id=${id}&name=${encodeURIComponent(name)}`);
   }
 
-  handleRow = (record) => {
-    return {
-      onClick: this.handleRowClick.bind(this, record),
-    };
-  };
+  handleRow = record => ({
+    onClick: this.handleRowClick.bind(this, record),
+  });
 
   getTableColumns() {
     return [{

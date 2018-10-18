@@ -827,7 +827,7 @@ export default class TaskDetail extends Component {
       <Content
         className="sidebar-content"
         code={`${intlPrefix}.create`}
-        values={{ name: `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+        values={{ name: `${AppState.getSiteInfo.systemName || 'Choerodon'}` }}
       >
         <div>
           <Form
@@ -1349,7 +1349,7 @@ export default class TaskDetail extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Table
             loading={loading}

@@ -357,7 +357,7 @@ export default class Configuration extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {this.filterBar}
           <Table

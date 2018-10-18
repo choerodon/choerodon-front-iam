@@ -300,7 +300,7 @@ export default class MailSetting extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {mainContent}
         </Content>

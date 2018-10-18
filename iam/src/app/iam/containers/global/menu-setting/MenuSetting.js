@@ -290,7 +290,7 @@ export default class MenuSetting extends Component {
     switch (selectType) {
       case 'create':
         code = `${intlPrefix}.create`;
-        values = { name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` };
+        values = { name: AppState.getSiteInfo.systemName || 'Choerodon' };
         formDom = this.getDirNameDom();
         break;
       case 'edit':
@@ -807,7 +807,7 @@ export default class MenuSetting extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`} />} key="site" />

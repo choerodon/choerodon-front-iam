@@ -223,7 +223,7 @@ export default class Organization extends Component {
       <Content
         className="sidebar-content"
         code={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}
-        values={{ name: show === 'create' ? `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}` }}
+        values={{ name: show === 'create' ? `${AppState.getSiteInfo.systemName || 'Choerodon'}` : `${editData.code}` }}
       >
         <Form>
           {
@@ -440,7 +440,7 @@ export default class Organization extends Component {
         </Header>
         <Content
           code="global.organization"
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Table
             columns={this.getTableColumns()}

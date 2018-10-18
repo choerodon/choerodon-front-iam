@@ -233,7 +233,7 @@ export default class APITest extends Component {
         </Header>
         <Content
           code={this.msgrecord.code}
-          values={{ name: AppState.getSiteInfo.systemName || `${process.env.HEADER_TITLE_NAME}` || 'Choerodon' }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Table
             columns={columns}

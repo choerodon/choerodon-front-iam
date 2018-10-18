@@ -544,7 +544,7 @@ class CreateConfig extends Component {
     const { current, service, template, version } = this.state;
     const { AppState } = this.props;
     let code;
-    const values = { name: `${AppState.getSiteInfo.systemName || process.env.HEADER_TITLE_NAME || 'Choerodon'}` };
+    const values = { name: `${AppState.getSiteInfo.systemName || 'Choerodon'}` };
     if (ConfigurationStore.getStatus === 'create') {
       code = `${intlPrefix}.create`;
     } else {

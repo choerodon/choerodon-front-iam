@@ -261,6 +261,7 @@ export default class SystemSetting extends Component {
         <FormItem
           {...formItemLayout}
         >
+          <Input style={{ display: 'none' }} />
           {getFieldDecorator('systemName', {
             initialValue: systemName,
             rules: [{
@@ -309,6 +310,7 @@ export default class SystemSetting extends Component {
         <FormItem
           {...formItemLayout}
         >
+          <Input style={{ display: 'none' }} />
           {getFieldDecorator('systemTitle', {
             initialValue: systemTitle,
           })(
@@ -325,6 +327,7 @@ export default class SystemSetting extends Component {
         <FormItem
           {...formItemLayout}
         >
+          <Input style={{ display: 'none' }} />
           {getFieldDecorator('defaultPassword', {
             initialValue: defaultPassword,
             rules: [{

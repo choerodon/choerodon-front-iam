@@ -72,10 +72,9 @@ export default class SystemSetting extends Component {
   handleReset = () => {
     const { SystemSettingStore, intl } = this.props;
     SystemSettingStore.resetUserSetting().then(() => {
-      this.init();
+      window.location.reload(true);
     },
     );
-    Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.reset` }));
   };
   showDeleteConfirm = () => {
     const that = this;

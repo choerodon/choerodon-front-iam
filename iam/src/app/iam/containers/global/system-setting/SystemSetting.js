@@ -199,6 +199,7 @@ export default class SystemSetting extends Component {
       submitting: true,
     });
     this.props.form.validateFieldsAndScroll((err, values) => {
+      debugger;
       if (err) {
         this.setState({
           submitting: false,
@@ -212,6 +213,7 @@ export default class SystemSetting extends Component {
         favicon: SystemSettingStore.getFavicon,
         systemLogo: SystemSettingStore.getLogo,
       };
+      const { defaultLanguage, defaultPassword, systemName, systemTitle, favicon, systemLogo } = { submitSetting };
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
       if (Object.keys(prevSetting).length) {
         if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
@@ -222,6 +224,11 @@ export default class SystemSetting extends Component {
             submitting: false,
           });
         }
+      } else if (defaultLanguage === 'zh_CN' && systemName === 'Choerodon' && systemTitle === 'Choerodon | 企业数字化服务平台' && defaultPassword === 'abcd1234' && !favicon && !systemLogo) {
+        Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.conflict` }));
+        this.setState({
+          submitting: false,
+        });
       } else {
         SystemSettingStore.postUserSetting(submitSetting).then(() => window.location.reload(true));
       }
@@ -232,7 +239,8 @@ export default class SystemSetting extends Component {
     const { SystemSettingStore, intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { logoLoadingStatus, submitting } = this.state;
-    const { defaultLanguage, defaultPassword, systemName, systemTitle } = SystemSettingStore.getUserSetting;
+    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = 'Choerodon | 企业数字化服务平台' } = SystemSettingStore.getUserSetting;
+    debugger;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {
@@ -246,8 +254,7 @@ export default class SystemSetting extends Component {
     };
     const uploadButton = (
       <div>
-        {logoLoadingStatus ? <Spin /> : <Icon type="add" />}
-        <div className="">上传图片</div>
+        {logoLoadingStatus ? <Spin /> : <div className={'initLogo'} />}
       </div>
     );
     const mainContent =

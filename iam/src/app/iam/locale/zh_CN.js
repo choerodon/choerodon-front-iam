@@ -1023,7 +1023,7 @@ const zh_CN = {
   // 系统设置
   'global.system-setting.header': '系统设置',
   'global.system-setting.title': '对平台的自定义设置',
-  'global.system-setting.description': '设置平台的名称、logo，用以用户认出您的企业。',
+  'global.system-setting.description': '设置平台的名称、logo、系统默认密码和默认语言，以便于提高您的企业辨识度，个性化定制您的平台',
   'global.system-setting.file.size.limit': '图标大小不能大于{size}',
   'global.system-setting.favicon': '平台徽标',
   'global.system-setting.favicon.error': '请填写您的平台徽标',

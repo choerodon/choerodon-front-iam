@@ -307,7 +307,7 @@
   .c7n-apitest-modal-icon {
     height: 30px;
     width: 41px;
-    margin-right: 10px;
+    margin-right: 8px;
     // background-image: url('./icon/choerodon_logo_color.svg');
     background-repeat: no-repeat;
     background-size: auto 31px;
@@ -325,6 +325,7 @@
   }
 
   .c7n-apitest-modal-icon-title {
+    color: rgba(0, 0, 0, 0.65);
     font-size: 22px;
   }
 

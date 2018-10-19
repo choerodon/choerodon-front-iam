@@ -199,7 +199,6 @@ export default class SystemSetting extends Component {
       submitting: true,
     });
     this.props.form.validateFieldsAndScroll((err, values) => {
-      debugger;
       if (err) {
         this.setState({
           submitting: false,
@@ -240,7 +239,6 @@ export default class SystemSetting extends Component {
     const { getFieldDecorator } = this.props.form;
     const { logoLoadingStatus, submitting } = this.state;
     const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = 'Choerodon | 企业数字化服务平台' } = SystemSettingStore.getUserSetting;
-    debugger;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {

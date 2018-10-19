@@ -11,12 +11,12 @@ import { StepFooter, StepBar, GuideMask, Permission } from 'choerodon-front-boot
 @observer
 export default class Basic extends Component {
   renderStep(current) {
-    const { AppState, GuideStore } = this.props;
+    const { AppState, GuideStore, intl } = this.props;
     switch (current) {
       case 0:
         return (
           <div>
-            <h2>choerodon基础操作</h2>
+            <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>choerodon的基础系统配置</h3>
             <p>在本新手指引中，您可以创建一个新组织，并且在该组织中创建组织下的新项目，向新组织添加新用户，分别在组织层和项目层给用户分配角色。</p>
             <p>本教程会分步指导您完成如下任务：</p>
@@ -30,7 +30,7 @@ export default class Basic extends Component {
       case 1:
         return (
           <div>
-            <h2>choerodon基础操作</h2>
+            <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>创建组织</h3>
             <p>组织是项目的上一级。通过组织您可以管理项目、用户。</p>
             <p>您可以使用组织创建表单来创建组织，创建后平台默认您是这个组织的组织管理员。</p>
@@ -43,7 +43,7 @@ export default class Basic extends Component {
       case 2:
         return (
           <div>
-            <h2>choerodon基础操作</h2>
+            <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>组织基本设置</h3>
             <p>如果要进行组织基本操作的步骤，首先您必须先选择一个组织</p>
             <ol>
@@ -90,7 +90,7 @@ export default class Basic extends Component {
       case 3:
         return (
           <div>
-            <h2>choerodon基础操作</h2>
+            <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>项目基本设置</h3>
             <p>项目是最小粒度的管理层次。</p>
             <p>如果要进行项目基本操作的步骤，首先您必须先选择一个项目</p>
@@ -114,7 +114,7 @@ export default class Basic extends Component {
       default:
         return (
           <div>
-            <h2>choerodon基础操作</h2>
+            <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>完成</h3>
             <p>恭喜！</p>
             <div className="icon-winner" />

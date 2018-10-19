@@ -10,7 +10,7 @@ class SystemSettingStore {
   @observable submitting = false;
   @computed
   get getUserSetting() {
-    return this.userSetting ? this.userSetting : null;
+    return this.userSetting ? this.userSetting : {};
   }
   @action
   setUserSetting(data) {

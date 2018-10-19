@@ -116,8 +116,8 @@ export default class Basic extends Component {
           <div>
             <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>完成</h3>
-            <p>恭喜！</p>
             <div className="icon-winner" />
+            <p>恭喜！</p>
             <p>现在您已经知道如何在choerodon初始状态下进行系统配置的一系列基础操作。</p>
             <p>您可以点击表单页面的“<a href="http://choerodon.io">了解更多<Icon type="open_in_new" /></a>”，了解系统配置的更多用户手册。</p>
             <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">菜单配置<Icon type="open_in_new" /></a> 用于配置平台菜单</p>

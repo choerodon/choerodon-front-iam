@@ -1,5 +1,17 @@
 .c7n-iam-guide-basic {
+  a {
+    border-bottom: 1px dashed;
+  }
   .icon-open_in_new {
     font-size: 12px;
+  }
+  .icon-winner {
+    background: url("image/winner.svg");
+    background-position: center;
+    background-size: 100%;
+    height: 86px;
+    width: 86px;
+    background-repeat: no-repeat;
+    margin-left: 46px;
   }
 }

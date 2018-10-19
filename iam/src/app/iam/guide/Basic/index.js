@@ -45,7 +45,7 @@ export default class Basic extends Component {
           <div>
             <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>组织基本设置</h3>
-            <p>如果要进行组织基本操作的步骤，首先您必须先选择一个组织</p>
+            <p>如果要进行组织基本操作的步骤，首先您必须先选择一个组织。</p>
             <ol>
               <li>选择组织，点击<GuideMask highLight="c7n-boot-header-menu-type-button" mode="click">选择项目</GuideMask>，选择您要进入的组织。</li>
               <li>创建一个项目</li>
@@ -93,7 +93,7 @@ export default class Basic extends Component {
             <h2>{intl.formatMessage({ id: 'guide.iam.basic.h2' })}</h2>
             <h3>项目基本设置</h3>
             <p>项目是最小粒度的管理层次。</p>
-            <p>如果要进行项目基本操作的步骤，首先您必须先选择一个项目</p>
+            <p>如果要进行项目基本操作的步骤，首先您必须先选择一个项目。</p>
             <ol>
               <li>选择项目，点击<GuideMask highLight="c7n-boot-header-menu-type-button" mode="click">选择项目</GuideMask>，选择您要进入的项目。</li>
               <li>分配项目层角色</li>

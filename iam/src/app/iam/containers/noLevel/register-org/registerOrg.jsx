@@ -266,7 +266,7 @@ export default class registerOrg extends Component {
     const { getFieldDecorator } = this.props.form;
     const { organizationCode, organizationName, address, submitLoading } = this.state;
     return (
-      <Form className="c7n-registerorg-content" name="firstStepForm" onSubmit={this.handleSubmit.bind(this, 1)}>
+      <Form className="c7n-registerorg-content">
         <FormItem
           {...formItemLayout}
         >
@@ -335,10 +335,10 @@ export default class registerOrg extends Component {
         </FormItem>
         <Button
           type="primary"
-          htmlType="submit"
           funcType="raised"
           className="c7n-registerorg-btn-group"
           loading={submitLoading}
+          onClick={this.handleSubmit.bind(this, 1)}
         >
           <FormattedMessage id={`${intlPrefix}.step.next`} />
         </Button>
@@ -353,7 +353,7 @@ export default class registerOrg extends Component {
     const { loginName, realName, email, phone, password, rePassword, submitLoading } = this.state;
     const userPrefix = 'organization.user';
     return (
-      <Form className="c7n-registerorg-content" name="secondStepForm" onSubmit={this.handleSubmit.bind(this, 2)}>
+      <Form className="c7n-registerorg-content">
         <FormItem
           {...formItemLayout}
         >
@@ -531,8 +531,8 @@ export default class registerOrg extends Component {
           <Button
             type="primary"
             funcType="raised"
-            htmlType="submit"
             loading={submitLoading}
+            onClick={this.handleSubmit.bind(this, 2)}
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
@@ -553,7 +553,7 @@ export default class registerOrg extends Component {
     const { getFieldDecorator } = this.props.form;
     const { interval, captcha, submitLoading } = this.state;
     return (
-      <Form className="c7n-registerorg-content" name="thirdStepForm" onSubmit={this.handleSubmit.bind(this, 3)}>
+      <Form className="c7n-registerorg-content">
         <FormItem
           {...formItemLayout}
         >
@@ -610,7 +610,7 @@ export default class registerOrg extends Component {
           <Button
             type="primary"
             funcType="raised"
-            htmlType="submit"
+            onClick={this.handleSubmit.bind(this, 3)}
             loading={submitLoading}
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />

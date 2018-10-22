@@ -289,6 +289,7 @@ export default class UserInfo extends Component {
             <Select
               label={<FormattedMessage id={`${intlPrefix}.language`} />}
               style={{ width: inputWidth }}
+              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             >
               {this.getLanguageOptions()}
             </Select>,
@@ -309,6 +310,7 @@ export default class UserInfo extends Component {
             <Select
               label={<FormattedMessage id={`${intlPrefix}.timezone`} />}
               style={{ width: inputWidth }}
+              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             >
               {this.getTimeZoneOptions()}
             </Select>,

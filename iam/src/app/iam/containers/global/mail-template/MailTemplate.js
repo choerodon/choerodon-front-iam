@@ -320,7 +320,7 @@ export default class MailTemplate extends Component {
             action: this.handleDelete.bind(this, record),
           });
         }
-        return <Action data={actionsDatas} />;
+        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]}/>;
       },
     }];
 

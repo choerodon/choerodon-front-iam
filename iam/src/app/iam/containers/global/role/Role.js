@@ -299,7 +299,7 @@ export default class Role extends Component {
             action: this.handleEnable.bind(this, record),
           });
         }
-        return <Action data={actionDatas} />;
+        return <Action data={actionDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
       },
     }];
     const rowSelection = {

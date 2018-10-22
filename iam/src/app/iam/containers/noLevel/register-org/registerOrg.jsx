@@ -90,7 +90,8 @@ export default class registerOrg extends Component {
    * 提交表单
    * @param step 当前步骤
    */
-  handleSubmit = (step) => {
+  handleSubmit = (step, e) => {
+    e.preventDefault();
     const { form, intl } = this.props;
     form.validateFields((err, values) => {
       Object.keys(values).forEach((key) => {
@@ -266,7 +267,7 @@ export default class registerOrg extends Component {
     const { getFieldDecorator } = this.props.form;
     const { organizationCode, organizationName, address, submitLoading } = this.state;
     return (
-      <Form className="c7n-registerorg-content">
+      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmit.bind(this, 1)}>
         <FormItem
           {...formItemLayout}
         >
@@ -338,7 +339,7 @@ export default class registerOrg extends Component {
           funcType="raised"
           className="c7n-registerorg-btn-group"
           loading={submitLoading}
-          onClick={this.handleSubmit.bind(this, 1)}
+          htmlType="sumbit"
         >
           <FormattedMessage id={`${intlPrefix}.step.next`} />
         </Button>
@@ -351,9 +352,8 @@ export default class registerOrg extends Component {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { loginName, realName, email, phone, password, rePassword, submitLoading } = this.state;
-    const userPrefix = 'organization.user';
     return (
-      <Form className="c7n-registerorg-content">
+      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmit.bind(this, 2)}>
         <FormItem
           {...formItemLayout}
         >
@@ -532,7 +532,7 @@ export default class registerOrg extends Component {
             type="primary"
             funcType="raised"
             loading={submitLoading}
-            onClick={this.handleSubmit.bind(this, 2)}
+            htmlType="submit"
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
@@ -553,7 +553,7 @@ export default class registerOrg extends Component {
     const { getFieldDecorator } = this.props.form;
     const { interval, captcha, submitLoading } = this.state;
     return (
-      <Form className="c7n-registerorg-content">
+      <Form className="c7n-registerorg-content" onSubmit={this.handleSubmit.bind(this, 3)}>
         <FormItem
           {...formItemLayout}
         >
@@ -610,7 +610,7 @@ export default class registerOrg extends Component {
           <Button
             type="primary"
             funcType="raised"
-            onClick={this.handleSubmit.bind(this, 3)}
+            htmlType="submit"
             loading={submitLoading}
           >
             <FormattedMessage id={`${intlPrefix}.step.next`} />
@@ -659,6 +659,8 @@ export default class registerOrg extends Component {
 
   render() {
     const { current } = this.state;
+    const { AppState } = this.props;
+    const siteInfo = AppState.getSiteInfo;
     return (
       <div className="c7n-registerorg-bg">
         <div className="c7n-registerorg-container">

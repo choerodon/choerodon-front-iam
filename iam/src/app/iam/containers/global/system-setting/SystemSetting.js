@@ -212,7 +212,7 @@ export default class SystemSetting extends Component {
         favicon: SystemSettingStore.getFavicon,
         systemLogo: SystemSettingStore.getLogo,
       };
-      const { defaultLanguage, defaultPassword, systemName, systemTitle, favicon, systemLogo } = { submitSetting };
+      const { defaultLanguage, defaultPassword, systemName, systemTitle, favicon, systemLogo } = submitSetting;
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
       if (Object.keys(prevSetting).length) {
         if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {

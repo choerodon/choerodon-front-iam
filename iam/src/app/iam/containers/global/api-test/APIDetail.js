@@ -415,6 +415,7 @@ export default class APIDetail extends Component {
                   <Select
                     dropdownStyle={{ width: '55px' }}
                     defaultValue=""
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                     onChange={this.handleSelectChange.bind(this, record.name)}
                   >
                     <Option value="" style={{ height: '22px' }} />

@@ -159,6 +159,7 @@ class CreateConfig extends Component {
           disabled={templateDisable}
           style={{ width: '512px' }}
           label={<FormattedMessage id={`${intlPrefix}.template`} />}
+          getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
           filterOption={
             (input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -182,6 +183,7 @@ class CreateConfig extends Component {
             disabled={templateDisable}
             style={{ width: '512px' }}
             label={<FormattedMessage id={`${intlPrefix}.template`} />}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             filterOption={
               (input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -195,6 +197,7 @@ class CreateConfig extends Component {
             disabled={templateDisable}
             style={{ width: '512px' }}
             label={<FormattedMessage id={`${intlPrefix}.template`} />}
+            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             filterOption={
               (input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -340,6 +343,7 @@ class CreateConfig extends Component {
                 disabled={ConfigurationStore.getStatus === 'baseon'}
                 style={{ width: inputWidth }}
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
+                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                 filterOption={
                   (input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

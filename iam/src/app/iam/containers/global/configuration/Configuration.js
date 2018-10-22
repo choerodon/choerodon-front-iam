@@ -325,7 +325,7 @@ export default class Configuration extends Component {
             action: this.setDefaultConfig.bind(this, record.id),
           });
         }
-        return <Action data={actionsDatas} />;
+        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
       },
     }];
     return (

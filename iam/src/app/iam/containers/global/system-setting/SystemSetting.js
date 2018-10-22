@@ -37,12 +37,12 @@ const cardContentName = (
   </div>
 );
 const cardTitle = (
-  <Popover content={cardContentTitle}>
+  <Popover content={cardContentTitle} getPopupContainer={() => document.getElementsByClassName('page-content')[0]}>
     <Icon type="help" style={{ fontSize: 16, color: '#bdbdbd' }} />
   </Popover>
 );
 const cardName = (
-  <Popover content={cardContentName}>
+  <Popover content={cardContentName} getPopupContainer={() => document.getElementsByClassName('page-content')[0]}>
     <Icon type="help" style={{ fontSize: 16, color: '#bdbdbd' }} />
   </Popover>
 );
@@ -118,7 +118,7 @@ export default class SystemSetting extends Component {
         </div>
         <span className={`${prefixClas}-tips`}>
           <FormattedMessage id={`${intlPrefix}.favicon`} />
-          <Popover content={cardContentFavicon}>
+          <Popover content={cardContentFavicon} getPopupContainer={() => document.getElementsByClassName('page-content')[0]}>
             <Icon type="help" style={{ fontSize: 16, color: '#bdbdbd' }} />
           </Popover>
         </span>
@@ -293,7 +293,7 @@ export default class SystemSetting extends Component {
         >
           <span className={`${prefixClas}-tips`}>
             <FormattedMessage id={`${intlPrefix}.systemLogo`} />
-            <Popover content={cardContentLogo}>
+            <Popover content={cardContentLogo} getPopupContainer={() => document.getElementsByClassName('page-content')[0]}>
               <Icon type="help" style={{ fontSize: 16, color: '#bdbdbd' }} />
             </Popover>
           </span>
@@ -361,9 +361,7 @@ export default class SystemSetting extends Component {
               required: true,
               message: intl.formatMessage({ id: `${intlPrefix}.defaultLanguage.error` }),
             }],
-          })(<Select
-            label={<FormattedMessage id={`${intlPrefix}.defaultLanguage`} />}
-          >
+          })(<Select getPopupContainer={() => document.getElementsByClassName('page-content')[0]} label={<FormattedMessage id={`${intlPrefix}.defaultLanguage`} />}>
             {this.getLanguageOptions()}
           </Select>,
           )}

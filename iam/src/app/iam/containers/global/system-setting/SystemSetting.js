@@ -51,6 +51,7 @@ const cardName = (
 @Form.create({})
 @withRouter
 @injectIntl
+@inject('AppState')
 @observer
 export default class SystemSetting extends Component {
   state = {
@@ -235,10 +236,10 @@ export default class SystemSetting extends Component {
   };
 
   render() {
-    const { SystemSettingStore, intl } = this.props;
+    const { SystemSettingStore, intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { logoLoadingStatus, submitting } = this.state;
-    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = 'Choerodon | 企业数字化服务平台' } = SystemSettingStore.getUserSetting;
+    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = AppState.getSiteInfo.defaultTitle } = SystemSettingStore.getUserSetting;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {

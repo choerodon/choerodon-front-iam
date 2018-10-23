@@ -327,9 +327,9 @@ export default class EditRole extends Component {
                     <Select
                       mode="multiple"
                       size="default"
-                      disabled={!RoleStore.getLabel.length}
+                      // disabled={!RoleStore.getLabel.length}
                       label={<FormattedMessage id={`${intlPrefix}.label`} />}
-                      getPopupContainer={() => document.getElementsByClassName('ant-modal-content')[0]}
+                      getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                       style={{
                         width: '512px',
                       }}

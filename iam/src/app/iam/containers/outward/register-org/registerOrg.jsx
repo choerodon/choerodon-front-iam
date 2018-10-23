@@ -250,6 +250,16 @@ export default class registerOrg extends Component {
     });
   }
 
+  // 直接登录
+  login = () => {
+    const token = Choerodon.getAccessToken();
+    if (token) {
+      Choerodon.logout();
+    } else {
+      Choerodon.authorize();
+    }
+  }
+
 
   // 渲染第一步
   handleRenderFirstStep = () => {
@@ -637,17 +647,6 @@ export default class registerOrg extends Component {
       </Button>
     </div>
   )
-
-  // 直接登录
-  login = () => {
-    const token = Choerodon.getAccessToken();
-    if (token) {
-      Choerodon.logout();
-    } else {
-      Choerodon.authorize();
-    }
-  }
-
 
   render() {
     const { current } = this.state;

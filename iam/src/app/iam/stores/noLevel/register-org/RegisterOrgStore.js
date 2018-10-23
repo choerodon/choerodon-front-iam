@@ -27,9 +27,9 @@ instance.interceptors.response.use(res => res.data,
 
 @store('RegisterOrgStore')
 class RegisterOrgStore {
-  checkCode = value => instance.post('/iam/v1/organizations/check', JSON.stringify({ code: value }));
+  checkCode = value => instance.post('/org/v1/organizations/check', JSON.stringify({ code: value }));
 
-  checkLoginrname = loginName => instance.post('/iam/v1/users/check', JSON.stringify({ loginName }));
+  checkLoginname = loginName => instance.post('/iam/v1/users/check', JSON.stringify({ loginName }));
 
   checkEmailAddress = email => instance.post('/iam/v1/users/check', JSON.stringify({ email }));
 

@@ -16,11 +16,28 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
 
     &-icon {
-      width: 172px;
       height: 30px;
-      margin: auto;
-      background: url('./icon/choerodon_logo_color.svg') no-repeat;
+      width: 41px;
+      margin-right: 8px;
+      // background-image: url('./icon/choerodon_logo_color.svg');
+      background-repeat: no-repeat;
       background-size: auto 31px;
+      line-height: 30px;
+      font-size: 22px;
+    }
+
+    &-icon-content {
+      display: flex;
+      justify-content: center;
+    }
+
+    &-default-icon {
+      background-image: url('./icon/choerodon_logo_color.svg');
+    }
+
+    &-icon-title {
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 22px;
     }
 
     &-title {

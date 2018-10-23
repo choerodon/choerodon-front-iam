@@ -3,6 +3,7 @@ import { Button, Select, Table, Tooltip, Modal, Form, Input, Icon, Steps } from 
 import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import classnames from 'classnames';
 import './registerOrg.scss';
 import _ from 'lodash';
 import RegsiterOrgStore from '../../../stores/noLevel/register-org';
@@ -47,17 +48,6 @@ export default class registerOrg extends Component {
       interval: 0, // 发送验证码冷却时间
       submitLoading: false, // 提交表单时下一步按钮的状态
     };
-  }
-
-
-  componentDidMount() {
-    if (document.getElementsByClassName('common-menu')[0]) {
-      document.getElementsByClassName('common-menu')[0].style.display = 'none';
-    }
-
-    if (document.getElementsByClassName('page-header')[0]) {
-      document.getElementsByClassName('page-header')[0].style.display = 'none';
-    }
   }
 
   /**
@@ -159,7 +149,7 @@ export default class registerOrg extends Component {
    */
   checkUsername = (rule, loginname, callback) => {
     const { intl } = this.props;
-    RegsiterOrgStore.checkLoginrname(loginname)
+    RegsiterOrgStore.checkLoginname(loginname)
       .then(({ failed }) => {
         if (failed) {
           callback(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
@@ -537,6 +527,7 @@ export default class registerOrg extends Component {
             <FormattedMessage id={`${intlPrefix}.step.next`} />
           </Button>
           <Button
+            disabled={submitLoading}
             funcType="raised"
             onClick={this.changeStep.bind(this, 1)}
           >
@@ -617,6 +608,7 @@ export default class registerOrg extends Component {
           </Button>
           <Button
             funcType="raised"
+            disabled={submitLoading}
             onClick={this.changeStep.bind(this, 2)}
           >
             <FormattedMessage id={`${intlPrefix}.step.prev`} />
@@ -664,7 +656,15 @@ export default class registerOrg extends Component {
     return (
       <div className="c7n-registerorg-bg">
         <div className="c7n-registerorg-container">
-          <div className="c7n-registerorg-container-icon" />
+          <div className="c7n-registerorg-container-icon-content">
+            <div
+              className={classnames('c7n-registerorg-container-icon', !siteInfo.favicon ? 'c7n-registerorg-container-default-icon' : null)}
+              style={{ backgroundImage: siteInfo.favicon ? `url(${siteInfo.favicon})` : null }}
+            />
+            <div className="c7n-registerorg-container-icon-title">{siteInfo.systemName ? siteInfo.systemName : 'Choerodon'}</div>
+          </div>
+
+
           <div className="c7n-registerorg-container-title">
             <FormattedMessage id={`${intlPrefix}.register.organization`} />
           </div>

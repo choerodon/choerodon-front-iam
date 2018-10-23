@@ -4,7 +4,7 @@ import { inject } from 'mobx-react';
 import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
 
 // noLevel
-const registerOrg = asyncRouter(() => import('./noLevel/register-org'));
+const registerOrg = asyncRouter(() => import('./outward/register-org'));
 
 // global 对应目录
 const apiTest = asyncRouter(() => import('./global/api-test'));
@@ -61,7 +61,7 @@ class IAMIndex extends React.Component {
     return (
       <IntlProviderAsync>
         <Switch>
-          <Route path={`${match.url}/register-org`} component={registerOrg} />
+          <Route path={`${match.url}/outward-register-org`} component={registerOrg} />
           <Route path={`${match.url}/api-test`} component={apiTest} />
           <Route path={`${match.url}/configuration`} component={configuration} />
           <Route path={`${match.url}/inmail-template`} component={inmailTemplate} />

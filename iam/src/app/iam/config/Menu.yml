@@ -133,6 +133,7 @@
         sort: 1
         permission:
         - 'manager-service.service.pageManager'
+        - 'manager-service.api.queryPathDetail'
 
 # 消息中心
 "msg-center":
@@ -398,15 +399,17 @@
         sort: 3
         permission:
           - 'iam-service.user.listOrganizationAndRoleById'
+          - 'iam-service.role.listPermissionById'
     - "project-info":
         icon: project
         Routes: /iam/project-info
         sort: 4
         permission:
           - 'iam-service.user.listProjectAndRoleById'
+          - 'iam-service.role.listPermissionById'
     - "user-msg":
         icon: message_notification
         Routes: /iam/user-msg
         sort: 5
         permission:
-        - 'iam-service.user.listProjectAndRoleById'
+          - 'iam-service.user.listProjectAndRoleById'

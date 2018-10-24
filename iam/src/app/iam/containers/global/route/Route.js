@@ -8,6 +8,7 @@ import { inject, observer } from 'mobx-react';
 import './Route.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import '../../../common/ConfirmModal.scss';
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
@@ -214,6 +215,7 @@ export default class Route extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
       onOk: () => axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {

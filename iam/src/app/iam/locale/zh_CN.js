@@ -520,6 +520,7 @@ const zh_CN = {
   running: '运行中',
   failed: '失败',
   completed: '完成',
+  non_consumer: '完成',
   predefined: '预定义',
   custom: '自定义',
 
@@ -669,6 +670,11 @@ const zh_CN = {
   'global.taskdetail.cron.task': 'Cron任务',
   'global.taskdetail.cron.expression': 'Cron表达式',
   'global.taskdetail.cron.expression.required': '请输入Cron表达式',
+  'global.taskdetail.cron.tip': '请填写Cron表达式, 了解如何填写Cron表达式。',
+  'global.taskdetail.cron.tip.link': `${docServer}/user-guide/microservice-development/job/cron-expression/`,
+  'global.taskdetail.cron.example': '示例',
+  'global.taskdetail.cron.runtime': '第{time}次执行时间',
+  'global.taskdetail.cron.wrong': 'Cron表达式错误，请重新输入',
   'global.taskdetail.service.required': '请选择服务名',
   'global.taskdetail.task.class.required': '请选择任务类名',
   'global.taskdetail.service.name': '服务名',
@@ -690,11 +696,10 @@ const zh_CN = {
   'global.taskdetail.plan.execution.time': '计划执行时间',
   'global.taskdetail.actual.execution.time': '实际执行时间',
   'global.taskdetail.delete.title': '删除任务',
-  'global.taskdetail.delete.content': '确定要删除任务"{name}"吗',
+  'global.taskdetail.delete.content': '确定要删除任务"{name}"吗？',
   'global.taskdetail.noprogram': '无可选任务程序时，无法创建任务',
   'global.taskdetail.num.required': '请输入数字',
   'global.taskdetail.default.required': '无默认值时必填',
-
 
   // 执行记录
   'global.execution.header.title': '执行记录',

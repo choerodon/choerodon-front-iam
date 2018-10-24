@@ -295,7 +295,10 @@ export default class APITest extends Component {
     }];
     return (
       <Page
-        service={['manager-service.service.pageManager']}
+        service={[
+          'manager-service.service.pageManager',
+          'manager-service.api.queryPathDetail',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}

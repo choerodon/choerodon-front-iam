@@ -147,7 +147,7 @@ export default class SagaInstance extends Component {
           value: 'FAILED',
           text: '失败',
         }, {
-          value: 'COMPLETED',
+          value: 'COMPLETED' || 'NON_CONSUMER',
           text: '完成',
         }] : null,
         filteredValue: (activeTab === 'all' && filters.status) || [],

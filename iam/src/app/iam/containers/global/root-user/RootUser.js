@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import RootUserStore from '../../../stores/global/root-user/RootUserStore';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import StatusTag from '../../../components/statusTag';
+import '../../../common/ConfirmModal.scss';
 
 const { Sidebar } = Modal;
 const intlPrefix = 'global.rootuser';
@@ -107,6 +108,7 @@ export default class RootUser extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.remove.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.remove.content` }, {
         name: record.realName,

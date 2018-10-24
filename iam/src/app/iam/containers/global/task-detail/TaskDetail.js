@@ -10,6 +10,7 @@ import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../../stores/global/task-detail';
 import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
+import '../../../common/ConfirmModal.scss';
 
 const intlPrefix = 'global.taskdetail';
 const { Sidebar } = Modal;
@@ -256,6 +257,7 @@ export default class TaskDetail extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
       onOk: () => TaskDetailStore.deleteTask(record.id).then(({ failed, message }) => {
@@ -684,11 +686,16 @@ export default class TaskDetail extends Component {
 
   getCronContent = () => {
     const { cronLoading, cronTime } = this.state;
+    const { intl } = this.props;
     let content;
     if (cronLoading === 'empty') {
       content = (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          请填写cron表达式
+        <div>
+          <FormattedMessage id={`${intlPrefix}.cron.tip`} />
+          <a href={intl.formatMessage({ id: `${intlPrefix}.cron.tip.link` })} target="_blank">
+            <span>{intl.formatMessage({ id: 'learnmore' })}</span>
+            <Icon type="open_in_new" style={{ fontSize: '13px' }} />
+          </a>
         </div>
       );
     } else if (cronLoading === true) {
@@ -699,10 +706,10 @@ export default class TaskDetail extends Component {
     } else if (cronLoading === 'right') {
       content = (
         <div className="c7n-task-deatil-cron-container">
-          <span>示例</span>
+          <FormattedMessage id={`${intlPrefix}.cron.example`} />
           {
             cronTime.map((value, key) => (
-              <li><span>第{key + 1}次执行时间:</span><span>{value}</span></li>
+              <li><FormattedMessage id={`${intlPrefix}.cron.runtime`} values={{ time: key + 1 }} />:<span>{value}</span></li>
             ))
           }
         </div>
@@ -710,7 +717,7 @@ export default class TaskDetail extends Component {
     } else {
       content = (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          cron表达式错误，请重新输入
+          <FormattedMessage id={`${intlPrefix}.cron.wrong`} />
         </div>
       );
     }
@@ -1000,7 +1007,13 @@ export default class TaskDetail extends Component {
                   <Input style={{ width: inputWidth }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.cron.expression`} />} />,
                 )}
               </FormItem>
-              <Popover content={this.getCronContent()} trigger="click" placement="bottom" overlayClassName="c7n-task-detail-popover">
+              <Popover
+                content={this.getCronContent()}
+                trigger="click"
+                placement="bottom"
+                overlayClassName="c7n-task-detail-popover"
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              >
                 <Icon
                   onClick={this.checkCron}
                   style={{ display: triggerType === 'cron' ? 'inline-block' : 'none' }}

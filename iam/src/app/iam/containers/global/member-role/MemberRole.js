@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import MemberRoleType, { pageSize } from './MemberRoleType';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import './MemberRole.scss';
+import '../../../common/ConfirmModal.scss';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
@@ -251,6 +252,7 @@ export default class MemberRole extends Component {
     const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
     const content = showMember ? 'memberrole.remove.select.all.content' : 'memberrole.remove.select.content';
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: this.formatMessage('memberrole.remove.title'),
       content: this.formatMessage(content),
       onOk: () => {
@@ -272,6 +274,7 @@ export default class MemberRole extends Component {
 
   deleteRoleByRole = (record) => {
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: this.formatMessage('memberrole.remove.title'),
       content: this.formatMessage('memberrole.remove.content', {
         member: record.loginName,
@@ -647,6 +650,7 @@ export default class MemberRole extends Component {
 
   handleDelete = (record) => {
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: this.formatMessage('memberrole.remove.title'),
       content: this.formatMessage('memberrole.remove.all.content', { name: record.loginName }),
       onOk: () => this.deleteRolesByIds({

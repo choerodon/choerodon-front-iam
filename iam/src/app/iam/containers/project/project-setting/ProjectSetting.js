@@ -7,6 +7,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import './ProjectSetting.scss';
 import ProjectSettingStore from '../../../stores/project/project-setting/ProjectSettingStore';
+import '../../../common/ConfirmModal.scss';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -71,6 +72,7 @@ export default class ProjectSetting extends Component {
     const userId = AppState.getUserId;
     this.setState({ stopping: true });
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.disable.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.disable.content` }, { name }),
       onOk: () => ProjectSettingStore.disableProject(AppState.currentMenuType.id)

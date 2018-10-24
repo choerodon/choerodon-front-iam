@@ -8,6 +8,7 @@ import classnames from 'classnames';
 import LoadingBar from '../../../components/loadingBar/index';
 import ClientStore from '../../../stores/organization/client/ClientStore';
 import './Client.scss';
+import '../../../common/ConfirmModal.scss';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
@@ -151,6 +152,7 @@ export default class Client extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
       onOk: () => ClientStore.deleteClientById(record.organizationId, record.id).then((status) => {

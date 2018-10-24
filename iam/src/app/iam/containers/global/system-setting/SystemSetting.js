@@ -5,6 +5,7 @@ import { Button, Form, Icon, Input, Select, Spin, Upload, Popover, Modal } from 
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './SystemSetting.scss';
+import '../../../common/ConfirmModal.scss';
 
 const intlPrefix = 'global.system-setting';
 const prefixClas = 'c7n-iam-system-setting';
@@ -81,6 +82,7 @@ export default class SystemSetting extends Component {
     const that = this;
     const { intl } = this.props;
     confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.reset.confirm.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.reset.confirm.content` }),
       okText: intl.formatMessage({ id: 'yes' }),
@@ -256,8 +258,7 @@ export default class SystemSetting extends Component {
         {logoLoadingStatus ? <Spin /> : <div className={'initLogo'} />}
       </div>
     );
-    const mainContent =
-    () => (
+    const mainContent = (
       <Form onSubmit={this.handleSubmit} layout="vertical" className={prefixClas}>
         <FormItem>
           {
@@ -366,8 +367,8 @@ export default class SystemSetting extends Component {
           </Select>,
           )}
         </FormItem>
-        <FormItem>
-          <hr className={`${prefixClas}-footer`} />
+        <div className={`${prefixClas}-divider`} />
+        <div>
           <Button
             htmlType="submit"
             funcType="raised"
@@ -380,7 +381,7 @@ export default class SystemSetting extends Component {
             style={{ marginLeft: 16 }}
             disabled={submitting}
           ><FormattedMessage id="cancel" /></Button>
-        </FormItem>
+        </div>
       </Form>
     );
 
@@ -410,7 +411,7 @@ export default class SystemSetting extends Component {
           </Button>
         </Header>
         <Content code={intlPrefix}>
-          {mainContent()}
+          {mainContent}
         </Content>
       </Page>
     );

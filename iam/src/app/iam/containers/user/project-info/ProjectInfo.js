@@ -162,7 +162,12 @@ export default class ProjectInfo extends Component {
     let proId;
 
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.user.listProjectAndRoleById',
+          'iam-service.role.listPermissionById',
+        ]}
+      >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button
             onClick={this.handleRefresh}

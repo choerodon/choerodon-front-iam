@@ -16,6 +16,7 @@ import MailTemplateStore from '../../../stores/global/mail-template';
 import './MailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import '../../../common/ConfirmModal.scss';
 
 
 // 公用方法类
@@ -164,6 +165,7 @@ export default class MailTemplate extends Component {
   handleDelete(record) {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: 'mailtemplate.delete.owntitle' }),
       content: intl.formatMessage({ id: 'mailtemplate.delete.owncontent' }, {
         name: record.name,
@@ -320,7 +322,7 @@ export default class MailTemplate extends Component {
             action: this.handleDelete.bind(this, record),
           });
         }
-        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]}/>;
+        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
       },
     }];
 

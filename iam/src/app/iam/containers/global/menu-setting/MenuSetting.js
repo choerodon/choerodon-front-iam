@@ -7,6 +7,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import _ from 'lodash';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
 import './MenuSetting.scss';
+import '../../../common/ConfirmModal.scss';
 
 const { MenuStore } = stores;
 const intlPrefix = 'global.menusetting';
@@ -201,6 +202,7 @@ export default class MenuSetting extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
       content: intl.formatMessage({
         id: record.subMenus && record.subMenus.length ?
@@ -789,7 +791,7 @@ export default class MenuSetting extends Component {
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
-          <Prompt message={promptMsg} when={edited} />
+          <Prompt message={promptMsg} wrapper="c7n-iam-confirm-modal" when={edited} />
           <Permission service={['iam-service.menu.create']}>
             <Button
               onClick={this.addDir}

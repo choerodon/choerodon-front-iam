@@ -15,6 +15,7 @@ import {
 import InMailTemplateStore from '../../../stores/global/inmail-template';
 import './InMailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import '../../../common/ConfirmModal.scss';
 
 // 公用方法类
 class MailTemplateType {
@@ -162,6 +163,7 @@ export default class InMailTemplate extends Component {
   handleDelete(record) {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: 'inmailtemplate.delete.owntitle' }),
       content: intl.formatMessage({ id: 'inmailtemplate.delete.owncontent' }, {
         name: record.name,

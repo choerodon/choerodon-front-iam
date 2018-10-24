@@ -7,11 +7,13 @@ const Color = {
   RUNNING: '#4d90fe',
   FAILED: '#f44336',
   COMPLETED: '#00BFA5',
+  NON_CONSUMER: '#00BFA5',
   DEFAULT: '#b8b8b8',
 };
 
 const IconType = {
   COMPLETED: 'check_circle',
+  NON_CONSUMER: 'check_circle',
   FAILED: 'cancel',
   ENABLE: 'check_circle',
   DISABLE: 'remove_circle',

@@ -14,6 +14,12 @@ const Size = Quill.import('attributors/style/size');
 Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px'];
 Quill.register(Size, true);
 
+const Font = Quill.import('attributors/style/font');
+Font.whitelist = ['STSong', 'STKaiti', 'STHeiti', 'STFangsong', 'SimSun', 'KaiTi', 'SimHei', 'FangSong', 'Microsoft-YaHei'];
+Quill.register(Font, true);
+
+let system;
+
 const CustomToolbar = () => (
   <div id="toolbar">
     <span className="ql-formats">
@@ -31,7 +37,7 @@ const CustomToolbar = () => (
     </span>
     <span className="ql-formats">
       <select className="ql-header">
-        <option selected></option>
+        <option selected />
         <option value="1">H1</option>
         <option value="2">H2</option>
         <option value="3">H3</option>
@@ -39,7 +45,26 @@ const CustomToolbar = () => (
         <option value="5">H5</option>
         <option value="6">H6</option>
       </select>
-      <select className="ql-font" />
+      {
+        navigator.platform.indexOf('Mac') > -1 ? (
+          <select className="ql-font">
+            <option selected />
+            <option value="STSong">华文宋体</option>
+            <option value="STKaiti">华文楷体</option>
+            <option value="STHeiti">华文黑体</option>
+            <option value="STFangsong">华文仿宋</option>
+          </select>
+        ) : (
+          <select className="ql-font">
+            <option selected />
+            <option value="SimSun">宋体</option>
+            <option value="KaiTi">楷体</option>
+            <option value="SimHei">黑体</option>
+            <option value="FangSong">仿宋</option>
+            <option value="Microsoft-YaHei">微软雅黑</option>
+          </select>
+        )
+      }
       <select className="ql-size">
         <option value="10px" />
         <option value="12px" />
@@ -119,7 +144,7 @@ export default class Editor extends Component {
     toolbar: {
       container: '#toolbar',
       handlers: {
-        'image': this.handleOpenModal,
+        image: this.handleOpenModal,
         'code-block': this.changeToHtml,
       },
     },
@@ -249,7 +274,7 @@ export default class Editor extends Component {
         </div>
         <div className="c7n-iam-editor-modal-preview-content">
           <div className="c7n-iam-editor-modal-preview-sentence">
-            图片预览区
+            <FormattedMessage id="editor.preview" />
           </div>
           <div style={{ backgroundImage: `url(${previewUrl})` }} className="c7n-iam-editor-modal-preview-pic" />
         </div>
@@ -263,7 +288,7 @@ export default class Editor extends Component {
     const style = { ...this.defaultStyle, ...this.props.style };
     const editHeight = style.height - 42;
     return (
-      <div style={style} className="react-quill-editor">
+      <div style={style} className="c7n-iam-react-quill-editor">
         <CustomToolbar />
         <ReactQuill
           id="c7n-iam-editor"
@@ -274,7 +299,7 @@ export default class Editor extends Component {
           value={value}
           onChange={this.onQuillChange}
           bounds="#c7n-iam-editor"
-          ref={(el) => this.quillRef = el}
+          ref={(el) => { this.quillRef = el; }}
         />
         <div className="c7n-editor-changedHTML-container" style={{ display: isShowHtmlContainer ? 'block' : 'none' }}>
           <div className="c7n-editor-changedHTML-container-toolbar">

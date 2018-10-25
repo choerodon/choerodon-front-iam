@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
 import UserMsgStore from '../../../stores/user/user-msg/UserMsgStore';
+import '../../../common/ConfirmModal.scss';
 
 const intlPrefix = 'user.usermsg';
 
@@ -80,6 +81,7 @@ export default class UserMsg extends Component {
     const { intl } = this.props;
     if (UserMsgStore.getSelectMsg.size > 0) {
       Modal.confirm({
+        className: 'c7n-iam-confirm-modal',
         title: intl.formatMessage({ id: `${intlPrefix}.delete.owntitle` }),
         content: intl.formatMessage({ id: `${intlPrefix}.delete.owncontent` }, {
           count: UserMsgStore.selectMsg.size,

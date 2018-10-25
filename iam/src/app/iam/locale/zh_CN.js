@@ -431,6 +431,7 @@ const pageDetail = {
   'editor.view': '浏览',
   'editor.pic.url.required': '请输入图片URL',
   'editor.back.gui': '返回可视化编辑',
+  'editor.preview': '预览区',
 };
 
 /* eslint-disable-next-line */

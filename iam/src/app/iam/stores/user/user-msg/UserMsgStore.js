@@ -1,9 +1,13 @@
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import queryString from 'query-string';
+import _ from 'lodash';
 
 const PAGELOADSIZE = 10;
 
+/**
+ * 在今天这个版本重构消息添加了两种类型，在界面上标注为消息和通知。
+ */
 @store('UserMsgStore')
 class UserMsgStore {
   @observable userMsg = [];
@@ -13,6 +17,12 @@ class UserMsgStore {
   @observable expandCardId = 0;
 
   @observable selectMsg = new Set();
+
+  @observable expandMsg = new Set();
+
+  @observable currentType = 'siteMsg';
+
+  @observable showAll = false;
 
   @observable loading = true;
 
@@ -59,7 +69,27 @@ class UserMsgStore {
   @action paginationChange = (current, pageSize) => {
     this.pagination.current = current;
     this.pagination.pageSize = pageSize;
-    this.loadData(this.pagination, {}, {}, {}, true, false);
+    this.loadData(this.pagination, {}, {}, {}, this.showAll, false);
+  };
+
+  @action expandAllMsg() {
+    this.getUserMsg.forEach(action(v => this.expandMsg.add(v.id)));
+  }
+
+  @action selectAllMsg() {
+    _.forEach(this.getUserMsg, action((v) => {
+      this.addSelectMsgById(v.id);
+    }));
+  }
+
+  @computed
+  get getCurrentType() {
+    return this.currentType;
+  }
+
+  @action
+  setCurrentType(newType) {
+    this.currentType = newType;
   }
 
   @computed
@@ -75,6 +105,21 @@ class UserMsgStore {
   @action
   addSelectMsgById(id) {
     this.selectMsg.add(id);
+  }
+
+  @computed
+  get getExpandMsg() {
+    return this.expandMsg;
+  }
+
+  @action
+  expandMsgById(id) {
+    this.expandMsg.add(id);
+  }
+
+  @action
+  unExpandMsgById(id) {
+    this.expandMsg.delete(id);
   }
 
   @computed
@@ -167,7 +212,18 @@ class UserMsgStore {
     return axios.put(`/notify/v1/notices/sitemsgs/batch_delete?user_id=${this.userInfo.id}`, JSON.stringify(data));
   }
 
-  @action load(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll) {
+  /**
+   * 稳定的load，加载数据并返回Promise
+   * @param pagination
+   * @param filters
+   * @param columnKey
+   * @param order
+   * @param params
+   * @param showAll 为true时获取全部消息，为false时获取未读消息
+   * @param type 在今天这个版本重构消息添加了两种类型
+   * @returns {*} 返回的是一个Promise
+   */
+  @action load(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, type) {
     const sorter = [];
     if (columnKey) {
       sorter.push(columnKey);
@@ -183,6 +239,7 @@ class UserMsgStore {
       page: pagination.current - 1,
       size: pagination.pageSize,
       sort: sorter.join(','),
+      type: type === 'siteMsg' ? 'msg' : 'notice',
     })}`);
   }
 
@@ -194,18 +251,18 @@ class UserMsgStore {
    * @param order
    * @param params
    * @param showAll 为true时load已读和未读消息，为false时只load未读消息
-   * @param isWebSocket 请求是否由webSocket服务器推送
+   * @param isWebSocket 请求是否由webSocket服务器推送（旧有字段，现在重构的版本暂时没有webSocket了，但仍保留，平时使用传false即可）
    * @param msgId 默认展开显示当msgId
+   * @param type
    */
   @action
-  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, isWebSocket, msgId) {
-    if (!showAll) {
-      // 在未读消息中显示尽量多的消息
-      pagination.pageSize = 100;
-    }
+  loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, isWebSocket, msgId, type = this.currentType) {
     if (isWebSocket) this.setLoadingMore(true); else this.setLoading(true);
-    this.load(pagination, filters, { columnKey, order }, params, showAll).then(action((data) => {
+    this.load(pagination, filters, { columnKey, order }, params, showAll, type).then(action((data) => {
       this.setUserMsg(data.content ? data.content : data);
+      // 当显示的是未读消息的时候，加载完成后自动展开全部消息
+      this.showAll = showAll;
+      if (!showAll) this.expandAllMsg();
       this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
       if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
       if (msgId) {

@@ -477,6 +477,7 @@ const zh_CN = {
   enable: '启用',
   disable: '停用',
   baseon: '基于此创建',
+  selectall: '全选',
 
   // status
   // success
@@ -1276,11 +1277,11 @@ const zh_CN = {
   'user.usermsg.header.title': '消息通知',
   'user.usermsg.title': '用户"{name}"的消息通知',
   'user.usermsg.description': '展示你能使用的消息模版发送的特定触发事件，您可以规定对应触发事件所要应用的模版，发送频率等。',
-  'user.usermsg.view': '查看消息',
+  'user.usermsg.view': '查看消息：',
   'user.usermsg.unread': '未读消息',
   'user.usermsg.all': '全部消息',
   'user.usermsg.markread': '标记为已读',
-  'user.usermsg.markreadall': '全部标记为已读',
+  'user.usermsg.markreadall': '标记为已读',
   'user.usermsg.empty': '已看完所有通知！',
   'user.usermsg.allempty': '暂无消息',
   'user.usermsg.delete.owntitle': '删除消息记录',

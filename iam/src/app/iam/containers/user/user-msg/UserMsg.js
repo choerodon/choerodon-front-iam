@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, List, Spin, Tooltip, Modal, Form, Card, Checkbox } from 'choerodon-ui';
+import { Button, List, Tabs, Collapse, Modal, Form, Icon, Checkbox, Avatar, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, WSHandler } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
@@ -9,6 +9,52 @@ import './UserMsg.scss';
 import UserMsgStore from '../../../stores/user/user-msg/UserMsgStore';
 
 const intlPrefix = 'user.usermsg';
+const Panel = Collapse.Panel;
+const TabPane = Tabs.TabPane;
+
+// 兼容ie和w3c标准的阻止事件冒泡函数
+function cancelBubble(e) {
+  const evt = e || window.event;
+  if (evt.stopPropagation) {
+    evt.stopPropagation();
+  } else {
+    evt.cancelBubble = true;
+  }
+}
+
+function timestampFormat(timestamp) {
+  function zeroize(num) {
+    return (String(num).length === 1 ? '0' : '') + num;
+  }
+
+  const curTimestamp = parseInt(new Date().getTime() / 1000, 10); // 当前时间戳
+  const timestampDiff = curTimestamp - timestamp; // 参数时间戳与当前时间戳相差秒数
+
+  const curDate = new Date(curTimestamp * 1000); // 当前时间日期对象
+  const tmDate = new Date(timestamp * 1000); // 参数时间戳转换成的日期对象
+
+  const Y = tmDate.getFullYear(); const m = tmDate.getMonth() + 1; const 
+    d = tmDate.getDate();
+  const H = tmDate.getHours(); const i = tmDate.getMinutes(); const 
+    s = tmDate.getSeconds();
+
+  if (timestampDiff < 60) { // 一分钟以内
+    return '刚刚';
+  } else if (timestampDiff < 3600) { // 一小时前之内
+    return `${Math.floor(timestampDiff / 60)}分钟前`;
+  } else if (curDate.getFullYear() === Y && curDate.getMonth() + 1 === m && curDate.getDate() === d) {
+    return `今天${zeroize(H)}:${zeroize(i)}`;
+  } else {
+    const newDate = new Date((curTimestamp - 86400) * 1000); // 参数中的时间戳加一天转换成的日期对象
+    if (newDate.getFullYear() === Y && newDate.getMonth() + 1 === m && newDate.getDate() === d) {
+      return `昨天${zeroize(H)}:${zeroize(i)}`;
+    } else if (curDate.getFullYear() === Y) {
+      return `${zeroize(m)}月${zeroize(d)}日 ${zeroize(H)}:${zeroize(i)}`;
+    } else {
+      return `${Y}年${zeroize(m)}月${zeroize(d)}日 ${zeroize(H)}:${zeroize(i)}`;
+    }
+  }
+}
 
 @Form.create()
 @withRouter
@@ -22,6 +68,7 @@ export default class UserMsg extends Component {
     return {
       showAll: false,
       needExpand: true,
+      isAllSelect: false,
     };
   }
 
@@ -38,6 +85,7 @@ export default class UserMsg extends Component {
   refresh = () => {
     UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll);
     UserMsgStore.selectMsg.clear();
+    UserMsgStore.expandMsg.clear();
     UserMsgStore.initPagination();
   };
 
@@ -61,20 +109,18 @@ export default class UserMsg extends Component {
     () => this.refresh());
   }
 
-  renderMsgTitle(title, id, read, sendTime) {
-    return (
-      <div>
-        <Checkbox
-          style={{ verticalAlign: 'text-bottom' }}
-          onChange={() => this.handleCheckboxChange(id)}
-          checked={UserMsgStore.getSelectMsg.has(id)}
-        />
-        <span className={read ? 'c7n-user-msg-read-title' : 'c7n-user-msg-unread-title'}>{title}</span>
-        <span className={read ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{sendTime}</span>
-        <span className={read ? 'c7n-user-msg-read' : 'c7n-user-msg-unread'}>{read ? '已读' : '未读'}</span>
-      </div>
-    );
-  }
+  renderMsgTitle = (title, id, read, sendTime, isChecked) => (
+    <div className="c7n-iam-user-msg-collapse-title">
+      <Checkbox
+        style={{ verticalAlign: 'text-bottom' }}
+        onChange={e => this.handleCheckboxChange(e, id)}
+        checked={isChecked}
+      />
+      <span className={read ? 'c7n-iam-user-msg-read-title' : 'c7n-iam-user-msg-unread-title'}>{title}</span>
+      <span className={read ? 'c7n-iam-user-msg-read' : 'c7n-iam-user-msg-unread'}>{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
+      <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
+    </div>
+  );
 
   handleDelete = () => {
     const { intl } = this.props;
@@ -94,7 +140,13 @@ export default class UserMsg extends Component {
     }
   };
 
-  handleCheckboxChange = (id) => {
+  handleTabsChange = (key) => {
+    UserMsgStore.setCurrentType(key);
+    this.refresh();
+  };
+
+  handleCheckboxChange = (e, id) => {
+    // cancelBubble(e);
     if (UserMsgStore.getSelectMsg.has(id)) {
       UserMsgStore.deleteSelectMsgById(id);
     } else {
@@ -105,18 +157,22 @@ export default class UserMsg extends Component {
     });
   };
 
-  handleCardClick = (id, read) => {
+  handleReadIconClick = (id) => {
+    UserMsgStore.setReadLocal(id);
+    UserMsgStore.readMsg([id]);
+    this.setState({
+      needExpand: false,
+    });
+  };
+
+  handleCollapseChange = (item) => {
     setTimeout(() => {
-      if (this.state.needExpand) {
-        UserMsgStore.setExpandCardId(UserMsgStore.getExpandCardId !== id ? id : null);
-        if (UserMsgStore.getNeedReload && UserMsgStore.getExpandCardId === null && !this.state.showAll) {
-          UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, true);
-        }
-        // 如果消息未读则发送已读消息的请求
-        if (!read) {
-          UserMsgStore.readMsg([id]);
-          UserMsgStore.setReadLocal(id);
-        }
+      if (this.state.needExpand && UserMsgStore.getExpandMsg.has(item.id)) {
+        UserMsgStore.unExpandMsgById(item.id);
+      } else if (this.state.needExpand && !UserMsgStore.getExpandMsg.has(item.id)) {
+        UserMsgStore.expandMsgById(item.id);
+        UserMsgStore.readMsg([item.id]);
+        UserMsgStore.setReadLocal(item.id);
       }
       this.setState({
         needExpand: true,
@@ -124,30 +180,55 @@ export default class UserMsg extends Component {
     }, 10);
   };
 
-  handleMessage = () => {
-    if (UserMsgStore.getExpandCardId === null) UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, true);
-    else UserMsgStore.setNeedReload(true);
-  };
-
   loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
+  selectAllMsg = () => {
+    UserMsgStore.selectAllMsg();
+    this.setState({
+      isAllSelect: !this.state.isAllSelect,
+    });
+  };
+
   renderUserMsgCard(item) {
+    const { id, title, read, sendTime, content, sendByUser } = item;
+    const { AppState } = this.props;
+    const innerStyle = {
+      userSelect: 'none', verticalAlign: 'top', marginRight: '22px', marginLeft: '24px',
+    };
+    let avatar;
+    if (sendByUser !== null) {
+      const { imageUrl, loginName, realName } = sendByUser;
+      avatar = (
+        <Tooltip title={`${loginName} ${realName}`}>
+          <Avatar src={imageUrl} style={innerStyle}>
+            {realName[0]}
+          </Avatar>
+        </Tooltip>
+      );
+    } else {
+      avatar = (
+        <Tooltip title={AppState.siteInfo.systemName || 'Choerodon'}>
+          <Avatar src={AppState.siteInfo.favicon || './favicon.ico'} style={innerStyle}>
+            {(AppState.siteInfo.systemName && AppState.siteInfo.systemName[0]) || 'Choerodon'}
+          </Avatar>
+        </Tooltip>
+      );
+    }
     const innerHTML = (
       <List.Item>
-        <Card
-          key={item.id}
-          className={
-            classnames(
-              'ant-card-wider-padding',
-              { 'c7n-user-msg-card': true },
-              { active: UserMsgStore.getExpandCardId === item.id },
-              { 'c7n-unread-line': !item.read },
-            )}
-          title={this.renderMsgTitle(item.title, item.id, item.read, item.sendTime)}
-          onHeadClick={() => this.handleCardClick(item.id, item.read)}
+        <Collapse
+          onChange={() => this.handleCollapseChange(item)}
+          className="c7n-iam-user-msg-collapse"
+          activeKey={UserMsgStore.getExpandMsg.has(id) ? [id.toString()] : []}
         >
-          <div dangerouslySetInnerHTML={{ __html: `${item.content}` }} />
-        </Card>
+          <Panel header={this.renderMsgTitle(title, id, read, sendTime, UserMsgStore.getSelectMsg.has(id))} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
+            {<div>
+              {avatar}
+              <div style={{ width: 'calc(100% - 78px)', display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: `${content}` }} />
+            </div> }
+          </Panel>
+        </Collapse>
+
       </List.Item>
     );
     return innerHTML;
@@ -155,26 +236,25 @@ export default class UserMsg extends Component {
 
   renderEmpty = () => (
     <div>
-      <div className="c7n-user-msg-empty-icon" />
-      <div className="c7n-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} /></div>
+      <div className="c7n-iam-user-msg-empty-icon" />
+      <div className="c7n-iam-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} /></div>
     </div>
   );
 
   render() {
-    const user = UserMsgStore.getUserInfo;
-    const { AppState } = this.props;
-    const { showAll } = this.state;
+    const { intl } = this.props;
     const pagination = UserMsgStore.getPagination;
+    const userMsg = UserMsgStore.getUserMsg;
     return (
       <Page>
         <Header
           title={<FormattedMessage id="user.usermsg.header.title" />}
         >
           <Button
-            icon="refresh"
-            onClick={this.refresh}
+            icon="check_box"
+            onClick={this.selectAllMsg}
           >
-            <FormattedMessage id="refresh" />
+            <FormattedMessage id="selectall" />
           </Button>
           <Button
             icon="all_read"
@@ -189,44 +269,82 @@ export default class UserMsg extends Component {
           >
             <FormattedMessage id={'delete.all'} />
           </Button>
+          <Button
+            icon="refresh"
+            onClick={this.refresh}
+          >
+            <FormattedMessage id="refresh" />
+          </Button>
         </Header>
         <Content>
-          <WSHandler
-            messageKey={`choerodon:msg:site-msg:${AppState.userInfo.id}`}
-            onMessage={data => this.handleMessage(data)}
-          >
-            <div className="c7n-user-msg-btns">
-              <span className="text">
-                <FormattedMessage id="user.usermsg.view" />：
-              </span>
-              <Button
-                className={this.getUserMsgClass('unRead')}
-                onClick={() => {
-                  this.showUserMsg(false);
-                }}
-                type="primary"
-              ><FormattedMessage id="user.usermsg.unread" /></Button>
-              <Button
-                className={this.getUserMsgClass('all')}
-                onClick={() => {
-                  this.showUserMsg(true);
-                }}
-                type="primary"
-              ><FormattedMessage id="user.usermsg.all" /></Button>
-            </div>
-            <List
-              className="c7n-user-msg-list"
-              loading={UserMsgStore.getLoading}
-              itemLayout="horizontal"
-              pagination={showAll ? pagination : false}
-              dataSource={UserMsgStore.getUserMsg}
-              renderItem={item => (
-                this.renderUserMsgCard(item)
-              )}
-              split={false}
-              empty={this.renderEmpty()}
-            />
-          </WSHandler>
+          <Tabs defaultActiveKey="siteMsg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType}>
+            <TabPane tab="消息" key="siteMsg" className="c7n-iam-user-msg-tab">
+              <div className="c7n-iam-user-msg-btns">
+                <div className="text">
+                  {intl.formatMessage({ id: 'user.usermsg.view' })}
+                </div>
+                <Button
+                  className={this.getUserMsgClass('unRead')}
+                  onClick={() => {
+                    this.showUserMsg(false);
+                  }}
+                  type="primary"
+                ><FormattedMessage id="user.usermsg.unread" /></Button>
+                <Button
+                  className={this.getUserMsgClass('all')}
+                  onClick={() => {
+                    this.showUserMsg(true);
+                  }}
+                  type="primary"
+                ><FormattedMessage id="user.usermsg.all" /></Button>
+              </div>
+              <List
+                className="c7n-iam-user-msg-list"
+                loading={UserMsgStore.getLoading}
+                itemLayout="horizontal"
+                pagination={pagination}
+                dataSource={userMsg}
+                renderItem={item => (
+                  this.renderUserMsgCard(item)
+                )}
+                split={false}
+                empty={this.renderEmpty()}
+              />
+            </TabPane>
+            <TabPane tab="通知" key="siteNotify" className="c7n-iam-user-msg-tab">
+              <div className="c7n-iam-user-msg-btns">
+                <div className="text">
+                  {intl.formatMessage({ id: 'user.usermsg.view' })}
+                </div>
+                <Button
+                  className={this.getUserMsgClass('unRead')}
+                  onClick={() => {
+                    this.showUserMsg(false);
+                  }}
+                  type="primary"
+                ><FormattedMessage id="user.usermsg.unread" /></Button>
+                <Button
+                  className={this.getUserMsgClass('all')}
+                  onClick={() => {
+                    this.showUserMsg(true);
+                  }}
+                  type="primary"
+                ><FormattedMessage id="user.usermsg.all" /></Button>
+              </div>
+              <List
+                className="c7n-iam-user-msg-list"
+                loading={UserMsgStore.getLoading}
+                itemLayout="horizontal"
+                pagination={pagination}
+                dataSource={userMsg}
+                renderItem={item => (
+                  this.renderUserMsgCard(item)
+                )}
+                split={false}
+                empty={this.renderEmpty()}
+              />
+            </TabPane>
+          </Tabs>
         </Content>
       </Page>
     );

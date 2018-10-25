@@ -122,6 +122,12 @@ export default class UserMsg extends Component {
     </div>
   );
 
+  handleBatchRead = () => {
+    if (UserMsgStore.getSelectMsg.size > 0) {
+      UserMsgStore.readMsg(UserMsgStore.getSelectMsg).then(() => this.refresh());
+    }
+  };
+
   handleDelete = () => {
     const { intl } = this.props;
     if (UserMsgStore.getSelectMsg.size > 0) {
@@ -258,7 +264,7 @@ export default class UserMsg extends Component {
           </Button>
           <Button
             icon="all_read"
-            onClick={() => UserMsgStore.userMsg && UserMsgStore.readMsg(UserMsgStore.userMsg.map(v => v.id)).then(() => this.refresh())}
+            onClick={this.handleBatchRead}
           >
             <FormattedMessage id={`${intlPrefix}.markreadall`} />
           </Button>
@@ -267,7 +273,7 @@ export default class UserMsg extends Component {
             disabled={UserMsgStore.getSelectMsg.size === 0}
             onClick={this.handleDelete}
           >
-            <FormattedMessage id={'delete.all'} />
+            <FormattedMessage id={'remove'} />
           </Button>
           <Button
             icon="refresh"

@@ -1,6 +1,18 @@
 .c7n-iam-react-quill-editor {
   position: relative;
 
+  /* default header */
+  .ql-snow .ql-picker.ql-header .ql-picker-label::before,
+  .ql-snow .ql-picker.ql-header .ql-picker-item::before {
+    content: '标准';
+  }
+
+  /* default font */
+  .ql-snow .ql-picker.ql-font .ql-picker-label::before,
+  .ql-snow .ql-picker.ql-font .ql-picker-item::before {
+    content: '默认';
+  }
+
   .ql-changeToHtml {
     margin-top: -3px;
   }

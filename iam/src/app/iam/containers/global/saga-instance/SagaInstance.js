@@ -24,6 +24,7 @@ export default class SagaInstance extends Component {
 
   getInitState() {
     return {
+      data: '',
       visible: false,
       pagination: {
         current: 1,
@@ -278,6 +279,7 @@ export default class SagaInstance extends Component {
             <Content
               className="sidebar-content"
               code={`${intlPrefix}.detail`}
+              values={{ name: data.id }}
             >
               <SagaImg data={data} instance />
             </Content>

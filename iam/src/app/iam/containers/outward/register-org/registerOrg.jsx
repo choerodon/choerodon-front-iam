@@ -103,9 +103,9 @@ export default class registerOrg extends Component {
           }, () => {
             const body = _.omit({ ...this.state }, ['rePassword', 'rePasswordDirty', 'current', 'interval', 'submitLoading']);
             body.address = body.address || null;
-            RegsiterOrgStore.registerOrg(body).then(({ failed }) => {
+            RegsiterOrgStore.registerOrg(body).then(({ failed, message }) => {
               if (failed) {
-                Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.register.failed` }));
+                Choerodon.prompt(message);
                 this.setState({
                   submitLoading: false,
                 });

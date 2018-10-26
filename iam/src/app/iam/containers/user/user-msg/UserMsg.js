@@ -116,8 +116,8 @@ export default class UserMsg extends Component {
         onChange={e => this.handleCheckboxChange(e, id)}
         checked={isChecked}
       />
-      <span className={read ? 'c7n-iam-user-msg-read-title' : 'c7n-iam-user-msg-unread-title'}>{title}</span>
-      <span className={read ? 'c7n-iam-user-msg-read' : 'c7n-iam-user-msg-unread'}>{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
+      <span className="c7n-iam-user-msg-unread-title">{title}</span>
+      <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
       <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
     </div>
   );
@@ -226,6 +226,7 @@ export default class UserMsg extends Component {
           onChange={() => this.handleCollapseChange(item)}
           className="c7n-iam-user-msg-collapse"
           activeKey={UserMsgStore.getExpandMsg.has(id) ? [id.toString()] : []}
+          style={UserMsgStore.getExpandMsg.has(id) ? null : { backgroundColor: '#fff' }}
         >
           <Panel header={this.renderMsgTitle(title, id, read, sendTime, UserMsgStore.getSelectMsg.has(id))} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
             {<div>
@@ -240,10 +241,10 @@ export default class UserMsg extends Component {
     return innerHTML;
   }
 
-  renderEmpty = () => (
+  renderEmpty = type => (
     <div>
       <div className="c7n-iam-user-msg-empty-icon" />
-      <div className="c7n-iam-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} /></div>
+      <div className="c7n-iam-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} />{type}</div>
     </div>
   );
 
@@ -283,7 +284,7 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <Tabs defaultActiveKey="siteMsg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType}>
+          <Tabs defaultActiveKey="siteMsg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false}>
             <TabPane tab="消息" key="siteMsg" className="c7n-iam-user-msg-tab">
               <div className="c7n-iam-user-msg-btns">
                 <div className="text">
@@ -308,13 +309,13 @@ export default class UserMsg extends Component {
                 className="c7n-iam-user-msg-list"
                 loading={UserMsgStore.getLoading}
                 itemLayout="horizontal"
-                pagination={pagination}
+                pagination={userMsg.length > 0 ? pagination : false}
                 dataSource={userMsg}
                 renderItem={item => (
                   this.renderUserMsgCard(item)
                 )}
                 split={false}
-                empty={this.renderEmpty()}
+                empty={this.renderEmpty('消息')}
               />
             </TabPane>
             <TabPane tab="通知" key="siteNotify" className="c7n-iam-user-msg-tab">
@@ -341,13 +342,13 @@ export default class UserMsg extends Component {
                 className="c7n-iam-user-msg-list"
                 loading={UserMsgStore.getLoading}
                 itemLayout="horizontal"
-                pagination={pagination}
+                pagination={userMsg.length > 0 ? pagination : false}
                 dataSource={userMsg}
                 renderItem={item => (
                   this.renderUserMsgCard(item)
                 )}
                 split={false}
-                empty={this.renderEmpty()}
+                empty={this.renderEmpty('通知')}
               />
             </TabPane>
           </Tabs>

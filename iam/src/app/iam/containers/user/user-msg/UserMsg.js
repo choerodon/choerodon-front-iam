@@ -79,8 +79,11 @@ export default class UserMsg extends Component {
       const id = Number(matchId[0].match(/\d+/g)[0]);
       UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false, id);
     } else UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
+    const matchType = this.props.location.search.match(/(?<=msgType=)(.+)/g);
+    if (matchType) {
+      UserMsgStore.setCurrentType(matchType[0]);
+    }
   }
-
 
   refresh = () => {
     UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll);
@@ -284,8 +287,8 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <Tabs defaultActiveKey="siteMsg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false}>
-            <TabPane tab="消息" key="siteMsg" className="c7n-iam-user-msg-tab">
+          <Tabs defaultActiveKey="msg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false}>
+            <TabPane tab="消息" key="msg" className="c7n-iam-user-msg-tab">
               <div className="c7n-iam-user-msg-btns">
                 <div className="text">
                   {intl.formatMessage({ id: 'user.usermsg.view' })}
@@ -318,7 +321,7 @@ export default class UserMsg extends Component {
                 empty={this.renderEmpty('消息')}
               />
             </TabPane>
-            <TabPane tab="通知" key="siteNotify" className="c7n-iam-user-msg-tab">
+            <TabPane tab="通知" key="notice" className="c7n-iam-user-msg-tab">
               <div className="c7n-iam-user-msg-btns">
                 <div className="text">
                   {intl.formatMessage({ id: 'user.usermsg.view' })}

@@ -239,7 +239,7 @@ class UserMsgStore {
       page: pagination.current - 1,
       size: pagination.pageSize,
       sort: sorter.join(','),
-      type: type === 'siteMsg' ? 'msg' : 'notice',
+      type,
     })}`);
   }
 

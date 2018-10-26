@@ -156,15 +156,16 @@ export default class SendSetting extends Component {
           submitting: true,
         });
         const body = {
+          objectVersionNumber: SendSettingStore.getCurrentRecord.objectVersionNumber,
+          id: SendSettingStore.getCurrentRecord.id,
           emailTemplateId: values.emailTemplateId === 'empty' ? null : values.emailTemplateId,
-          pmTemplateId: values.pmTemplateId === 'empty' ? null : values.pmTemplateId,
           retryCount: Number(values.retryCount),
           isSendInstantly: values.sendnow === 'instant',
           isManualRetry: values.manual === 'allow',
-          objectVersionNumber: SendSettingStore.getCurrentRecord.objectVersionNumber,
-          id: SendSettingStore.getCurrentRecord.id,
+          pmTemplateId: values.pmTemplateId === 'empty' ? null : values.pmTemplateId,
+          pmType: values.pmType,
         };
-        SendSettingStore.modifySetting(SendSettingStore.getCurrentRecord.id, body, this.setting.type, this.setting.orgId).then((data) => {
+        SendSettingStore.modifySetting(SendSettingStore.getCurrentRecord.id, body, type, orgId).then((data) => {
           if (data.failed) {
             Choerodon.prompt(data.message);
             this.setState({
@@ -274,36 +275,6 @@ export default class SendSetting extends Component {
             {...formItemLayout}
           >
             {
-              getFieldDecorator('pmTemplateId', {
-                rules: [],
-                initialValue: !getCurrentRecord.pmTemplateId ? 'empty' : getCurrentRecord.pmTemplateId,
-              })(
-                <Select
-                  className="c7n-email-template-select"
-                  style={{ width: inputWidth }}
-                  label={<FormattedMessage id="sendsetting.pmtemplate" />}
-                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                >
-                  {
-
-                    SendSettingStore.getPmTemplate.length > 0 ? [<Option key="empty" value="empty">无</Option>].concat(
-                      SendSettingStore.getPmTemplate.map(({ name, id, code }) => (
-                        <Option key={id} value={id} title={name}>
-                          <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
-                            <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
-                          </Tooltip>
-                        </Option>
-                      )),
-                    ) : <Option key="empty" value="empty">无</Option>
-                  }
-                </Select>,
-              )
-            }
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            {
               getFieldDecorator('retryCount', {
                 rules: [
                   {
@@ -357,6 +328,54 @@ export default class SendSetting extends Component {
                 >
                   <Radio value="allow">{intl.formatMessage({ id: 'yes' })}</Radio>
                   <Radio value="notallow">{intl.formatMessage({ id: 'no' })}</Radio>
+                </RadioGroup>,
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('pmTemplateId', {
+                rules: [],
+                initialValue: !getCurrentRecord.pmTemplateId ? 'empty' : getCurrentRecord.pmTemplateId,
+              })(
+                <Select
+                  className="c7n-email-template-select"
+                  style={{ width: inputWidth }}
+                  label={<FormattedMessage id="sendsetting.pmtemplate" />}
+                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                >
+                  {
+
+                    SendSettingStore.getPmTemplate.length > 0 ? [<Option key="empty" value="empty">无</Option>].concat(
+                      SendSettingStore.getPmTemplate.map(({ name, id, code }) => (
+                        <Option key={id} value={id} title={name}>
+                          <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
+                            <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
+                          </Tooltip>
+                        </Option>
+                      )),
+                    ) : <Option key="empty" value="empty">无</Option>
+                  }
+                </Select>,
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('pmType', {
+                rules: [],
+                initialValue: getCurrentRecord.pmType,
+              })(
+                <RadioGroup
+                  label={<FormattedMessage id="sendsetting.pmtemplate.type" />}
+                  className="radioGroup"
+                >
+                  <Radio value="msg">{intl.formatMessage({ id: 'sendsetting.pmtemplate.msg' })}</Radio>
+                  <Radio value="notice">{intl.formatMessage({ id: 'sendsetting.pmtemplate.notice' })}</Radio>
                 </RadioGroup>,
               )
             }

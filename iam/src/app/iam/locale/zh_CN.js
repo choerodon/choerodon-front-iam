@@ -878,6 +878,9 @@ const zh_CN = {
   'sendsetting.trigger.type': '触发类型',
   'sendsetting.code': '编码',
   'sendsetting.description': '描述',
+  'sendsetting.pmtemplate.type': '站内信类型',
+  'sendsetting.pmtemplate.msg': '消息',
+  'sendsetting.pmtemplate.notice': '通知',
 
   // 消息记录
   'msgrecord.header.title': '消息记录',

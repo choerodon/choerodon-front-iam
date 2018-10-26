@@ -1333,7 +1333,7 @@ const zh_CN = {
   'memberrole.uploading.text': '正在导入...',
   'memberrole.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
 
-  // MemberLabel
+  // 角色标签
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',

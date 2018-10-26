@@ -20,7 +20,7 @@ class UserMsgStore {
 
   @observable expandMsg = new Set();
 
-  @observable currentType = 'siteMsg';
+  @observable currentType = 'msg';
 
   @observable showAll = false;
 

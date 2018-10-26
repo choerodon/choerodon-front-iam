@@ -108,6 +108,7 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',
       key: 'type',
+      width: 100,
       render: (text, record) => (
         'organizationId' in record ? '项目' : '角色'
       ),

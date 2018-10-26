@@ -7,8 +7,8 @@ import { axios, store } from 'choerodon-front-boot';
 @store('ApitestStore')
 class ApitestStore {
   @observable service = [];
-  @observable currentService = {};
-  @observable currentVersion = {};
+  @observable currentService = [];
+  @observable currentVersion = [];
   @observable versions = ['asdasd', 'asd'];
   @observable apiData = [];
   @observable isShowModal = false;

@@ -862,6 +862,8 @@ const zh_CN = {
   'global.apitest.request.format': '请求格式',
   'global.apitest.response.format': '响应格式',
   'global.apitest.default.role': '默认角色',
+  'global.apitest.inner': '内部',
+  'global.apitest.outer': '外部',
 
   // 发送设置
   'sendsetting.header.title': '发送设置',

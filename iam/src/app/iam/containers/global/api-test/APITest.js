@@ -249,7 +249,7 @@ export default class APITest extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
-      width: '30%',
+      width: '28%',
       key: 'remark',
       render: (text, data) => {
         const { description, remark } = data;
@@ -266,13 +266,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.available.range`} />,
       dataIndex: 'innerInterface',
       key: 'innerInterface',
-      render: (text) => {
-        if (text === true) {
-          return <span>内部</span>;
-        } else if (text === false) {
-          return <span>外部</span>;
-        }
-      },
+      render: text => intl.formatMessage({ id: text === true ? `${intlPrefix}.inner` : `${intlPrefix}.outer` }),
     }, {
       title: '',
       width: 56,

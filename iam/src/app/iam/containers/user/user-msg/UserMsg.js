@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, List, Tabs, Collapse, Modal, Form, Icon, Checkbox, Avatar, Tooltip } from 'choerodon-ui';
+import { Button, List, Tabs, Collapse, Modal, Icon, Checkbox, Avatar, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, WSHandler } from 'choerodon-front-boot';
+import { axios, Content, Header, Page } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
@@ -12,16 +12,6 @@ import '../../../common/ConfirmModal.scss';
 const intlPrefix = 'user.usermsg';
 const Panel = Collapse.Panel;
 const TabPane = Tabs.TabPane;
-
-// 兼容ie和w3c标准的阻止事件冒泡函数
-function cancelBubble(e) {
-  const evt = e || window.event;
-  if (evt.stopPropagation) {
-    evt.stopPropagation();
-  } else {
-    evt.cancelBubble = true;
-  }
-}
 
 function timestampFormat(timestamp) {
   function zeroize(num) {
@@ -34,9 +24,9 @@ function timestampFormat(timestamp) {
   const curDate = new Date(curTimestamp * 1000); // 当前时间日期对象
   const tmDate = new Date(timestamp * 1000); // 参数时间戳转换成的日期对象
 
-  const Y = tmDate.getFullYear(); const m = tmDate.getMonth() + 1; const 
+  const Y = tmDate.getFullYear(); const m = tmDate.getMonth() + 1; const
     d = tmDate.getDate();
-  const H = tmDate.getHours(); const i = tmDate.getMinutes(); const 
+  const H = tmDate.getHours(); const i = tmDate.getMinutes(); const
     s = tmDate.getSeconds();
 
   if (timestampDiff < 60) { // 一分钟以内
@@ -57,7 +47,6 @@ function timestampFormat(timestamp) {
   }
 }
 
-@Form.create()
 @withRouter
 @injectIntl
 @inject('AppState')
@@ -80,9 +69,9 @@ export default class UserMsg extends Component {
       const id = Number(matchId[0].match(/\d+/g)[0]);
       UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false, id);
     } else UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
-    const matchType = this.props.location.search.match(/(?<=msgType=)(.+)/g);
+    const matchType = this.props.location.search.match(/(msgType=)(.+)/g); // 火狐浏览器不兼容js正则表达式的环视，只能改成这样了
     if (matchType) {
-      UserMsgStore.setCurrentType(matchType[0]);
+      UserMsgStore.setCurrentType(matchType[0].substring(8));
     }
   }
 

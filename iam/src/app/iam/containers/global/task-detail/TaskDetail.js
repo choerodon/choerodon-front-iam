@@ -1294,10 +1294,10 @@ export default class TaskDetail extends Component {
   getPermission() {
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    let createService = [''];
-    let enableService = [''];
-    let disableService = [''];
-    let deleteService = [''];
+    let createService = ['asgard-service.schedule-task.create'];
+    let enableService = ['asgard-service.schedule-task.enable'];
+    let disableService = ['asgard-service.schedule-task.disable'];
+    let deleteService = ['asgard-service.schedule-task.delete'];
     if (type === 'organization') {
       createService = [''];
       enableService = [''];

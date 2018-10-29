@@ -110,7 +110,7 @@ export default class UserMsg extends Component {
         checked={isChecked}
       />
       {avatar}
-      <span className="c7n-iam-user-msg-unread-title">{title}</span>
+      <span style={{ color: '#000' }}>{title}</span>
       <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
       <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
     </div>
@@ -194,7 +194,7 @@ export default class UserMsg extends Component {
     const { id, title, read, sendTime, content, sendByUser } = item;
     const { AppState } = this.props;
     const innerStyle = {
-      userSelect: 'none', verticalAlign: 'top', marginRight: '10px', marginLeft: '10px', fontSize: '16px',
+      userSelect: 'none', verticalAlign: 'top', marginRight: '8px', marginLeft: '12px', fontSize: '16px',
     };
     let avatar;
     if (sendByUser !== null) {

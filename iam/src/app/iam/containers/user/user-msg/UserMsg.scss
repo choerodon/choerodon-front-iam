@@ -11,6 +11,7 @@
       margin-right: 12px;
       &:before {
         content: '\E5CF' !important;
+        line-height: 1.2;
       }
     }
     .ant-checkbox {
@@ -19,21 +20,28 @@
     &-panel {
       // display: flex;
     }
+    .ant-collapse-header {
+      line-height: 24px;
+      color: #000;
+    }
     &-title {
       padding-left: 12px;
-      padding-right: 60px;
+      padding-right: 84px;
       > span {
         vertical-align: text-bottom;
         font-size: 14px;
+        line-height: 24px;
       }
       > span:nth-child(3) {
         width: 120px;
       }
       > i {
         font-size: 18px;
+        line-height: 24px;
+        position: absolute;
+        right: 227px;
         float: right;
         vertical-align: text-bottom;
-        margin-right: 65.3px;
       }
     }
   }
@@ -111,17 +119,21 @@
 
   &-read {
     font-size: 13px;
-    color: rgba(0, 0, 0, 0.54);
+    color: #000;
     line-height: 20px;
     float: right;
     &-title {
-      color: rgba(0, 0, 0, 0.54);
+      // color: rgba(0, 0, 0, 0.54);
+      line-height: 24px;
     }
   }
   &-unread {
     font-size: 13px;
     color: #000;
     float: right;
+    &-title {
+      line-height: 24px;
+    }
   }
 
   &-card.active {
@@ -138,6 +150,7 @@
       background: rgba(0, 0, 0, 0.12);
       height: 48px;
       .ant-card-head-title {
+        line-height: 24px;
         white-space: normal !important;
         .c7n-iam-user-msg-read-title,
         .c7n-iam-user-msg-read {

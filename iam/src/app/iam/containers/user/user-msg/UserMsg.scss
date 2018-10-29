@@ -8,6 +8,7 @@
       position: absolute;
       right: 16px;
       top: 15px;
+      margin-right: 12px;
       &:before {
         content: '\E5CF' !important;
       }
@@ -19,11 +20,11 @@
       // display: flex;
     }
     &-title {
-      padding-left: 24px;
+      padding-left: 12px;
       padding-right: 60px;
       > span {
         vertical-align: text-bottom;
-        font-size: 16px;
+        font-size: 14px;
       }
       > span:nth-child(3) {
         width: 120px;
@@ -141,9 +142,9 @@
         .c7n-iam-user-msg-read-title,
         .c7n-iam-user-msg-read {
           color: #000;
-          font-size: 16px;
+          font-size: 14px;
         }
-        font-size: 16px;
+        font-size: 14px;
         padding: 12px 0;
       }
     }

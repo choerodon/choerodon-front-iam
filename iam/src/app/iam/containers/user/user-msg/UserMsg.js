@@ -102,13 +102,14 @@ export default class UserMsg extends Component {
     () => this.refresh());
   }
 
-  renderMsgTitle = (title, id, read, sendTime, isChecked) => (
+  renderMsgTitle = (title, id, read, sendTime, isChecked, avatar) => (
     <div className="c7n-iam-user-msg-collapse-title">
       <Checkbox
         style={{ verticalAlign: 'text-bottom' }}
         onChange={e => this.handleCheckboxChange(e, id)}
         checked={isChecked}
       />
+      {avatar}
       <span className="c7n-iam-user-msg-unread-title">{title}</span>
       <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
       <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
@@ -193,22 +194,22 @@ export default class UserMsg extends Component {
     const { id, title, read, sendTime, content, sendByUser } = item;
     const { AppState } = this.props;
     const innerStyle = {
-      userSelect: 'none', verticalAlign: 'top', marginRight: '22px', marginLeft: '24px',
+      userSelect: 'none', verticalAlign: 'top', marginRight: '10px', marginLeft: '10px', fontSize: '16px',
     };
     let avatar;
     if (sendByUser !== null) {
       const { imageUrl, loginName, realName } = sendByUser;
       avatar = (
         <Tooltip title={`${loginName} ${realName}`}>
-          <Avatar src={imageUrl} style={innerStyle}>
-            {realName[0]}
+          <Avatar size="small" src={imageUrl} style={innerStyle}>
+            <span style={{ left: 'calc(50%-6px)' }}>{realName[0]}</span>
           </Avatar>
         </Tooltip>
       );
     } else {
       avatar = (
         <Tooltip title={AppState.siteInfo.systemName || 'Choerodon'}>
-          <Avatar src={AppState.siteInfo.favicon || './favicon.ico'} style={innerStyle}>
+          <Avatar size="small" src={AppState.siteInfo.favicon || './favicon.ico'} style={innerStyle}>
             {(AppState.siteInfo.systemName && AppState.siteInfo.systemName[0]) || 'Choerodon'}
           </Avatar>
         </Tooltip>
@@ -222,10 +223,9 @@ export default class UserMsg extends Component {
           activeKey={UserMsgStore.getExpandMsg.has(id) ? [id.toString()] : []}
           style={UserMsgStore.getExpandMsg.has(id) ? null : { backgroundColor: '#fff' }}
         >
-          <Panel header={this.renderMsgTitle(title, id, read, sendTime, UserMsgStore.getSelectMsg.has(id))} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
+          <Panel header={this.renderMsgTitle(title, id, read, sendTime, UserMsgStore.getSelectMsg.has(id), avatar)} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
             {<div>
-              {avatar}
-              <div style={{ width: 'calc(100% - 78px)', display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: `${content}` }} />
+              <div style={{ width: 'calc(100% - 72px)', margin: '0 36px', display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: `${content}` }} />
             </div> }
           </Panel>
         </Collapse>

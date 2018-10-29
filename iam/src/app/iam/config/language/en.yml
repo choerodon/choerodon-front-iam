@@ -49,10 +49,20 @@
 "msg-center-organization.mail-template-organization": "Mail Template"
 "msg-center-organization.msg-record-organization": "Message Record"
 
+"task-dispatch-organization": "Task Dispatch"
+"task-dispatch-organization.task-detail-organization": "Task Detail"
+"task-dispatch-organization.execution-record-organization": "Execution Record"
+"task-dispatch-organization.task-classname-organization": "Executable Program"
+
 "prosetting": "Project Manage"
 # project
 "prosetting.proManage": "Project Manage"
 "prosetting.member-role-project": "Role Assignment"
+
+"task-dispatch-project": "Task Dispatch"
+"task-dispatch-project.task-detail-project": "Task Detail"
+"task-dispatch-project.execution-record-project": "Execution Record"
+"task-dispatch-project.task-classname-project": "Executable Program"
 
 "usercenter": "Profile"
 # user

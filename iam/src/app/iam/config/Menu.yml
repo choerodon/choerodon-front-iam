@@ -349,6 +349,30 @@
         permission:
           - 'notify-service.message-record-org.pageEmail'
 
+# 组织层任务调度
+"task-dispatch-organization":
+  icon: task_schedule
+  sort: 4
+  organization:
+    - "task-detail-organization":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - ''
+    - "execution-record-organization":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - ''
+    - "task-classname-organization":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - ''
+
 # 项目设置
 "prosetting":
   icon: IAM
@@ -372,6 +396,30 @@
           - 'iam-service.project.disableProject'
           - 'iam-service.project.query'
           - 'iam-service.project.update'
+
+# 项目层任务调度
+"task-dispatch-project":
+  icon: task_schedule
+  sort: 7
+  project:
+    - "task-detail-project":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - ''
+    - "execution-record-project":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - ''
+    - "task-classname-project":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - ''
 
 # 个人中心
 "usercenter":

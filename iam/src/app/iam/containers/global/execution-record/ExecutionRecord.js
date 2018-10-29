@@ -8,8 +8,37 @@ import ExecutionRecordStore from '../../../stores/global/execution-record';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 
-const intlPrefix = 'global.execution';
-const tablePrefix = 'global.taskdetail';
+const intlPrefix = 'execution';
+const tablePrefix = 'taskdetail';
+
+// 公用方法类
+class ExecutionRecordType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      case 'site':
+        codePrefix = 'global';
+        break;
+      default:
+        break;
+    }
+    this.code = `${codePrefix}.execution`;
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
+    this.type = type;
+    this.id = id; // 项目或组织id
+    this.name = name; // 项目或组织名称
+  }
+}
 
 @withRouter
 @injectIntl
@@ -35,7 +64,12 @@ export default class ExecutionRecord extends Component {
   }
 
   componentWillMount() {
+    this.initExecutionRecord();
     this.loadExecutionRecord();
+  }
+
+  initExecutionRecord() {
+    this.executionRecord = new ExecutionRecordType(this);
   }
 
   loadExecutionRecord(paginationIn, filtersIn, sortIn, paramsIn) {
@@ -85,6 +119,7 @@ export default class ExecutionRecord extends Component {
   render() {
     const { intl, AppState } = this.props;
     const { filters, params, pagination, loading } = this.state;
+    const { code, values } = this.executionRecord;
     const recordData = ExecutionRecordStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id="status" />,
@@ -158,8 +193,8 @@ export default class ExecutionRecord extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
+          code={code}
+          values={{ name: `${values.name || 'Choerodon'}` }}
         >
           <Table
             loading={loading}

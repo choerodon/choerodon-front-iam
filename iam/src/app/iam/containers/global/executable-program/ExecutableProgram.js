@@ -11,7 +11,36 @@ import './ExecutableProgram.scss';
 
 const { Sidebar } = Modal;
 const { TabPane } = Tabs;
-const intlPrefix = 'global.executable.program';
+const intlPrefix = 'executable.program';
+
+// 公用方法类
+class ExecutableProgramType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      case 'site':
+        codePrefix = 'global';
+        break;
+      default:
+        break;
+    }
+    this.code = `${codePrefix}.executable.program`;
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
+    this.type = type;
+    this.id = id; // 项目或组织id
+    this.name = name; // 项目或组织名称
+  }
+}
 
 @withRouter
 @injectIntl
@@ -43,7 +72,12 @@ export default class ExecutableProgram extends Component {
   }
 
   componentWillMount() {
+    this.initExecutableProgram();
     this.loadTaskClassName();
+  }
+
+  initExecutableProgram() {
+    this.executableProgram = new ExecutableProgramType(this);
   }
 
   loadTaskClassName(paginationIn, filtersIn, sortIn, paramsIn) {
@@ -171,6 +205,7 @@ export default class ExecutableProgram extends Component {
   render() {
     const { intl, AppState } = this.props;
     const { sort: { columnKey, order }, filters, params, pagination, loading, isShowSidebar, showJson, programName } = this.state;
+    const { code, values } = this.executableProgram;
     const data = ExecutableProgramStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
@@ -238,8 +273,8 @@ export default class ExecutableProgram extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
+          code={code}
+          values={{ name: `${values.name || 'Choerodon'}` }}
         >
           <Table
             loading={loading}
@@ -261,7 +296,7 @@ export default class ExecutableProgram extends Component {
           >
             <Content
               className="sidebar-content"
-              code={`${intlPrefix}.class`}
+              code={`${code}.class`}
               values={{ name: programName }}
             >
               <Tabs activeKey={showJson ? 'json' : 'table'} onChange={this.handleTabChange}>

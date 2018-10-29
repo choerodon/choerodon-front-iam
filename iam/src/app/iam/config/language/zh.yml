@@ -49,10 +49,20 @@
 "msg-center-organization.mail-template-organization": "邮件模板"
 "msg-center-organization.msg-record-organization": "消息记录"
 
+"task-dispatch-organization": "任务调度"
+"task-dispatch-organization.task-detail-organization": "任务明细"
+"task-dispatch-organization.execution-record-organization": "执行记录"
+"task-dispatch-organization.task-classname-organization": "可执行程序"
+
 "prosetting": 项目设置
 # project
 "prosetting.proManage": "项目信息"
 "prosetting.member-role-project": "项目角色分配"
+
+"task-dispatch-project": "任务调度"
+"task-dispatch-project.task-detail-project": "任务明细"
+"task-dispatch-project.execution-record-project": "执行记录"
+"task-dispatch-project.task-classname-project": "可执行程序"
 
 "usercenter": 个人中心
 # user

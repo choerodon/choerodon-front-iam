@@ -4,7 +4,7 @@ import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row, Spin, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../../stores/global/task-detail';
@@ -12,7 +12,7 @@ import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
 import '../../../common/ConfirmModal.scss';
 
-const intlPrefix = 'global.taskdetail';
+const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -22,6 +22,35 @@ const Option = Select.Option;
 const { TabPane } = Tabs;
 
 configure({ enforceActions: false });
+
+// 公用方法类
+class TaskDetailType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      case 'site':
+        codePrefix = 'global';
+        break;
+      default:
+        break;
+    }
+    this.code = `${codePrefix}.taskdetail`;
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
+    this.type = type;
+    this.id = id; // 项目或组织id
+    this.name = name; // 项目或组织名称
+  }
+}
 
 @Form.create()
 @withRouter
@@ -79,7 +108,12 @@ export default class TaskDetail extends Component {
   }
 
   componentWillMount() {
+    this.initTaskDetail();
     this.loadTaskDetail();
+  }
+
+  initTaskDetail() {
+    this.taskdetail = new TaskDetailType(this);
   }
 
   loadTaskDetail(paginationIn, filtersIn, sortIn, paramsIn) {
@@ -326,6 +360,7 @@ export default class TaskDetail extends Component {
       TaskDetailStore.setCurrentTask(record);
     }
   }
+
 
   // 关闭侧边栏
   handleCancel = () => {
@@ -833,8 +868,8 @@ export default class TaskDetail extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.create`}
-        values={{ name: `${AppState.getSiteInfo.systemName || 'Choerodon'}` }}
+        code={`${this.taskdetail.code}.create`}
+        values={{ name: `${this.taskdetail.values.name || 'Choerodon'}` }}
       >
         <div>
           <Form
@@ -1108,8 +1143,7 @@ export default class TaskDetail extends Component {
   // 渲染任务详情
   renderDetailContent() {
     const { intl: { formatMessage } } = this.props;
-    const { selectType, showLog } = this.state;
-    const { logFilters, logParams, logPagination, logLoading } = this.state;
+    const { selectType, showLog, logFilters, logParams, logPagination, logLoading } = this.state;
     const info = TaskDetailStore.info;
     let unit;
     switch (info.simpleRepeatIntervalUnit) {
@@ -1215,7 +1249,7 @@ export default class TaskDetail extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.detail`}
+        code={`${this.taskdetail.code}.detail`}
         values={{ name: info.name }}
       >
         <Tabs activeKey={showLog ? 'log' : 'info'} onChange={this.handleTabChange}>
@@ -1256,9 +1290,37 @@ export default class TaskDetail extends Component {
     );
   }
 
+  // 页面权限
+  getPermission() {
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    let createService = [''];
+    let enableService = [''];
+    let disableService = [''];
+    let deleteService = [''];
+    if (type === 'organization') {
+      createService = [''];
+      enableService = [''];
+      disableService = [''];
+      deleteService = [''];
+    } else if (type === 'project') {
+      createService = [''];
+      enableService = [''];
+      disableService = [''];
+      deleteService = [''];
+    }
+    return {
+      createService,
+      enableService,
+      disableService,
+      deleteService,
+    };
+  }
+
   render() {
     const { intl, AppState } = this.props;
     const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
+    const { createService } = this.getPermission();
     const TaskData = TaskDetailStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id="name" />,
@@ -1353,7 +1415,7 @@ export default class TaskDetail extends Component {
             icon="playlist_add"
             onClick={this.handleOpen.bind(this, 'create')}
           >
-            <FormattedMessage id={`${intlPrefix}.create.service`} />
+            <FormattedMessage id={`${intlPrefix}.create`} />
           </Button>
           <Button
             icon="refresh"
@@ -1363,8 +1425,8 @@ export default class TaskDetail extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
+          code={this.taskdetail.code}
+          values={{ name: `${this.taskdetail.values.name || 'Choerodon'}` }}
         >
           <Table
             loading={loading}

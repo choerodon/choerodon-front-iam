@@ -20,12 +20,14 @@ $baseFontColor: rgba(0, 0, 0, 0.55);
 }
 
 .client-granttype-item {
-  background-color: rgba(0, 0, 0, 0.08);
   display: inline-block;
-  border-radius: 100px;
+  background: rgba(0, 0, 0, .08);
+  border-radius: 10px;
+  margin-right: 8px;
   padding: 0 12px;
-  margin: 2px 5px;
+  height: 20px;
   line-height: 20px;
+  font-size: 12px;
 }
 
 .submit-wrap {

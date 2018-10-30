@@ -194,7 +194,7 @@ export default class UserMsg extends Component {
     const { id, title, read, sendTime, content, sendByUser } = item;
     const { AppState } = this.props;
     const innerStyle = {
-      userSelect: 'none', verticalAlign: 'top', marginRight: '8px', marginLeft: '12px', fontSize: '16px',
+      userSelect: 'none', verticalAlign: 'top', marginRight: '8px', marginLeft: '12px', fontSize: '16px', color: 'rgba(0,0,0,0.65)',
     };
     let avatar;
     if (sendByUser !== null) {
@@ -202,7 +202,7 @@ export default class UserMsg extends Component {
       avatar = (
         <Tooltip title={`${loginName} ${realName}`}>
           <Avatar size="small" src={imageUrl} style={innerStyle}>
-            <span style={{ left: 'calc(50%-6px)' }}>{realName[0]}</span>
+            {realName[0].toUpperCase()}
           </Avatar>
         </Tooltip>
       );

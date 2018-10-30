@@ -16,6 +16,9 @@
     }
     .ant-checkbox {
       color: rgba(0, 0, 0, 0.65);
+      &-wrapper + span {
+        padding: 0;
+      }
     }
     &-panel {
       // display: flex;

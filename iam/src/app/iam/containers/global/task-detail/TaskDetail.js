@@ -112,11 +112,16 @@ export default class TaskDetail extends Component {
     this.loadTaskDetail();
   }
 
+  componentWillUnmount() {
+    TaskDetailStore.setData([]);
+  }
+
   initTaskDetail() {
     this.taskdetail = new TaskDetailType(this);
   }
 
   loadTaskDetail(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.taskdetail;
     const {
       pagination: paginationState,
       sort: sortState,
@@ -129,7 +134,7 @@ export default class TaskDetail extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
-    TaskDetailStore.loadData(pagination, filters, sort, params).then((data) => {
+    TaskDetailStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       TaskDetailStore.setData(data.content);
       this.setState({
         pagination: {
@@ -158,8 +163,9 @@ export default class TaskDetail extends Component {
    * 任务信息
    * @param id 任务ID
    */
-  loadInfo = (id) => {
-    TaskDetailStore.loadInfo(id).then((data) => {
+  loadInfo = (taskId) => {
+    const { type, id } = this.taskdetail;
+    TaskDetailStore.loadInfo(taskId, type, id).then((data) => {
       if (data.faield) {
         Choerodon.prompt(data.message);
       } else {
@@ -173,6 +179,7 @@ export default class TaskDetail extends Component {
 
   // 任务日志列表
   loadLog(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.taskdetail;
     const {
       logPagination: paginationState,
       logSort: sortState,
@@ -185,7 +192,7 @@ export default class TaskDetail extends Component {
     const logParams = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ logFilters, logLoading: true });
-    TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id).then((data) => {
+    TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id, type, id).then((data) => {
       TaskDetailStore.setLog(data.content);
       this.setState({
         logPagination: {
@@ -272,7 +279,7 @@ export default class TaskDetail extends Component {
     const { id, objectVersionNumber } = record;
     const { intl } = this.props;
     const status = record.status === 'ENABLE' ? 'disable' : 'enable';
-    TaskDetailStore.ableTask(id, objectVersionNumber, status).then((data) => {
+    TaskDetailStore.ableTask(id, objectVersionNumber, status, this.taskdetail.type, this.taskdetail.code).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -290,11 +297,12 @@ export default class TaskDetail extends Component {
    */
   handleDelete = (record) => {
     const { intl } = this.props;
+    const { type, id } = this.taskdetail;
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
-      onOk: () => TaskDetailStore.deleteTask(record.id).then(({ failed, message }) => {
+      onOk: () => TaskDetailStore.deleteTask(record.id, type, id).then(({ failed, message }) => {
         if (failed) {
           Choerodon.prompt(message);
         } else {
@@ -412,7 +420,7 @@ export default class TaskDetail extends Component {
   // 获取对应服务名的类名
   loadClass = () => {
     const { currentService } = TaskDetailStore;
-    TaskDetailStore.loadClass(currentService.name).then((data) => {
+    TaskDetailStore.loadClass(currentService.name, this.taskdetail.type, this.taskdetail.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else if (data.length) {
@@ -436,8 +444,9 @@ export default class TaskDetail extends Component {
       paramsLoading: true,
     });
     const { currentClassNames } = TaskDetailStore;
+    const { type, id } = this.taskdetail;
     if (currentClassNames.id) {
-      TaskDetailStore.loadParams(currentClassNames.id).then((data) => {
+      TaskDetailStore.loadParams(currentClassNames.id, type, id).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -482,7 +491,8 @@ export default class TaskDetail extends Component {
    */
   checkName = (rule, value, callback) => {
     const { intl } = this.props;
-    TaskDetailStore.checkName(value).then(({ failed }) => {
+    const { type, id } = this.taskdetail;
+    TaskDetailStore.checkName(value, type, id).then(({ failed }) => {
       if (failed) {
         callback(intl.formatMessage({ id: `${intlPrefix}.task.name.exist` }));
       } else {
@@ -493,6 +503,7 @@ export default class TaskDetail extends Component {
 
   checkCron = () => {
     const { getFieldValue } = this.props.form;
+    const { type, id } = this.taskdetail;
     const cron = getFieldValue('cronExpression');
     if (this.state.currentCron === cron) return;
     this.setState({
@@ -507,7 +518,7 @@ export default class TaskDetail extends Component {
         cronLoading: true,
       });
 
-      TaskDetailStore.checkCron(cron).then((data) => {
+      TaskDetailStore.checkCron(cron, type, id).then((data) => {
         if (data.failed) {
           this.setState({
             cronLoading: false,
@@ -558,6 +569,7 @@ export default class TaskDetail extends Component {
     e.preventDefault();
     if (this.state.selectType === 'create') {
       const { intl } = this.props;
+      const { type, id } = this.taskdetail;
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (values.methodId === 'empty') {
           Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.noprogram` }));
@@ -581,7 +593,7 @@ export default class TaskDetail extends Component {
             simpleRepeatIntervalUnit: flag ? simpleRepeatIntervalUnit : null,
             simpleRepeatCount: flag ? Number(simpleRepeatCount) : null,
           };
-          TaskDetailStore.createTask(body).then(({ failed, message }) => {
+          TaskDetailStore.createTask(body, type, id).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
               this.setState({

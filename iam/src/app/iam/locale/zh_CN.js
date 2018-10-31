@@ -1381,11 +1381,15 @@ const zh_CN = {
   'memberrole.member.type': '成员类型',
   'memberrole.role': '角色',
   'memberrole.role.disabled.tip': '该角色已停用',
-  'memberrole.rolemember': '角色/成员',
+  'memberrole.rolemember': '角色/登录名',
   'memberrole.view': '查看方式',
   'memberrole.fileloading.text': '正在上传...',
   'memberrole.uploading.text': '正在导入...',
   'memberrole.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
+  'memberrole.loginname': '登录名',
+  'memberrole.realname': '用户名',
+  'memberrole.type.user': '用户',
+  'memberrole.type.client': '客户端',
 
   // 角色标签
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',

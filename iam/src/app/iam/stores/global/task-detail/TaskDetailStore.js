@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
+import { axios, store, stores } from 'choerodon-front-boot';
 import querystring from 'query-string';
 
 @store('TaskDetailStore')
@@ -66,11 +66,13 @@ class TaskDetailStore {
     this.currentTask = data;
   }
 
+  getLevelType = (type, id) => (type === 'site' ? '' : `/${type}s/${id}`);
+
   loadData(
     { current, pageSize },
     { status, name, description },
     { columnKey = 'id', order = 'descend' },
-    params) {
+    params, type, id) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -87,14 +89,14 @@ class TaskDetailStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`asgard/v1/schedules/tasks?${querystring.stringify(queryObj)}`);
+    return axios.get(`asgard/v1/schedules${this.getLevelType(type, id)}/tasks?${querystring.stringify(queryObj)}`);
   }
 
   loadLogData(
     { current, pageSize },
     { status, serviceInstanceId },
     { columnKey = 'id', order = 'descend' },
-    params, taskId) {
+    params, taskId, type, id) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -110,26 +112,33 @@ class TaskDetailStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/asgard/v1/schedules/tasks/instances/${taskId}?${querystring.stringify(queryObj)}`);
+    return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/instances/${taskId}?${querystring.stringify(queryObj)}`);
   }
 
   loadService = () => axios.get('manager/v1/services');
 
-  loadClass = service => axios.get(`/asgard/v1/schedules/methods/service?service=${service}`)
+  loadClass = (service, type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/service?service=${service}`);
 
-  loadParams = id => axios.get(`/asgard/v1/schedules/methods/${id}`);
 
-  ableTask = (id, objectVersionNumber, status) => axios.put(`/asgard/v1/schedules/tasks/${id}/${status}?objectVersionNumber=${objectVersionNumber}`);
+  loadParams = (classId, type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/${classId}`);
 
-  deleteTask = id => axios.delete(`/asgard/v1/schedules/tasks/${id}`);
 
-  checkName = name => axios.post(`/asgard/v1/schedules/tasks/check?name=${name}`);
+  ableTask = (taskId, objectVersionNumber, status, type, id) => axios.put(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/${taskId}/${status}?objectVersionNumber=${objectVersionNumber}`);
 
-  createTask = body => axios.post('/asgard/v1/schedules/tasks', JSON.stringify(body));
 
-  loadInfo = id => axios.get(`/asgard/v1/schedules/tasks/${id}`);
+  deleteTask = (taskId, type, id) => axios.delete(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/${taskId}`);
 
-  checkCron = body => axios.post('/asgard/v1/schedules/tasks/cron', body);
+
+  checkName = (name, type, id) => axios.post(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/check?name=${name}`);
+
+
+  createTask = (body, type, id) => axios.post(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks`, JSON.stringify(body));
+
+
+  loadInfo = (currentId, type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/${currentId}`);
+
+
+  checkCron = (body, type, id) => axios.post(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/cron`, body);
 }
 
 

@@ -37,9 +37,27 @@
   tr td {
     vertical-align: text-top;
   }
-  .memberrole-roles .role-table {
-    padding-bottom: 6px;
+  .memberrole-roles {
+    .role-wrapper {
+      display: inline-block;
+      border-radius: 10px;
+      margin-right: 8px;
+      padding: 0 12px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 12px;
+
+      &-disabled {
+        background: rgba(0, 0, 0, 0.04);
+        color: rgba(0, 0, 0, 0.36);
+      }
+
+      &-enabled {
+        background: rgba(0, 0, 0, .08);
+      }
+    }
   }
+
   > .ant-spin-nested-loading {
     height: 500px;
   }
@@ -145,6 +163,44 @@
     }
   }
 }
-.c7n-test-test {
-  width: 50%;
+
+.c7n-memberrole-select-dropdown {
+  top: 72px !important;
+
+  li {
+    padding-right: 0;
+    padding-left: 6px;
+  }
+}
+
+.c7n-memberrole-select {
+  margin-right: 12px;
+  margin-left: 10px;
+  line-height: 58px;
+
+  .ant-select-selection-selected-value {
+    font-weight: 500;
+  }
+
+  .ant-select-selection__rendered {
+    margin-bottom: 0;
+  }
+  .ant-select-selection {
+    color: #3f51b5;
+  }
+
+  .ant-select-underline {
+    display: none;
+  }
+
+  a {
+    height: 20px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  i {
+    line-height: 58px;
+  }
 }

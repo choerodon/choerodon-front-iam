@@ -1,7 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import queryString from 'query-string';
-import _ from 'lodash';
+
 
 const PAGELOADSIZE = 10;
 
@@ -77,9 +77,16 @@ class UserMsgStore {
   }
 
   @action selectAllMsg() {
-    _.forEach(this.getUserMsg, action((v) => {
-      this.addSelectMsgById(v.id);
-    }));
+    this.getUserMsg.forEach(action(v => this.selectMsg.add(v.id)));
+  }
+
+  @action unSelectAllMsg() {
+    this.getUserMsg.forEach(action(v => this.selectMsg.delete(v.id)));
+  }
+
+  @computed
+  get isAllSelected() {
+    return !this.getUserMsg.some(v => !this.selectMsg.has(v.id));
   }
 
   @computed

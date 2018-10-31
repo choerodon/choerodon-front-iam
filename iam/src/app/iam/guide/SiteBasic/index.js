@@ -67,7 +67,8 @@ export default class SiteBasic extends Component {
                 >
                   <div className="menubox">
                     <div className="show-menu-img-site-setting show-menu-img" />
-                    <div className="showbox"><Icon className="showicon" type="play_circle_filled" />   互动演示</div>
+                    <Icon className="showicon" type="play_circle_filled" />
+                    <span>互动演示</span>
                   </div>
                 </AutoGuide>
               </Timeline.Item>

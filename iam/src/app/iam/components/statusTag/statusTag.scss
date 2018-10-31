@@ -5,19 +5,24 @@
   border-radius: 2px;
   text-align: center;
   padding: 0 2px;
-
+  > span {
+    vertical-align: middle;
+  }
   div {
     transform: scale(0.8);
   }
   &-with-icon {
     color: #000;
+    > span {
+      vertical-align: middle;
+    }
     i {
       padding-right: 6px;
-      vertical-align: top;
+      vertical-align: middle;
     }
 
     .icon-check_circle {
-      color: #00BFA5;
+      color: #00bfa5;
     }
 
     .icon-remove_circle {

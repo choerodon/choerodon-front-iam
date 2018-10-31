@@ -97,6 +97,14 @@
     background-color: white;
     height: 48px;
     width: 250px;
+    display: flex;
+    > i {
+      margin-top: 15px;
+    }
+    > span {
+      margin-top: 15px;
+      margin-left: 5.5px;
+    }
   }
   .show-menu-img {
     background-position: center;
@@ -154,6 +162,7 @@
     margin: 11px 0;
     height: 30px;
     width: 90px;
+    left: 178px;
     background-color: white;
     color: #3f51b5;
     line-height: 30px;

@@ -406,7 +406,7 @@ export default class Project extends Component {
       }],
       filteredValue: filters.enabled || [],
       key: 'enabled',
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
     }, {
       title: '',
       key: 'action',

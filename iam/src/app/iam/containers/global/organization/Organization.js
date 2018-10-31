@@ -351,7 +351,7 @@ export default class Organization extends Component {
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
     }, {
       title: '',
       width: 150,

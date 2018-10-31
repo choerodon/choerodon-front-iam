@@ -178,7 +178,7 @@ export default class RootUser extends Component {
         title: <FormattedMessage id={`${intlPrefix}.status.enabled`} />,
         key: 'enabled',
         dataIndex: 'enabled',
-        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
         filters: [{
           text: intl.formatMessage({ id: 'enable' }),
           value: 'true',

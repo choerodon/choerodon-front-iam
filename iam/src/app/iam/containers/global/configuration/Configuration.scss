@@ -28,12 +28,12 @@
 .ace_keyword {
   color: #794938;
 }
-.ace_constant{
-  color: #811F24;
+
+.ace_constant {
+  color: #811f24;
 }
 
 .createConfigContainer {
-  margin-bottom: 32px;
   padding: 32px;
   background-color: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
@@ -81,6 +81,18 @@
       display: block;
       margin-bottom: 10px;
     }
+    .CodeMirror-scroll {
+      max-height: calc(100vh - 590px);
+    }
+  }
+  .CodeMirror {
+    height: auto;
+  }
+  .CodeMirror-scroll {
+    /* Set scrolling behaviour here */
+    overflow: auto;
+    // max-height: 800px;
+    max-height: calc(100vh - 515px);
   }
 }
 

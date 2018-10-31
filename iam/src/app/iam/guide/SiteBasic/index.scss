@@ -41,138 +41,24 @@
   .icon-open_in_new {
     font-size: 12px;
   }
-  .inline-icon-setting {
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: -7px;
-    display: inline-block;
-    height: 24px;
-    width: 43px;
-    background-image: url("./image/icon-setting.png");
-  }
-  .inline-main-menu {
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: -6px;
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    background-image: url("./image/main-menu.png");
-  }
-  .inline-add-role {
-    background-position: center;
-    background-size: 90%;
-    background-repeat: no-repeat;
-    margin-bottom: -6px;
-    display: inline-block;
-    height: 24px;
-    width: 88px;
-    background-image: url("./image/add-role.png");
-  }
-  .inline-pen {
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: -6px;
-    display: inline-block;
-    height: 15px;
-    width: 15px;
-    background-image: url("./image/pen.png");
-  }
-  .inline-stop {
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: -6px;
-    display: inline-block;
-    height: 15px;
-    width: 15px;
-    background-image: url("./image/stop.png");
-  }
-  .menubox {
+  .guide-card {
     margin-bottom: 2px;
     box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
     background-color: white;
     height: 48px;
-    width: 250px;
+    width: 100%;
     display: flex;
     > i {
-      margin-top: 15px;
+      margin: auto 0;
+      margin-left: 16px;
     }
     > span {
-      margin-top: 15px;
+      margin: auto 0;
       margin-left: 5.5px;
-    }
-  }
-  .show-menu-img {
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    height: 30px;
-    width: 150px;
-    display: inline-block;
-    margin: 9px 0;
-    &-site-setting {
-      background-image: url("./image/site-setting.png");
-    }
-  }
-  .menu-img {
-    box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    height: 30px;
-    width: 150px;
-    display: inline-block;
-    margin: 9px 0;
-    margin-bottom: 2px;
-    &-site-setting {
-      background-image: url("./image/site-setting.png");
-    }
-    &-org-man {
-      background-image: url("./image/org-man.png");
-    }
-    &-role-man {
-      background-image: url("./image/role-man.png");
-    }
-    &-site-role-ass {
-      background-image: url("./image/site-role-ass.png");
-    }
-    &-root-setting {
-      background-image: url("./image/root-setting.png");
-    }
-    &-menu-setting {
-      background-image: url("./image/menu-setting.png");
-    }
-    &-dash-setting {
-      background-image: url("./image/dash-setting.png");
-    }
-    &-settings {
-      background-image: url("./image/settings.png");
     }
   }
   .no-border {
     border-bottom: 0;
-  }
-  .showbox {
-    display: inline-block;
-    position: absolute;
-    margin: 11px 0;
-    height: 30px;
-    width: 90px;
-    left: 178px;
-    background-color: white;
-    color: #3f51b5;
-    line-height: 30px;
-    font-size: 13px;
-  }
-  .showicon {
-    color: #3f51b5;
-    width: 15px;
-    height: 15px;
-    margin-top: -5px;
   }
   .icon-winner {
     background: url("./image/winner.svg");

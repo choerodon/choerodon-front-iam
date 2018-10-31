@@ -260,7 +260,7 @@ export default class Role extends Component {
         text: intl.formatMessage({ id: 'disable' }),
         value: 'false',
       }],
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
       sorter: true,
       sortOrder: columnKey === 'enabled' && order,
       filteredValue: filters.enabled || [],

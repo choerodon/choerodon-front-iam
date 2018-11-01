@@ -930,7 +930,7 @@ export default class TaskDetail extends Component {
                   disabledDate={this.disabledStartDate}
                   disabledTime={this.disabledDateStartTime}
                   showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[0]}
+                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
                   onChange={this.onStartChange}
                   onOpenChange={this.clearStartTimes}
                 />,
@@ -950,7 +950,7 @@ export default class TaskDetail extends Component {
                   disabledDate={this.disabledEndDate.bind(this)}
                   disabledTime={this.disabledDateEndTime.bind(this)}
                   showTime={{ defaultValue: moment() }}
-                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[0]}
+                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
                   onChange={this.onEndChange}
                   onOpenChange={this.clearEndTimes}
                 />,

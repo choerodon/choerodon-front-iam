@@ -319,7 +319,7 @@ class DashboardSetting extends Component {
               })(
                 <IconSelect
                   label={<FormattedMessage id={`${intlPrefix}.icon`} />}
-                  getPopupContainer={() => document.getElementsByClassName('ant-modal-body')[0]}
+                  getPopupContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
                   style={{ width: inputWidth }}
                   showArrow
                 />,
@@ -343,7 +343,7 @@ class DashboardSetting extends Component {
                 mode="multiple"
                 label={<FormattedMessage id={`${intlPrefix}.role`} />}
                 size="default"
-                getPopupContainer={() => document.getElementsByClassName('ant-modal-body')[0]}
+                getPopupContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
                 style={{
                   width: '512px',
                   display: needRoles ? 'inline-block' : 'none',

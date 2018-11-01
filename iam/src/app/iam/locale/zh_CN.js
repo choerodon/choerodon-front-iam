@@ -533,6 +533,7 @@ const zh_CN = {
   disable: '停用',
   baseon: '基于此创建',
   selectall: '全选',
+  selectnone: '取消全选',
 
   // status
   // success

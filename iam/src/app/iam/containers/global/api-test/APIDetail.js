@@ -16,6 +16,8 @@ import AuthorizeModal from './AuthorizeModal';
 let statusCode;
 let responseHeader;
 let response;
+let rcResponseHeader;
+let rcResponse;
 let authorization;
 const intlPrefix = 'global.apitest';
 const urlPrefix = process.env.API_HOST;
@@ -59,11 +61,15 @@ instance.interceptors.request.use(
 instance.interceptors.response.use((res) => {
   statusCode = res.status; // 响应码
   responseHeader = jsonFormat(res.headers);
+  rcResponseHeader = JSON.stringify(res.headers);
   response = res.data instanceof Object ? jsonFormat(res.data) : `${res.data}`; // 响应主体
+  rcResponse = JSON.stringify(res.data);
 }, (error) => {
   statusCode = error.response.status; // 响应码
   responseHeader = jsonFormat(error.response.headers);
+  rcResponseHeader = JSON.stringify(error.response.headers);
   response = error.response.data instanceof Object ? jsonFormat(error.response.data) : `${error.response.data}`; // 响应主体
+  rcResponse = JSON.stringify(error.response.data);
 });
 
 @Form.create()
@@ -339,6 +345,25 @@ export default class APIDetail extends Component {
     Choerodon.prompt(formatMessage({ id: 'copy.success' }));
   }
 
+  handleCopyHeader() {
+    const { intl: { formatMessage } } = this.props;
+    const headerRootEle = document.getElementById('responseHeader');
+    headerRootEle.value = rcResponseHeader;
+    headerRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
+  handleCopyBody() {
+    const { intl: { formatMessage } } = this.props;
+    const headerRootEle = document.getElementById('responseContent');
+    headerRootEle.value = rcResponse;
+    headerRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
+
   getTest = () => {
     let curlContent;
     const upperMethod = {
@@ -586,6 +611,11 @@ export default class APIDetail extends Component {
                   {response}
                 </code>
               </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyBody.bind(this)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="responseContent" />
             </div>
           </div>
           <div className="c7n-response-body">
@@ -596,6 +626,11 @@ export default class APIDetail extends Component {
                   {responseHeader}
                 </code>
               </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyHeader.bind(this)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="responseHeader" />
             </div>
           </div>
           <div className="c7n-curl">

@@ -245,6 +245,7 @@
 
       .c7n-response-body {
         margin-top: 24px;
+        position: relative;
 
         .response-body-container {
           width: 100%;
@@ -254,6 +255,22 @@
           background: #f1f9ff;
           white-space: nowrap;
           font-size: 14px;
+
+          &:hover {
+            i.icon.icon-library_books {
+              display: inline-block;
+            }
+          }
+        }
+        i.icon.icon-library_books {
+          position: absolute;
+          top: 50px;
+          right: 16px;
+          color: #3f51b5;
+          cursor: pointer;
+          font-size: 25px;
+          background: white;
+          display: none;
         }
       }
 

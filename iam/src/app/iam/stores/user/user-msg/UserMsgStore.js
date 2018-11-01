@@ -73,15 +73,15 @@ class UserMsgStore {
   };
 
   @action expandAllMsg() {
-    this.getUserMsg.forEach(action(v => this.expandMsg.add(v.id)));
+    this.expandMsg = new Set([...this.expandMsg, ...this.getUserMsg.map(action(v => v.id))]);
   }
 
   @action selectAllMsg() {
-    this.getUserMsg.forEach(action(v => this.selectMsg.add(v.id)));
+    this.selectMsg = new Set([...this.selectMsg, ...this.getUserMsg.map(action(v => v.id))]);
   }
 
   @action unSelectAllMsg() {
-    this.getUserMsg.forEach(action(v => this.selectMsg.delete(v.id)));
+    this.selectMsg = new Set([...this.selectMsg].filter(x => !this.userMsg.find(v => v.id === x)));
   }
 
   @computed
@@ -111,7 +111,7 @@ class UserMsgStore {
 
   @action
   addSelectMsgById(id) {
-    this.selectMsg.add(id);
+    this.selectMsg = new Set([...this.selectMsg, id]);
   }
 
   @computed
@@ -121,12 +121,12 @@ class UserMsgStore {
 
   @action
   expandMsgById(id) {
-    this.expandMsg.add(id);
+    this.expandMsg = new Set([...this.expandMsg, id]);
   }
 
   @action
   unExpandMsgById(id) {
-    this.expandMsg.delete(id);
+    this.expandMsg = new Set([...this.expandMsg].filter(v => v !== id));
   }
 
   @computed
@@ -151,7 +151,7 @@ class UserMsgStore {
 
   @action
   deleteSelectMsgById(id) {
-    this.selectMsg.delete(id);
+    this.selectMsg = new Set([...this.selectMsg].filter(v => v !== id));
   }
 
   @computed
@@ -287,7 +287,7 @@ class UserMsgStore {
     }))
       .catch(action((error) => {
         if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
-        Choerodon.handleResponseError(error);
+        Choerodon.prompt(error.response.statusText);
       }));
   }
 }

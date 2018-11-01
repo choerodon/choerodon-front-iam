@@ -52,22 +52,17 @@ function timestampFormat(timestamp) {
 @inject('AppState')
 @observer
 export default class UserMsg extends Component {
-  state = this.getInitState();
-
-  getInitState() {
-    return {
-      showAll: false,
-      needExpand: true,
-      isAllSelect: false,
-    };
-  }
+  state = {
+    showAll: false,
+    needExpand: true,
+  };
 
   componentDidMount() {
     this.loadUserInfo();
     const matchId = this.props.location.search.match(/msgId=(\d+)/g);
     if (matchId) {
       const id = Number(matchId[0].match(/\d+/g)[0]);
-      UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false, id);
+      UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
     } else UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
     const matchType = this.props.location.search.match(/(msgType=)(.+)/g); // 火狐浏览器不兼容js正则表达式的环视，只能改成这样了
     if (matchType) {
@@ -96,10 +91,7 @@ export default class UserMsg extends Component {
   }
 
   showUserMsg(show) {
-    this.setState({
-      showAll: show,
-    },
-    () => this.refresh());
+    this.setState({ showAll: show }, () => this.refresh());
   }
 
   renderMsgTitle = (title, id, read, sendTime, isChecked, avatar) => (
@@ -147,52 +139,39 @@ export default class UserMsg extends Component {
   };
 
   handleCheckboxChange = (e, id) => {
-    // cancelBubble(e);
     if (UserMsgStore.getSelectMsg.has(id)) {
       UserMsgStore.deleteSelectMsgById(id);
     } else {
       UserMsgStore.addSelectMsgById(id);
     }
-    this.setState({
-      needExpand: false,
-    });
+    this.setState({ needExpand: false });
   };
 
   handleReadIconClick = (id) => {
     UserMsgStore.setReadLocal(id);
     UserMsgStore.readMsg([id]);
-    this.setState({
-      needExpand: false,
-    });
+    this.setState({ needExpand: false });
   };
 
   handleCollapseChange = (item) => {
     setTimeout(() => {
       if (this.state.needExpand && UserMsgStore.getExpandMsg.has(item.id)) {
         UserMsgStore.unExpandMsgById(item.id);
-      } else if (this.state.needExpand && !UserMsgStore.getExpandMsg.has(item.id)) {
+      } else if (this.state.needExpand) {
         UserMsgStore.expandMsgById(item.id);
-        UserMsgStore.readMsg([item.id]);
-        UserMsgStore.setReadLocal(item.id);
       }
-      this.setState({
-        needExpand: true,
-      });
+      this.setState({ needExpand: true });
     }, 10);
   };
 
   loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
   selectAllMsg = () => {
-    const { isAllSelect } = this.state;
     if (!UserMsgStore.isAllSelected) {
       UserMsgStore.selectAllMsg();
     } else {
       UserMsgStore.unSelectAllMsg();
     }
-    this.setState({
-      isAllSelect: !isAllSelect,
-    });
   };
 
   renderUserMsgCard(item) {
@@ -259,11 +238,13 @@ export default class UserMsg extends Component {
           <Button
             icon="check_box"
             onClick={this.selectAllMsg}
+            style={{ width: '93px' }}
           >
-            <FormattedMessage id="selectall" />
+            <FormattedMessage id={UserMsgStore.getUserMsg.length > 0 && UserMsgStore.isAllSelected ? 'selectnone' : 'selectall'} />
           </Button>
           <Button
             icon="all_read"
+            disabled={UserMsgStore.getSelectMsg.size === 0}
             onClick={this.handleBatchRead}
           >
             <FormattedMessage id={`${intlPrefix}.markreadall`} />
@@ -284,72 +265,35 @@ export default class UserMsg extends Component {
         </Header>
         <Content>
           <Tabs defaultActiveKey="msg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false}>
-            <TabPane tab="消息" key="msg" className="c7n-iam-user-msg-tab">
-              <div className="c7n-iam-user-msg-btns">
-                <div className="text">
-                  {intl.formatMessage({ id: 'user.usermsg.view' })}
+            {[{ key: 'msg', value: '消息' }, { key: 'notice', value: '通知' }].map(panelItem => (
+              <TabPane tab={panelItem.value} key={panelItem.key} className="c7n-iam-user-msg-tab">
+                <div className="c7n-iam-user-msg-btns">
+                  <div className="text">
+                    {intl.formatMessage({ id: 'user.usermsg.view' })}
+                  </div>
+                  <Button
+                    className={this.getUserMsgClass('unRead')}
+                    onClick={() => { this.showUserMsg(false); }}
+                    type="primary"
+                  ><FormattedMessage id="user.usermsg.unread" /></Button>
+                  <Button
+                    className={this.getUserMsgClass('all')}
+                    onClick={() => { this.showUserMsg(true); }}
+                    type="primary"
+                  ><FormattedMessage id="user.usermsg.all" /></Button>
                 </div>
-                <Button
-                  className={this.getUserMsgClass('unRead')}
-                  onClick={() => {
-                    this.showUserMsg(false);
-                  }}
-                  type="primary"
-                ><FormattedMessage id="user.usermsg.unread" /></Button>
-                <Button
-                  className={this.getUserMsgClass('all')}
-                  onClick={() => {
-                    this.showUserMsg(true);
-                  }}
-                  type="primary"
-                ><FormattedMessage id="user.usermsg.all" /></Button>
-              </div>
-              <List
-                className="c7n-iam-user-msg-list"
-                loading={UserMsgStore.getLoading}
-                itemLayout="horizontal"
-                pagination={userMsg.length > 0 ? pagination : false}
-                dataSource={userMsg}
-                renderItem={item => (
-                  this.renderUserMsgCard(item)
-                )}
-                split={false}
-                empty={this.renderEmpty('消息')}
-              />
-            </TabPane>
-            <TabPane tab="通知" key="notice" className="c7n-iam-user-msg-tab">
-              <div className="c7n-iam-user-msg-btns">
-                <div className="text">
-                  {intl.formatMessage({ id: 'user.usermsg.view' })}
-                </div>
-                <Button
-                  className={this.getUserMsgClass('unRead')}
-                  onClick={() => {
-                    this.showUserMsg(false);
-                  }}
-                  type="primary"
-                ><FormattedMessage id="user.usermsg.unread" /></Button>
-                <Button
-                  className={this.getUserMsgClass('all')}
-                  onClick={() => {
-                    this.showUserMsg(true);
-                  }}
-                  type="primary"
-                ><FormattedMessage id="user.usermsg.all" /></Button>
-              </div>
-              <List
-                className="c7n-iam-user-msg-list"
-                loading={UserMsgStore.getLoading}
-                itemLayout="horizontal"
-                pagination={userMsg.length > 0 ? pagination : false}
-                dataSource={userMsg}
-                renderItem={item => (
-                  this.renderUserMsgCard(item)
-                )}
-                split={false}
-                empty={this.renderEmpty('通知')}
-              />
-            </TabPane>
+                <List
+                  className="c7n-iam-user-msg-list"
+                  loading={UserMsgStore.getLoading}
+                  itemLayout="horizontal"
+                  pagination={userMsg.length > 0 ? pagination : false}
+                  dataSource={userMsg}
+                  renderItem={item => (this.renderUserMsgCard(item))}
+                  split={false}
+                  empty={this.renderEmpty(panelItem.value)}
+                />
+              </TabPane>
+            ))}
           </Tabs>
         </Content>
       </Page>

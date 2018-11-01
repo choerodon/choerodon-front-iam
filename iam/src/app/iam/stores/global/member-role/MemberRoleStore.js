@@ -11,6 +11,8 @@ class MemberRoleStore {
    */
   @observable uploading = false;
 
+  @observable mode = 'user'; // 所选模式 默认为用户
+
   @observable uploadInfo = {
     noData: true,
   };
@@ -18,6 +20,11 @@ class MemberRoleStore {
   @observable roleData = [];
 
   @observable roleMemberDatas = [];
+
+
+  @action setMode(data) {
+    this.mode = data;
+  }
 
   @computed
   get getRoleData() {

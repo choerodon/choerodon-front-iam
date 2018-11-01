@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page } from 'choerodon-front-boot';
-import { Col, Row, Table, Tabs } from 'choerodon-ui';
+import { Col, Row, Table, Tabs, Spin } from 'choerodon-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import AceEditor from '../../../components/yamlAce';
 import InstanceStore from '../../../stores/global/instance';
@@ -59,8 +59,8 @@ export default class InstanceDetail extends Component {
   }
 
   getInstanceInfo = () => {
-    const { info, loading, metadata } = this.state;
-    const { intl } = this.props;
+    const { info, metadata } = this.state;
+    const { intl: { formatMessage } } = this.props;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
@@ -70,78 +70,70 @@ export default class InstanceDetail extends Component {
       dataIndex: 'value',
       key: 'value',
     }];
+    const infoList = [{
+      key: formatMessage({ id: `${intlPrefix}.instanceid` }),
+      value: info.instanceId,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.hostname` }),
+      value: info.hostName,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.ip` }),
+      value: info.ipAddr,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.service` }),
+      value: info.app,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.port` }),
+      value: info.port,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.version` }),
+      value: info.version,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.registertime` }),
+      value: info.registrationTime,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.metadata` }),
+      value: '',
+    }];
     return (
       <div className="instanceInfoContainer">
         <div className="instanceInfo">
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.instanceid`} />：</Col>
-            <Col span={19}>{info && info.instanceId}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.hostname`} />：</Col>
-            <Col span={19}>{info && info.hostName}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.ip`} />：</Col>
-            <Col span={19}>{info && info.ipAddr}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.service`} />：</Col>
-            <Col span={19}>{info && info.app}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.port`} />：</Col>
-            <Col span={19}>{info && info.port}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.version`} />：</Col>
-            <Col span={19}>{info && info.version}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.registertime`} />：</Col>
-            <Col span={19}>{info && info.registrationTime}</Col>
-          </Row>
-          <Row>
-            <Col span={5}><FormattedMessage id={`${intlPrefix}.metadata`} /></Col>
-          </Row>
+          {
+            infoList.map(({ key, value }) =>
+              <Row key={key}>
+                <Col span={5}>{key}:</Col>
+                <Col span={19}>{value}</Col>
+              </Row>,
+            )
+          }
         </div>
         <Table
-          loading={loading}
           columns={columns}
           dataSource={metadata}
-          rowkey="name"
+          rowKey="name"
           pagination={false}
-          filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+          filterBarPlaceholder={formatMessage({ id: 'filtertable' })}
         />
       </div>
     );
   };
 
   getConfigInfo = () => {
-    let configInfo = '';
-    let envinfo = '';
-    if (this.state.info && this.state.info.configInfoYml) {
-      configInfo = this.state.info.configInfoYml.yaml;
-    }
-
-    if (this.state.info && this.state.info.envInfoYml) {
-      envinfo = this.state.info.envInfoYml.yaml;
-    }
-
+    const { info } = this.state;
     return (
       <div className="configContainer">
         <div>
           <p><FormattedMessage id={`${intlPrefix}.configinfo`} /></p>
           <AceEditor
             readOnly="nocursor"
-            value={configInfo}
+            value={info.configInfoYml.yaml || ''}
           />
         </div>
         <div>
           <p><FormattedMessage id={`${intlPrefix}.envinfo`} /></p>
           <AceEditor
             readOnly="nocursor"
-            value={envinfo}
+            value={info.envInfoYml.yaml || ''}
           />
         </div>
       </div>
@@ -149,21 +141,31 @@ export default class InstanceDetail extends Component {
   };
 
   render() {
+    const { loading } = this.state;
     return (
       <Page>
         <Header
           title={<FormattedMessage id={`${intlPrefix}.detail`} />}
           backPath="/iam/instance"
         />
-        <Content
-          code={`${intlPrefix}.detail`}
-          values={{ name: this.instanceId }}
-        >
-          <Tabs>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.instanceinfo`} />} key="instanceinfo">{this.getInstanceInfo()}</TabPane>
-            <TabPane tab={<FormattedMessage id={`${intlPrefix}.configenvInfo`} />} key="configenvInfo">{this.getConfigInfo()}</TabPane>
-          </Tabs>
-        </Content>
+        {
+          loading ? <Spin size="large" style={{ paddingTop: 242 }} /> :
+          <Content
+            code={`${intlPrefix}.detail`}
+            values={{ name: this.instanceId }}
+          >
+            <Tabs>
+              <TabPane
+                tab={<FormattedMessage id={`${intlPrefix}.instanceinfo`} />}
+                key="instanceinfo"
+              >{this.getInstanceInfo()}</TabPane>
+              <TabPane
+                tab={<FormattedMessage id={`${intlPrefix}.configenvInfo`} />}
+                key="configenvInfo"
+              >{this.getConfigInfo()}</TabPane>
+            </Tabs>
+          </Content>
+        }
       </Page>
     );
   }

@@ -752,7 +752,7 @@ export default class MemberRole extends Component {
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
     const columns = [
       {
-        title: <FormattedMessage id="memberrole.member" />,
+        title: <FormattedMessage id="memberrole.loginname" />,
         dataIndex: 'loginName',
         key: 'loginName',
         filters: [],
@@ -771,7 +771,7 @@ export default class MemberRole extends Component {
         },
       },
       {
-        title: <FormattedMessage id="memberrole.name" />,
+        title: <FormattedMessage id="memberrole.realname" />,
         dataIndex: 'realName',
         key: 'realName',
         filters: [],
@@ -790,12 +790,6 @@ export default class MemberRole extends Component {
         },
       },
       {
-        title: <FormattedMessage id="memberrole.member.type" />,
-        dataIndex: 'organizationId',
-        key: 'organizationId',
-        render: (record, text) => <div><Icon type="person" style={{ verticalAlign: 'text-bottom', marginRight: '4px' }} /><span>用户</span></div>,
-      },
-      {
         title: <FormattedMessage id="memberrole.role" />,
         dataIndex: 'roles',
         key: 'roles',
@@ -803,21 +797,15 @@ export default class MemberRole extends Component {
         filteredValue: memberRoleFilters.roles || [],
         className: 'memberrole-roles',
         render: text => text.map(({ id, name, enabled }) => {
-          const wrapclass = ['role-table'];
-          let item = <span className={'role-table-list'}>{name}</span>;
+          let item = <span className={classnames('role-wrapper', { 'role-wrapper-enabled': enabled, 'role-wrapper-disabled': !enabled })} key={id}>{name}</span>;
           if (enabled === false) {
-            wrapclass.push('text-disabled');
             item = (
               <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
                 {item}
               </Tooltip>
             );
           }
-          return (
-            <div key={id} className={wrapclass.join(' ')}>
-              {item}
-            </div>
-          );
+          return item;
         }),
       },
       {
@@ -907,7 +895,7 @@ export default class MemberRole extends Component {
     }
     const columns = [
       {
-        title: <FormattedMessage id="memberrole.member" />,
+        title: <FormattedMessage id="memberrole.loginname" />,
         key: 'loginName',
         hidden: true,
         filters: [],
@@ -952,7 +940,7 @@ export default class MemberRole extends Component {
         },
       },
       {
-        title: <FormattedMessage id="memberrole.name" />,
+        title: <FormattedMessage id="memberrole.realname" />,
         key: 'realName',
         dataIndex: 'realName',
         filteredValue: roleMemberFilters.realName || [],
@@ -1147,8 +1135,14 @@ export default class MemberRole extends Component {
     };
   }
 
+  /* 选择用户或者客户端模式 */
+  changeMode = (value) => {
+    const { MemberRoleStore } = this.props;
+    MemberRoleStore.setMode(value);
+  }
+
   render() {
-    const { MemberRoleStore, AppState } = this.props;
+    const { MemberRoleStore, AppState, intl } = this.props;
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting, fileLoading } = this.state;
     const uploading = MemberRoleStore.getUploading;
     const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');
@@ -1178,6 +1172,16 @@ export default class MemberRole extends Component {
         ]}
       >
         <Header title={<FormattedMessage id={`${this.roles.code}.header.title`} />}>
+          <Select
+            style={{ width: '60px' }}
+            value={MemberRoleStore.mode}
+            dropdownClassName="c7n-memberrole-select-dropdown"
+            className="c7n-memberrole-select"
+            onChange={this.changeMode}
+          >
+            <Option value="user" key="user">{intl.formatMessage({ id: 'memberrole.type.user' })}</Option>
+            <Option value="client" key="client">{intl.formatMessage({ id: 'memberrole.type.client' })}</Option>
+          </Select>
           <Permission
             service={createService}
           >

@@ -5,21 +5,21 @@ dashboard:
     description: "新手指引"
     level: site
     sort: 1
-    delete: True
+    delete: true
   - code: "Document"
     icon: description
     title: "文档"
     description: "文档"
     level: site
     sort: 2
-    delete: True
+    delete: true
   - code: "Announcement"
     icon: import_contacts
     title: "公告"
     description: "公告"
     level: site
     sort: 3
-    delete: True
+    delete: true
   - code: "UserInfo"
     icon: person
     title: "我的信息"

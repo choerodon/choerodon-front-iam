@@ -27,7 +27,7 @@ class ExecutableProgramStore {
     { current, pageSize },
     { code, service, method, description },
     { columnKey = 'id', order = 'descend' },
-    params) {
+    params, type, id) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -45,10 +45,14 @@ class ExecutableProgramStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/asgard/v1/schedules/methods?${querystring.stringify(queryObj)}`);
+    const path = type === 'site' ? '' : `/${type}s/${id}`;
+    return axios.get(`/asgard/v1/schedules${path}/methods?${querystring.stringify(queryObj)}`);
   }
 
-  loadProgramDetail = id => axios.get(`/asgard/v1/schedules/methods/${id}`);
+  loadProgramDetail = (recordId, type, id) => {
+    const path = type === 'site' ? '' : `/${type}s/${id}`;
+    return axios.get(`/asgard/v1/schedules${path}/methods/${recordId}`);
+  }
 }
 
 const executableProgramStore = new ExecutableProgramStore();

@@ -184,9 +184,14 @@ export default class UserMsg extends Component {
   loadUserInfo = () => UserMsgStore.setUserInfo(this.props.AppState.getUserInfo);
 
   selectAllMsg = () => {
-    UserMsgStore.selectAllMsg();
+    const { isAllSelect } = this.state;
+    if (!UserMsgStore.isAllSelected) {
+      UserMsgStore.selectAllMsg();
+    } else {
+      UserMsgStore.unSelectAllMsg();
+    }
     this.setState({
-      isAllSelect: !this.state.isAllSelect,
+      isAllSelect: !isAllSelect,
     });
   };
 

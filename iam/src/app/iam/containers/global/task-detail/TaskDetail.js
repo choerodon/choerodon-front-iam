@@ -166,7 +166,7 @@ export default class TaskDetail extends Component {
   loadInfo = (taskId) => {
     const { type, id } = this.taskdetail;
     TaskDetailStore.loadInfo(taskId, type, id).then((data) => {
-      if (data.faield) {
+      if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
         TaskDetailStore.setInfo(data);

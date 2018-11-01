@@ -36,7 +36,7 @@ class ExecutionRecordStore {
       queryObj.sort = sorter.join(',');
     }
     const path = type === 'site' ? '' : `/${type}s/${id}`;
-    return axios.get(`asgard/v1/schedules${path}tasks/instances?${querystring.stringify(queryObj)}`);
+    return axios.get(`asgard/v1/schedules${path}/tasks/instances?${querystring.stringify(queryObj)}`);
   }
 }
 

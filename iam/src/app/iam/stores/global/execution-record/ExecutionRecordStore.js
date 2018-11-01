@@ -18,7 +18,7 @@ class ExecutionRecordStore {
     { current, pageSize },
     { status, taskName, exceptionMessage },
     { columnKey = 'id', order = 'descend' },
-    params) {
+    params, type, id) {
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -35,7 +35,8 @@ class ExecutionRecordStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`asgard/v1/schedules/tasks/instances?${querystring.stringify(queryObj)}`);
+    const path = type === 'site' ? '' : `/${type}s/${id}`;
+    return axios.get(`asgard/v1/schedules/${path}tasks/instances?${querystring.stringify(queryObj)}`);
   }
 }
 

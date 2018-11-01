@@ -81,6 +81,7 @@ export default class ExecutableProgram extends Component {
   }
 
   loadTaskClassName(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.executableProgram;
     const {
       pagination: paginationState,
       sort: sortState,
@@ -93,7 +94,7 @@ export default class ExecutableProgram extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
-    ExecutableProgramStore.loadData(pagination, filters, sort, params).then((data) => {
+    ExecutableProgramStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       ExecutableProgramStore.setData(data.content);
       this.setState({
         pagination: {
@@ -130,7 +131,8 @@ export default class ExecutableProgram extends Component {
     this.setState({
       classLoading: true,
     });
-    ExecutableProgramStore.loadProgramDetail(record.id).then((data) => {
+    const { type, id } = this.executableProgram;
+    ExecutableProgramStore.loadProgramDetail(record.id, type, id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
         this.setState({
@@ -247,19 +249,31 @@ export default class ExecutableProgram extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        <Button
-          shape="circle"
-          icon="find_in_page"
-          size="small"
-          onClick={this.openSidebar.bind(this, record)}
-        />
+        <Permission
+          service={[
+            'asgard-service.schedule-method-site.getParams',
+            'asgard-service.schedule-method-org.getParams',
+            'asgard-service.schedule-method-project.getParams',
+          ]}
+        >
+          <Button
+            shape="circle"
+            icon="find_in_page"
+            size="small"
+            onClick={this.openSidebar.bind(this, record)}
+          />
+        </Permission>
       ),
     }];
     return (
       <Page
         service={[
-          'asgard-service.schedule-method.getParams',
-          'asgard-service.schedule-method.pagingQuery',
+          'asgard-service.schedule-method-site.pagingQuery',
+          'asgard-service.schedule-method-org.pagingQuery',
+          'asgard-service.schedule-method-project.pagingQuery',
+          'asgard-service.schedule-method-site.getParams',
+          'asgard-service.schedule-method-org.getParams',
+          'asgard-service.schedule-method-project.getParams',
         ]}
       >
         <Header

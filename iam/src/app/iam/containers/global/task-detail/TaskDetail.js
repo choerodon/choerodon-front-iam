@@ -4,7 +4,7 @@ import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row, Spin, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../../stores/global/task-detail';
@@ -231,33 +231,38 @@ export default class TaskDetail extends Component {
    * @returns {*}
    */
   showActionButton(record) {
+    const { enableService, disableService } = this.getPermission();
     if (record.status === 'ENABLE') {
       return (
-        <Tooltip
-          title={<FormattedMessage id="disable" />}
-          placement="bottom"
-        >
-          <Button
-            size="small"
-            icon="remove_circle_outline"
-            shape="circle"
-            onClick={this.handleAble.bind(this, record)}
-          />
-        </Tooltip>
+        <Permission service={disableService}>
+          <Tooltip
+            title={<FormattedMessage id="disable" />}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="remove_circle_outline"
+              shape="circle"
+              onClick={this.handleAble.bind(this, record)}
+            />
+          </Tooltip>
+        </Permission>
       );
     } else if (record.status === 'DISABLE') {
       return (
-        <Tooltip
-          title={<FormattedMessage id="enable" />}
-          placement="bottom"
-        >
-          <Button
-            size="small"
-            icon="finished"
-            shape="circle"
-            onClick={this.handleAble.bind(this, record)}
-          />
-        </Tooltip>
+        <Permission service={disableService}>
+          <Tooltip
+            title={<FormattedMessage id="enable" />}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="finished"
+              shape="circle"
+              onClick={this.handleAble.bind(this, record)}
+            />
+          </Tooltip>
+        </Permission>
       );
     } else {
       return (
@@ -1306,31 +1311,36 @@ export default class TaskDetail extends Component {
   getPermission() {
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
-    let createService = ['asgard-service.schedule-task.create'];
-    let enableService = ['asgard-service.schedule-task.enable'];
-    let disableService = ['asgard-service.schedule-task.disable'];
-    let deleteService = ['asgard-service.schedule-task.delete'];
+    let createService = ['asgard-service.schedule-task-site.create'];
+    let enableService = ['asgard-service.schedule-task-site.enable'];
+    let disableService = ['asgard-service.schedule-task-site.disable'];
+    let deleteService = ['asgard-service.schedule-task-site.delete'];
+    let detailService = ['asgard-service.schedule-task-site.getTaskDetail'];
     if (type === 'organization') {
-      createService = [''];
-      enableService = [''];
-      disableService = [''];
-      deleteService = [''];
+      createService = ['asgard-service.schedule-task-org.create'];
+      enableService = ['asgard-service.schedule-task-org.enable'];
+      disableService = ['asgard-service.schedule-task-org.disable'];
+      deleteService = ['asgard-service.schedule-task-org.delete'];
+      detailService = ['asgard-service.schedule-task-org.getTaskDetail'];
     } else if (type === 'project') {
-      createService = [''];
-      enableService = [''];
-      disableService = [''];
-      deleteService = [''];
+      createService = ['asgard-service.schedule-task-project.create'];
+      enableService = ['asgard-service.schedule-task-project.enable'];
+      disableService = ['asgard-service.schedule-task-project.disable'];
+      deleteService = ['asgard-service.schedule-task-project.delete'];
+      detailService = ['asgard-service.schedule-task-project.getTaskDetail'];
     }
     return {
       createService,
       enableService,
       disableService,
       deleteService,
+      detailService,
     };
   }
 
   render() {
     const { intl, AppState } = this.props;
+    const { deleteService, detailService } = this.getPermission();
     const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
     const { createService } = this.getPermission();
     const TaskData = TaskDetailStore.getData.slice();
@@ -1377,58 +1387,86 @@ export default class TaskDetail extends Component {
       width: '130px',
       render: (text, record) => (
         <div>
-          <Tooltip
-            title={<FormattedMessage id="detail" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="find_in_page"
-              shape="circle"
-              onClick={this.handleOpen.bind(this, 'detail', record)}
-            />
-          </Tooltip>
+          <Permission service={detailService}>
+            <Tooltip
+              title={<FormattedMessage id="detail" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="find_in_page"
+                shape="circle"
+                onClick={this.handleOpen.bind(this, 'detail', record)}
+              />
+            </Tooltip>
+          </Permission>
           {this.showActionButton(record)}
-          <Tooltip
-            title={<FormattedMessage id="delete" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="delete_forever"
-              shape="circle"
-              onClick={this.handleDelete.bind(this, record)}
-            />
-          </Tooltip>
+          <Permission service={deleteService}>
+            <Tooltip
+              title={<FormattedMessage id="delete" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="delete_forever"
+                shape="circle"
+                onClick={this.handleDelete.bind(this, record)}
+              />
+            </Tooltip>
+          </Permission>
         </div>
       ),
     }];
     return (
       <Page
         service={[
-          'asgard-service.schedule-task.pagingQuery',
-          'asgard-service.schedule-task.create',
-          'asgard-service.schedule-task.check',
-          'asgard-service.schedule-task.cron',
-          'asgard-service.schedule-task.getTaskDetail',
-          'asgard-service.schedule-task.delete',
-          'asgard-service.schedule-task.disable',
-          'asgard-service.schedule-task.enable',
-          'asgard-service.schedule-task-instance.pagingQueryByTaskId',
-          'asgard-service.schedule-method.getMethodByService',
-          'asgard-service.schedule-method.pagingQuery',
+          'asgard-service.schedule-task-site.pagingQuery',
+          'asgard-service.schedule-task-org.pagingQuery',
+          'asgard-service.schedule-task-project.pagingQuery',
+          'asgard-service.schedule-task-site.create',
+          'asgard-service.schedule-task-org.create',
+          'asgard-service.schedule-task-project.create',
+          'asgard-service.schedule-task-site.enable',
+          'asgard-service.schedule-task-org.enable',
+          'asgard-service.schedule-task-project.enable',
+          'asgard-service.schedule-task-site.disable',
+          'asgard-service.schedule-task-org.disable',
+          'asgard-service.schedule-task-project.disable',
+          'asgard-service.schedule-task-site.delete',
+          'asgard-service.schedule-task-org.delete',
+          'asgard-service.schedule-task-project.delete',
+          'asgard-service.schedule-task-site.getTaskDetail',
+          'asgard-service.schedule-task-org.getTaskDetail',
+          'asgard-service.schedule-task-project.getTaskDetail',
+          'asgard-service.schedule-task-site.check',
+          'asgard-service.schedule-task-org.check',
+          'asgard-service.schedule-task-project.check',
+          'asgard-service.schedule-task-site.cron',
+          'asgard-service.schedule-task-org.cron',
+          'asgard-service.schedule-task-project.cron',
+          'asgard-service.schedule-task-instance-site.pagingQueryByTaskId',
+          'asgard-service.schedule-task-instance-org.pagingQueryByTaskId',
+          'asgard-service.schedule-task-instance-project.pagingQueryByTaskId',
+          'asgard-service.schedule-method-site.getMethodByService',
+          'asgard-service.schedule-method-org.getMethodByService',
+          'asgard-service.schedule-method-project.getMethodByService',
+          'asgard-service.schedule-method-site.pagingQuery',
+          'asgard-service.schedule-method-org.pagingQuery',
+          'asgard-service.schedule-method-project.pagingQuery',
           'manager-service.service.pageAll',
         ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
-          <Button
-            icon="playlist_add"
-            onClick={this.handleOpen.bind(this, 'create')}
-          >
-            <FormattedMessage id={`${intlPrefix}.create`} />
-          </Button>
+          <Permission service={createService}>
+            <Button
+              icon="playlist_add"
+              onClick={this.handleOpen.bind(this, 'create')}
+            >
+              <FormattedMessage id={`${intlPrefix}.create`} />
+            </Button>
+          </Permission>
           <Button
             icon="refresh"
             onClick={this.handleRefresh}

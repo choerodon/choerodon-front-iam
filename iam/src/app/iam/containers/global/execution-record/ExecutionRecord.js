@@ -73,6 +73,7 @@ export default class ExecutionRecord extends Component {
   }
 
   loadExecutionRecord(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.executionRecord;
     const {
       pagination: paginationState,
       sort: sortState,
@@ -85,7 +86,7 @@ export default class ExecutionRecord extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
-    ExecutionRecordStore.loadData(pagination, filters, sort, params).then((data) => {
+    ExecutionRecordStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       ExecutionRecordStore.setData(data.content);
       this.setState({
         pagination: {
@@ -180,7 +181,11 @@ export default class ExecutionRecord extends Component {
     }];
     return (
       <Page
-        service={['asgard-service.schedule-task-instance.pagingQuery']}
+        service={[
+          'asgard-service.schedule-task-instance-site.pagingQuery',
+          'asgard-service.schedule-task-instance-org.pagingQuery',
+          'asgard-service.schedule-task-instance-project.pagingQuery',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}

@@ -191,31 +191,25 @@
         Routes: /iam/task-detail
         sort: 1
         permission:
-          - 'asgard-service.schedule-task.pagingQuery'
-          - 'asgard-service.schedule-task.create'
-          - 'asgard-service.schedule-task.check'
-          - 'asgard-service.schedule-task.cron'
-          - 'asgard-service.schedule-task.getTaskDetail'
-          - 'asgard-service.schedule-task.delete'
-          - 'asgard-service.schedule-task.disable'
-          - 'asgard-service.schedule-task.enable'
-          - 'asgard-service.schedule-task-instance.pagingQueryByTaskId'
-          - 'asgard-service.schedule-method.getMethodByService'
-          - 'asgard-service.schedule-method.pagingQuery'
-          - 'manager-service.service.pageAll'
+          - 'asgard-service.schedule-task-site.pagingQuery'
+          - 'asgard-service.schedule-task-site.create'
+          - 'asgard-service.schedule-task-site.enable'
+          - 'asgard-service.schedule-task-site.disable'
+          - 'asgard-service.schedule-task-site.delete'
+          - 'asgard-service.schedule-task-site.getTaskDetail'
     - "execution-record":
         icon: work_log
         Routes: /iam/execution-record
         sort: 2
         permission:
-          - 'asgard-service.schedule-task-instance.pagingQuery'
+          - 'asgard-service.schedule-task-instance-site.pagingQuery'
     - "task-classname":
         icon: classname
         Routes: /iam/executable-program
         sort: 3
         permission:
-          - 'asgard-service.schedule-method.getParams'
-          - 'asgard-service.schedule-method.pagingQuery'
+          - 'asgard-service.schedule-method-site.pagingQuery'
+          - 'asgard-service.schedule-method-site.getParams'
 
 # 事务管理
 "global-transaction":
@@ -359,19 +353,25 @@
         Routes: /iam/task-detail
         sort: 1
         permission:
-          - ''
+          - 'asgard-service.schedule-task-org.pagingQuery'
+          - 'asgard-service.schedule-task-org.create'
+          - 'asgard-service.schedule-task-org.enable'
+          - 'asgard-service.schedule-task-org.disable'
+          - 'asgard-service.schedule-task-org.delete'
+          - 'asgard-service.schedule-task-org.getTaskDetail'
     - "execution-record-organization":
         icon: work_log
         Routes: /iam/execution-record
         sort: 2
         permission:
-          - ''
+          - 'asgard-service.schedule-task-instance-org.pagingQuery'
     - "task-classname-organization":
         icon: classname
         Routes: /iam/executable-program
         sort: 3
         permission:
-          - ''
+          - 'asgard-service.schedule-method-org.pagingQuery'
+          - 'asgard-service.schedule-method-org.getParams'
 
 # 项目设置
 "prosetting":
@@ -407,19 +407,25 @@
         Routes: /iam/task-detail
         sort: 1
         permission:
-          - ''
+          - 'asgard-service.schedule-task-project.pagingQuery'
+          - 'asgard-service.schedule-task-project.create'
+          - 'asgard-service.schedule-task-project.enable'
+          - 'asgard-service.schedule-task-project.disable'
+          - 'asgard-service.schedule-task-project.delete'
+          - 'asgard-service.schedule-task-project.getTaskDetail'
     - "execution-record-project":
         icon: work_log
         Routes: /iam/execution-record
         sort: 2
         permission:
-          - ''
+          - 'asgard-service.schedule-task-instance-project.pagingQuery'
     - "task-classname-project":
         icon: classname
         Routes: /iam/executable-program
         sort: 3
         permission:
-          - ''
+          - 'asgard-service.schedule-method-project.pagingQuery'
+          - 'asgard-service.schedule-method-project.getParams'
 
 # 个人中心
 "usercenter":

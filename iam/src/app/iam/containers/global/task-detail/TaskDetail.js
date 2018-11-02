@@ -284,7 +284,7 @@ export default class TaskDetail extends Component {
     const { id, objectVersionNumber } = record;
     const { intl } = this.props;
     const status = record.status === 'ENABLE' ? 'disable' : 'enable';
-    TaskDetailStore.ableTask(id, objectVersionNumber, status, this.taskdetail.type, this.taskdetail.code).then((data) => {
+    TaskDetailStore.ableTask(id, objectVersionNumber, status, this.taskdetail.type, this.taskdetail.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {

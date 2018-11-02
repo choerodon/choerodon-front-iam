@@ -50,6 +50,7 @@
     "jsx-a11y/no-static-element-interactions": "off",
     "linebreak-style": "off",
     "max-len": "off",
+    "no-bitwise": "off",
     "no-console": "error",
     "no-control-regex": "off",
     "no-debugger": "off",

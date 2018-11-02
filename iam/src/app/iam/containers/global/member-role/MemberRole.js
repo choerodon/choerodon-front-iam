@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Modal, Progress, Select, Table, Tooltip, Upload, Spin } from 'choerodon-ui';
+import { Button, Form, Modal, Progress, Select, Table, Tooltip, Upload, Spin } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -148,9 +148,7 @@ export default class MemberRole extends Component {
   };
 
   closeSidebar = () => {
-    this.setState({
-      sidebar: false,
-    });
+    this.setState({ sidebar: false });
   };
 
   openSidebar = () => {
@@ -286,21 +284,11 @@ export default class MemberRole extends Component {
 
   deleteRolesByIds = (data) => {
     const { showMember } = this.state;
-    let body = {};
-    if (showMember) {
-      body = {
-        view: 'userView',
-        memberType: 'user',
-        data,
-      };
-    } else {
-      body = {
-        view: 'roleView',
-        memberType: 'user',
-        data,
-      };
-    }
-
+    const body = {
+      view: showMember ? 'userView' : 'roleView',
+      memberType: 'user',
+      data,
+    };
     return this.roles.deleteRoleMember(body).then(({ failed, message }) => {
       if (failed) {
         Choerodon.prompt(message);
@@ -346,7 +334,7 @@ export default class MemberRole extends Component {
 
   getHeader() {
     const { selectType, currentMemberData } = this.state;
-    const { code, values } = this.roles;
+    const { values } = this.roles;
     const modify = selectType === 'edit';
     return {
       className: 'sidebar-content',
@@ -539,7 +527,7 @@ export default class MemberRole extends Component {
         }
       },
     };
-  }
+  };
 
   isModify = () => {
     const { roleIds, currentMemberData } = this.state;
@@ -632,20 +620,14 @@ export default class MemberRole extends Component {
   };
 
   createRole = () => {
-    this.setState({
-      selectType: 'create',
-    }, () => {
-      this.openSidebar();
-    });
+    this.setState({ selectType: 'create' }, () => this.openSidebar());
   };
 
   editRole = (memberData) => {
     this.setState({
       selectType: 'edit',
       currentMemberData: memberData,
-    }, () => {
-      this.openSidebar();
-    });
+    }, () => this.openSidebar());
   };
 
   handleDelete = (record) => {
@@ -735,21 +717,99 @@ export default class MemberRole extends Component {
     this.setState(newState);
   };
 
+  renderSimpleColumn = (text, { enabled }) => {
+    if (enabled === false) {
+      return (
+        <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip" />}>
+          <span className="text-disabled">
+            {text}
+          </span>
+        </Tooltip>
+      );
+    }
+    return text;
+  };
+
+  renderRoleColumn = text => text.map(({ id, name, enabled }) => {
+    let item = <span className={classnames('role-wrapper', { 'role-wrapper-enabled': enabled, 'role-wrapper-disabled': !enabled })} key={id}>{name}</span>;
+    if (enabled === false) {
+      item = (
+        <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
+          {item}
+        </Tooltip>
+      );
+    }
+    return item;
+  });
+
+  renderRoleLoginNameColumn = (text, data) => {
+    const { roleMemberFilters } = this.state;
+    const { loginName, name } = data;
+    if (loginName) {
+      return loginName;
+    } else if (name) {
+      const { userCount, users: { length }, loading: isLoading, enabled } = data;
+      const more = isLoading ? (<Progress type="loading" width={12} />) : (length > 0 && userCount > length && (
+        <a onClick={() => {
+          this.roles.loadRoleMemberData(data, {
+            current: (length / pageSize) + 1,
+            pageSize,
+          }, roleMemberFilters);
+          this.forceUpdate();
+        }}
+        >更多</a>
+      ));
+      const item = <span className={classnames({ 'text-disabled': !enabled })}>{name} ({userCount}) {more}</span>;
+      return enabled ? item : (<Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>{item}</Tooltip>);
+    }
+  };
+
+  renderActionColumn = (text, record) => {
+    const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
+    if ('roleId' in record || 'email' in record) {
+      return (
+        <div>
+          <Permission
+            service={createService}
+          >
+            <Tooltip
+              title={<FormattedMessage id="modify" />}
+              placement="bottom"
+            >
+              <Button
+                onClick={() => { this.handleEditRole(record); }}
+                size="small"
+                shape="circle"
+                icon="mode_edit"
+              />
+            </Tooltip>
+          </Permission>
+          <Permission
+            service={deleteService}
+            type={type}
+            organizationId={organizationId}
+            projectId={projectId}
+          >
+            <Tooltip
+              title={<FormattedMessage id="remove" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                shape="circle"
+                onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
+                icon="delete"
+              />
+            </Tooltip>
+          </Permission>
+        </div>
+      );
+    }
+  };
+
   renderMemberTable() {
     const { selectMemberRoles, roleMemberDatas, memberRolePageInfo, memberDatas, memberRoleFilters, loading } = this.state;
-    const filtersRoleObj = {};
-    let filtersRole = roleMemberDatas.map(({ name }) => ({
-      value: name,
-      text: name,
-    }));
-
-    filtersRole = filtersRole.reduce((item, next) => {
-      /* eslint-disable-next-line */
-      filtersRoleObj[next.value] ? '' : filtersRoleObj[next.value] = true && item.push(next);
-      return item;
-    }, []);
-
-    const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
+    const filtersRole = [...new Set(roleMemberDatas.map(({ name }) => (name)))].map(value => ({ value, text: value }));
     const columns = [
       {
         title: <FormattedMessage id="memberrole.loginname" />,
@@ -757,18 +817,7 @@ export default class MemberRole extends Component {
         key: 'loginName',
         filters: [],
         filteredValue: memberRoleFilters.loginName || [],
-        render: (text, { enabled }) => {
-          if (enabled === false) {
-            return (
-              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip" />}>
-                <span className="text-disabled">
-                  {text}
-                </span>
-              </Tooltip>
-            );
-          }
-          return text;
-        },
+        render: this.renderSimpleColumn,
       },
       {
         title: <FormattedMessage id="memberrole.realname" />,
@@ -776,18 +825,7 @@ export default class MemberRole extends Component {
         key: 'realName',
         filters: [],
         filteredValue: memberRoleFilters.realName || [],
-        render: (text, { enabled }) => {
-          if (enabled === false) {
-            return (
-              <Tooltip title={<FormattedMessage id="memberrole.member.disabled.tip" />}>
-                <span className="text-disabled">
-                  {text}
-                </span>
-              </Tooltip>
-            );
-          }
-          return text;
-        },
+        render: this.renderSimpleColumn,
       },
       {
         title: <FormattedMessage id="memberrole.role" />,
@@ -796,56 +834,13 @@ export default class MemberRole extends Component {
         filters: filtersRole,
         filteredValue: memberRoleFilters.roles || [],
         className: 'memberrole-roles',
-        render: text => text.map(({ id, name, enabled }) => {
-          let item = <span className={classnames('role-wrapper', { 'role-wrapper-enabled': enabled, 'role-wrapper-disabled': !enabled })} key={id}>{name}</span>;
-          if (enabled === false) {
-            item = (
-              <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
-                {item}
-              </Tooltip>
-            );
-          }
-          return item;
-        }),
+        render: this.renderRoleColumn,
       },
       {
         title: '',
         width: 100,
         align: 'right',
-        render: (text, record) => (
-          <div>
-            <Permission
-              service={createService}
-            >
-              <Tooltip
-                title={<FormattedMessage id="modify" />}
-                placement="bottom"
-              >
-                <Button
-                  onClick={() => {
-                    this.editRole(record);
-                  }}
-                  size="small"
-                  shape="circle"
-                  icon="mode_edit"
-                />
-              </Tooltip>
-            </Permission>
-            <Permission
-              service={deleteService}
-              type={type}
-              organizationId={organizationId}
-              projectId={projectId}
-            >
-              <Tooltip
-                title={<FormattedMessage id="remove" />}
-                placement="bottom"
-              >
-                <Button size="small" shape="circle" onClick={this.handleDelete.bind(this, record)} icon="delete" />
-              </Tooltip>
-            </Permission>
-          </div>
-        ),
+        render: this.renderActionColumn,
       },
     ];
     const rowSelection = {
@@ -878,17 +873,7 @@ export default class MemberRole extends Component {
 
   renderRoleTable() {
     const { roleMemberDatas, roleMemberFilterRole, selectRoleMemberKeys, expandedKeys, roleMemberParams, roleMemberFilters, loading } = this.state;
-    const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
-    let filtersData = roleMemberDatas.map(({ name }) => ({
-      value: name,
-      text: name,
-    }));
-    const filtersDataObj = {};
-    filtersData = filtersData.reduce((item, next) => {
-      /* eslint-disable-next-line */
-      filtersDataObj[next.value] ? '' : filtersDataObj[next.value] = true && item.push(next);
-      return item;
-    }, []);
+    const filtersData = [...new Set(roleMemberDatas.map(({ name }) => (name)))].map(value => ({ value, text: value }));
     let dataSource = roleMemberDatas;
     if (roleMemberFilterRole && roleMemberFilterRole.length) {
       dataSource = roleMemberDatas.filter(({ name }) => roleMemberFilterRole.some(role => name.indexOf(role) !== -1));
@@ -908,36 +893,7 @@ export default class MemberRole extends Component {
         dataIndex: 'name',
         filters: filtersData,
         filteredValue: roleMemberFilterRole || [],
-        render: (text, data) => {
-          const { loginName, name } = data;
-          if (loginName) {
-            return loginName;
-          } else if (name) {
-            const { userCount, users: { length }, loading: isLoading, enabled } = data;
-            const more = isLoading ? (
-              <Progress type="loading" width={12} />
-            ) : (length > 0 && userCount > length && (
-              <a onClick={() => {
-                this.roles.loadRoleMemberData(data, {
-                  current: (length / pageSize) + 1,
-                  pageSize,
-                }, roleMemberFilters);
-                this.forceUpdate();
-              }}
-              >更多</a>
-            ));
-            const item = <span className={classnames({ 'text-disabled': !enabled })}>{name} ({userCount}) {more}</span>;
-            if (enabled === false) {
-              return (
-                <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
-                  {item}
-                </Tooltip>
-              );
-            } else {
-              return item;
-            }
-          }
-        },
+        render: this.renderRoleLoginNameColumn,
       },
       {
         title: <FormattedMessage id="memberrole.realname" />,
@@ -950,35 +906,7 @@ export default class MemberRole extends Component {
         title: '',
         width: 100,
         align: 'right',
-        render: (text, record) => {
-          if ('roleId' in record) {
-            return (
-              <div>
-                <Permission
-                  service={createService}
-                >
-                  <Tooltip title={<FormattedMessage id="modify" />}>
-                    <Button
-                      onClick={() => {
-                        this.handleEditRole(record);
-                      }}
-                      size="small"
-                      shape="circle"
-                      icon="mode_edit"
-                    />
-                  </Tooltip>
-                </Permission>
-                <Permission
-                  service={deleteService}
-                >
-                  <Tooltip title={<FormattedMessage id="remove" />}>
-                    <Button size="small" onClick={this.deleteRoleByRole.bind(this, record)} shape="circle" icon="delete" />
-                  </Tooltip>
-                </Permission>
-              </div>
-            );
-          }
-        },
+        render: this.renderActionColumn,
       },
     ];
     const rowSelection = {
@@ -1102,15 +1030,7 @@ export default class MemberRole extends Component {
 
   getMemberRoleClass(name) {
     const { showMember } = this.state;
-    if (name === 'member') {
-      return classnames({
-        active: showMember,
-      });
-    } else if (name === 'role') {
-      return classnames({
-        active: !showMember,
-      });
-    }
+    return classnames({ active: name === 'role' ^ showMember });
   }
 
   getPermission() {
@@ -1142,7 +1062,7 @@ export default class MemberRole extends Component {
   }
 
   render() {
-    const { MemberRoleStore, AppState, intl } = this.props;
+    const { MemberRoleStore, intl } = this.props;
     const { sidebar, selectType, roleData, showMember, selectMemberRoles, selectRoleMemberKeys, submitting, fileLoading } = this.state;
     const uploading = MemberRoleStore.getUploading;
     const okText = selectType === 'create' ? this.formatMessage('add') : this.formatMessage('save');

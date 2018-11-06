@@ -1137,6 +1137,8 @@ const zh_CN = {
   'organization.client.delete.content': '确认删除客户端"{name}"吗?',
   'organization.client.name': '客户端名称',
   'organization.client.name.exist.msg': '客户端名称已存在，请输入其他客户端名称',
+  'organization.client.name.pattern.msg': '客户端名称只能由1-12位的数字或字母组成',
+  'organization.client.secret.pattern.msg': '密钥只能由6-16位的数字或字母组成',
   'organization.client.name.require.msg': '请输入客户端名称',
   'organization.client.secret': '密钥',
   'organization.client.secret.require.msg': '请输入密钥',

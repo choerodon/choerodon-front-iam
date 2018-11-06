@@ -136,7 +136,7 @@ export default class APITest extends Component {
         this.setState({
           pagination: {
             current: data.number + 1,
-            pageSize: data.size,
+            pageSize: 10,
             total: data.totalElements,
           },
           params,
@@ -155,7 +155,7 @@ export default class APITest extends Component {
     APITestStore.setLoading(true);
     const queryObj = {
       page: current - 1,
-      size: pageSize,
+      size: pageSize + 999,
       version,
       params,
     };
@@ -163,7 +163,25 @@ export default class APITest extends Component {
   }
 
   handlePageChange = (pagination, filters, sorter = {}, params) => {
-    this.loadApi(pagination, filters, params);
+    if (params.length > 1) APITestStore.setFilters(params.slice(1));
+    else APITestStore.setFilters(params);
+    const data = APITestStore.getFilteredData;
+    const newPagination = {
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      total: data.length,
+    };
+    if (params.length > 1) {
+      this.setState({
+        pagination: newPagination,
+        params: params.slice(1),
+      });
+    } else {
+      this.setState({
+        pagination: newPagination,
+        params,
+      });
+    }
   };
 
   handleRefresh = () => {
@@ -334,10 +352,11 @@ export default class APITest extends Component {
             loading={APITestStore.loading}
             indentSize={0}
             columns={columns}
-            dataSource={APITestStore.getApiData.slice()}
+            dataSource={APITestStore.getFilteredData}
             pagination={pagination}
             childrenColumnName="paths"
             filters={params}
+            noFilter
             onChange={this.handlePageChange}
             rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

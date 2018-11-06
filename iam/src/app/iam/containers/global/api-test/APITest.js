@@ -103,6 +103,7 @@ export default class APITest extends Component {
 
   loadVersions = () => {
     const { service, currentService } = APITestStore;
+    APITestStore.setFilters([]);
     const newVersions = [];
     if (service && service.length > 0) {
       APITestStore.service.forEach(({ name, value, version }, index) => {
@@ -187,6 +188,7 @@ export default class APITest extends Component {
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       APITestStore.setCurrentService(APITestStore.service[0]);
+      APITestStore.setFilters([]);
       this.loadApi();
       APITestStore.clearIsExpand();
     });
@@ -199,6 +201,7 @@ export default class APITest extends Component {
   handleChange(serviceName) {
     const currentService = APITestStore.service.find(service => service.value === serviceName);
     APITestStore.clearIsExpand();
+    APITestStore.setFilters([]);
     this.loadVersions();
     APITestStore.setCurrentService(currentService);
     this.setState(this.getInitState(), () => {
@@ -213,6 +216,7 @@ export default class APITest extends Component {
   handleVersionChange(serviceVersion) {
     const currentVersion = APITestStore.versions.find(version => version === serviceVersion);
     APITestStore.clearIsExpand();
+    APITestStore.setFilters([]);
     APITestStore.setCurrentVersion(currentVersion);
     this.setState(this.getInitState(), () => {
       this.loadApi();

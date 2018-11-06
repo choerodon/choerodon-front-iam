@@ -45,7 +45,6 @@ export default class Client extends Component {
   constructor(props) {
     super(props);
     this.editFocusInput = React.createRef();
-    this.createFocusInput = React.createRef();
   }
 
   state = this.getInitState();
@@ -69,6 +68,8 @@ export default class Client extends Component {
       visible: false,
       status: '',
       selectData: {},
+      initName: undefined, // 创建时客户端名称
+      initSecret: undefined, // 创建时客户端秘钥
     };
   }
 
@@ -171,24 +172,31 @@ export default class Client extends Component {
   openSidebar = (status, record = {}) => {
     const { resetFields } = this.props.form;
     resetFields();
-    this.setState({
-      status,
-      visible: true,
-      selectData: record,
-    });
     ClientStore.setClientById([]);
     if (record.organizationId && record.id) {
       ClientStore.getClientById(record.organizationId, record.id)
         .subscribe((data) => {
           ClientStore.setClientById(data);
+          this.setState({
+            status,
+            visible: true,
+            selectData: record,
+          });
         });
       setTimeout(() => {
         this.editFocusInput.input.focus();
       }, 100);
+    } else {
+      const { AppState } = this.props;
+      ClientStore.getCreateClientInitValue(AppState.currentMenuType.id).then(({ name, secret }) => {
+        this.setState({
+          initName: name,
+          initSecret: secret,
+          status,
+          visible: true,
+        });
+      });
     }
-    setTimeout(() => {
-      this.createFocusInput.input.focus();
-    }, 100);
   };
 
   closeSidebar = () => {
@@ -220,18 +228,6 @@ export default class Client extends Component {
   };
 
   isJson = (string) => {
-    // if (typeof string === 'string') {
-    //   const str = string.trim();
-    //   if (str.substr(0, 1) === '{' && str.substr(-1, 1) === '}') {
-    //     try {
-    //       JSON.parse(str);
-    //       return true;
-    //     } catch (e) {
-    //       return false;
-    //     }
-    //   }
-    // }
-    // return false;
     try {
       if (typeof JSON.parse(string) === 'object') {
         return true;
@@ -379,25 +375,41 @@ export default class Client extends Component {
     callback();
   }
 
+  getAuthorizedGrantTypes() {
+    const { status } = this.state;
+    const client = ClientStore.getClient || {};
+    if (status === 'create') {
+      return ['password', 'implicit', 'client_credentials', 'authorization_code', 'refresh_token'];
+    } else {
+      return client.authorizedGrantTypes ? client.authorizedGrantTypes.split(',') : [];
+    }
+  }
+
   renderSidebarContent() {
     const { intl } = this.props;
     const client = ClientStore.getClient || {};
     const { getFieldDecorator } = this.props.form;
-    const { status } = this.state;
+    const { status, initName, initSecret } = this.state;
     const mainContent = client ? (<div className="client-detail">
       <Form layout="vertical" style={{ width: 512 }}>
         <FormItem
           {...formItemLayout}
         >
           {getFieldDecorator('name', {
-            initialValue: client.name || undefined,
-            rules: [{
+            initialValue: status === 'create' ? initName : client.name,
+            rules: status === 'create' ? [{
               required: true,
               whitespace: true,
               message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
             }, {
+              pattern: /^[0-9a-zA-Z]+$/,
+              message: intl.formatMessage({ id: `${intlPrefix}.name.pattern.msg` }),
+            }, {
+              max: 12,
+              message: intl.formatMessage({ id: `${intlPrefix}.name.pattern.msg` }),
+            }, {
               validator: status === 'create' && this.checkName,
-            }],
+            }] : [],
             validateTrigger: 'onBlur',
             validateFirst: true,
           })(
@@ -405,7 +417,6 @@ export default class Client extends Component {
               autoComplete="off"
               label={intl.formatMessage({ id: `${intlPrefix}.name` })}
               disabled={status === 'edit'}
-              ref={(e) => { this.createFocusInput = e; }}
               maxLength={32}
               showLengthInfo={false}
             />,
@@ -415,17 +426,30 @@ export default class Client extends Component {
           {...formItemLayout}
         >
           {getFieldDecorator('secret', {
-            initialValue: client.secret || undefined,
+            initialValue: status === 'create' ? initSecret : client.secret,
             rules: [{
               required: true,
               whitespace: true,
               message: intl.formatMessage({ id: `${intlPrefix}.secret.require.msg` }),
+            }, {
+              pattern: /^[0-9a-zA-Z]+$/,
+              message: intl.formatMessage({ id: `${intlPrefix}.secret.pattern.msg` }),
+            }, {
+              min: 6,
+              message: intl.formatMessage({ id: `${intlPrefix}.secret.pattern.msg` }),
+            }, {
+              max: 16,
+              message: intl.formatMessage({ id: `${intlPrefix}.secret.pattern.msg` }),
             }],
+            validateTrigger: 'onBlur',
+            validateFirst: true,
           })(
             <Input
               autoComplete="off"
+              type="password"
               label={intl.formatMessage({ id: `${intlPrefix}.secret` })}
               ref={(e) => { this.editFocusInput = e; }}
+              showPasswordEye
             />,
           )}
         </FormItem>
@@ -433,7 +457,7 @@ export default class Client extends Component {
           {...formItemLayout}
         >
           {getFieldDecorator('authorizedGrantTypes', {
-            initialValue: client.authorizedGrantTypes ? client.authorizedGrantTypes.split(',') : [],
+            initialValue: this.getAuthorizedGrantTypes(),
             rules: [
               {
                 type: 'array',
@@ -456,146 +480,146 @@ export default class Client extends Component {
             </Select>,
           )}
         </FormItem>
+        <FormItem
+          {...formItemNumLayout}
+        >
+          {getFieldDecorator('accessTokenValidity', {
+            initialValue: status === 'create' ? 3600 : client.accessTokenValidity ?
+              parseInt(client.accessTokenValidity, 10) : undefined,
+          })(
+            <InputNumber
+              autoComplete="off"
+              label={intl.formatMessage({ id: `${intlPrefix}.accesstokenvalidity` })}
+              style={{ width: 300 }}
+              size="default"
+              min={60}
+            />,
+          )}
+          <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
+            {intl.formatMessage({ id: 'second' })}
+          </span>
+        </FormItem>
+        <FormItem
+          {...formItemNumLayout}
+        >
+          {getFieldDecorator('refreshTokenValidity', {
+            initialValue: status === 'create' ? 3600 : client.refreshTokenValidity ?
+              parseInt(client.refreshTokenValidity, 10) : undefined,
+          })(
+            <InputNumber
+              autoComplete="off"
+              label={intl.formatMessage({ id: `${intlPrefix}.tokenvalidity` })}
+              style={{ width: 300 }}
+              size="default"
+              min={60}
+            />,
+          )}
+          <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
+            {intl.formatMessage({ id: 'second' })}
+          </span>
+        </FormItem>
         { status === 'edit' &&
-          <div>
-            <FormItem
-              {...formItemNumLayout}
+        <div>
+          <FormItem
+            {...formItemNumLayout}
+          >
+            {getFieldDecorator('scope', {
+              rules: [{
+                validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'scope'),
+              }],
+              validateTrigger: 'onChange',
+              initialValue: client.scope ? client.scope.split(',') : [],
+            })(
+              <Select
+                label={intl.formatMessage({ id: `${intlPrefix}.scope` })}
+                mode="tags"
+                filterOption={false}
+                onInputKeyDown={e => this.handleInputKeyDown(e, 'scope')}
+                ref={(node) => { this.saveSelectRef(node, 'scope'); }}
+                notFoundContent={false}
+                showNotFindSelectedItem={false}
+                showNotFindInputItem={false}
+                choiceRender={this.handleChoiceRender}
+                allowClear={false}
+              />,
+            )}
+            <Popover
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              overlayStyle={{ maxWidth: '180px' }}
+              placement="right"
+              trigger="hover"
+              content={intl.formatMessage({ id: `${intlPrefix}.scope.help.msg` })}
             >
-              {getFieldDecorator('accessTokenValidity', {
-                initialValue: client.accessTokenValidity ?
-                  parseInt(client.accessTokenValidity, 10) : undefined,
-              })(
-                <InputNumber
-                  autoComplete="off"
-                  label={intl.formatMessage({ id: `${intlPrefix}.accesstokenvalidity` })}
-                  style={{ width: 300 }}
-                  size="default"
-                  min={60}
-                />,
-              )}
-              <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
-                {intl.formatMessage({ id: 'second' })}
-              </span>
-            </FormItem>
-            <FormItem
-              {...formItemNumLayout}
+              <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)' }} />
+            </Popover>
+          </FormItem>
+          <FormItem
+            {...formItemNumLayout}
+          >
+            {getFieldDecorator('autoApprove', {
+              rules: [{
+                validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'autoApprove'),
+              }],
+              validateTrigger: 'onChange',
+              initialValue: client.autoApprove ? client.autoApprove.split(',') : [],
+            })(
+              <Select
+                label={intl.formatMessage({ id: `${intlPrefix}.autoApprove` })}
+                mode="tags"
+                filterOption={false}
+                onInputKeyDown={e => this.handleInputKeyDown(e, 'autoApprove')}
+                ref={node => this.saveSelectRef(node, 'autoApprove')}
+                choiceRender={this.handleChoiceRender}
+                notFoundContent={false}
+                showNotFindSelectedItem={false}
+                showNotFindInputItem={false}
+                allowClear={false}
+              />,
+            )}
+            <Popover
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              overlayStyle={{ maxWidth: '180px' }}
+              placement="right"
+              trigger="hover"
+              content={intl.formatMessage({ id: `${intlPrefix}.autoApprove.help.msg` })}
             >
-              {getFieldDecorator('refreshTokenValidity', {
-                initialValue: client.refreshTokenValidity ?
-                  parseInt(client.refreshTokenValidity, 10) : undefined,
-              })(
-                <InputNumber
-                  autoComplete="off"
-                  label={intl.formatMessage({ id: `${intlPrefix}.tokenvalidity` })}
-                  style={{ width: 300 }}
-                  size="default"
-                  min={60}
-                />,
-              )}
-              <span style={{ position: 'absolute', bottom: '-10px', right: '-20px' }}>
-                {intl.formatMessage({ id: 'second' })}
-              </span>
-            </FormItem>
-            <FormItem
-              {...formItemNumLayout}
-            >
-              {getFieldDecorator('scope', {
-                rules: [{
-                  validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'scope'),
-                }],
-                validateTrigger: 'onChange',
-                initialValue: client.scope ? client.scope.split(',') : [],
-              })(
-                <Select
-                  label={intl.formatMessage({ id: `${intlPrefix}.scope` })}
-                  mode="tags"
-                  filterOption={false}
-                  onInputKeyDown={e => this.handleInputKeyDown(e, 'scope')}
-                  ref={(node) => { this.saveSelectRef(node, 'scope'); }}
-                  notFoundContent={false}
-                  showNotFindSelectedItem={false}
-                  showNotFindInputItem={false}
-                  choiceRender={this.handleChoiceRender}
-                  allowClear={false}
-                />,
-              )}
-              <Popover
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                overlayStyle={{ maxWidth: '180px' }}
-                placement="right"
-                trigger="hover"
-                content={intl.formatMessage({ id: `${intlPrefix}.scope.help.msg` })}
-              >
-                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)' }} />
-              </Popover>
-            </FormItem>
-            <FormItem
-              {...formItemNumLayout}
-            >
-              {getFieldDecorator('autoApprove', {
-                rules: [{
-                  validator: (rule, value, callback) => this.validateSelect(rule, value, callback, 'autoApprove'),
-                }],
-                validateTrigger: 'onChange',
-                initialValue: client.autoApprove ? client.autoApprove.split(',') : [],
-              })(
-                <Select
-                  label={intl.formatMessage({ id: `${intlPrefix}.autoApprove` })}
-                  mode="tags"
-                  filterOption={false}
-                  onInputKeyDown={e => this.handleInputKeyDown(e, 'autoApprove')}
-                  ref={node => this.saveSelectRef(node, 'autoApprove')}
-                  choiceRender={this.handleChoiceRender}
-                  notFoundContent={false}
-                  showNotFindSelectedItem={false}
-                  showNotFindInputItem={false}
-                  allowClear={false}
-                />,
-              )}
-              <Popover
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                overlayStyle={{ maxWidth: '180px' }}
-                placement="right"
-                trigger="hover"
-                content={intl.formatMessage({ id: `${intlPrefix}.autoApprove.help.msg` })}
-              >
-                <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)' }} />
-              </Popover>
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('webServerRedirectUri', {
-                initialValue: client.webServerRedirectUri || undefined,
-              })(
-                <Input autoComplete="off" label={intl.formatMessage({ id: `${intlPrefix}.redirect` })} />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('additionalInformation', {
-                rules: [
-                  {
-                    validator: (rule, value, callback) => {
-                      if (!value || this.isJson(value)) {
-                        callback();
-                      } else {
-                        callback(intl.formatMessage({ id: `${intlPrefix}.additional.pattern.msg` }));
-                      }
-                    },
+              <Icon type="help" style={{ position: 'absolute', bottom: '2px', right: '0', color: 'rgba(0, 0, 0, 0.26)' }} />
+            </Popover>
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('webServerRedirectUri', {
+              initialValue: client.webServerRedirectUri || undefined,
+            })(
+              <Input autoComplete="off" label={intl.formatMessage({ id: `${intlPrefix}.redirect` })} />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('additionalInformation', {
+              rules: [
+                {
+                  validator: (rule, value, callback) => {
+                    if (!value || this.isJson(value)) {
+                      callback();
+                    } else {
+                      callback(intl.formatMessage({ id: `${intlPrefix}.additional.pattern.msg` }));
+                    }
                   },
-                ],
-                validateTrigger: 'onBlur',
-                initialValue: client.additionalInformation || undefined,
-              })(
-                <TextArea
-                  autoComplete="off"
-                  label={intl.formatMessage({ id: `${intlPrefix}.additional` })}
-                  rows={3}
-                />,
-              )}
-            </FormItem>
+                },
+              ],
+              validateTrigger: 'onBlur',
+              initialValue: client.additionalInformation || undefined,
+            })(
+              <TextArea
+                autoComplete="off"
+                label={intl.formatMessage({ id: `${intlPrefix}.additional` })}
+                rows={3}
+              />,
+            )}
+          </FormItem>
           </div>}
       </Form>
     </div>) : <LoadingBar />;

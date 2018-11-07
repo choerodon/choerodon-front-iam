@@ -318,6 +318,7 @@
 "msg-center-organization":
   icon: center
   sort: 3
+  delete: true
   organization:
     - "send-setting-organization":
         icon: mail_set

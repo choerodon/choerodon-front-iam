@@ -66,6 +66,9 @@
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel'
           - 'iam-service.role-member.listRolesWithUserCountOnSiteLevel'
           - 'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnSiteLevel'
+          - 'iam-service.role-member.listRolesWithClientCountOnSiteLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithSiteLevelRoles'
     - "root-user":
         icon: root
         Routes: /iam/root-user
@@ -270,6 +273,9 @@
           - 'iam-service.role-member.listRolesWithUserCountOnOrganizationLevel'
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnOrganizationLevel'
           - 'iam-service.role-member.pagingQueryUsersWithOrganizationLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnOrganizationLevel'
+          - 'iam-service.role-member.pagingQueryClientsByRoleIdOnOrganizationLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithOrganizationLevelRoles'
     - "client":
         icon: laptop_mac
         Routes: /iam/client
@@ -389,6 +395,9 @@
           - 'iam-service.role-member.listRolesWithUserCountOnProjectLevel'
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel'
           - 'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithProjectLevelRoles'
+          - 'iam-service.role-member.pagingQueryClientsByRoleIdOnProjectLevel'
     - "proManage":
         icon: settings_applications
         Routes: /iam/project-setting

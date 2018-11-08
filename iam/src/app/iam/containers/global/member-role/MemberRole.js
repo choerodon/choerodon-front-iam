@@ -348,13 +348,14 @@ export default class MemberRole extends Component {
       className: 'sidebar-content',
       ref: this.saveSideBarRef,
       code: this.getHeaderCode(),
-      values: modify ? { name: currentMemberData.loginName } : values,
+      values: modify ? { name: currentMemberData.loginName || currentMemberData.name } : values,
     };
   }
 
   getHeaderCode = () => {
     const { selectType } = this.state;
-    const { code } = this.roles;
+    const { code, clientCode } = this.roles;
+    const { MemberRoleStore } = this.props;
     let codeType = '';
     switch (selectType) {
       case 'edit':
@@ -367,7 +368,7 @@ export default class MemberRole extends Component {
         codeType = 'upload';
         break;
     }
-    return `${code}.${codeType}`;
+    return MemberRoleStore.currentMode === 'users' ? `${code}.${codeType}` : `${code}.${codeType}.client`;
   };
 
   saveSideBarRef = (node) => {
@@ -945,73 +946,59 @@ export default class MemberRole extends Component {
    * @returns {*}
    */
   renderActionColumn = (text, record) => {
-    const { MemberRoleStore } = this.props;
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
-    if (MemberRoleStore.currentMode === 'users') {
-      if ('roleId' in record || 'email' in record) {
-        return (
-          <div>
-            <Permission
-              service={createService}
-            >
-              <Tooltip
-                title={<FormattedMessage id="modify" />}
-                placement="bottom"
-              >
-                <Button
-                  onClick={() => { this.handleEditRole(record); }}
-                  size="small"
-                  shape="circle"
-                  icon="mode_edit"
-                />
-              </Tooltip>
-            </Permission>
-            <Permission
-              service={deleteService}
-              type={type}
-              organizationId={organizationId}
-              projectId={projectId}
-            >
-              <Tooltip
-                title={<FormattedMessage id="remove" />}
-                placement="bottom"
-              >
-                <Button
-                  size="small"
-                  shape="circle"
-                  onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
-                  icon="delete"
-                />
-              </Tooltip>
-            </Permission>
-          </div>
-        );
-      }
-    } else if ('secret' in record) {
+    const { MemberRoleStore } = this.props;
+    if ('roleId' in record || 'email' in record || 'secret' in record) {
       return (
         <div>
-          <Tooltip
-            title={<FormattedMessage id="modify" />}
-            placement="bottom"
+          <Permission
+            service={createService}
           >
-            <Button
-              onClick={() => { this.handleEditClientRole(record); }}
-              size="small"
-              shape="circle"
-              icon="mode_edit"
-            />
-          </Tooltip>
-          <Tooltip
-            title={<FormattedMessage id="remove" />}
-            placement="bottom"
+            <Tooltip
+              title={<FormattedMessage id="modify" />}
+              placement="bottom"
+            >
+              {
+                MemberRoleStore.currentMode === 'users' ? (
+                  <Button
+                    onClick={() => {
+                      this.handleEditRole(record);
+                    }}
+                    size="small"
+                    shape="circle"
+                    icon="mode_edit"
+                  />
+                ) : (
+                  <Button
+                    onClick={() => {
+                      this.handleEditClientRole(record);
+                    }}
+                    size="small"
+                    shape="circle"
+                    icon="mode_edit"
+                  />
+                )
+              }
+            </Tooltip>
+          </Permission>
+          <Permission
+            service={deleteService}
+            type={type}
+            organizationId={organizationId}
+            projectId={projectId}
           >
-            <Button
-              size="small"
-              shape="circle"
-              onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
-              icon="delete"
-            />
-          </Tooltip>
+            <Tooltip
+              title={<FormattedMessage id="remove" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                shape="circle"
+                onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
+                icon="delete"
+              />
+            </Tooltip>
+          </Permission>
         </div>
       );
     }
@@ -1434,19 +1421,24 @@ export default class MemberRole extends Component {
           'iam-service.role-member.deleteOnOrganizationLevel',
           'iam-service.role-member.createOrUpdateOnProjectLevel',
           'iam-service.role-member.deleteOnProjectLevel',
-          'iam-service.role-member.createOrUpdateOnOrganizationLevel1',
-          'iam-service.role-member.deleteOnOrganizationLevel1',
           'iam-service.role-member.pagingQueryUsersByRoleIdOnOrganizationLevel',
           'iam-service.role-member.listRolesWithUserCountOnOrganizationLevel',
           'iam-service.role-member.pagingQueryUsersWithOrganizationLevelRoles',
           'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel',
           'iam-service.role-member.listRolesWithUserCountOnProjectLevel',
           'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles',
-          'iam-service.role-member.createOrUpdateOnSiteLevel1',
-          'iam-service.role-member.deleteOnSiteLevel1',
           'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel',
           'iam-service.role-member.listRolesWithUserCountOnSiteLevel',
           'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles',
+          'iam-service.role-member.listRolesWithClientCountOnSiteLevel',
+          'iam-service.role-member.listRolesWithClientCountOnSiteLevel',
+          'iam-service.role-member.pagingQueryClientsWithSiteLevelRoles',
+          'iam-service.role-member.listRolesWithClientCountOnOrganizationLevel',
+          'iam-service.role-member.pagingQueryClientsByRoleIdOnOrganizationLevel',
+          'iam-service.role-member.pagingQueryClientsWithOrganizationLevelRoles',
+          'iam-service.role-member.listRolesWithClientCountOnProjectLevel',
+          'iam-service.role-member.pagingQueryClientsWithProjectLevelRoles',
+          'iam-service.role-member.pagingQueryClientsByRoleIdOnProjectLevel',
         ]}
       >
         <Header title={<FormattedMessage id={`${this.roles.code}.header.title`} />}>
@@ -1521,7 +1513,7 @@ export default class MemberRole extends Component {
                 this.showMemberTable(true);
               }}
               type="primary"
-            ><FormattedMessage id={MemberRoleStore.currentMode === 'users' ? 'memberrole.member' : 'memberrole.client'} /></Button>
+            ><FormattedMessage id="memberrole.member" /></Button>
             <Button
               className={this.getMemberRoleClass('role')}
               onClick={() => {
@@ -1535,7 +1527,7 @@ export default class MemberRole extends Component {
             title={this.getSidebarTitle()}
             visible={sidebar}
             okText={selectType === 'upload' ? this.getUploadOkText() : okText}
-            confirmLoading={uploading && fileLoading && submitting}
+            confirmLoading={uploading || fileLoading || submitting}
             cancelText={<FormattedMessage id={selectType === 'upload' ? 'close' : 'cancel'} />}
             onOk={selectType === 'upload' ? this.upload : this.handleOk}
             onCancel={this.closeSidebar}

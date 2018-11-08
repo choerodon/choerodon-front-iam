@@ -34,17 +34,21 @@ const pageDetail = {
   'global.rootuser.add.link': `${docServer}/user-guide/system-configuration/platform/rootuser/`,
 
   // 角色分配
-  'global.memberrole.title': '平台"{name}"的角色分配',
-  'global.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
+  'global.memberrole.title': '向成员分配平台"{name}"的角色',
+  'global.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',
   'global.memberrole.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  'global.memberrole.add.title': '在平台"{name}"中添加成员角色',
-  'global.memberrole.add.description': '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
+  'global.memberrole.add.title': '向平台"{name}"添加成员的角色',
+  'global.memberrole.add.description': '请先选择成员类型，在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
   'global.memberrole.add.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  'global.memberrole.modify.title': '对成员"{name}"的角色进行修改',
-  'global.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
+  'global.memberrole.modify.title': '对用户"{name}"进行角色修改',
+  'global.memberrole.modify.description': '您可以在此增删改此用户在平台层的角色。',
   'global.memberrole.modify.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
+
+  'global.memberrole.modify.client.title': '对客户端"{name}"进行角色修改',
+  'global.memberrole.modify.client.description': '您可以在此增删改此客户端在平台层的角色。',
+  'global.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
   'global.memberrole.upload.description': '您可以在此将文件中的角色信息导入到平台中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
   'global.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
@@ -252,17 +256,21 @@ const pageDetail = {
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
   // 组织角色分配
-  'organization.memberrole.title': '组织"{name}"的角色分配',
-  'organization.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
+  'organization.memberrole.title': '向成员分配组织"{name}"的角色',
+  'organization.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',
   'organization.memberrole.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
-  'organization.memberrole.add.title': '在组织"{name}"中添加成员角色',
-  'organization.memberrole.add.description': '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
+  'organization.memberrole.add.title': '向组织"{name}"添加成员的角色',
+  'organization.memberrole.add.description': '请先选择成员类型，在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
   'organization.memberrole.add.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
-  'organization.memberrole.modify.title': '对成员"{name}"的角色进行修改',
-  'organization.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
+  'organization.memberrole.modify.title': '对用户"{name}"进行角色修改',
+  'organization.memberrole.modify.description': '您可以在此增删改此用户在组织层的角色。',
   'organization.memberrole.modify.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
+
+  'organization.memberrole.modify.client.title': '对客户端"{name}"进行角色修改',
+  'organization.memberrole.modify.client.description': '您可以在此增删改此客户端在组织层的角色。',
+  'organization.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
   'organization.memberrole.upload.title': '在组织"{name}"中导入角色',
   'organization.memberrole.upload.description': '您可以在此将文件中的角色信息导入到组织中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
@@ -405,16 +413,20 @@ const pageDetail = {
   'organization.pwdpolicy.link': `${docServer}/user-guide/system-configuration/tenant/secret_policy/`,
 
   // 项目角色分配
-  'project.memberrole.title': '项目"{name}"的角色分配',
-  'project.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
+  'project.memberrole.title': '向成员分配项目"{name}"的角色',
+  'project.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',
   'project.memberrole.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
-  'project.memberrole.add.title': '在项目"{name}"中添加成员角色',
-  'project.memberrole.add.description': '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
+  'project.memberrole.add.title': '向项目"{name}"添加成员的角色',
+  'project.memberrole.add.description': '请先选择成员类型，在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
   'project.memberrole.add.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
-  'project.memberrole.modify.title': '对成员"{name}"的角色进行修改',
-  'project.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
+  'project.memberrole.modify.client.title': '对客户端"{name}"进行角色修改',
+  'project.memberrole.modify.client.description': '您可以在此增删改此客户端在项目层的角色。',
+  'project.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
+
+  'project.memberrole.modify.title': '对用户"{name}"的进行角色修改',
+  'project.memberrole.modify.description': '您可以在此增删改此用户在项目层的角色。',
   'project.memberrole.modify.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
   // 任务调度

@@ -38,11 +38,13 @@
     vertical-align: text-top;
   }
   .memberrole-roles {
+    line-height: 2;
+
     .role-wrapper {
       display: inline-block;
       border-radius: 10px;
-      margin-right: 8px;
       padding: 0 12px;
+      margin-right: 8px;
       height: 20px;
       line-height: 20px;
       font-size: 12px;
@@ -166,6 +168,7 @@
 
 .c7n-memberrole-select-dropdown {
   top: 72px !important;
+  width: 100px !important;
 
   li {
     padding-right: 0;

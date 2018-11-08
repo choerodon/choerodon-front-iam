@@ -38,38 +38,58 @@ export default class MemberRole extends Component {
     const { MemberRoleStore, AppState } = this.props;
     MemberRoleStore.loadCurrentMenuType(AppState.currentMenuType, AppState.getUserId);
     return {
+      loading: true,
       submitting: false,
       sidebar: false,
-      roleData: MemberRoleStore.getRoleData, // 当前情况下的所有角色
       selectType: 'create',
-      currentMemberData: [], // 当前成员的角色分配信息
-      loading: true,
       showMember: true,
+      expandedKeys: [], // 角色展开
+      roleIds: [],
+      overflow: false,
+      fileLoading: false,
+      selectRoleMemberKeys: [],
+      roleData: MemberRoleStore.getRoleData, // 所有角色
+      roleMemberDatas: MemberRoleStore.getRoleMemberDatas, // 用户-角色表数据源
+      memberDatas: [], // 用户-成员表数据源
+      currentMemberData: [], // 当前成员的角色分配信息
       selectMemberRoles: {},
       selectRoleMembers: [],
-      selectRoleMemberKeys: [],
-      expandedKeys: [],
-      validedMembers: {},
-      roleMemberDatas: MemberRoleStore.getRoleMemberDatas,
-      roleMemberFilters: {},
-      roleMemberParams: [],
-      memberRoleFilters: {},
-      memberRolePageInfo: {
+      roleMemberFilters: {}, // 用户-角色表格过滤
+      roleMemberParams: [], // 用户-角色表格参数
+      memberRoleFilters: {}, // 用户-成员表格过滤
+      params: [], // 用户-成员表格参数
+      memberRolePageInfo: { // 用户-成员表格分页信息
         current: 1,
         total: 0,
         pageSize,
       },
       roleMemberFilterRole: [],
-      roleIds: [],
-      params: [],
-      overflow: false,
-      fileLoading: false,
+      clientMemberDatas: [],
+      cilentRoleMemberDatas: MemberRoleStore.getClientRoleMemberDatas,
+      clientMemberRolePageInfo: { // 客户端-成员表格分页信息
+        current: 1,
+        total: 0,
+        pageSize,
+      },
+      clientMemberRoleFilters: {},
+      clientMemberParams: [],
+      clientRoleMemberFilters: {},
+      clientParams: [],
+      clientRoleMemberParams: [],
+      selectClientMemberRoles: {},
+      selectClientRoleMembers: [],
+      clientRoleMemberFilterRole: [],
     };
   }
 
   init() {
+    const { MemberRoleStore } = this.props;
     this.initMemberRole();
-    this.roles.fetch();
+    if (MemberRoleStore.currentMode === 'users') {
+      this.roles.fetch();
+    } else {
+      this.roles.fetchClient();
+    }
   }
 
   // 第一次渲染前获得数据
@@ -89,16 +109,25 @@ export default class MemberRole extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
-    this.props.MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
-    this.props.MemberRoleStore.setRoleData(this.state.roleData);
+    const { MemberRoleStore } = this.props;
+    MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
+    MemberRoleStore.setRoleData(this.state.roleData);
+    MemberRoleStore.setCurrentMode('users');
   }
 
-  saveSideBarRef = (node) => {
-    if (node) {
-      /* eslint-disable-next-line */
-      this.sidebarBody = findDOMNode(node).parentNode;
-    }
-  };
+  initMemberRole() {
+    this.roles = new MemberRoleType(this);
+  }
+
+  /**
+   * 更改模式
+   * @param value 模式
+   */
+  changeMode = (value) => {
+    const { MemberRoleStore } = this.props;
+    MemberRoleStore.setCurrentMode(value);
+    this.reload();
+  }
 
   updateSelectContainer() {
     const body = this.sidebarBody;
@@ -126,37 +155,16 @@ export default class MemberRole extends Component {
     }, values);
   };
 
-  // 创建编辑角色 状态
-  getOption = (current) => {
-    const { roleData = [], roleIds } = this.state;
-    return roleData.reduce((options, { id, name, enabled, code }) => {
-      if (roleIds.indexOf(id) === -1 || id === current) {
-        if (enabled === false) {
-          options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
-        } else {
-          options.push(
-            <Option value={id} key={id} title={name}>
-              <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
-                <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
-              </Tooltip>
-            </Option>,
-          );
-        }
-      }
-      return options;
-    }, []);
-  };
-
-  closeSidebar = () => {
-    this.setState({ sidebar: false });
-  };
-
   openSidebar = () => {
     this.props.form.resetFields();
     this.setState({
       roleIds: this.initFormRoleIds(),
       sidebar: true,
     });
+  };
+
+  closeSidebar = () => {
+    this.setState({ sidebar: false });
   };
 
   initFormRoleIds() {
@@ -168,6 +176,214 @@ export default class MemberRole extends Component {
     return roleIds;
   }
 
+  /**
+   * 批量移除角色
+   */
+  deleteRoleByMultiple = () => {
+    const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
+    const { MemberRoleStore } = this.props;
+    let content;
+    if (MemberRoleStore.currentMode === 'users' && showMember) {
+      content = 'memberrole.remove.select.all.content';
+    } else if (MemberRoleStore.currentMode === 'users' && !showMember) {
+      content = 'memberrole.remove.select.content';
+    } else if (MemberRoleStore.currentMode === 'clients' && showMember) {
+      content = 'memberrole.remove.select.all.client.content';
+    } else {
+      content = 'memberrole.remove.select.client.content';
+    }
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: this.formatMessage('memberrole.remove.title'),
+      content: this.formatMessage(content),
+      onOk: () => {
+        if (showMember) {
+          return this.deleteRolesByIds(selectMemberRoles);
+        } else {
+          const data = {};
+          selectRoleMembers.forEach(({ id, roleId }) => {
+            if (!data[roleId]) {
+              data[roleId] = [];
+            }
+            data[roleId].push(id);
+          });
+          return this.deleteRolesByIds(data);
+        }
+      },
+    });
+  };
+
+  /**
+   * 删除单个成员或客户端
+   * @param record
+   */
+  handleDelete = (record) => {
+    const { MemberRoleStore } = this.props;
+    const isUsersMode = MemberRoleStore.currentMode === 'users';
+    let content;
+    if (isUsersMode) {
+      content = this.formatMessage('memberrole.remove.all.content', { name: record.loginName });
+    } else {
+      content = this.formatMessage('memberrole.remove.all.client.content', { name: record.name });
+    }
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: this.formatMessage('memberrole.remove.title'),
+      content,
+      onOk: () => this.deleteRolesByIds({
+        [record.id]: record.roles.map(({ id }) => id),
+      }),
+    });
+  };
+
+  deleteRoleByRole = (record) => {
+    const { MemberRoleStore } = this.props;
+    const isUsersMode = MemberRoleStore.currentMode === 'users';
+    let content;
+    if (isUsersMode) {
+      content = this.formatMessage('memberrole.remove.content', {
+        member: record.loginName,
+        role: record.roleName,
+      });
+    } else {
+      content = this.formatMessage('memberrole.remove.client.content', {
+        member: record.name,
+        role: record.roleName,
+      });
+    }
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: this.formatMessage('memberrole.remove.title'),
+      content,
+      onOk: () => this.deleteRolesByIds({ [record.roleId]: [record.id] }),
+    });
+  };
+
+  deleteRolesByIds = (data) => {
+    const { showMember } = this.state;
+    const { MemberRoleStore } = this.props;
+    const isUsersMode = MemberRoleStore.currentMode === 'users';
+    const body = {
+      view: showMember ? 'userView' : 'roleView',
+      memberType: isUsersMode ? 'user' : 'client',
+      data,
+    };
+    return this.roles.deleteRoleMember(body).then(({ failed, message }) => {
+      if (failed) {
+        Choerodon.prompt(message);
+      } else {
+        Choerodon.prompt(this.formatMessage('remove.success'));
+        this.setState({
+          selectRoleMemberKeys: [],
+          selectMemberRoles: {},
+        });
+        if (isUsersMode) {
+          this.roles.fetch();
+        } else {
+          this.roles.fetchClient();
+        }
+      }
+    });
+  };
+
+  getSidebarTitle() {
+    const { selectType } = this.state;
+    if (selectType === 'create') {
+      return <FormattedMessage id="memberrole.add" />;
+    } else if (selectType === 'edit') {
+      return <FormattedMessage id="memberrole.modify" />;
+    } else if (selectType === 'upload') {
+      return <FormattedMessage id="memberrole.upload" />;
+    }
+  }
+
+  getUploadOkText = () => {
+    const { fileLoading } = this.state;
+    const { MemberRoleStore } = this.props;
+    const uploading = MemberRoleStore.getUploading;
+    if (fileLoading === true) {
+      return '上传中...';
+    } else if (uploading) {
+      return '导入中...';
+    } else {
+      return '上传';
+    }
+  }
+
+  renderUpload = () => (
+    <Content
+      {...this.getHeader()}
+    >
+      <div>
+        <div style={{ width: '512px' }}>
+          {this.getUploadInfo()}
+        </div>
+        <div style={{ display: 'none' }}>
+          <Upload {...this.getUploadProps()}>
+            <Button className="c7n-user-upload-hidden" />
+          </Upload>
+        </div>
+      </div>
+    </Content>
+  );
+
+  getSidebarContent() {
+    const { roleData = [], roleIds, selectType } = this.state;
+    const disabled = roleIds.findIndex((id, index) => id === undefined) !== -1
+      || !roleData.filter(({ enabled, id }) => enabled && roleIds.indexOf(id) === -1).length;
+    return (
+      <Content
+        {...this.getHeader()}
+      >
+        {this.renderForm()}
+        {this.getAddOtherBtn(disabled)}
+      </Content>);
+  }
+
+  getHeader() {
+    const { selectType, currentMemberData } = this.state;
+    const { values } = this.roles;
+    const modify = selectType === 'edit';
+    return {
+      className: 'sidebar-content',
+      ref: this.saveSideBarRef,
+      code: this.getHeaderCode(),
+      values: modify ? { name: currentMemberData.loginName } : values,
+    };
+  }
+
+  getHeaderCode = () => {
+    const { selectType } = this.state;
+    const { code } = this.roles;
+    let codeType = '';
+    switch (selectType) {
+      case 'edit':
+        codeType = 'modify';
+        break;
+      case 'create':
+        codeType = 'add';
+        break;
+      default:
+        codeType = 'upload';
+        break;
+    }
+    return `${code}.${codeType}`;
+  };
+
+  saveSideBarRef = (node) => {
+    if (node) {
+      /* eslint-disable-next-line */
+      this.sidebarBody = findDOMNode(node).parentNode;
+    }
+  };
+
+  renderForm = () => (
+    <Form layout="vertical">
+      {this.getProjectNameDom()}
+      {this.getRoleFormItems()}
+    </Form>
+  );
+
   getProjectNameDom() {
     const { selectType, currentMemberData } = this.state;
     const member = [];
@@ -175,7 +391,8 @@ export default class MemberRole extends Component {
       marginTop: '-15px',
     };
     if (selectType === 'edit') {
-      member.push(currentMemberData.loginName);
+      // member.push(currentMemberData.loginName);
+      member.push(this.props.AppState.getUserInfo.loginName);
       style.display = 'none';
     }
     return (
@@ -234,132 +451,32 @@ export default class MemberRole extends Component {
     return formItems;
   };
 
-  addRoleList = () => {
-    const { roleIds } = this.state;
-    roleIds.push(undefined);
-    this.setState({ roleIds });
+  // 创建/编辑角色 下拉框的option
+  getOption = (current) => {
+    const { roleData = [], roleIds } = this.state;
+    return roleData.reduce((options, { id, name, enabled, code }) => {
+      if (roleIds.indexOf(id) === -1 || id === current) {
+        if (enabled === false) {
+          options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
+        } else {
+          options.push(
+            <Option value={id} key={id} title={name}>
+              <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
+                <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
+              </Tooltip>
+            </Option>,
+          );
+        }
+      }
+      return options;
+    }, []);
   };
-  // sidebar
+
+  // sidebar 删除角色
   removeRole = (index) => {
     const { roleIds } = this.state;
     roleIds.splice(index, 1);
     this.setState({ roleIds });
-  };
-
-  deleteRoleByMultiple = () => {
-    const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
-    const content = showMember ? 'memberrole.remove.select.all.content' : 'memberrole.remove.select.content';
-    Modal.confirm({
-      className: 'c7n-iam-confirm-modal',
-      title: this.formatMessage('memberrole.remove.title'),
-      content: this.formatMessage(content),
-      onOk: () => {
-        if (showMember) {
-          return this.deleteRolesByIds(selectMemberRoles);
-        } else {
-          const data = {};
-          selectRoleMembers.forEach(({ id, roleId }) => {
-            if (!data[roleId]) {
-              data[roleId] = [];
-            }
-            data[roleId].push(id);
-          });
-          return this.deleteRolesByIds(data);
-        }
-      },
-    });
-  };
-
-  deleteRoleByRole = (record) => {
-    Modal.confirm({
-      className: 'c7n-iam-confirm-modal',
-      title: this.formatMessage('memberrole.remove.title'),
-      content: this.formatMessage('memberrole.remove.content', {
-        member: record.loginName,
-        role: record.roleName,
-      }),
-      onOk: () => this.deleteRolesByIds({ [record.roleId]: [record.id] }),
-    });
-  };
-
-  deleteRolesByIds = (data) => {
-    const { showMember } = this.state;
-    const body = {
-      view: showMember ? 'userView' : 'roleView',
-      memberType: 'user',
-      data,
-    };
-    return this.roles.deleteRoleMember(body).then(({ failed, message }) => {
-      if (failed) {
-        Choerodon.prompt(message);
-      } else {
-        Choerodon.prompt(this.formatMessage('remove.success'));
-        this.setState({
-          selectRoleMemberKeys: [],
-          selectMemberRoles: {},
-        });
-        this.roles.fetch();
-      }
-    });
-  };
-
-  initMemberRole() {
-    this.roles = new MemberRoleType(this);
-  }
-
-  getSidebarTitle() {
-    const { selectType } = this.state;
-    if (selectType === 'create') {
-      return <FormattedMessage id="memberrole.add" />;
-    } else if (selectType === 'edit') {
-      return <FormattedMessage id="memberrole.modify" />;
-    } else if (selectType === 'upload') {
-      return <FormattedMessage id="memberrole.upload" />;
-    }
-  }
-
-  getUploadOkText = () => {
-    const { fileLoading } = this.state;
-    const { MemberRoleStore } = this.props;
-    const uploading = MemberRoleStore.getUploading;
-    if (fileLoading === true) {
-      return '上传中...';
-    } else if (uploading) {
-      return '导入中...';
-    } else {
-      return '上传';
-    }
-  }
-
-
-  getHeader() {
-    const { selectType, currentMemberData } = this.state;
-    const { values } = this.roles;
-    const modify = selectType === 'edit';
-    return {
-      className: 'sidebar-content',
-      ref: this.saveSideBarRef,
-      code: this.getHeaderCode(),
-      values: modify ? { name: currentMemberData.loginName } : values,
-    };
-  }
-
-  getHeaderCode = () => {
-    const { selectType } = this.state;
-    const { code } = this.roles;
-    let codeType = '';
-    switch (selectType) {
-      case 'edit':
-        codeType = 'modify';
-        break;
-      case 'create':
-        codeType = 'add';
-        break;
-      default:
-        codeType = 'upload';
-        break;
-    }
-    return `${code}.${codeType}`;
   };
 
   getAddOtherBtn(disabled) {
@@ -370,42 +487,11 @@ export default class MemberRole extends Component {
     );
   }
 
-  renderForm = () => (
-    <Form layout="vertical">
-      {this.getProjectNameDom()}
-      {this.getRoleFormItems()}
-    </Form>
-  );
-
-  renderUpload = () => (
-    <Content
-      {...this.getHeader()}
-    >
-      <div>
-        <div style={{ width: '512px' }}>
-          {this.getUploadInfo()}
-        </div>
-        <div style={{ display: 'none' }}>
-          <Upload {...this.getUploadProps()}>
-            <Button className="c7n-user-upload-hidden" />
-          </Upload>
-        </div>
-      </div>
-    </Content>
-  );
-
-  getSidebarContent() {
-    const { roleData = [], roleIds, selectType } = this.state;
-    const disabled = roleIds.findIndex((id, index) => id === undefined) !== -1
-      || !roleData.filter(({ enabled, id }) => enabled && roleIds.indexOf(id) === -1).length;
-    return (
-      <Content
-        {...this.getHeader()}
-      >
-        {this.renderForm()}
-        {this.getAddOtherBtn(disabled)}
-      </Content>);
-  }
+  addRoleList = () => {
+    const { roleIds } = this.state;
+    roleIds.push(undefined);
+    this.setState({ roleIds });
+  };
 
   getSpentTime = (startTime, endTime) => {
     const { intl } = this.props;
@@ -558,12 +644,13 @@ export default class MemberRole extends Component {
   // ok 按钮保存
   handleOk = (e) => {
     const { selectType, roleIds } = this.state;
+    const { MemberRoleStore } = this.props;
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const memberNames = values.member;
         const body = roleIds.filter(roleId => roleId).map((roleId, index) => ({
-          memberType: 'user',
+          memberType: MemberRoleStore.currentMode === 'users' ? 'user' : 'client',
           roleId,
           sourceId: sessionStorage.selectData.id || 0,
           sourceType: sessionStorage.type,
@@ -607,7 +694,11 @@ export default class MemberRole extends Component {
               } else {
                 Choerodon.prompt(this.formatMessage('modify.success'));
                 this.closeSidebar();
-                this.roles.fetch();
+                if (MemberRoleStore.currentMode === 'users') {
+                  this.roles.fetch();
+                } else {
+                  this.roles.fetchClient();
+                }
               }
             })
             .catch((error) => {
@@ -630,16 +721,6 @@ export default class MemberRole extends Component {
     }, () => this.openSidebar());
   };
 
-  handleDelete = (record) => {
-    Modal.confirm({
-      className: 'c7n-iam-confirm-modal',
-      title: this.formatMessage('memberrole.remove.title'),
-      content: this.formatMessage('memberrole.remove.all.content', { name: record.loginName }),
-      onOk: () => this.deleteRolesByIds({
-        [record.id]: record.roles.map(({ id }) => id),
-      }),
-    });
-  };
   handleEditRole = ({ id: memberId, loginName }) => {
     const member = this.state.memberDatas.find(({ id }) => id === memberId);
     if (!member) {
@@ -650,6 +731,22 @@ export default class MemberRole extends Component {
         loginName: [loginName],
       }).then(({ content }) => {
         this.editRole(content.find(memberData => memberData.loginName === loginName));
+      });
+    } else {
+      this.editRole(member);
+    }
+  };
+
+  handleEditClientRole = ({ id: memberId, clientName }) => {
+    const member = this.state.clientMemberDatas.find(({ id }) => id === memberId);
+    if (!member) {
+      this.roles.loadClientMemberDatas({
+        current: 1,
+        pageSize,
+      }, {
+        clientName,
+      }).then(({ content }) => {
+        this.editRole(content.find(memberData => memberData.name === clientName));
       });
     } else {
       this.editRole(member);
@@ -685,6 +782,28 @@ export default class MemberRole extends Component {
     });
   };
 
+  clientMemberRoleTableChange = (clientMemberRolePageInfo, clientMemberRoleFilters, sort, clientParams) => {
+    this.setState({
+      clientMemberRolePageInfo,
+      clientMemberRoleFilters,
+      clientParams,
+      loading: true,
+    });
+    this.roles.loadClientMemberDatas(clientMemberRolePageInfo, clientMemberRoleFilters, clientParams).then(({ content, totalElements, number, size }) => {
+      this.setState({
+        loading: false,
+        clientMemberDatas: content,
+        clientMemberRolePageInfo: {
+          current: number + 1,
+          total: totalElements,
+          pageSize: size,
+        },
+        clientParams,
+        clientMemberRoleFilters,
+      });
+    });
+  }
+
   roleMemberTableChange = (pageInfo, { name, ...roleMemberFilters }, sort, params) => {
     const newState = {
       roleMemberFilterRole: name,
@@ -716,6 +835,39 @@ export default class MemberRole extends Component {
       });
     this.setState(newState);
   };
+
+  clientRoleMemberTableChange = (pageInfo, { name, ...clientRoleMemberFilters }, sort, params) => {
+    const newState = {
+      clientRoleMemberFilterRole: name,
+      clientRoleMemberFilters,
+      clientRoleMemberParams: params,
+    };
+    newState.loading = true;
+    const { expandedKeys } = this.state;
+    this.roles.loadClientRoleMemberDatas({ name, ...clientRoleMemberFilters })
+      .then((roleData) => {
+        const cilentRoleMemberDatas = roleData.filter((role) => {
+          role.users = role.users || [];
+          if (role.userCount > 0) {
+            if (expandedKeys.find(expandedKey => expandedKey.split('-')[1] === String(role.id))) {
+              this.roles.loadClientRoleMemberData(role, {
+                current: 1,
+                pageSize,
+              }, clientRoleMemberFilters, params);
+            }
+            return true;
+          }
+          return false;
+        });
+        this.setState({
+          loading: false,
+          expandedKeys,
+          cilentRoleMemberDatas,
+        });
+      });
+    this.setState(newState);
+  }
+
 
   renderSimpleColumn = (text, { enabled }) => {
     if (enabled === false) {
@@ -764,44 +916,102 @@ export default class MemberRole extends Component {
     }
   };
 
+  renderRoleClientNameColumn = (text, data) => {
+    const { clientRoleMemberFilters } = this.state;
+    const { clientName, name } = data;
+    if (clientName) {
+      return clientName;
+    } else if (name) {
+      const { userCount, users: { length }, loading: isLoading, enabled } = data;
+      const more = isLoading ? (<Progress type="loading" width={12} />) : (length > 0 && userCount > length && (
+        <a onClick={() => {
+          this.roles.loadClientRoleMemberData(data, {
+            current: (length / pageSize) + 1,
+            pageSize,
+          }, clientRoleMemberFilters);
+          this.forceUpdate();
+        }}
+        >更多</a>
+      ));
+      const item = <span className={classnames({ 'text-disabled': !enabled })}>{name} ({userCount}) {more}</span>;
+      return enabled ? item : (<Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>{item}</Tooltip>);
+    }
+  }
+
+  /**
+   * 渲染操作列
+   * @param text
+   * @param record
+   * @returns {*}
+   */
   renderActionColumn = (text, record) => {
+    const { MemberRoleStore } = this.props;
     const { organizationId, projectId, createService, deleteService, type } = this.getPermission();
-    if ('roleId' in record || 'email' in record) {
+    if (MemberRoleStore.currentMode === 'users') {
+      if ('roleId' in record || 'email' in record) {
+        return (
+          <div>
+            <Permission
+              service={createService}
+            >
+              <Tooltip
+                title={<FormattedMessage id="modify" />}
+                placement="bottom"
+              >
+                <Button
+                  onClick={() => { this.handleEditRole(record); }}
+                  size="small"
+                  shape="circle"
+                  icon="mode_edit"
+                />
+              </Tooltip>
+            </Permission>
+            <Permission
+              service={deleteService}
+              type={type}
+              organizationId={organizationId}
+              projectId={projectId}
+            >
+              <Tooltip
+                title={<FormattedMessage id="remove" />}
+                placement="bottom"
+              >
+                <Button
+                  size="small"
+                  shape="circle"
+                  onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
+                  icon="delete"
+                />
+              </Tooltip>
+            </Permission>
+          </div>
+        );
+      }
+    } else if ('secret' in record) {
       return (
         <div>
-          <Permission
-            service={createService}
+          <Tooltip
+            title={<FormattedMessage id="modify" />}
+            placement="bottom"
           >
-            <Tooltip
-              title={<FormattedMessage id="modify" />}
-              placement="bottom"
-            >
-              <Button
-                onClick={() => { this.handleEditRole(record); }}
-                size="small"
-                shape="circle"
-                icon="mode_edit"
-              />
-            </Tooltip>
-          </Permission>
-          <Permission
-            service={deleteService}
-            type={type}
-            organizationId={organizationId}
-            projectId={projectId}
+            <Button
+              onClick={() => { this.handleEditClientRole(record); }}
+              size="small"
+              shape="circle"
+              icon="mode_edit"
+            />
+          </Tooltip>
+          <Tooltip
+            title={<FormattedMessage id="remove" />}
+            placement="bottom"
           >
-            <Tooltip
-              title={<FormattedMessage id="remove" />}
-              placement="bottom"
-            >
-              <Button
-                size="small"
-                shape="circle"
-                onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
-                icon="delete"
-              />
-            </Tooltip>
-          </Permission>
+            <Button
+              size="small"
+              shape="circle"
+              onClick={this.state.showMember ? this.handleDelete.bind(this, record) : this.deleteRoleByRole.bind(this, record)}
+              icon="delete"
+            />
+          </Tooltip>
         </div>
       );
     }
@@ -836,6 +1046,7 @@ export default class MemberRole extends Component {
         filters: filtersRole,
         filteredValue: memberRoleFilters.roles || [],
         className: 'memberrole-roles',
+        width: '60%',
         render: this.renderRoleColumn,
       },
       {
@@ -946,19 +1157,154 @@ export default class MemberRole extends Component {
     );
   }
 
+  renderClientMemberTable() {
+    const { selectMemberRoles, cilentRoleMemberDatas, clientMemberRolePageInfo, clientMemberDatas, clientMemberRoleFilters, loading } = this.state;
+    const filtersRole = [...new Set(cilentRoleMemberDatas.map(({ name }) => (name)))].map(value => ({ value, text: value }));
+    const columns = [
+      {
+        title: '客户端',
+        dataIndex: 'name',
+        key: 'name',
+        filters: [],
+        filteredValue: clientMemberRoleFilters.name || [],
+      },
+      {
+        title: <FormattedMessage id="memberrole.role" />,
+        dataIndex: 'roles',
+        key: 'roles',
+        filters: filtersRole,
+        filteredValue: clientMemberRoleFilters.roles || [],
+        className: 'memberrole-roles',
+        width: '60%',
+        render: this.renderRoleColumn,
+      },
+      {
+        title: '',
+        width: 100,
+        align: 'right',
+        render: this.renderActionColumn,
+      },
+    ];
+    const rowSelection = {
+      selectedRowKeys: Object.keys(selectMemberRoles).map(key => Number(key)),
+      onChange: (selectedRowkeys, selectedRecords) => {
+        this.setState({
+          selectMemberRoles: selectedRowkeys.reduce((data, key, index) => {
+            data[key] = selectedRecords[index].roles.map(({ id }) => id);
+            return data;
+          }, {}),
+        });
+      },
+    };
+    return (
+      <Table
+        key="client-member-role"
+        className="member-role-table"
+        loading={loading}
+        rowSelection={rowSelection}
+        pagination={clientMemberRolePageInfo}
+        columns={columns}
+        filters={this.state.clientParams}
+        onChange={this.clientMemberRoleTableChange}
+        dataSource={clientMemberDatas}
+        filterBarPlaceholder={this.formatMessage('filtertable')}
+        rowKey={({ id }) => id}
+      />
+    );
+  }
+
+  renderClientRoleTable() {
+    const { cilentRoleMemberDatas, clientRoleMemberFilterRole, selectRoleMemberKeys, expandedKeys, clientRoleMemberParams, clientRoleMemberFilters, loading } = this.state;
+    const filtersData = [...new Set(cilentRoleMemberDatas.map(({ name }) => (name)))].map(value => ({ value, text: value }));
+    let dataSource = cilentRoleMemberDatas;
+    if (clientRoleMemberFilterRole && clientRoleMemberFilterRole.length) {
+      dataSource = cilentRoleMemberDatas.filter(({ name }) => clientRoleMemberFilterRole.some(role => name.indexOf(role) !== -1));
+    }
+    const columns = [
+      {
+        title: '客户端',
+        key: 'clientName',
+        hidden: true,
+        filters: [],
+        filteredValue: clientRoleMemberFilters.clientName || [],
+      },
+      {
+        title: '角色/客户端',
+        filterTitle: '角色',
+        key: 'name',
+        dataIndex: 'name',
+        filters: filtersData,
+        filteredValue: clientRoleMemberFilterRole || [],
+        render: this.renderRoleClientNameColumn,
+      },
+      {
+        title: '',
+        width: 100,
+        align: 'right',
+        render: this.renderActionColumn,
+      },
+    ];
+
+    const rowSelection = {
+      type: 'checkbox',
+      selectedRowKeys: selectRoleMemberKeys,
+      getCheckboxProps: ({ secret }) => ({
+        disabled: !secret,
+      }),
+      onChange: (newSelectRoleMemberKeys, newSelectRoleMembers) => {
+        this.setState({
+          selectRoleMemberKeys: newSelectRoleMemberKeys,
+          selectRoleMembers: newSelectRoleMembers,
+        });
+      },
+    };
+    return (
+      <Table
+        key="client-role-member"
+        loading={loading}
+        rowSelection={rowSelection}
+        className="role-member-table"
+        pagination={false}
+        columns={columns}
+        filters={clientRoleMemberParams}
+        indentSize={0}
+        dataSource={dataSource}
+        rowKey={({ roleId = '', id }) => [roleId, id].join('-')}
+        childrenColumnName="users"
+        onChange={this.clientRoleMemberTableChange}
+        onExpand={this.handleExpand}
+        onExpandedRowsChange={this.handleExpandedRowsChange}
+        filterBarPlaceholder={this.formatMessage('filtertable')}
+      />
+    );
+  }
+
   handleExpandedRowsChange = (expandedKeys) => {
     this.setState({
       expandedKeys,
     });
   };
 
+  /**
+   * 角色表格展开控制
+   * @param expand Boolean 是否展开
+   * @param data 展开行数据
+   */
   handleExpand = (expand, data) => {
     const { users = [], id } = data;
+    const { MemberRoleStore } = this.props;
     if (expand && !users.length) {
-      this.roles.loadRoleMemberData(data, {
-        current: 1,
-        pageSize,
-      }, this.state.roleMemberFilters, this.state.roleMemberParams);
+      if (MemberRoleStore.currentMode === 'users') {
+        this.roles.loadRoleMemberData(data, {
+          current: 1,
+          pageSize,
+        }, this.state.roleMemberFilters, this.state.roleMemberParams);
+      } else {
+        this.roles.loadClientRoleMemberData(data, {
+          current: 1,
+          pageSize,
+        }, this.state.clientRoleMemberFilters, this.state.clientRoleMemberParams);
+      }
     }
   };
 
@@ -1057,11 +1403,21 @@ export default class MemberRole extends Component {
     };
   }
 
-  /* 选择用户或者客户端模式 */
-  changeMode = (value) => {
-    const { MemberRoleStore } = this.props;
-    MemberRoleStore.setMode(value);
-  }
+  renderTable = () => {
+    const { showMember } = this.state;
+    const { MemberRoleStore: { currentMode } } = this.props;
+    let showTable;
+    if (showMember && currentMode === 'users') {
+      showTable = this.renderMemberTable();
+    } else if (showMember && currentMode === 'clients') {
+      showTable = this.renderClientMemberTable();
+    } else if (!showMember && currentMode === 'users') {
+      showTable = this.renderRoleTable();
+    } else {
+      showTable = this.renderClientRoleTable();
+    }
+    return showTable;
+  };
 
   render() {
     const { MemberRoleStore, intl } = this.props;
@@ -1096,13 +1452,13 @@ export default class MemberRole extends Component {
         <Header title={<FormattedMessage id={`${this.roles.code}.header.title`} />}>
           <Select
             style={{ width: '60px' }}
-            value={MemberRoleStore.mode}
+            value={MemberRoleStore.currentMode}
             dropdownClassName="c7n-memberrole-select-dropdown"
             className="c7n-memberrole-select"
             onChange={this.changeMode}
           >
-            <Option value="user" key="user">{intl.formatMessage({ id: 'memberrole.type.user' })}</Option>
-            <Option value="client" key="client">{intl.formatMessage({ id: 'memberrole.type.client' })}</Option>
+            <Option value="users" key="users">{intl.formatMessage({ id: 'memberrole.type.user' })}</Option>
+            <Option value="clients" key="client">{intl.formatMessage({ id: 'memberrole.client' })}</Option>
           </Select>
           <Permission
             service={createService}
@@ -1118,14 +1474,16 @@ export default class MemberRole extends Component {
             service={importService}
           >
             <Button
-              onClick={this.handleDownLoad}
               icon="get_app"
+              style={{ display: MemberRoleStore.currentMode === 'users' ? 'inline' : 'none' }}
+              onClick={this.handleDownLoad}
             >
               <FormattedMessage id={'download.template'} />
               <a id="c7n-user-download-template" href="" onClick={(event) => { event.stopPropagation(); }} download="roleAssignment.xlsx" />
             </Button>
             <Button
               icon="file_upload"
+              style={{ display: MemberRoleStore.currentMode === 'users' ? 'inline' : 'none' }}
               onClick={this.handleUpload}
             >
               <FormattedMessage id={'upload.file'} />
@@ -1163,7 +1521,7 @@ export default class MemberRole extends Component {
                 this.showMemberTable(true);
               }}
               type="primary"
-            ><FormattedMessage id="memberrole.member" /></Button>
+            ><FormattedMessage id={MemberRoleStore.currentMode === 'users' ? 'memberrole.member' : 'memberrole.client'} /></Button>
             <Button
               className={this.getMemberRoleClass('role')}
               onClick={() => {
@@ -1172,7 +1530,7 @@ export default class MemberRole extends Component {
               type="primary"
             ><FormattedMessage id="memberrole.role" /></Button>
           </div>
-          {showMember ? this.renderMemberTable() : this.renderRoleTable()}
+          {this.renderTable()}
           <Sidebar
             title={this.getSidebarTitle()}
             visible={sidebar}

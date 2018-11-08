@@ -11,19 +11,23 @@ class MemberRoleStore {
    */
   @observable uploading = false;
 
-  @observable mode = 'user'; // 所选模式 默认为用户
+  @observable currentMode = 'users'; // 所选模式 默认为用户
+
+  // @observable isShowMember = true; // tab 默认为成员
 
   @observable uploadInfo = {
     noData: true,
   };
 
-  @observable roleData = [];
+  @observable roleData = []; // 用户模式下的所有角色
 
-  @observable roleMemberDatas = [];
+  @observable roleMemberDatas = []; // 用户-角色表格数据
+
+  @observable clientRoleMemberDatas = []; // 客户端-角色表格数据
 
 
-  @action setMode(data) {
-    this.mode = data;
+  @action setCurrentMode(data) {
+    this.currentMode = data;
   }
 
   @computed
@@ -44,6 +48,16 @@ class MemberRoleStore {
   @action
   setRoleMemberDatas(data) {
     this.roleMemberDatas = data;
+  }
+
+  @computed
+  get getClientRoleMemberDatas() {
+    return this.clientRoleMemberDatas;
+  }
+
+  @action
+  setClientRoleMemberDatas(data) {
+    this.clientRoleMemberDatas = data;
   }
 
   @computed

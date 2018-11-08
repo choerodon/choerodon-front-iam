@@ -1394,7 +1394,12 @@ const zh_CN = {
   'memberrole.loginname': '登录名',
   'memberrole.realname': '用户名',
   'memberrole.type.user': '用户',
-  'memberrole.type.client': '客户端',
+
+  'memberrole.client': '客户端',
+  'memberrole.remove.select.all.client.content': '确认移除当前选中的客户端下的所有角色?',
+  'memberrole.remove.select.client.content': '确认移除当前选中的客户端的这些角色?',
+  'memberrole.remove.all.client.content': '确认移除客户端"{name}"下的所有角色?',
+  'memberrole.remove.client.content': '确认移除客户端"{member}"的角色"{role}"?',
 
   // 角色标签
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',

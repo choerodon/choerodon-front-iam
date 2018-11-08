@@ -1209,6 +1209,8 @@ const zh_CN = {
   'organization.ldap.password.require.msg': '请输入LDAP密码',
   'organization.ldap.address.msg': 'ldap的服务地址为空',
   'organization.ldap.address.require.msg': 'LDAP的服务地址为空，请先填写LDAP信息',
+  'organization.ldap.abort.title': '这会强制终止同步',
+  'organization.ldap.abort.content': '如果卡住很久了就点确认然后就可以重新同步',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',

@@ -396,7 +396,7 @@ export default class MemberRole extends Component {
     const { selectType } = this.state;
     const { form, MemberRoleStore } = this.props;
     const { getFieldDecorator } = form;
-    return selectType === 'user' ? (
+    return selectType === 'create' ? (
       <FormItem
         {...FormItemNumLayout}
       >
@@ -475,7 +475,7 @@ export default class MemberRole extends Component {
   }
 
   getProjectNameDom() {
-    const { selectType, currentMemberData, createMode } = this.state;
+    const { selectType, currentMemberData, createMode, overflow } = this.state;
     const { form, MemberRoleStore } = this.props;
     const { getFieldDecorator } = form;
     const member = [];
@@ -508,7 +508,7 @@ export default class MemberRole extends Component {
               optionFilterProp="children"
               filterOption={false}
               filter
-              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
               onFilterChange={this.handleUserFilter}
               notFoundContent="没有符合条件的结果"
             >
@@ -537,7 +537,7 @@ export default class MemberRole extends Component {
               optionFilterProp="children"
               filterOption={false}
               filter
-              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
               onFilterChange={this.handleClientFilter}
               notFoundContent="没有符合条件的结果"
             >

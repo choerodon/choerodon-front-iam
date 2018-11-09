@@ -7,10 +7,10 @@ import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
 import MemberRoleType, { pageSize } from './MemberRoleType';
-import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import './MemberRole.scss';
 import '../../../common/ConfirmModal.scss';
 
+let timer;
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -39,6 +39,7 @@ export default class MemberRole extends Component {
     const { MemberRoleStore, AppState } = this.props;
     MemberRoleStore.loadCurrentMenuType(AppState.currentMenuType, AppState.getUserId);
     return {
+      selectLoading: true,
       loading: true,
       submitting: false,
       sidebar: false,
@@ -337,7 +338,7 @@ export default class MemberRole extends Component {
       <Content
         {...this.getHeader()}
       >
-        {this.renderForm()}
+        {this.getForm()}
         {this.getAddOtherBtn(disabled)}
       </Content>);
   }
@@ -384,14 +385,29 @@ export default class MemberRole extends Component {
     }
   };
 
-  renderForm = () => (
-    <Form layout="vertical">
-      {this.getModeDom()}
-      {this.getProjectNameDom()}
-      {this.getRoleFormItems()}
-    </Form>
-  );
+  /**
+   * 渲染创建及修改的表单
+   * @returns {*}
+   */
+  getForm = () => {
+    const { selectType } = this.state;
+    return selectType === 'create' ? (
+      <Form layout="vertical">
+        {this.getModeDom()}
+        {this.getProjectNameDom()}
+        {this.getRoleFormItems()}
+      </Form>
+    ) : (
+      <Form layout="vertical">
+        {this.getRoleFormItems()}
+      </Form>
+    );
+  };
 
+  /**
+   * 渲染表单选择成员类型的节点
+   * @returns {null}
+   */
   getModeDom() {
     const { selectType } = this.state;
     const { form, MemberRoleStore } = this.props;
@@ -412,68 +428,11 @@ export default class MemberRole extends Component {
     ) : null;
   }
 
-  changeCreateMode = (e) => {
-    const { MemberRoleStore } = this.props;
-    this.setState({
-      createMode: e.target.value,
-    });
-    if (e.target.value === 'client' && !MemberRoleStore.getClientsData.length) {
-      MemberRoleStore.loadClients().then((data) => {
-        MemberRoleStore.setClientsData(data.content.slice());
-      });
-    } else if (e.target.value === 'user' && !MemberRoleStore.getUsersData.length) {
-      MemberRoleStore.loadUsers().then((data) => {
-        MemberRoleStore.setUsersData(data.content.slice());
-      });
-    }
-  }
 
-  handleUserFilter = (value) => {
-    const { MemberRoleStore } = this.props;
-    const queryObj = {
-      page: 0,
-      size: 20,
-      param: value,
-      sort: 'id',
-    };
-    MemberRoleStore.loadUsers(queryObj).then((data) => {
-      MemberRoleStore.setUsersData(data.content.slice());
-    });
-  }
-
-  handleClientFilter = (value) => {
-    const { MemberRoleStore } = this.props;
-    const queryObj = {
-      page: 0,
-      size: 20,
-      param: value,
-      sort: 'id',
-    };
-    MemberRoleStore.loadClients(queryObj).then((data) => {
-      MemberRoleStore.setClientsData(data.content.slice());
-    });
-  }
-
-  getUserOption = () => {
-    const { MemberRoleStore } = this.props;
-    const usersData = MemberRoleStore.getUsersData;
-    return usersData && usersData.length > 0 ? (
-      usersData.map(({ id, loginName, realName }) => (
-        <Option key={id} value={id}>{loginName}{realName}</Option>
-      ))
-    ) : null;
-  }
-
-  getClientOption = () => {
-    const { MemberRoleStore } = this.props;
-    const clientsData = MemberRoleStore.getClientsData;
-    return clientsData && clientsData.length > 0 ? (
-      clientsData.map(({ id, clientName }) => (
-        <Option key={id} value={id}>{clientName}</Option>
-      ))
-    ) : null;
-  }
-
+  /**
+   * 渲染表单客户端或用户下拉框的节点
+   * @returns {*}
+   */
   getProjectNameDom() {
     const { selectType, currentMemberData, createMode, overflow } = this.state;
     const { form, MemberRoleStore } = this.props;
@@ -490,7 +449,7 @@ export default class MemberRole extends Component {
 
     if (createMode === 'user') {
       return (
-        <FormItem
+        selectType === 'create' && <FormItem
           {...FormItemNumLayout}
         >
           {getFieldDecorator('member', {
@@ -511,6 +470,7 @@ export default class MemberRole extends Component {
               getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
               onFilterChange={this.handleUserFilter}
               notFoundContent="没有符合条件的结果"
+              loading={this.state.selectLoading}
             >
               {this.getUserOption()}
             </Select>,
@@ -519,7 +479,7 @@ export default class MemberRole extends Component {
       );
     } else {
       return (
-        <FormItem
+        selectType === 'create' && <FormItem
           {...FormItemNumLayout}
         >
           {getFieldDecorator('member', {
@@ -538,8 +498,9 @@ export default class MemberRole extends Component {
               filterOption={false}
               filter
               getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
-              onFilterChange={this.handleClientFilter}
+              onFilterChange={this.handleClientFilter.bind(this)}
               notFoundContent="没有符合条件的结果"
+              loading={this.state.selectLoading}
             >
               {this.getClientOption()}
             </Select>,
@@ -547,12 +508,12 @@ export default class MemberRole extends Component {
         </FormItem>
       );
     }
-
-    // return (
-    //   <MemberLabel label={<FormattedMessage id="memberrole.member" />} style={style} value={member} form={this.props.form} />
-    // );
   }
 
+  /**
+   * 渲染表单增删角色的节点
+   * @returns {any[]}
+   */
   getRoleFormItems = () => {
     const { selectType, roleIds, overflow } = this.state;
     const { getFieldDecorator } = this.props.form;
@@ -603,6 +564,116 @@ export default class MemberRole extends Component {
     });
     return formItems;
   };
+
+  changeCreateMode = (e) => {
+    const { MemberRoleStore, form } = this.props;
+    this.setState({
+      createMode: e.target.value,
+      selectLoading: true,
+    });
+    form.setFieldsValue({ member: [undefined] });
+    // if (e.target.value === 'client' && !MemberRoleStore.getClientsData.length) {
+    //   MemberRoleStore.loadClients().then((data) => {
+    //     MemberRoleStore.setClientsData(data.content.slice());
+    //     this.setState({
+    //       selectLoading: false,
+    //     });
+    //   });
+    // } else if (e.target.value === 'user' && !MemberRoleStore.getUsersData.length) {
+    //   MemberRoleStore.loadUsers().then((data) => {
+    //     MemberRoleStore.setUsersData(data.content.slice());
+    //     this.setState({
+    //       selectLoading: false,
+    //     });
+    //   });
+    // }
+  }
+
+  handleUserFilter = (value) => {
+    this.setState({
+      selectLoading: true,
+    });
+    const { MemberRoleStore } = this.props;
+    const queryObj = {
+      param: value,
+      sort: 'id',
+    };
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    if (value) {
+      timer = setTimeout(() => {
+        MemberRoleStore.loadUsers(queryObj).then((data) => {
+          MemberRoleStore.setUsersData(data.content.slice());
+          this.setState({
+            selectLoading: false,
+          });
+        });
+      }, 300);
+    } else {
+      MemberRoleStore.loadUsers(queryObj).then((data) => {
+        MemberRoleStore.setUsersData(data.content.slice());
+        this.setState({
+          selectLoading: false,
+        });
+      });
+    }
+  }
+
+  handleClientFilter(value) {
+    this.setState({
+      selectLoading: true,
+    });
+    const { MemberRoleStore } = this.props;
+    const queryObj = {
+      param: value,
+      sort: 'id',
+    };
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    if (value) {
+      timer = setTimeout(() => {
+        MemberRoleStore.loadClients(queryObj).then((data) => {
+          MemberRoleStore.setClientsData(data.content.slice());
+          this.setState({
+            selectLoading: false,
+          });
+        });
+      }, 300);
+    } else {
+      MemberRoleStore.loadClients(queryObj).then((data) => {
+        MemberRoleStore.setClientsData(data.content.slice());
+        this.setState({
+          selectLoading: false,
+        });
+      });
+    }
+  }
+
+  getUserOption = () => {
+    const { MemberRoleStore } = this.props;
+    const usersData = MemberRoleStore.getUsersData;
+    return usersData && usersData.length > 0 ? (
+      usersData.map(({ id, loginName, realName }) => (
+        <Option key={id} value={id}>{loginName}{realName}</Option>
+      ))
+    ) : null;
+  }
+
+  getClientOption = () => {
+    const { MemberRoleStore } = this.props;
+    const clientsData = MemberRoleStore.getClientsData;
+    return clientsData && clientsData.length > 0 ? (
+      clientsData.map(({ id, clientName }) => (
+        <Option key={id} value={id}>{clientName}</Option>
+      ))
+    ) : null;
+  }
 
   // 创建/编辑角色 下拉框的option
   getOption = (current) => {
@@ -867,17 +938,7 @@ export default class MemberRole extends Component {
   createRole = () => {
     const { MemberRoleStore } = this.props;
     this.setState({ selectType: 'create', createMode: MemberRoleStore.currentMode }, () => {
-      if (MemberRoleStore.currentMode === 'user') {
-        MemberRoleStore.loadUsers().then((data) => {
-          MemberRoleStore.setUsersData(data.content.slice());
-          this.openSidebar();
-        });
-      } else {
-        MemberRoleStore.loadClients().then((data) => {
-          MemberRoleStore.setClientsData(data.content.slice());
-          this.openSidebar();
-        });
-      }
+      this.openSidebar();
     });
   };
 

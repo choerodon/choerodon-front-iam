@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Modal, Progress, Select, Table, Tooltip, Upload, Spin } from 'choerodon-ui';
+import { Button, Form, Modal, Progress, Select, Table, Tooltip, Upload, Spin, Radio } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -14,6 +14,7 @@ import '../../../common/ConfirmModal.scss';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const RadioGroup = Radio.Group;
 const FormItemNumLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -47,6 +48,7 @@ export default class MemberRole extends Component {
       roleIds: [],
       overflow: false,
       fileLoading: false,
+      createMode: 'user',
       selectRoleMemberKeys: [],
       roleData: MemberRoleStore.getRoleData, // 所有角色
       roleMemberDatas: MemberRoleStore.getRoleMemberDatas, // 用户-角色表数据源
@@ -85,7 +87,7 @@ export default class MemberRole extends Component {
   init() {
     const { MemberRoleStore } = this.props;
     this.initMemberRole();
-    if (MemberRoleStore.currentMode === 'users') {
+    if (MemberRoleStore.currentMode === 'user') {
       this.roles.fetch();
     } else {
       this.roles.fetchClient();
@@ -112,7 +114,7 @@ export default class MemberRole extends Component {
     const { MemberRoleStore } = this.props;
     MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
     MemberRoleStore.setRoleData(this.state.roleData);
-    MemberRoleStore.setCurrentMode('users');
+    MemberRoleStore.setCurrentMode('user');
   }
 
   initMemberRole() {
@@ -183,11 +185,11 @@ export default class MemberRole extends Component {
     const { selectMemberRoles, showMember, selectRoleMembers } = this.state;
     const { MemberRoleStore } = this.props;
     let content;
-    if (MemberRoleStore.currentMode === 'users' && showMember) {
+    if (MemberRoleStore.currentMode === 'user' && showMember) {
       content = 'memberrole.remove.select.all.content';
-    } else if (MemberRoleStore.currentMode === 'users' && !showMember) {
+    } else if (MemberRoleStore.currentMode === 'user' && !showMember) {
       content = 'memberrole.remove.select.content';
-    } else if (MemberRoleStore.currentMode === 'clients' && showMember) {
+    } else if (MemberRoleStore.currentMode === 'client' && showMember) {
       content = 'memberrole.remove.select.all.client.content';
     } else {
       content = 'memberrole.remove.select.client.content';
@@ -219,7 +221,7 @@ export default class MemberRole extends Component {
    */
   handleDelete = (record) => {
     const { MemberRoleStore } = this.props;
-    const isUsersMode = MemberRoleStore.currentMode === 'users';
+    const isUsersMode = MemberRoleStore.currentMode === 'user';
     let content;
     if (isUsersMode) {
       content = this.formatMessage('memberrole.remove.all.content', { name: record.loginName });
@@ -238,7 +240,7 @@ export default class MemberRole extends Component {
 
   deleteRoleByRole = (record) => {
     const { MemberRoleStore } = this.props;
-    const isUsersMode = MemberRoleStore.currentMode === 'users';
+    const isUsersMode = MemberRoleStore.currentMode === 'user';
     let content;
     if (isUsersMode) {
       content = this.formatMessage('memberrole.remove.content', {
@@ -262,7 +264,7 @@ export default class MemberRole extends Component {
   deleteRolesByIds = (data) => {
     const { showMember } = this.state;
     const { MemberRoleStore } = this.props;
-    const isUsersMode = MemberRoleStore.currentMode === 'users';
+    const isUsersMode = MemberRoleStore.currentMode === 'user';
     const body = {
       view: showMember ? 'userView' : 'roleView',
       memberType: isUsersMode ? 'user' : 'client',
@@ -368,7 +370,11 @@ export default class MemberRole extends Component {
         codeType = 'upload';
         break;
     }
-    return MemberRoleStore.currentMode === 'users' ? `${code}.${codeType}` : `${code}.${codeType}.client`;
+    if (selectType !== 'edit') {
+      return `${code}.${codeType}`;
+    } else {
+      return MemberRoleStore.currentMode === 'user' ? `${code}.${codeType}` : `${code}.${codeType}.client`;
+    }
   };
 
   saveSideBarRef = (node) => {
@@ -380,25 +386,171 @@ export default class MemberRole extends Component {
 
   renderForm = () => (
     <Form layout="vertical">
+      {this.getModeDom()}
       {this.getProjectNameDom()}
       {this.getRoleFormItems()}
     </Form>
   );
 
+  getModeDom() {
+    const { selectType } = this.state;
+    const { form, MemberRoleStore } = this.props;
+    const { getFieldDecorator } = form;
+    return selectType === 'user' ? (
+      <FormItem
+        {...FormItemNumLayout}
+      >
+        {getFieldDecorator('mode', {
+          initialValue: MemberRoleStore.currentMode,
+        })(
+          <RadioGroup label="成员类型" className="c7n-iam-memberrole-radiogroup" onChange={this.changeCreateMode}>
+            <Radio value={'user'}>用户</Radio>
+            <Radio value={'client'}>客户端</Radio>
+          </RadioGroup>,
+        )}
+      </FormItem>
+    ) : null;
+  }
+
+  changeCreateMode = (e) => {
+    const { MemberRoleStore } = this.props;
+    this.setState({
+      createMode: e.target.value,
+    });
+    if (e.target.value === 'client' && !MemberRoleStore.getClientsData.length) {
+      MemberRoleStore.loadClients().then((data) => {
+        MemberRoleStore.setClientsData(data.content.slice());
+      });
+    } else if (e.target.value === 'user' && !MemberRoleStore.getUsersData.length) {
+      MemberRoleStore.loadUsers().then((data) => {
+        MemberRoleStore.setUsersData(data.content.slice());
+      });
+    }
+  }
+
+  handleUserFilter = (value) => {
+    const { MemberRoleStore } = this.props;
+    const queryObj = {
+      page: 0,
+      size: 20,
+      param: value,
+      sort: 'id',
+    };
+    MemberRoleStore.loadUsers(queryObj).then((data) => {
+      MemberRoleStore.setUsersData(data.content.slice());
+    });
+  }
+
+  handleClientFilter = (value) => {
+    const { MemberRoleStore } = this.props;
+    const queryObj = {
+      page: 0,
+      size: 20,
+      param: value,
+      sort: 'id',
+    };
+    MemberRoleStore.loadClients(queryObj).then((data) => {
+      MemberRoleStore.setClientsData(data.content.slice());
+    });
+  }
+
+  getUserOption = () => {
+    const { MemberRoleStore } = this.props;
+    const usersData = MemberRoleStore.getUsersData;
+    return usersData && usersData.length > 0 ? (
+      usersData.map(({ id, loginName, realName }) => (
+        <Option key={id} value={id}>{loginName}{realName}</Option>
+      ))
+    ) : null;
+  }
+
+  getClientOption = () => {
+    const { MemberRoleStore } = this.props;
+    const clientsData = MemberRoleStore.getClientsData;
+    return clientsData && clientsData.length > 0 ? (
+      clientsData.map(({ id, clientName }) => (
+        <Option key={id} value={id}>{clientName}</Option>
+      ))
+    ) : null;
+  }
+
   getProjectNameDom() {
-    const { selectType, currentMemberData } = this.state;
+    const { selectType, currentMemberData, createMode } = this.state;
+    const { form, MemberRoleStore } = this.props;
+    const { getFieldDecorator } = form;
     const member = [];
     const style = {
       marginTop: '-15px',
     };
     if (selectType === 'edit') {
-      // member.push(currentMemberData.loginName);
-      member.push(this.props.AppState.getUserInfo.loginName);
+      member.push(MemberRoleStore.currentMode === 'user' ? currentMemberData.loginName : currentMemberData.id);
       style.display = 'none';
+      return null;
     }
-    return (
-      <MemberLabel label={<FormattedMessage id="memberrole.member" />} style={style} value={member} form={this.props.form} />
-    );
+
+    if (createMode === 'user') {
+      return (
+        <FormItem
+          {...FormItemNumLayout}
+        >
+          {getFieldDecorator('member', {
+            rules: [{
+              required: true,
+              message: '必须至少选择一个用户',
+            }],
+            initialValue: selectType === 'create' ? [undefined] : member,
+          })(
+            <Select
+              label="登录名"
+              allowClear
+              style={{ width: 512 }}
+              mode="multiple"
+              optionFilterProp="children"
+              filterOption={false}
+              filter
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              onFilterChange={this.handleUserFilter}
+              notFoundContent="没有符合条件的结果"
+            >
+              {this.getUserOption()}
+            </Select>,
+          )}
+        </FormItem>
+      );
+    } else {
+      return (
+        <FormItem
+          {...FormItemNumLayout}
+        >
+          {getFieldDecorator('member', {
+            rules: [{
+              required: true,
+              message: '必须至少选择一个客户端',
+            }],
+            initialValue: selectType === 'create' ? [undefined] : member,
+          })(
+            <Select
+              label="客户端"
+              allowClear
+              style={{ width: 512 }}
+              mode="multiple"
+              optionFilterProp="children"
+              filterOption={false}
+              filter
+              getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              onFilterChange={this.handleClientFilter}
+              notFoundContent="没有符合条件的结果"
+            >
+              {this.getClientOption()}
+            </Select>,
+          )}
+        </FormItem>
+      );
+    }
+
+    // return (
+    //   <MemberLabel label={<FormattedMessage id="memberrole.member" />} style={style} value={member} form={this.props.form} />
+    // );
   }
 
   getRoleFormItems = () => {
@@ -648,36 +800,37 @@ export default class MemberRole extends Component {
     const { MemberRoleStore } = this.props;
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
+      const memberType = selectType === 'create' ? values.mode : MemberRoleStore.currentMode;
       if (!err) {
-        const memberNames = values.member;
         const body = roleIds.filter(roleId => roleId).map((roleId, index) => ({
-          memberType: MemberRoleStore.currentMode === 'users' ? 'user' : 'client',
+          memberType,
           roleId,
           sourceId: sessionStorage.selectData.id || 0,
           sourceType: sessionStorage.type,
         }));
         this.setState({ submitting: true });
         if (selectType === 'create') {
-          this.roles.searchMemberIds(memberNames).then((data) => {
-            if (data) {
-              const memberIds = data.map(info => info.id);
-              this.roles.fetchRoleMember(memberIds, body)
-                .then(({ failed, message }) => {
-                  this.setState({ submitting: false });
-                  if (failed) {
-                    Choerodon.prompt(message);
-                  } else {
-                    Choerodon.prompt(this.formatMessage('add.success'));
-                    this.closeSidebar();
-                    this.roles.fetch();
-                  }
-                })
-                .catch((error) => {
-                  this.setState({ submitting: false });
-                  Choerodon.handleResponseError(error);
-                });
-            }
-          });
+          this.roles.fetchRoleMember(values.member, body)
+            .then(({ failed, message }) => {
+              this.setState({ submitting: false });
+              if (failed) {
+                Choerodon.prompt(message);
+              } else {
+                Choerodon.prompt(this.formatMessage('add.success'));
+                this.closeSidebar();
+                if (MemberRoleStore.currentMode === 'user') {
+                  this.roles.fetch();
+                } else {
+                  this.roles.fetchClient();
+                }
+              }
+            })
+            .catch((error) => {
+              this.setState({ submitting: false });
+              Choerodon.handleResponseError(error);
+            });
+          // }
+          // });
         } else if (selectType === 'edit') {
           if (!this.isModify()) {
             this.setState({ submitting: false });
@@ -695,7 +848,7 @@ export default class MemberRole extends Component {
               } else {
                 Choerodon.prompt(this.formatMessage('modify.success'));
                 this.closeSidebar();
-                if (MemberRoleStore.currentMode === 'users') {
+                if (MemberRoleStore.currentMode === 'user') {
                   this.roles.fetch();
                 } else {
                   this.roles.fetchClient();
@@ -712,7 +865,20 @@ export default class MemberRole extends Component {
   };
 
   createRole = () => {
-    this.setState({ selectType: 'create' }, () => this.openSidebar());
+    const { MemberRoleStore } = this.props;
+    this.setState({ selectType: 'create', createMode: MemberRoleStore.currentMode }, () => {
+      if (MemberRoleStore.currentMode === 'user') {
+        MemberRoleStore.loadUsers().then((data) => {
+          MemberRoleStore.setUsersData(data.content.slice());
+          this.openSidebar();
+        });
+      } else {
+        MemberRoleStore.loadClients().then((data) => {
+          MemberRoleStore.setClientsData(data.content.slice());
+          this.openSidebar();
+        });
+      }
+    });
   };
 
   editRole = (memberData) => {
@@ -959,7 +1125,7 @@ export default class MemberRole extends Component {
               placement="bottom"
             >
               {
-                MemberRoleStore.currentMode === 'users' ? (
+                MemberRoleStore.currentMode === 'user' ? (
                   <Button
                     onClick={() => {
                       this.handleEditRole(record);
@@ -1067,6 +1233,7 @@ export default class MemberRole extends Component {
         dataSource={memberDatas}
         filterBarPlaceholder={this.formatMessage('filtertable')}
         rowKey={({ id }) => id}
+        noFilter
       />
     );
   }
@@ -1281,7 +1448,7 @@ export default class MemberRole extends Component {
     const { users = [], id } = data;
     const { MemberRoleStore } = this.props;
     if (expand && !users.length) {
-      if (MemberRoleStore.currentMode === 'users') {
+      if (MemberRoleStore.currentMode === 'user') {
         this.roles.loadRoleMemberData(data, {
           current: 1,
           pageSize,
@@ -1394,11 +1561,11 @@ export default class MemberRole extends Component {
     const { showMember } = this.state;
     const { MemberRoleStore: { currentMode } } = this.props;
     let showTable;
-    if (showMember && currentMode === 'users') {
+    if (showMember && currentMode === 'user') {
       showTable = this.renderMemberTable();
-    } else if (showMember && currentMode === 'clients') {
+    } else if (showMember && currentMode === 'client') {
       showTable = this.renderClientMemberTable();
-    } else if (!showMember && currentMode === 'users') {
+    } else if (!showMember && currentMode === 'user') {
       showTable = this.renderRoleTable();
     } else {
       showTable = this.renderClientRoleTable();
@@ -1449,8 +1616,8 @@ export default class MemberRole extends Component {
             className="c7n-memberrole-select"
             onChange={this.changeMode}
           >
-            <Option value="users" key="users">{intl.formatMessage({ id: 'memberrole.type.user' })}</Option>
-            <Option value="clients" key="client">{intl.formatMessage({ id: 'memberrole.client' })}</Option>
+            <Option value="user" key="user">{intl.formatMessage({ id: 'memberrole.type.user' })}</Option>
+            <Option value="client" key="client">{intl.formatMessage({ id: 'memberrole.client' })}</Option>
           </Select>
           <Permission
             service={createService}
@@ -1467,7 +1634,7 @@ export default class MemberRole extends Component {
           >
             <Button
               icon="get_app"
-              style={{ display: MemberRoleStore.currentMode === 'users' ? 'inline' : 'none' }}
+              style={{ display: MemberRoleStore.currentMode === 'user' ? 'inline' : 'none' }}
               onClick={this.handleDownLoad}
             >
               <FormattedMessage id={'download.template'} />
@@ -1475,7 +1642,7 @@ export default class MemberRole extends Component {
             </Button>
             <Button
               icon="file_upload"
-              style={{ display: MemberRoleStore.currentMode === 'users' ? 'inline' : 'none' }}
+              style={{ display: MemberRoleStore.currentMode === 'user' ? 'inline' : 'none' }}
               onClick={this.handleUpload}
             >
               <FormattedMessage id={'upload.file'} />

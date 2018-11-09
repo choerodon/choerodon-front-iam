@@ -1,10 +1,10 @@
 
 import React, { Component } from 'react';
-import { Form, Input, Icon, Spin } from 'choerodon-ui';
+import { Form, Input, Icon, Spin, Button, Modal } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Content } from 'choerodon-front-boot';
+import { axios, Content } from 'choerodon-front-boot';
 import './TestLdap.scss';
 import LDAPStore from '../../../stores/organization/ldap/LDAPStore';
 
@@ -304,6 +304,42 @@ export default class TestConnect extends Component {
     }
   }
 
+  handleAbort = () => {
+    const { intl, onAbort } = this.props;
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: intl.formatMessage({ id: `${intlPrefix}.abort.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.abort.content` }),
+      onOk: () => axios.put(`iam/v1/organizations/${LDAPStore.ldapData.organizationId}/ldaps/${LDAPStore.ldapData.id}/stop`).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+          this.closeSyncSidebar();
+        } else {
+          Choerodon.prompt('终止成功');
+          this.closeSyncSidebar();
+        }
+        if (onAbort) {
+          onAbort();
+        }
+      }),
+    });
+  }
+
+  renderAobrtButton = () => {
+    const passTime = new Date() - new Date(LDAPStore.getSyncData && LDAPStore.getSyncData.syncBeginTime);
+    if (LDAPStore.getSyncData && LDAPStore.getSyncData.syncEndTime === null && passTime / 1000 > 3600) {
+      return (
+        <Button
+          funcType="raised"
+          type="primary"
+          style={{ backgroundColor: '#f44336', margin: '0 auto', display: 'inherit' }}
+          onClick={this.handleAbort}
+        >强制终止</Button>
+      );
+    }
+    return null;
+  };
+
   renderLoading(tip, syncTip = '') {
     return (
       <div className="loadingContainer">
@@ -312,6 +348,7 @@ export default class TestConnect extends Component {
         </div>
         <p className="loadingText">{tip}</p>
         <p className="tipText">{syncTip}</p>
+        {this.renderAobrtButton()}
       </div>
     );
   }

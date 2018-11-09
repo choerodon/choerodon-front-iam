@@ -1,5 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import querystring from 'query-string';
 
 /**
  * 当要改写 src/app/iam/containers/global/member-role/MemberRoleType.js中的内容时可以逐步把用到的东西移到store里
@@ -11,7 +12,7 @@ class MemberRoleStore {
    */
   @observable uploading = false;
 
-  @observable currentMode = 'users'; // 所选模式 默认为用户
+  @observable currentMode = 'user'; // 所选模式 默认为用户
 
   // @observable isShowMember = true; // tab 默认为成员
 
@@ -25,6 +26,25 @@ class MemberRoleStore {
 
   @observable clientRoleMemberDatas = []; // 客户端-角色表格数据
 
+  @observable usersData = [];
+
+  @observable clientsData = [];
+
+  @action setUsersData(data) {
+    this.usersData = data;
+  }
+
+  @computed get getUsersData() {
+    return this.usersData;
+  }
+
+  @action setClientsData(data) {
+    this.clientsData = data;
+  }
+
+  @computed get getClientsData() {
+    return this.clientsData;
+  }
 
   @action setCurrentMode(data) {
     this.currentMode = data;
@@ -116,6 +136,7 @@ class MemberRoleStore {
     this.urlUserCount = `${apiGetway}/role_members/users/count`;
     this.roleId = id || 0;
   }
+
   /**
    * 下载文件
    */
@@ -139,7 +160,10 @@ class MemberRoleStore {
       this.setUploading(!data.endTime);
     });
   }
-}
 
+  loadUsers = (queryObj = { sort: 'id' }) => axios.get(`/iam/v1/all/users?${querystring.stringify(queryObj)}`);
+
+  loadClients = (queryObj = { sort: 'id' }) => axios.get(`/iam/v1/all/clients?${querystring.stringify(queryObj)}`);
+}
 const memberRoleStore = new MemberRoleStore();
 export default memberRoleStore;

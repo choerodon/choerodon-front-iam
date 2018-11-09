@@ -311,6 +311,7 @@ export default class LDAP extends Component {
         onRef={(node) => {
           this.TestLdap = node;
         }}
+        onAbort={() => { this.closeSidebar(); this.getSyncInfo(); }}
       />
     );
   }

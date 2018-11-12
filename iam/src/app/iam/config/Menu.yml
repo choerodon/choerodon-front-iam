@@ -477,3 +477,9 @@
         sort: 5
         permission:
           - 'iam-service.user.listProjectAndRoleById'
+    - "receive-setting":
+        icon: settings
+        Routes: /iam/receive-setting
+        sort: 6
+        permission:
+        - 'iam-service.user.queryInfo'

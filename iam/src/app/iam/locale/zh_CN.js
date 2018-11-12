@@ -491,6 +491,12 @@ const pageDetail = {
   'user.permissioninfo.description': '{description}',
   'user.permissioninfo.link': '{link}',
 
+  // 接收设置
+  'user.receive-setting.title': '用户"{name}"的接收设置',
+  'user.receive-setting.description': '您可以在此修改您消息通知的接收设置',
+  'user.receive-setting.link': `${docServer}`,
+  'user.receive-setting.header.title': '接收设置',
+
   // 富文本编辑器
   'editor.add.pic': '添加图片',
   'editor.pic.url': '图片URL',

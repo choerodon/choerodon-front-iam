@@ -4,7 +4,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { Table, Button, Checkbox } from 'choerodon-ui';
 import './ReceiveSetting.scss';
-import UserInfoStore from '../../../stores/user/user-info/UserInfoStore';
+import { Prompt } from 'react-router-dom';
 import ReceiveSettingStore from '../../../stores/user/receive-setting/ReceiveSettingStore';
 
 const intlPrefix = 'user.receive-setting';
@@ -27,7 +27,16 @@ export default class ReceiveSetting extends Component {
       ReceiveSettingStore.loadAllowConfigData(),
     ]).then(() => {
       ReceiveSettingStore.setLoading(false);
+      ReceiveSettingStore.setDirty(false);
     });
+  };
+
+  handleCheckAllChange = (type) => {
+    if (ReceiveSettingStore.isAllSelected(type)) {
+      ReceiveSettingStore.unCheckAll(type);
+    } else {
+      ReceiveSettingStore.checkAll(type);
+    }
   };
 
   handleCheckChange = (e, id, type) => {
@@ -36,67 +45,69 @@ export default class ReceiveSetting extends Component {
   };
 
   saveSettings = () => {
-    ReceiveSettingStore.saveData().then((data) => {
-      if (!data.fail) {
-        Choerodon.prompt('保存成功');
-      }
-    });
+    const { intl } = this.props;
+    if (ReceiveSettingStore.getDirty) {
+      ReceiveSettingStore.saveData().then((data) => {
+        if (!data.fail) {
+          Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+          ReceiveSettingStore.setDirty(false);
+        }
+      });
+    } else {
+      Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
+    }
   };
 
   render() {
-    const user = UserInfoStore.getUserInfo;
+    const { intl, AppState } = this.props;
+    const promptMsg = intl.formatMessage({ id: 'global.menusetting.prompt.inform.title' }) + Choerodon.STRING_DEVIDER + intl.formatMessage({ id: 'global.menusetting.prompt.inform.message' });
     const columns = [{
       title: '信息类型',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => text,
+    }, {
+      title: intl.formatMessage({ id: 'level' }),
+      width: '20%',
+      render: (text, record) => intl.formatMessage({ id: record.id.split('-')[0] }),
     }, {
       title: (
         <Checkbox
           key="pm"
-          indeterminate={false}
-          // onChange={e => this.handleCheckChange(e, record.id, 'pm')}
-          // checked={record.pmChecked}
+          indeterminate={!ReceiveSettingStore.isAllSelected('pm') && !ReceiveSettingStore.isAllUnSelected('pm')}
+          checked={ReceiveSettingStore.isAllSelected('pm')}
+          onChange={() => this.handleCheckAllChange('pm')}
         >
           站内信
         </Checkbox>
       ),
-      dataIndex: 'age',
-      key: 'age',
-      width: '20%',
+      width: '15%',
       render: (text, record) => (
         <Checkbox
           key={record.id ? record.id : `${record.id}-${record.sendSettingId}`}
           indeterminate={record.id ? record.pmIndeterminate : false}
           onChange={e => this.handleCheckChange(e, record.id, 'pm')}
           checked={record.pmChecked}
-        >
-          {record.id}
-        </Checkbox>
+        />
       ),
     }, {
       title: (
         <Checkbox
-          key="pm"
-          // indeterminate
-          // onChange={e => this.handleCheckChange(e, record.id, 'pm')}
-          // checked={false}
+          key="email"
+          indeterminate={!ReceiveSettingStore.isAllSelected('email') && !ReceiveSettingStore.isAllUnSelected('email')}
+          checked={ReceiveSettingStore.isAllSelected('email')}
+          onChange={() => this.handleCheckAllChange('email')}
         >
           邮件
         </Checkbox>
       ),
-      dataIndex: 'address',
-      width: '20%',
-      key: 'address',
+      width: '15%',
       render: (text, record) => (
         <Checkbox
           key={record.id ? record.id : `${record.id}-${record.sendSettingId}`}
-          indeterminate={false}
+          indeterminate={record.id ? record.mailIndeterminate : false}
           onChange={e => this.handleCheckChange(e, record.id, 'email')}
           checked={record.mailChecked}
-        >
-          {record.id}
-        </Checkbox>
+        />
       ),
     }];
 
@@ -112,8 +123,9 @@ export default class ReceiveSetting extends Component {
         <Content
           className="c7n-iam-receive-setting"
           code={intlPrefix}
-          values={{ name: user.realName }}
+          values={{ name: AppState.getUserInfo.realName }}
         >
+          <Prompt message={promptMsg} wrapper="c7n-iam-confirm-modal" when={ReceiveSettingStore.getDirty} />
           <Table
             loading={ReceiveSettingStore.getLoading}
             filterBar={false}
@@ -130,13 +142,11 @@ export default class ReceiveSetting extends Component {
               funcType="raised"
               type="primary"
               onClick={this.saveSettings}
-              // loading={submitting}
             ><FormattedMessage id="save" /></Button>
             <Button
               funcType="raised"
               onClick={this.refresh}
               style={{ marginLeft: 16, color: '#3F51B5' }}
-              // disabled={submitting}
             ><FormattedMessage id="cancel" /></Button>
           </div>
         </Content>

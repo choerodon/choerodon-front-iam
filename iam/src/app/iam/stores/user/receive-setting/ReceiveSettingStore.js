@@ -1,6 +1,5 @@
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import queryString from 'query-string';
 
 @store('ReceiveSettingStore')
 class ReceiveSettingStore {
@@ -28,6 +27,12 @@ class ReceiveSettingStore {
    */
   @observable loading = false;
 
+  @observable dirty = false;
+
+  @computed get getDirty() {
+    return this.dirty;
+  }
+
   @computed get getReceiveTypeData() {
     return this.receiveTypeData;
   }
@@ -41,7 +46,6 @@ class ReceiveSettingStore {
     ds.forEach((v) => {
       const allowConfig = new Map();
       [...this.allowConfigData.keys()].forEach((value) => {
-        const a = this.allowConfigData;
         if (this.allowConfigData.get(value).type === v.type) {
           allowConfig.set(value, this.allowConfigData.get(value));
         }
@@ -58,12 +62,15 @@ class ReceiveSettingStore {
           mailChecked: this.isChecked(`${v.id}-${k}`, 'email'),
         }));
     });
-    debugger;
     return ds;
   }
 
   @action setLoading(flag) {
     this.loading = flag;
+  }
+
+  @action setDirty(flag) {
+    this.dirty = flag;
   }
 
   @action loadReceiveTypeData(id) {
@@ -92,8 +99,6 @@ class ReceiveSettingStore {
             this.allowConfigData.set(v.id, { name: v.name, type: v.level, pmType: v.pmType });
           });
           this.allowConfigData = new Map(this.allowConfigData);
-          const a = this.allowConfigData;
-          debugger;
         }
       },
     ));
@@ -113,14 +118,19 @@ class ReceiveSettingStore {
   }
 
   @action check(id, type) {
+    this.dirty = true;
     if (id.split('-').length === 2) { // 当使用-分割然后id有2部分时，这是一个项目或组织或site的id，处理成组check的逻辑
       if (!this.isGroupAllSelected(id, type)) {
+        debugger;
         this.receiveSettingData.filter(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}`).forEach((v) => {
           this.check(`${id}-${v.sendSettingId}`, type);
         });
       } else {
+        debugger;
         [...this.allowConfigData.keys()].forEach((v) => {
-          this.check(`${id}-${v}`, type);
+          if (id.split('-')[0] === this.allowConfigData.get(v).type) {
+            this.check(`${id}-${v}`, type);
+          }
         });
       }
     } else if (this.receiveSettingData.some(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}-${v.sendSettingId}`)) {
@@ -138,6 +148,22 @@ class ReceiveSettingStore {
   }
 
   /**
+   * 根据type全选
+   * @param type
+   */
+  @action checkAll(type) {
+    this.receiveSettingData = this.receiveSettingData.filter(v => v.messageType !== type);
+  }
+
+  /**
+   * 根据type全否
+   * @param type
+   */
+  @action unCheckAll(type) {
+    this.receiveTypeData.forEach(v => this.check(v.id, type));
+  }
+
+  /**
    * 判断某个元素是否选中
    * @param id 元素的id
    * @param type type 有'pm'、'email'、'sms' 三种对应表中的站内信列、邮件列和短信列
@@ -145,7 +171,6 @@ class ReceiveSettingStore {
    */
   isChecked(id, type) {
     if (id.split('-').length === 2) {
-      debugger;
       return this.isGroupAllSelected(id, type);
     }
     return !this.receiveSettingData.some(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}-${v.sendSettingId}`);
@@ -159,6 +184,25 @@ class ReceiveSettingStore {
    */
   isGroupAllSelected(id, type) {
     return !this.receiveSettingData.filter(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}`).some(v => !this.isChecked(`${id}-${v.sendSettingId}`, type));
+  }
+
+  /**
+   * 根据type判断是否全选
+   * @param type type有'pm'、'email'、'sms' 三种对应表中的站内信列、邮件列和短信列
+   * @returns {boolean}
+   */
+  isAllSelected(type) {
+    return this.receiveSettingData.filter(v => v.messageType === type).length === 0;
+  }
+
+  /**
+   * 根据type判断全选框是否为全不选
+   * @param type
+   * @returns {boolean}
+   */
+  isAllUnSelected(type) {
+    const maxLength = this.receiveTypeData.reduce((previousValue, currentValue) => previousValue + (currentValue.settings ? currentValue.settings.length : 0), 0);
+    return this.receiveSettingData.filter(v => v.messageType === type).length === maxLength;
   }
 
   /**

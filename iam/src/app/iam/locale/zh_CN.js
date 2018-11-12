@@ -600,6 +600,8 @@ const zh_CN = {
   non_consumer: '完成',
   predefined: '预定义',
   custom: '自定义',
+  email: '邮件',
+  pm: '站内信',
 
   // type
   global: '全局',

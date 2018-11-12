@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { adjustSort, canDelete, defineLevel, deleteNode, findParent, hasDirChild, isChild, normalizeMenus } from './util';
 import './MenuSetting.scss';
 import '../../../common/ConfirmModal.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const { MenuStore } = stores;
 const intlPrefix = 'global.menusetting';
@@ -665,6 +666,7 @@ export default class MenuSetting extends Component {
       title: <FormattedMessage id={`${intlPrefix}.directory`} />,
       dataIndex: 'name',
       key: 'name',
+      width: '25%',
       render: (text, { type, default: dft }) => {
         let icon = '';
         if (type === 'menu') {
@@ -675,7 +677,9 @@ export default class MenuSetting extends Component {
           icon = 'custom_Directory';
         }
         return (
-          <span><Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}</span>
+          <MouseOverWrapper text={text} width={0.2} className="c7n-iam-menusetting-name">
+            <Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}
+          </MouseOverWrapper>
         );
       },
       onCell: this.handleCell,
@@ -683,31 +687,51 @@ export default class MenuSetting extends Component {
       title: <FormattedMessage id={`${intlPrefix}.icon`} />,
       dataIndex: 'icon',
       key: 'icon',
-      render: text => <Icon type={text} style={{ fontSize: 18 }} />,
+      width: '10%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.8}>
+          <Icon type={text} style={{ fontSize: 18 }} />
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'code',
       key: 'code',
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.belong`} />,
-      dataIndex: '__parent_name__',
-      key: '__parent_name__',
+      width: '35%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.3}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.type`} />,
       dataIndex: 'default',
       key: 'default',
+      width: '15%',
       render: (text, { type, default: dft }) => {
         if (type === 'menu') {
-          return <span style={{ cursor: 'default' }}>菜单</span>;
+          return (
+            <MouseOverWrapper text={text} width={0.10}>
+              <span style={{ cursor: 'default' }}>菜单</span>
+            </MouseOverWrapper>
+          );
         } else if (!dft) {
-          return <span style={{ cursor: 'default' }}>自设目录</span>;
+          return (
+            <MouseOverWrapper text={text} width={0.10}>
+              <span style={{ cursor: 'default' }}>自设目录</span>
+            </MouseOverWrapper>
+          );
         } else {
-          return <span style={{ cursor: 'default' }}>预置目录</span>;
+          return (
+            <MouseOverWrapper text={text} width={0.10}>
+              <span style={{ cursor: 'default' }}>预置目录</span>
+            </MouseOverWrapper>
+          );
         }
       },
     }, {
       title: '',
-      width: 100,
+      width: '15%',
       key: 'action',
       align: 'right',
       render: (text, record) => {

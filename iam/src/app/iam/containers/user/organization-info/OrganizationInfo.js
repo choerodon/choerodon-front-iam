@@ -70,7 +70,7 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: '40%',
+      width: '35%',
       render: (text, record) => {
         let icon = '';
         if ('organizationId' in record) {
@@ -79,7 +79,7 @@ export default class ProjectInfo extends Component {
           icon = 'person';
         }
         return (
-          <MouseOverWrapper text={text} width={0.3} className={'c7n-org-info-orgname'}>
+          <MouseOverWrapper text={text} width={0.25} className={'c7n-org-info-orgname'}>
             <Icon type={icon} style={{ verticalAlign: 'text-bottom' }} />
             {text}
           </MouseOverWrapper>
@@ -90,8 +90,9 @@ export default class ProjectInfo extends Component {
       dataIndex: 'code',
       key: 'code',
       className: 'c7n-org-info-code',
+      width: '35%',
       render: text => (
-        <MouseOverWrapper text={text} width={0.2}>
+        <MouseOverWrapper text={text} width={0.3}>
           {text}
         </MouseOverWrapper>
       ),
@@ -99,11 +100,13 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',
       key: 'type',
+      width: '15%',
       render: (text, record) => (
         'projects' in record ? '组织' : '角色'
       ),
     }, {
       title: '',
+      width: '15%',
       key: 'action',
       align: 'right',
       render: (text, record) => {

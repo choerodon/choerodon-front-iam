@@ -468,7 +468,7 @@ export default class MemberRole extends Component {
               filterOption={false}
               filter
               getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
-              onFilterChange={this.handleUserFilter}
+              onFilterChange={this.handleSelectFilter}
               notFoundContent="没有符合条件的结果"
               loading={this.state.selectLoading}
             >
@@ -498,7 +498,7 @@ export default class MemberRole extends Component {
               filterOption={false}
               filter
               getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
-              onFilterChange={this.handleClientFilter.bind(this)}
+              onFilterChange={this.handleSelectFilter}
               notFoundContent="没有符合条件的结果"
               loading={this.state.selectLoading}
             >
@@ -567,33 +567,20 @@ export default class MemberRole extends Component {
 
   changeCreateMode = (e) => {
     const { MemberRoleStore, form } = this.props;
+    const { roleIds } = this.state;
     this.setState({
       createMode: e.target.value,
       selectLoading: true,
+      roleIds: [undefined],
     });
     form.setFieldsValue({ member: [undefined] });
-    // if (e.target.value === 'client' && !MemberRoleStore.getClientsData.length) {
-    //   MemberRoleStore.loadClients().then((data) => {
-    //     MemberRoleStore.setClientsData(data.content.slice());
-    //     this.setState({
-    //       selectLoading: false,
-    //     });
-    //   });
-    // } else if (e.target.value === 'user' && !MemberRoleStore.getUsersData.length) {
-    //   MemberRoleStore.loadUsers().then((data) => {
-    //     MemberRoleStore.setUsersData(data.content.slice());
-    //     this.setState({
-    //       selectLoading: false,
-    //     });
-    //   });
-    // }
   }
 
-  handleUserFilter = (value) => {
+  handleSelectFilter = (value) => {
     this.setState({
       selectLoading: true,
     });
-    const { MemberRoleStore } = this.props;
+    const { createMode } = this.state;
     const queryObj = {
       param: value,
       sort: 'id',
@@ -604,55 +591,32 @@ export default class MemberRole extends Component {
     }
 
     if (value) {
-      timer = setTimeout(() => {
-        MemberRoleStore.loadUsers(queryObj).then((data) => {
-          MemberRoleStore.setUsersData(data.content.slice());
-          this.setState({
-            selectLoading: false,
-          });
-        });
-      }, 300);
+      timer = setTimeout(() => (createMode === 'user' ? this.loadUsers(queryObj) : this.loadClients(queryObj)), 300);
     } else {
-      MemberRoleStore.loadUsers(queryObj).then((data) => {
-        MemberRoleStore.setUsersData(data.content.slice());
-        this.setState({
-          selectLoading: false,
-        });
-      });
+      return createMode === 'user' ? this.loadUsers(queryObj) : this.loadClients(queryObj);
     }
   }
 
-  handleClientFilter(value) {
-    this.setState({
-      selectLoading: true,
-    });
+  // 加载全平台用户信息
+  loadUsers = (queryObj) => {
     const { MemberRoleStore } = this.props;
-    const queryObj = {
-      param: value,
-      sort: 'id',
-    };
-
-    if (timer) {
-      clearTimeout(timer);
-    }
-
-    if (value) {
-      timer = setTimeout(() => {
-        MemberRoleStore.loadClients(queryObj).then((data) => {
-          MemberRoleStore.setClientsData(data.content.slice());
-          this.setState({
-            selectLoading: false,
-          });
-        });
-      }, 300);
-    } else {
-      MemberRoleStore.loadClients(queryObj).then((data) => {
-        MemberRoleStore.setClientsData(data.content.slice());
-        this.setState({
-          selectLoading: false,
-        });
+    MemberRoleStore.loadUsers(queryObj).then((data) => {
+      MemberRoleStore.setUsersData(data.content.slice());
+      this.setState({
+        selectLoading: false,
       });
-    }
+    });
+  }
+
+  // 加载全平台客户端信息
+  loadClients = (queryObj) => {
+    const { MemberRoleStore } = this.props;
+    MemberRoleStore.loadClients(queryObj).then((data) => {
+      MemberRoleStore.setClientsData(data.content.slice());
+      this.setState({
+        selectLoading: false,
+      });
+    });
   }
 
   getUserOption = () => {
@@ -881,7 +845,7 @@ export default class MemberRole extends Component {
         }));
         this.setState({ submitting: true });
         if (selectType === 'create') {
-          this.roles.fetchRoleMember(values.member, body)
+          this.roles.fetchRoleMember(values.member, body, memberType)
             .then(({ failed, message }) => {
               this.setState({ submitting: false });
               if (failed) {
@@ -911,7 +875,7 @@ export default class MemberRole extends Component {
           }
           const { currentMemberData } = this.state;
           const memberIds = [currentMemberData.id];
-          this.roles.fetchRoleMember(memberIds, body, true)
+          this.roles.fetchRoleMember(memberIds, body, memberType, true)
             .then(({ failed, message }) => {
               this.setState({ submitting: false });
               if (failed) {
@@ -1671,7 +1635,6 @@ export default class MemberRole extends Component {
       >
         <Header title={<FormattedMessage id={`${this.roles.code}.header.title`} />}>
           <Select
-            style={{ width: '60px' }}
             value={MemberRoleStore.currentMode}
             dropdownClassName="c7n-memberrole-select-dropdown"
             className="c7n-memberrole-select"

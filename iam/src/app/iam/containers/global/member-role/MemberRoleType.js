@@ -43,10 +43,13 @@ export default class MemberRoleType {
   }
 
   // fetch分配角色（post）
-  fetchRoleMember(memberIds, body, isEdit) {
+  fetchRoleMember(memberIds, body, memberType, isEdit) {
     let str = `member_ids=${memberIds.join(',')}`;
     if (isEdit === true) {
       str += '&is_edit=true';
+      if (memberType === 'client') {
+        str += '&member_type=client';
+      }
     }
     return axios.post(`${this.urlRoleMember}?${str}`, JSON.stringify(body));
   }

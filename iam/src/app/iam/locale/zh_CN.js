@@ -492,10 +492,12 @@ const pageDetail = {
   'user.permissioninfo.link': '{link}',
 
   // 接收设置
-  'user.receive-setting.title': '用户"{name}"的接收设置',
-  'user.receive-setting.description': '您可以在此修改您消息通知的接收设置',
-  'user.receive-setting.link': `${docServer}`,
+  'user.receive-setting.title': '站内信和邮件接收设置',
+  'user.receive-setting.description': '您可以为你所在每个组织或项目的每一类信息设置接收状态，组织项目状态变化、密码修改等一系列重要消息，建议您务必接收，防止消息遗漏造成损失。',
+  'user.receive-setting.link': `${docServer}/user-guide/system-configuration/person/notify_setting/`,
   'user.receive-setting.header.title': '接收设置',
+  'user.receive-setting.uncheck-all.title': '确认要全部关闭站内信（邮件）通知吗？',
+  'user.receive-setting.uncheck-all.content': '组织项目状态变更，密码修改确认等重要通知，建议您务必接收，防止消息遗漏造成损失。',
 
   // 富文本编辑器
   'editor.add.pic': '添加图片',
@@ -1227,8 +1229,8 @@ const zh_CN = {
   'organization.ldap.password.require.msg': '请输入LDAP密码',
   'organization.ldap.address.msg': 'ldap的服务地址为空',
   'organization.ldap.address.require.msg': 'LDAP的服务地址为空，请先填写LDAP信息',
-  'organization.ldap.abort.title': '这会强制终止同步',
-  'organization.ldap.abort.content': '如果卡住很久了就点确认然后就可以重新同步',
+  'organization.ldap.abort.title': '确认终止',
+  'organization.ldap.abort.content': '您的同步似乎已经超出正常同步的时间，确定要强制终止同步吗？终止之后您可以重新同步。',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',

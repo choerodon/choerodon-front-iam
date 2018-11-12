@@ -60,14 +60,14 @@ export default class UserMsg extends Component {
   componentDidMount() {
     this.loadUserInfo();
     const matchId = this.props.location.search.match(/msgId=(\d+)/g);
-    if (matchId) {
-      const id = Number(matchId[0].match(/\d+/g)[0]);
-      UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
-    } else UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
     const matchType = this.props.location.search.match(/(msgType=)(.+)/g); // 火狐浏览器不兼容js正则表达式的环视，只能改成这样了
     if (matchType) {
       UserMsgStore.setCurrentType(matchType[0].substring(8));
     }
+    if (matchId) {
+      const id = Number(matchId[0].match(/\d+/g)[0]);
+      UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
+    } else UserMsgStore.loadData({ current: 1, pageSize: 10 }, {}, {}, [], this.state.showAll, false);
   }
 
   refresh = () => {

@@ -83,7 +83,7 @@ export default class ReceiveSetting extends Component {
           checked={ReceiveSettingStore.isAllSelected('pm')}
           onChange={() => this.handleCheckAllChange('pm')}
         >
-          站内信
+          {intl.formatMessage({ id: 'pm' })}
         </Checkbox>
       ),
       width: '15%',
@@ -103,7 +103,7 @@ export default class ReceiveSetting extends Component {
           checked={ReceiveSettingStore.isAllSelected('email')}
           onChange={() => this.handleCheckAllChange('email')}
         >
-          邮件
+          {intl.formatMessage({ id: 'email' })}
         </Checkbox>
       ),
       width: '15%',

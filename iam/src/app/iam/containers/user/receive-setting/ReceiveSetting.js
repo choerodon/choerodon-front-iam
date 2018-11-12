@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content, Header, Page } from 'choerodon-front-boot';
-import { Table, Button, Checkbox } from 'choerodon-ui';
+import { Table, Button, Checkbox, Modal } from 'choerodon-ui';
 import './ReceiveSetting.scss';
 import { Prompt } from 'react-router-dom';
 import ReceiveSettingStore from '../../../stores/user/receive-setting/ReceiveSettingStore';
@@ -32,8 +32,14 @@ export default class ReceiveSetting extends Component {
   };
 
   handleCheckAllChange = (type) => {
+    const { intl } = this.props;
     if (ReceiveSettingStore.isAllSelected(type)) {
-      ReceiveSettingStore.unCheckAll(type);
+      Modal.confirm({
+        className: 'c7n-iam-confirm-modal',
+        title: intl.formatMessage({ id: `${intlPrefix}.uncheck-all.title` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.uncheck-all.content` }),
+        onOk: () => { ReceiveSettingStore.unCheckAll(type); },
+      });
     } else {
       ReceiveSettingStore.checkAll(type);
     }
@@ -59,7 +65,7 @@ export default class ReceiveSetting extends Component {
   };
 
   render() {
-    const { intl, AppState } = this.props;
+    const { intl } = this.props;
     const promptMsg = intl.formatMessage({ id: 'global.menusetting.prompt.inform.title' }) + Choerodon.STRING_DEVIDER + intl.formatMessage({ id: 'global.menusetting.prompt.inform.message' });
     const columns = [{
       title: '信息类型',
@@ -123,7 +129,6 @@ export default class ReceiveSetting extends Component {
         <Content
           className="c7n-iam-receive-setting"
           code={intlPrefix}
-          values={{ name: AppState.getUserInfo.realName }}
         >
           <Prompt message={promptMsg} wrapper="c7n-iam-confirm-modal" when={ReceiveSettingStore.getDirty} />
           <Table

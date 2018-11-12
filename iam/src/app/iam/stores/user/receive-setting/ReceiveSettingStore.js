@@ -121,12 +121,10 @@ class ReceiveSettingStore {
     this.dirty = true;
     if (id.split('-').length === 2) { // 当使用-分割然后id有2部分时，这是一个项目或组织或site的id，处理成组check的逻辑
       if (!this.isGroupAllSelected(id, type)) {
-        debugger;
         this.receiveSettingData.filter(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}`).forEach((v) => {
           this.check(`${id}-${v.sendSettingId}`, type);
         });
       } else {
-        debugger;
         [...this.allowConfigData.keys()].forEach((v) => {
           if (id.split('-')[0] === this.allowConfigData.get(v).type) {
             this.check(`${id}-${v}`, type);

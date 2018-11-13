@@ -496,7 +496,7 @@ const pageDetail = {
   'user.receive-setting.description': '您可以为你所在每个组织或项目的每一类信息设置接收状态，组织项目状态变化、密码修改等一系列重要消息，建议您务必接收，防止消息遗漏造成损失。',
   'user.receive-setting.link': `${docServer}/user-guide/system-configuration/person/notify_setting/`,
   'user.receive-setting.header.title': '接收设置',
-  'user.receive-setting.uncheck-all.title': '确认要全部关闭站内信（邮件）通知吗？',
+  'user.receive-setting.uncheck-all.title': '确认要全部关闭{name}通知吗？',
   'user.receive-setting.uncheck-all.content': '组织项目状态变更，密码修改确认等重要通知，建议您务必接收，防止消息遗漏造成损失。',
 
   // 富文本编辑器

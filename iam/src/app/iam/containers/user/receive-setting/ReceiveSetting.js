@@ -36,7 +36,7 @@ export default class ReceiveSetting extends Component {
     if (ReceiveSettingStore.isAllSelected(type)) {
       Modal.confirm({
         className: 'c7n-iam-confirm-modal',
-        title: intl.formatMessage({ id: `${intlPrefix}.uncheck-all.title` }),
+        title: intl.formatMessage({ id: `${intlPrefix}.uncheck-all.title` }, { name: intl.formatMessage({ id: type }) }),
         content: intl.formatMessage({ id: `${intlPrefix}.uncheck-all.content` }),
         onOk: () => { ReceiveSettingStore.unCheckAll(type); },
       });

@@ -1429,15 +1429,15 @@ export default class MemberRole extends Component {
     }
     const columns = [
       {
-        title: '客户端',
+        title: <FormattedMessage id="memberrole.client" />,
         key: 'clientName',
         hidden: true,
         filters: [],
         filteredValue: clientRoleMemberFilters.clientName || [],
       },
       {
-        title: '角色/客户端',
-        filterTitle: '角色',
+        title: <FormattedMessage id="memberrole.roleclient" />,
+        filterTitle: <FormattedMessage id="memberrole.role" />,
         key: 'name',
         dataIndex: 'name',
         filters: filtersData,

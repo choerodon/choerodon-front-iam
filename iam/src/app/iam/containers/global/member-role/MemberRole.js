@@ -105,16 +105,17 @@ export default class MemberRole extends Component {
   }
 
   componentDidUpdate() {
+    const { MemberRoleStore } = this.props;
     this.updateSelectContainer();
-    this.props.MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
-    this.props.MemberRoleStore.setRoleData(this.state.roleData);
+    MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
+    MemberRoleStore.setRoleData(this.state.roleData);
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
     const { MemberRoleStore } = this.props;
-    MemberRoleStore.setRoleMemberDatas(this.state.roleMemberDatas);
-    MemberRoleStore.setRoleData(this.state.roleData);
+    MemberRoleStore.setRoleMemberDatas([]);
+    MemberRoleStore.setRoleData([]);
     MemberRoleStore.setCurrentMode('user');
   }
 
@@ -843,6 +844,11 @@ export default class MemberRole extends Component {
           sourceId: sessionStorage.selectData.id || 0,
           sourceType: sessionStorage.type,
         }));
+        const pageInfo = {
+          current: 1,
+          total: 0,
+          pageSize,
+        };
         this.setState({ submitting: true });
         if (selectType === 'create') {
           this.roles.fetchRoleMember(values.member, body, memberType)
@@ -855,22 +861,16 @@ export default class MemberRole extends Component {
                 this.closeSidebar();
                 if (MemberRoleStore.currentMode === 'user') {
                   this.setState({
-                    memberRolePageInfo: { // 用户-成员表格分页信息
-                      current: 1,
-                      total: 0,
-                      pageSize,
-                    },
+                    memberRolePageInfo: pageInfo,
+                  }, () => {
+                    this.roles.fetch();
                   });
-                  this.roles.fetch();
                 } else {
                   this.setState({
-                    clientMemberRolePageInfo: { // 客户端-成员表格分页信息
-                      current: 1,
-                      total: 0,
-                      pageSize,
-                    },
+                    clientMemberRolePageInfo: pageInfo,
+                  }, () => {
+                    this.roles.fetchClient();
                   });
-                  this.roles.fetchClient();
                 }
               }
             })
@@ -878,8 +878,6 @@ export default class MemberRole extends Component {
               this.setState({ submitting: false });
               Choerodon.handleResponseError(error);
             });
-          // }
-          // });
         } else if (selectType === 'edit') {
           if (!this.isModify()) {
             this.setState({ submitting: false });
@@ -898,23 +896,25 @@ export default class MemberRole extends Component {
                 Choerodon.prompt(this.formatMessage('modify.success'));
                 this.closeSidebar();
                 if (MemberRoleStore.currentMode === 'user') {
-                  this.setState({
-                    memberRolePageInfo: { // 用户-成员表格分页信息
-                      current: 1,
-                      total: 0,
-                      pageSize,
-                    },
-                  });
-                  this.roles.fetch();
-                } else {
-                  this.setState({
-                    clientMemberRolePageInfo: { // 客户端-成员表格分页信息
-                      current: 1,
-                      total: 0,
-                      pageSize,
-                    },
-                  });
-                  this.roles.fetchClient();
+                  if (body.length) {
+                    this.setState({
+                      memberRolePageInfo: pageInfo,
+                    }, () => {
+                      this.roles.fetch();
+                    });
+                  } else {
+                    this.roles.fetch();
+                  }
+                } else if (MemberRoleStore.currentMode === 'client') {
+                  if (body.length) {
+                    this.setState({
+                      clientMemberRolePageInfo: pageInfo,
+                    }, () => {
+                      this.roles.fetchClient();
+                    });
+                  } else {
+                    this.roles.fetchClient();
+                  }
                 }
               }
             })

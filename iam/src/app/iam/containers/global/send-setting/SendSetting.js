@@ -424,6 +424,27 @@ export default class SendSetting extends Component {
         </MouseOverWrapper>
       ),
     }, {
+      title: <FormattedMessage id="level" />,
+      dataIndex: 'level',
+      key: 'level',
+      width: '8%',
+      filters: [{
+        text: intl.formatMessage({ id: 'site' }),
+        value: 'site',
+      }, {
+        text: intl.formatMessage({ id: 'organization' }),
+        value: 'organization',
+      }, {
+        text: intl.formatMessage({ id: 'project' }),
+        value: 'project',
+      }],
+      filteredValue: filters.level || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          <FormattedMessage id={text} />
+        </MouseOverWrapper>
+      ),
+    }, {
       title: <FormattedMessage id="sendsetting.template" />,
       dataIndex: 'emailTemplateCode',
       key: 'emailTemplateCode',

@@ -410,7 +410,7 @@ export default class MemberRole extends Component {
    */
   getModeDom() {
     const { selectType } = this.state;
-    const { form, MemberRoleStore } = this.props;
+    const { form, MemberRoleStore, intl } = this.props;
     const { getFieldDecorator } = form;
     return selectType === 'create' ? (
       <FormItem
@@ -419,9 +419,9 @@ export default class MemberRole extends Component {
         {getFieldDecorator('mode', {
           initialValue: MemberRoleStore.currentMode,
         })(
-          <RadioGroup label="成员类型" className="c7n-iam-memberrole-radiogroup" onChange={this.changeCreateMode}>
-            <Radio value={'user'}>用户</Radio>
-            <Radio value={'client'}>客户端</Radio>
+          <RadioGroup label={<FormattedMessage id="memberrole.member.type" />} className="c7n-iam-memberrole-radiogroup" onChange={this.changeCreateMode}>
+            <Radio value={'user'}>{intl.formatMessage({ id: 'memberrole.type.user' })}</Radio>
+            <Radio value={'client'}>{intl.formatMessage({ id: 'memberrole.client' })}</Radio>
           </RadioGroup>,
         )}
       </FormItem>
@@ -435,7 +435,7 @@ export default class MemberRole extends Component {
    */
   getProjectNameDom() {
     const { selectType, currentMemberData, createMode, overflow } = this.state;
-    const { form, MemberRoleStore } = this.props;
+    const { form, MemberRoleStore, intl } = this.props;
     const { getFieldDecorator } = form;
     const member = [];
     const style = {
@@ -455,12 +455,12 @@ export default class MemberRole extends Component {
           {getFieldDecorator('member', {
             rules: [{
               required: true,
-              message: '必须至少选择一个用户',
+              message: intl.formatMessage({ id: 'memberrole.user.require.msg' }),
             }],
             initialValue: selectType === 'create' ? [undefined] : member,
           })(
             <Select
-              label="登录名"
+              label={<FormattedMessage id="memberrole.loginname" />}
               allowClear
               style={{ width: 512 }}
               mode="multiple"
@@ -469,7 +469,7 @@ export default class MemberRole extends Component {
               filter
               getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
               onFilterChange={this.handleSelectFilter}
-              notFoundContent="没有符合条件的结果"
+              notFoundContent={intl.formatMessage({ id: 'memberrole.notfound.msg' })}
               loading={this.state.selectLoading}
             >
               {this.getUserOption()}
@@ -485,12 +485,12 @@ export default class MemberRole extends Component {
           {getFieldDecorator('member', {
             rules: [{
               required: true,
-              message: '必须至少选择一个客户端',
+              message: intl.formatMessage({ id: 'memberrole.client.require.msg' }),
             }],
             initialValue: selectType === 'create' ? [undefined] : member,
           })(
             <Select
-              label="客户端"
+              label={<FormattedMessage id="memberrole.client" />}
               allowClear
               style={{ width: 512 }}
               mode="multiple"
@@ -499,7 +499,7 @@ export default class MemberRole extends Component {
               filter
               getPopupContainer={() => (overflow ? this.sidebarBody : document.body)}
               onFilterChange={this.handleSelectFilter}
-              notFoundContent="没有符合条件的结果"
+              notFoundContent={intl.formatMessage({ id: 'memberrole.notfound.msg' })}
               loading={this.state.selectLoading}
             >
               {this.getClientOption()}
@@ -854,8 +854,22 @@ export default class MemberRole extends Component {
                 Choerodon.prompt(this.formatMessage('add.success'));
                 this.closeSidebar();
                 if (MemberRoleStore.currentMode === 'user') {
+                  this.setState({
+                    memberRolePageInfo: { // 用户-成员表格分页信息
+                      current: 1,
+                      total: 0,
+                      pageSize,
+                    },
+                  });
                   this.roles.fetch();
                 } else {
+                  this.setState({
+                    clientMemberRolePageInfo: { // 客户端-成员表格分页信息
+                      current: 1,
+                      total: 0,
+                      pageSize,
+                    },
+                  });
                   this.roles.fetchClient();
                 }
               }
@@ -884,8 +898,22 @@ export default class MemberRole extends Component {
                 Choerodon.prompt(this.formatMessage('modify.success'));
                 this.closeSidebar();
                 if (MemberRoleStore.currentMode === 'user') {
+                  this.setState({
+                    memberRolePageInfo: { // 用户-成员表格分页信息
+                      current: 1,
+                      total: 0,
+                      pageSize,
+                    },
+                  });
                   this.roles.fetch();
                 } else {
+                  this.setState({
+                    clientMemberRolePageInfo: { // 客户端-成员表格分页信息
+                      current: 1,
+                      total: 0,
+                      pageSize,
+                    },
+                  });
                   this.roles.fetchClient();
                 }
               }

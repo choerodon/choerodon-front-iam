@@ -1392,7 +1392,10 @@ const zh_CN = {
   'project.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'memberrole.member': '成员',
+  'memberrole.user.require.msg': '必须至少选择一个用户',
+  'memberrole.client.require.msg': '必须至少选择一个客户端',
   'memberrole.role.require.msg': '必须至少选择一个角色',
+  'memberrole.notfound.msg': '没有符合条件的结果',
   'memberrole.role.label': '请选择一个角色',
   'memberrole.remove.select.all.content': '确认移除当前选中的成员下的所有角色?',
   'memberrole.remove.select.content': '确认移除当前选中的成员的这些角色?',
@@ -1422,6 +1425,7 @@ const zh_CN = {
   'memberrole.remove.select.client.content': '确认移除当前选中的客户端的这些角色?',
   'memberrole.remove.all.client.content': '确认移除客户端"{name}"下的所有角色?',
   'memberrole.remove.client.content': '确认移除客户端"{member}"的角色"{role}"?',
+
 
   // 角色标签
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',

@@ -1412,6 +1412,7 @@ const zh_CN = {
   'memberrole.role': '角色',
   'memberrole.role.disabled.tip': '该角色已停用',
   'memberrole.rolemember': '角色/登录名',
+  'memberrole.roleclient': '角色/客户端',
   'memberrole.view': '查看方式',
   'memberrole.fileloading.text': '正在上传...',
   'memberrole.uploading.text': '正在导入...',
@@ -1419,7 +1420,6 @@ const zh_CN = {
   'memberrole.loginname': '登录名',
   'memberrole.realname': '用户名',
   'memberrole.type.user': '用户',
-
   'memberrole.client': '客户端',
   'memberrole.remove.select.all.client.content': '确认移除当前选中的客户端下的所有角色?',
   'memberrole.remove.select.client.content': '确认移除当前选中的客户端的这些角色?',

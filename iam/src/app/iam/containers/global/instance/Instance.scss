@@ -36,5 +36,6 @@
     overflow: auto;
     // max-height: 800px;
     max-height: calc(100vh - 360px);
+    min-height: 300px;
   }
 }

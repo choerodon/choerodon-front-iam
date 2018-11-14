@@ -83,6 +83,7 @@
     }
     .CodeMirror-scroll {
       max-height: calc(100vh - 590px);
+      min-height: 300px;
     }
   }
   .CodeMirror {
@@ -93,6 +94,7 @@
     overflow: auto;
     // max-height: 800px;
     max-height: calc(100vh - 515px);
+    min-height: 300px;
   }
 }
 

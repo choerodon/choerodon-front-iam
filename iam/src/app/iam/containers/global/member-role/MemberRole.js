@@ -461,7 +461,7 @@ export default class MemberRole extends Component {
             initialValue: selectType === 'create' ? [undefined] : member,
           })(
             <Select
-              label={<FormattedMessage id="memberrole.loginname" />}
+              label={<FormattedMessage id="memberrole.type.user" />}
               allowClear
               style={{ width: 512 }}
               mode="multiple"
@@ -1371,7 +1371,7 @@ export default class MemberRole extends Component {
     const filtersRole = [...new Set(cilentRoleMemberDatas.map(({ name }) => (name)))].map(value => ({ value, text: value }));
     const columns = [
       {
-        title: '客户端',
+        title: <FormattedMessage id="memberrole.client" />,
         dataIndex: 'name',
         key: 'name',
         filters: [],

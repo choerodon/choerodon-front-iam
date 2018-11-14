@@ -103,7 +103,12 @@ export default class UserMsg extends Component {
       />
       {avatar}
       <span style={{ color: '#000' }}>{title}</span>
-      <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
+      <Tooltip
+        title={sendTime}
+        placement="top"
+      >
+        <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
+      </Tooltip>
       <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
     </div>
   );

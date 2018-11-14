@@ -222,7 +222,7 @@ export default class SiteBasic extends Component {
                 </p>
                 <EasyImg src={picCard} />
                 <p>点击
-                  <GuideMask highLight="icon-finished" level={1} siteLevel="site" route="/iam/dashboard-setting">
+                  <GuideMask highLight="icon-remove_circle_outline" level={1} siteLevel="site" route="/iam/dashboard-setting">
                     启停用
                     <Icon type="finished" style={{ fontSize: 10 }} />
                   </GuideMask>按钮，可以控制此卡片是否启停用。

@@ -95,6 +95,7 @@ class DashboardSettingStore {
       name: filters.name,
       code: filters.code,
       level: filters.level,
+      enable: filters.enabled,
       params: params.join(','),
       sort: sorter.join(','),
     })}`)

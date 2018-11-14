@@ -458,7 +458,7 @@ export default class MemberRole extends Component {
               required: true,
               message: intl.formatMessage({ id: 'memberrole.user.require.msg' }),
             }],
-            initialValue: selectType === 'create' ? [undefined] : member,
+            initialValue: selectType === 'create' ? [] : member,
           })(
             <Select
               label={<FormattedMessage id="memberrole.type.user" />}
@@ -488,7 +488,7 @@ export default class MemberRole extends Component {
               required: true,
               message: intl.formatMessage({ id: 'memberrole.client.require.msg' }),
             }],
-            initialValue: selectType === 'create' ? [undefined] : member,
+            initialValue: selectType === 'create' ? [] : member,
           })(
             <Select
               label={<FormattedMessage id="memberrole.client" />}
@@ -567,14 +567,20 @@ export default class MemberRole extends Component {
   };
 
   changeCreateMode = (e) => {
-    const { MemberRoleStore, form } = this.props;
-    const { roleIds } = this.state;
+    const { form } = this.props;
     this.setState({
       createMode: e.target.value,
       selectLoading: true,
       roleIds: [undefined],
     });
-    form.setFieldsValue({ member: [undefined] });
+    form.setFields({
+      member: {
+        values: [],
+      },
+      'role-index-0': {
+        values: undefined,
+      },
+    });
   }
 
   handleSelectFilter = (value) => {

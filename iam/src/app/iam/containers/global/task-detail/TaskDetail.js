@@ -11,6 +11,7 @@ import TaskDetailStore from '../../../stores/global/task-detail';
 import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
 import '../../../common/ConfirmModal.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
@@ -742,7 +743,7 @@ export default class TaskDetail extends Component {
     let content;
     if (cronLoading === 'empty') {
       content = (
-        <div>
+        <div className="c7n-task-deatil-cron-container-empty">
           <FormattedMessage id={`${intlPrefix}.cron.tip`} />
           <a href={intl.formatMessage({ id: `${intlPrefix}.cron.tip.link` })} target="_blank">
             <span>{intl.formatMessage({ id: 'learnmore' })}</span>
@@ -1348,14 +1349,26 @@ export default class TaskDetail extends Component {
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
+      width: '20%',
       filters: [],
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="description" />,
+      width: '20%',
       dataIndex: 'description',
       key: 'description',
       filters: [],
       filteredValue: filters.description || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.last.execution.time`} />,
       dataIndex: 'lastExecTime',

@@ -14,8 +14,14 @@
 }
 
 .c7n-mailcontent-icon-container-tip {
-  a {
+  a:link {
+    text-decoration: none;
+  }
+  a:hover {
     text-decoration: underline;
+  }
+  a:visited {
+    text-decoration: none;
   }
 }
 

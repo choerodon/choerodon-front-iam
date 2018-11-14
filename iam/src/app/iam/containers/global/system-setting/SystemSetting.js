@@ -107,7 +107,7 @@ export default class SystemSetting extends Component {
             showUploadList={false}
             accept="image/jpeg, image/png, image/jpg，image/gif"
             beforeUpload={this.beforeUpload}
-            action="http://api.staging.saas.hand-china.com/iam/v1/system/setting/upload/favicon"
+            action={`${Choerodon.API_HOST}/iam/v1/system/setting/upload/logo`}
             onChange={this.handleFaviconChange}
             headers={{
               Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
@@ -305,7 +305,7 @@ export default class SystemSetting extends Component {
             showUploadList={false}
             accept="image/jpeg, image/png, image/jpg"
             beforeUpload={this.beforeUpload}
-            action="http://api.staging.saas.hand-china.com/iam/v1/system/setting/upload/logo"
+            action={`${Choerodon.API_HOST}/iam/v1/system/setting/upload/logo`}
             onChange={this.handleLogoChange}
             headers={{
               Authorization: `bearer ${Choerodon.getCookie('access_token')}`,

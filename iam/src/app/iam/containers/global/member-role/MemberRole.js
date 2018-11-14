@@ -1360,6 +1360,8 @@ export default class MemberRole extends Component {
         onExpand={this.handleExpand}
         onExpandedRowsChange={this.handleExpandedRowsChange}
         filterBarPlaceholder={this.formatMessage('filtertable')}
+        noFilter
+
       />
     );
   }
@@ -1416,6 +1418,7 @@ export default class MemberRole extends Component {
         dataSource={clientMemberDatas}
         filterBarPlaceholder={this.formatMessage('filtertable')}
         rowKey={({ id }) => id}
+        noFilter
       />
     );
   }
@@ -1482,6 +1485,7 @@ export default class MemberRole extends Component {
         onExpand={this.handleExpand}
         onExpandedRowsChange={this.handleExpandedRowsChange}
         filterBarPlaceholder={this.formatMessage('filtertable')}
+        noFilter
       />
     );
   }

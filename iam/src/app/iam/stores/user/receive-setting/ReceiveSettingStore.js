@@ -89,7 +89,7 @@ class ReceiveSettingStore {
   }
 
   @action loadAllowConfigData() {
-    return axios.get('notify/v1/notices/send_settings/list').then(action(
+    return axios.get('notify/v1/notices/send_settings/list/allow_config').then(action(
       (data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
@@ -150,6 +150,7 @@ class ReceiveSettingStore {
    * @param type
    */
   @action checkAll(type) {
+    this.dirty = true;
     this.receiveSettingData = this.receiveSettingData.filter(v => v.messageType !== type);
   }
 

@@ -28,6 +28,10 @@ export default class ReceiveSetting extends Component {
     ]).then(() => {
       ReceiveSettingStore.setLoading(false);
       ReceiveSettingStore.setDirty(false);
+    }).catch((error) => {
+      Choerodon.prompt(`${error.response.status} ${error.response.statusText}`);
+      Choerodon.handleResponseError(error);
+      ReceiveSettingStore.setLoading(false);
     });
   };
 

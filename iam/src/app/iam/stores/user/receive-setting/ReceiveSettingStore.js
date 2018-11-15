@@ -150,6 +150,7 @@ class ReceiveSettingStore {
    * @param type
    */
   @action checkAll(type) {
+    this.dirty = true;
     this.receiveSettingData = this.receiveSettingData.filter(v => v.messageType !== type);
   }
 

@@ -6,7 +6,6 @@ import { inject, observer } from 'mobx-react';
 import { injectIntl } from 'react-intl';
 import { StepFooter, StepBar, GuideMask, AutoGuide } from 'choerodon-front-boot';
 import EasyImg from '../../components/easyImg';
-import picCreatOrg from './image/create-org.png';
 import picSiteRole from './image/site-role.png';
 import picRootRole from './image/root-role.png';
 import picAddMenu from './image/add-menu.png';
@@ -35,11 +34,11 @@ export default class SiteBasic extends Component {
           <div>
             <h1>{intl.formatMessage({ id: 'guide.iam.sitebasic.h1' })}</h1>
             <h2>概览</h2>
-            <p className="text">在平台层您可以创建并管理组织，管理角色对应的权限，给成员分配平台层角色，设置root用户，自定义平台菜单、仪表盘、标志等基本配置。
+            <p className="text">在平台层您可以管理组织，管理角色对应的权限，给成员分配平台层角色，设置root用户，自定义平台菜单、仪表盘、标志等基本配置。
 当然，您想进行这些操作，您需是平台管理员及其以上的权限角色。</p>
             <p>在此教程，您将学习以下操作：</p>
             <ul className="step-dire">
-              <li>创建组织</li>
+              <li>管理组织</li>
               <li>创建角色</li>
               <li>分配平台角色</li>
               <li>设置Root用户</li>
@@ -89,8 +88,8 @@ export default class SiteBasic extends Component {
         return (
           <div>
             <h1>{intl.formatMessage({ id: 'guide.iam.sitebasic.h1' })}</h1>
-            <h2>创建组织</h2>
-            <p>组织是项目的上一个层级，用户必须属于一个组织。通过组织管理您可以创建、启停用组织。</p>
+            <h2>管理组织</h2>
+            <p>组织是项目的上一个层级，用户必须属于一个组织。通过组织管理您可以修改组织或者查看组织详情。</p>
             <Timeline>
               <Timeline.Item>
                 <p>选择<GuideMask highLight="icon icon-manage_organization" level={2} mode="checkMask" onCheck={dom => this.handleCheck(dom)}>组织管理</GuideMask></p>
@@ -99,16 +98,25 @@ export default class SiteBasic extends Component {
                 </GuideMask>
               </Timeline.Item>
               <Timeline.Item>
-                <p>点击 <GuideMask highLight="icon-playlist_add" level={1} siteLevel="site" route="/iam/organization">创建组织</GuideMask>按钮。</p>
-                <ul className="ul1">
-                  <li>输入组织编码、组织名称和组织所在地。</li>
-                  <li>点击创建按钮完成组织创建</li>
-                </ul>
-                <EasyImg src={picCreatOrg} />
+                <p>
+                  点击
+                  <GuideMask highLight="icon-mode_edit" level={1} siteLevel="site" route="/iam/organization">
+                    笔
+                    <Icon type="mode_edit" style={{ fontSize: 10 }} />
+                  </GuideMask>图标，您可以修改组织信息。
+                </p>
+              </Timeline.Item>
+              <Timeline.Item>
+                <p>
+                  点击
+                  <GuideMask highLight="icon-find_in_page" level={1} siteLevel="site" route="/iam/organization">
+                    详情
+                    <Icon type="find_in_page" style={{ fontSize: 10 }} />
+                  </GuideMask>图标，您可以查看组织信息。
+                </p>
               </Timeline.Item>
             </Timeline>
             <div />
-            <p><Icon type="info" style={{ color: '#ffb100', marginBottom: '3px' }} /><span> 创建组织后，平台默认您为此组织的组织管理员。</span></p>
           </div>
         );
       

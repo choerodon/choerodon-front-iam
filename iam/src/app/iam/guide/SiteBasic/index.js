@@ -256,11 +256,11 @@ export default class SiteBasic extends Component {
             <div className="icon-winner" />
             <p>恭喜！</p>
             <p>现在您已经知道作为平台管理员，要如何进行系统平台的一些列配置和设置。</p>
-            <p>您可以点击表单页面的“<a href="http://choerodon.io">了解更多<Icon type="open_in_new" /></a>”，了解系统配置的更多用户手册。</p>
-            <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/">菜单配置<Icon type="open_in_new" /></a> 用于配置平台菜单</p>
-            <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/dashboard-config/">仪表盘配置<Icon type="open_in_new" /></a> 用于预置用户可见的仪表盘卡片</p>
-            <p><a href="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/">LDAP<Icon type="open_in_new" /></a> 对组织应用的LDAP信息设置的管理</p>
-            <p>或者了解如何在完成系统配置之后进行其他choerodon产品功能：</p>
+            <p>您可以点击表单页面的“<a href="http://choerodon.io" target="_blank">了解更多<Icon type="open_in_new" /></a>”，了解系统配置的更多用户手册。</p>
+            <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/" target="_blank">菜单配置<Icon type="open_in_new" /></a> 用于配置平台菜单</p>
+            <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/dashboard-config/" target="_blank">仪表盘配置<Icon type="open_in_new" /></a> 用于预置用户可见的仪表盘卡片</p>
+            <p><a href="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/" target="_blank">LDAP<Icon type="open_in_new" /></a> 对组织应用的LDAP信息设置的管理</p>
+            <p>或者了解如何在完成系统配置之后进行其他Choerodon产品功能。</p>
           </div>
         );
     }

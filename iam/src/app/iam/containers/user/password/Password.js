@@ -59,6 +59,8 @@ export default class Password extends Component {
     const form = this.props.form;
     if (value && this.state.confirmDirty) {
       form.validateFields(['confirm'], { force: true });
+    } if (value.indexOf(' ') !== -1) {
+      callback('密码不能包含空格');
     }
     callback();
   };

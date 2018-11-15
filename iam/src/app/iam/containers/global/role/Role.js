@@ -135,8 +135,10 @@ export default class Role extends Component {
     RoleStore.getRoleById(record.id).then((data) => {
       RoleStore.setChosenLevel(data.level);
       RoleStore.setSelectedRolesPermission(data.permissions);
+      RoleStore.loadRoleLabel(data.level);
       this.linkToChange('role/create');
     }).catch((err) => {
+      Choerodon.handleResponseError(err);
     });
   }
 

@@ -87,7 +87,6 @@ export default class MemberRoleType {
     const body = {
       loginName: loginName && loginName[0],
       realName: realName && realName[0],
-      param: params,
     };
     const queryObj = { role_id: roleId, size: pageSize, page: current - 1 };
     roleData.loading = true;
@@ -117,7 +116,6 @@ export default class MemberRoleType {
     const { id: roleId, users, name } = roleData;
     const body = {
       clientName: clientName && clientName[0],
-      param: params,
     };
     const queryObj = { role_id: roleId, size: pageSize, page: current - 1 };
     roleData.loading = true;
@@ -170,10 +168,10 @@ export default class MemberRoleType {
   }
 
   // 客户端模式下的角色数据
-  loadClientRoleMemberDatas({ clientName, roles }) {
+  loadClientRoleMemberDatas({ clientName, name }) {
     const body = {
       clientName: clientName && clientName[0],
-      roleName: roles && roles[0],
+      roleName: name && name[0],
     };
     return axios.post(this.urlClientCount, JSON.stringify(body));
   }
@@ -186,7 +184,7 @@ export default class MemberRoleType {
     });
     return axios.all([
       this.loadMemberDatas(memberRolePageInfo, memberRoleFilters, params),
-      this.loadRoleMemberDatas(roleMemberFilters),
+      this.loadRoleMemberDatas({ name: roleMemberParams, ...roleMemberFilters }),
     ]).then(([{ content, totalElements, number }, roleData]) => {
       this.context.setState({
         memberDatas: content, // 用户-成员列表数据源
@@ -199,7 +197,7 @@ export default class MemberRoleType {
               this.loadRoleMemberData(role, {
                 current: 1,
                 pageSize,
-              }, roleMemberFilters, roleMemberParams);
+              }, roleMemberFilters);
             }
             return true;
           }
@@ -224,7 +222,7 @@ export default class MemberRoleType {
     });
     return axios.all([
       this.loadClientMemberDatas(clientMemberRolePageInfo, clientMemberRoleFilters, clientParams),
-      this.loadClientRoleMemberDatas(clientRoleMemberFilters),
+      this.loadClientRoleMemberDatas({ name: clientRoleMemberParams, ...clientRoleMemberFilters }),
     ]).then(([{ content, totalElements, number }, roleData]) => {
       this.context.setState({
         clientMemberDatas: content,
@@ -236,7 +234,7 @@ export default class MemberRoleType {
               this.loadClientRoleMemberData(role, {
                 current: 1,
                 pageSize,
-              }, clientRoleMemberFilters, clientRoleMemberParams);
+              }, clientRoleMemberFilters);
             }
             return true;
           }

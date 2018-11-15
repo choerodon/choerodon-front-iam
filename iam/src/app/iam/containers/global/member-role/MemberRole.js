@@ -43,7 +43,7 @@ export default class MemberRole extends Component {
       loading: true,
       submitting: false,
       sidebar: false,
-      selectType: 'create',
+      selectType: '',
       showMember: true,
       expandedKeys: [], // 角色展开
       roleIds: [],
@@ -1038,7 +1038,7 @@ export default class MemberRole extends Component {
     };
     newState.loading = true;
     const { expandedKeys } = this.state;
-    this.roles.loadRoleMemberDatas({ name, ...roleMemberFilters })
+    this.roles.loadRoleMemberDatas({ name: params, ...roleMemberFilters })
       .then((roleData) => {
         const roleMemberDatas = roleData.filter((role) => {
           role.users = role.users || [];
@@ -1047,7 +1047,7 @@ export default class MemberRole extends Component {
               this.roles.loadRoleMemberData(role, {
                 current: 1,
                 pageSize,
-              }, roleMemberFilters, params);
+              }, roleMemberFilters);
             }
             return true;
           }
@@ -1063,6 +1063,7 @@ export default class MemberRole extends Component {
   };
 
   clientRoleMemberTableChange = (pageInfo, { name, ...clientRoleMemberFilters }, sort, params) => {
+    debugger;
     const newState = {
       clientRoleMemberFilterRole: name,
       clientRoleMemberFilters,
@@ -1070,7 +1071,7 @@ export default class MemberRole extends Component {
     };
     newState.loading = true;
     const { expandedKeys } = this.state;
-    this.roles.loadClientRoleMemberDatas({ name, ...clientRoleMemberFilters })
+    this.roles.loadClientRoleMemberDatas({ name: params, ...clientRoleMemberFilters })
       .then((roleData) => {
         const cilentRoleMemberDatas = roleData.filter((role) => {
           role.users = role.users || [];
@@ -1079,7 +1080,7 @@ export default class MemberRole extends Component {
               this.roles.loadClientRoleMemberData(role, {
                 current: 1,
                 pageSize,
-              }, clientRoleMemberFilters, params);
+              }, clientRoleMemberFilters);
             }
             return true;
           }

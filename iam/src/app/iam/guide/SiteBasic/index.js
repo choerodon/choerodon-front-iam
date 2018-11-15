@@ -101,7 +101,7 @@ export default class SiteBasic extends Component {
                 <p>
                   点击
                   <GuideMask highLight="icon-mode_edit" level={1} siteLevel="site" route="/iam/organization">
-                    笔
+                    修改
                     <Icon type="mode_edit" style={{ fontSize: 10 }} />
                   </GuideMask>图标，您可以修改组织信息。
                 </p>
@@ -224,7 +224,7 @@ export default class SiteBasic extends Component {
                 <p>
                   点击
                   <GuideMask highLight="icon-mode_edit" level={1} siteLevel="site" route="/iam/dashboard-setting">
-                    笔
+                    修改
                     <Icon type="mode_edit" style={{ fontSize: 10 }} />
                   </GuideMask>图标，您可以修改卡片的信息，选择是否开启角色控制。
                 </p>

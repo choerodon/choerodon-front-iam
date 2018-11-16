@@ -161,8 +161,12 @@ export default class SiteBasic extends Component {
                 </GuideMask>
               </Timeline.Item>
               <Timeline.Item>
+                <p>点击<GuideMask highLight="icon-arrow_drop_down" level={3} idx={1} siteLevel="site" route="/iam/member-role">成员类型选择框</GuideMask>，切换您要进行角色分配的成员类型。</p>
+              </Timeline.Item>
+              <Timeline.Item>
                 <p>点击 <GuideMask highLight="icon-playlist_add" level={1} siteLevel="site" route="/iam/member-role">添加</GuideMask>按钮。 </p>
                 <ul className="ul1">
+                  <li>首先，选择成员类型</li>
                   <li>输入要添加角色的成员登录名。</li>
                   <li>选择对应角色</li>
                   <li>点击添加按钮完成角色分配</li>
@@ -260,7 +264,6 @@ export default class SiteBasic extends Component {
             <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/menu_configuration/" target="_blank">菜单配置<Icon type="open_in_new" /></a> 用于配置平台菜单</p>
             <p><a href="http://v0-10.choerodon.io/zh/docs/user-guide/system-configuration/platform/dashboard-config/" target="_blank">仪表盘配置<Icon type="open_in_new" /></a> 用于预置用户可见的仪表盘卡片</p>
             <p><a href="http://choerodon.io/zh/docs/user-guide/system-configuration/tenant/ldap/" target="_blank">LDAP<Icon type="open_in_new" /></a> 对组织应用的LDAP信息设置的管理</p>
-            <p>或者了解如何在完成系统配置之后进行其他Choerodon产品功能。</p>
           </div>
         );
     }

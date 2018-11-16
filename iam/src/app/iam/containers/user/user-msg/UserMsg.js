@@ -269,7 +269,7 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <Tabs defaultActiveKey="msg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false}>
+          <Tabs defaultActiveKey="msg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false} className="c7n-iam-user-msg-tab-container">
             {[{ key: 'msg', value: '消息' }, { key: 'notice', value: '通知' }].map(panelItem => (
               <TabPane tab={panelItem.value} key={panelItem.key} className="c7n-iam-user-msg-tab">
                 <div className="c7n-iam-user-msg-btns">

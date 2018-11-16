@@ -330,12 +330,14 @@
         icon: mail_set
         Routes: /iam/send-setting
         sort: 1
+        delete: true
         permission:
           - 'notify-service.send-setting-org.pageOrganization'
     - "mail-template-organization":
         icon: application_model
         Routes: /iam/mail-template
         sort: 2
+        delete: true
         permission:
           - 'notify-service.email-template-org.pageOrganization'
           - 'notify-service.email-template-org.create'
@@ -347,6 +349,7 @@
         icon: speaker_notes
         Routes: /iam/msg-record
         sort: 4
+        delete: true
         permission:
           - 'notify-service.message-record-org.pageEmail'
 

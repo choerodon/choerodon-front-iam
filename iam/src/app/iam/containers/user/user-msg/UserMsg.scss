@@ -1,7 +1,17 @@
 .c7n-iam-user-msg {
+  &-tab-container {
+    overflow: visible;
+
+    .ant-list-pagination {
+      float: right;
+      text-align: left;
+    }
+  }
+
   &-tab {
     display: flex;
   }
+
   &-collapse {
     width: 100%;
     .ant-collapse-expand-icon {

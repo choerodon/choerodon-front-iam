@@ -752,7 +752,7 @@ const zh_CN = {
   'taskdetail.cron.tip': '请填写Cron表达式, 了解如何填写Cron表达式。',
   'taskdetail.cron.tip.link': `${docServer}/user-guide/microservice-development/job/cron-expression/`,
   'taskdetail.cron.example': '示例',
-  'taskdetail.cron.runtime': '第{time}次执行时间',
+  'taskdetail.cron.runtime': '第{time}次执行时间:',
   'taskdetail.cron.wrong': 'Cron表达式错误，请重新输入',
   'taskdetail.service.required': '请选择服务名',
   'taskdetail.task.class.required': '请选择任务类名',

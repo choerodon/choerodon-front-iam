@@ -762,7 +762,7 @@ export default class TaskDetail extends Component {
           <FormattedMessage id={`${intlPrefix}.cron.example`} />
           {
             cronTime.map((value, key) => (
-              <li><FormattedMessage id={`${intlPrefix}.cron.runtime`} values={{ time: key + 1 }} />:<span>{value}</span></li>
+              <li><FormattedMessage id={`${intlPrefix}.cron.runtime`} values={{ time: key + 1 }} /><span>{value}</span></li>
             ))
           }
         </div>

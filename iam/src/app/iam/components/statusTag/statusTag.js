@@ -6,13 +6,21 @@ import './statusTag.scss';
 const Color = {
   RUNNING: '#4d90fe',
   FAILED: '#f44336',
-  COMPLETED: '#00BF96',
+  COMPLETED: '#00BFA5',
+  NON_CONSUMER: '#00BFA5',
   DEFAULT: '#b8b8b8',
 };
 
 const IconType = {
   COMPLETED: 'check_circle',
-  FAILED: 'remove_circle',
+  NON_CONSUMER: 'check_circle',
+  FAILED: 'cancel',
+  ENABLE: 'check_circle',
+  DISABLE: 'remove_circle',
+  FINISHED: 'state_over',
+  RUNNING: 'timelapse',
+  PREDEFINE: 'settings',
+  CUSTOM: 'av_timer',
 };
 
 export default class StatusTag extends Component {
@@ -23,11 +31,12 @@ export default class StatusTag extends Component {
     ]),
     color: PropTypes.string,
     colorCode: PropTypes.string,
-  }
+    iconType: PropTypes.string,
+  };
 
   static defaultProps = {
     colorCode: 'DEFAULT',
-  }
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     return !(nextProps.name === this.props.name
@@ -36,7 +45,7 @@ export default class StatusTag extends Component {
   }
 
   renderIconMode() {
-    const { name, colorCode } = this.props;
+    const { name, colorCode, iconType } = this.props;
 
     return (
       <span
@@ -45,7 +54,7 @@ export default class StatusTag extends Component {
           ...this.props.style,
         }}
       >
-        <Icon type={[IconType[colorCode]]} />
+        <Icon type={iconType || [IconType[colorCode]]} />
         <span>{ name || '' }</span>
       </span>
     );

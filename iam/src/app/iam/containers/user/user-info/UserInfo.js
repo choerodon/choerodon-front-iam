@@ -256,12 +256,19 @@ export default class UserInfo extends Component {
           <Icon type="phone_iphone" className="form-icon" />
           {getFieldDecorator('phone', {
             initialValue: phone,
+            rules: [
+              {
+                pattern: /^1[3-9]\d{9}$/,
+                whitespace: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }),
+              },
+            ],
           })(
             <Input
               autoComplete="off"
               label={<FormattedMessage id={`${intlPrefix}.phone`} />}
               style={{ width: inputWidth }}
-              maxLength={32}
+              maxLength={11}
               showLengthInfo={false}
             />,
           )}
@@ -282,6 +289,7 @@ export default class UserInfo extends Component {
             <Select
               label={<FormattedMessage id={`${intlPrefix}.language`} />}
               style={{ width: inputWidth }}
+              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             >
               {this.getLanguageOptions()}
             </Select>,
@@ -302,6 +310,7 @@ export default class UserInfo extends Component {
             <Select
               label={<FormattedMessage id={`${intlPrefix}.timezone`} />}
               style={{ width: inputWidth }}
+              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
             >
               {this.getTimeZoneOptions()}
             </Select>,

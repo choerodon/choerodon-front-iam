@@ -21,7 +21,6 @@ const formItemLayout = {
     sm: { span: 10 },
   },
 };
-const defaultPassword = 'abcd1234';
 
 function noop() {
 }
@@ -256,7 +255,6 @@ export default class UserEdit extends Component {
     const { getFieldDecorator } = this.props.form;
     const { userInfo } = this.state;
     const { originalPassword, enablePassword } = CreateUserStore.getPasswordPolicy || {};
-
     return (
       <Content
         className="sidebar-content"
@@ -273,13 +271,12 @@ export default class UserEdit extends Component {
                   required: true,
                   whitespace: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
-                },
-                {
+                }, {
+                  pattern: /^[0-9a-zA-Z]+$/,
+                  message: intl.formatMessage({ id: `${intlPrefix}.loginname.pattern.msg` }),
+                }, {
                   validator: this.checkUsername,
                 },
-                // {
-                //   validator: this.validateToPassword,
-                // },
               ],
               validateTrigger: 'onBlur',
               initialValue: userInfo.loginName,
@@ -373,7 +370,7 @@ export default class UserEdit extends Component {
                     validator: this.validateToNextPassword,
                   },
                 ],
-                initialValue: (enablePassword && originalPassword) || defaultPassword,
+                initialValue: (enablePassword && originalPassword) || AppState.getSiteInfo.defaultPassword,
                 validateFirst: true,
               })(
                 <Input
@@ -399,7 +396,7 @@ export default class UserEdit extends Component {
                   }, {
                     validator: this.checkRepassword,
                   }],
-                initialValue: (enablePassword && originalPassword) || defaultPassword,
+                initialValue: (enablePassword && originalPassword) || AppState.getSiteInfo.defaultPassword,
                 validateFirst: true,
               })(
                 <Input

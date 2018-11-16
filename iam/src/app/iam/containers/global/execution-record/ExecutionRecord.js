@@ -8,8 +8,37 @@ import ExecutionRecordStore from '../../../stores/global/execution-record';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 
-const intlPrefix = 'global.execution';
-const tablePrefix = 'global.taskdetail';
+const intlPrefix = 'execution';
+const tablePrefix = 'taskdetail';
+
+// 公用方法类
+class ExecutionRecordType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      case 'site':
+        codePrefix = 'global';
+        break;
+      default:
+        break;
+    }
+    this.code = `${codePrefix}.execution`;
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
+    this.type = type;
+    this.id = id; // 项目或组织id
+    this.name = name; // 项目或组织名称
+  }
+}
 
 @withRouter
 @injectIntl
@@ -35,10 +64,16 @@ export default class ExecutionRecord extends Component {
   }
 
   componentWillMount() {
+    this.initExecutionRecord();
     this.loadExecutionRecord();
   }
 
+  initExecutionRecord() {
+    this.executionRecord = new ExecutionRecordType(this);
+  }
+
   loadExecutionRecord(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.executionRecord;
     const {
       pagination: paginationState,
       sort: sortState,
@@ -51,7 +86,7 @@ export default class ExecutionRecord extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
-    ExecutionRecordStore.loadData(pagination, filters, sort, params).then((data) => {
+    ExecutionRecordStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       ExecutionRecordStore.setData(data.content);
       this.setState({
         pagination: {
@@ -83,8 +118,9 @@ export default class ExecutionRecord extends Component {
   };
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { filters, params, pagination, loading } = this.state;
+    const { code, values } = this.executionRecord;
     const recordData = ExecutionRecordStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id="status" />,
@@ -145,7 +181,11 @@ export default class ExecutionRecord extends Component {
     }];
     return (
       <Page
-        service={['asgard-service.schedule-task-instance.pagingQuery']}
+        service={[
+          'asgard-service.schedule-task-instance-site.pagingQuery',
+          'asgard-service.schedule-task-instance-org.pagingQuery',
+          'asgard-service.schedule-task-instance-project.pagingQuery',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
@@ -158,7 +198,8 @@ export default class ExecutionRecord extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
+          code={code}
+          values={{ name: `${values.name || 'Choerodon'}` }}
         >
           <Table
             loading={loading}

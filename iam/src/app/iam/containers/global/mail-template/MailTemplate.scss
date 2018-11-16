@@ -14,8 +14,14 @@
 }
 
 .c7n-mailcontent-icon-container-tip {
-  a {
+  a:link {
+    text-decoration: none;
+  }
+  a:hover {
     text-decoration: underline;
+  }
+  a:visited {
+    text-decoration: none;
   }
 }
 
@@ -24,7 +30,6 @@
     width: 512px;
     height: 1px;
     margin: 42px 0 12px;
-    background: rgba(0, 0, 0, 0.12);
   }
 
   .btn-group {

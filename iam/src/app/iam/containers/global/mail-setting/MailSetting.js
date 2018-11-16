@@ -130,7 +130,7 @@ export default class MailSetting extends Component {
   }
 
   render() {
-    const { intl, form } = this.props;
+    const { intl, form, AppState } = this.props;
     const { loading, saving } = this.state;
     const { getFieldDecorator } = form;
     const inputWidth = '512px';
@@ -300,7 +300,7 @@ export default class MailSetting extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {mainContent}
         </Content>

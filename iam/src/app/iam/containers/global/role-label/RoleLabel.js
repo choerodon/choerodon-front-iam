@@ -123,6 +123,7 @@ export default class RoleLabel extends Component {
     );
   }
   render() {
+    const { AppState } = this.props;
     return (
       <Page
         className="role-label"
@@ -144,6 +145,7 @@ export default class RoleLabel extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {this.renderTable()}
         </Content>

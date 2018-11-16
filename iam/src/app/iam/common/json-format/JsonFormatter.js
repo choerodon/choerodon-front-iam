@@ -26,7 +26,7 @@ class JsonFormatter extends Component {
   wrapper = (value, className, count, newLine = false, quote = false) => {
     const space = this.getSpace(count);
     const { renderItem } = this.props;
-    const tag = <span className={className}>{space}{quote && '"'}{value || ''}{newLine && '\n'}{quote && '"'}</span>;
+    const tag = <span className={className}>{space}{quote && '"'}{value}{newLine && '\n'}{quote && '"'}</span>;
     return renderItem ? renderItem(tag) : tag;
   };
 

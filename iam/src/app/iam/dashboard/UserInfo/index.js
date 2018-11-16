@@ -12,7 +12,6 @@ const intlPrefix = 'dashboard.userinfo';
 @inject('AppState', 'HeaderStore')
 @observer
 export default class UserInfo extends Component {
-
   componentWillMount() {
     this.loadUserInfo();
   }

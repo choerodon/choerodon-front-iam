@@ -5,7 +5,6 @@ import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import _ from 'lodash';
 import './Project.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
@@ -33,7 +32,6 @@ export default class Project extends Component {
       projectDatas: [],
       visible: false,
       visibleCreate: false,
-      checkCode: false,
       checkName: false,
       buttonClicked: false,
       state: {},
@@ -237,7 +235,7 @@ export default class Project extends Component {
    * @param value 项目编码
    * @param callback 回调函数
    */
-  checkCodeOnly = _.debounce((value, callback) => {
+  checkCode = (rule, value, callback) => {
     const { AppState, ProjectStore, intl } = this.props;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
@@ -250,33 +248,8 @@ export default class Project extends Component {
           callback();
         }
       });
-  }, 1000);
+  };
 
-
-  /**
-   * 校验编码
-   * @param rule 校验规则
-   * @param value 项目编码
-   * @param callback 回调函数
-   */
-  checkcode(rule, value, callback) {
-    const { intl } = this.props;
-    if (!value) {
-      callback(intl.formatMessage({ id: `${intlPrefix}.code.require.msg` }));
-      return;
-    }
-    if (value.length <= 14) {
-      // eslint-disable-next-line no-useless-escape
-      const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-      if (pa.test(value)) {
-        this.checkCodeOnly(value, callback);
-      } else {
-        callback(intl.formatMessage({ id: `${intlPrefix}.code.pattern.msg` }));
-      }
-    } else {
-      callback(intl.formatMessage({ id: `${intlPrefix}.code.length.msg` }));
-    }
-  }
 
   renderSideTitle() {
     if (this.state.operation === 'create') {
@@ -338,9 +311,19 @@ export default class Project extends Component {
             {getFieldDecorator('code', {
               rules: [{
                 required: true,
-                hasFeedback: false,
-                validator: this.checkcode.bind(this),
+                whitespace: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.code.require.msg` }),
+              }, {
+                max: 14,
+                message: intl.formatMessage({ id: `${intlPrefix}.code.length.msg` }),
+              }, {
+                pattern: /^[a-z](([a-z0-9]|-(?!-))*[a-z0-9])*$/,
+                message: intl.formatMessage({ id: `${intlPrefix}.code.pattern.msg` }),
+              }, {
+                validator: this.checkCode,
               }],
+              validateTrigger: 'onBlur',
+              validateFirst: true,
             })(
               <Input
                 autoComplete="off"
@@ -423,7 +406,7 @@ export default class Project extends Component {
       }],
       filteredValue: filters.enabled || [],
       key: 'enabled',
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
     }, {
       title: '',
       key: 'action',

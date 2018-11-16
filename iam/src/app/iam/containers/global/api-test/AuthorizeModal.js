@@ -5,7 +5,7 @@ import { axios as authorizeAxios } from 'choerodon-front-boot';
 import { Form, Modal, Button, Input } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import classnames from 'classnames';
 import querystring from 'query-string';
 import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
@@ -129,12 +129,18 @@ export default class AuthorizeModal extends Component {
   }
 
   render() {
-    const { intl, form } = this.props;
+    const { intl, form, AppState } = this.props;
     const { getFieldDecorator } = form;
+    const siteInfo = AppState.getSiteInfo;
     const inputWidth = '370px';
     return (
       <div className="c7n-apitest-modal">
-        <div className="c7n-apitest-modal-icon" />
+        <div className="c7n-apitest-modal-icon-content">
+          <div className={classnames('c7n-apitest-modal-icon', !siteInfo.favicon ? 'c7n-apitest-modal-default-icon' : null)}
+               style={{ backgroundImage: siteInfo.favicon ? `url(${siteInfo.favicon})` : null }} />
+          <div className="c7n-apitest-modal-icon-title">{siteInfo.systemName ? siteInfo.systemName : 'Choerodon'}</div>
+        </div>
+
         <div className="c7n-apitest-modal-title"><FormattedMessage id={`${intlPrefix}.authorize.title`} /></div>
         <Form layout="vertical" onSubmit={this.handleSubmit}>
           <FormItem

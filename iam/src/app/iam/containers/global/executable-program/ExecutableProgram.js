@@ -11,7 +11,36 @@ import './ExecutableProgram.scss';
 
 const { Sidebar } = Modal;
 const { TabPane } = Tabs;
-const intlPrefix = 'global.executable.program';
+const intlPrefix = 'executable.program';
+
+// 公用方法类
+class ExecutableProgramType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      case 'site':
+        codePrefix = 'global';
+        break;
+      default:
+        break;
+    }
+    this.code = `${codePrefix}.executable.program`;
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
+    this.type = type;
+    this.id = id; // 项目或组织id
+    this.name = name; // 项目或组织名称
+  }
+}
 
 @withRouter
 @injectIntl
@@ -43,10 +72,16 @@ export default class ExecutableProgram extends Component {
   }
 
   componentWillMount() {
+    this.initExecutableProgram();
     this.loadTaskClassName();
   }
 
+  initExecutableProgram() {
+    this.executableProgram = new ExecutableProgramType(this);
+  }
+
   loadTaskClassName(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.executableProgram;
     const {
       pagination: paginationState,
       sort: sortState,
@@ -59,7 +94,7 @@ export default class ExecutableProgram extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
-    ExecutableProgramStore.loadData(pagination, filters, sort, params).then((data) => {
+    ExecutableProgramStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       ExecutableProgramStore.setData(data.content);
       this.setState({
         pagination: {
@@ -96,7 +131,8 @@ export default class ExecutableProgram extends Component {
     this.setState({
       classLoading: true,
     });
-    ExecutableProgramStore.loadProgramDetail(record.id).then((data) => {
+    const { type, id } = this.executableProgram;
+    ExecutableProgramStore.loadProgramDetail(record.id, type, id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
         this.setState({
@@ -169,8 +205,9 @@ export default class ExecutableProgram extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { sort: { columnKey, order }, filters, params, pagination, loading, isShowSidebar, showJson, programName } = this.state;
+    const { code, values } = this.executableProgram;
     const data = ExecutableProgramStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
@@ -212,19 +249,31 @@ export default class ExecutableProgram extends Component {
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        <Button
-          shape="circle"
-          icon="find_in_page"
-          size="small"
-          onClick={this.openSidebar.bind(this, record)}
-        />
+        <Permission
+          service={[
+            'asgard-service.schedule-method-site.getParams',
+            'asgard-service.schedule-method-org.getParams',
+            'asgard-service.schedule-method-project.getParams',
+          ]}
+        >
+          <Button
+            shape="circle"
+            icon="find_in_page"
+            size="small"
+            onClick={this.openSidebar.bind(this, record)}
+          />
+        </Permission>
       ),
     }];
     return (
       <Page
         service={[
-          'asgard-service.schedule-method.getParams',
-          'asgard-service.schedule-method.pagingQuery',
+          'asgard-service.schedule-method-site.pagingQuery',
+          'asgard-service.schedule-method-org.pagingQuery',
+          'asgard-service.schedule-method-project.pagingQuery',
+          'asgard-service.schedule-method-site.getParams',
+          'asgard-service.schedule-method-org.getParams',
+          'asgard-service.schedule-method-project.getParams',
         ]}
       >
         <Header
@@ -238,7 +287,8 @@ export default class ExecutableProgram extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
+          code={code}
+          values={{ name: `${values.name || 'Choerodon'}` }}
         >
           <Table
             loading={loading}
@@ -260,7 +310,7 @@ export default class ExecutableProgram extends Component {
           >
             <Content
               className="sidebar-content"
-              code={`${intlPrefix}.class`}
+              code={`${code}.class`}
               values={{ name: programName }}
             >
               <Tabs activeKey={showJson ? 'json' : 'table'} onChange={this.handleTabChange}>

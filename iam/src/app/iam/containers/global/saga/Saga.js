@@ -183,6 +183,7 @@ export default class Saga extends Component {
 
   render() {
     const { showJson, data } = this.state;
+    const { AppState } = this.props;
     return (
       <Page
         className="c7n-saga"
@@ -205,6 +206,7 @@ export default class Saga extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {this.renderTable()}
           <Sidebar
@@ -218,6 +220,7 @@ export default class Saga extends Component {
             <Content
               className="sidebar-content"
               code={`${intlPrefix}.detail`}
+              values={{ name: data.code }}
             >
               <Tabs activeKey={showJson ? 'json' : 'img'} onChange={this.handleTabChange}>
                 <TabPane tab={<FormattedMessage id={`${intlPrefix}.img`} />} key="img" />

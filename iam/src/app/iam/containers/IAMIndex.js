@@ -3,6 +3,9 @@ import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot';
 
+// noLevel
+const registerOrg = asyncRouter(() => import('./outward/register-org'));
+
 // global 对应目录
 const apiTest = asyncRouter(() => import('./global/api-test'));
 const configuration = asyncRouter(() => import('./global/configuration'));
@@ -10,6 +13,7 @@ const instance = asyncRouter(() => import('./global/instance'));
 const inmailTemplate = asyncRouter(() => import('./global/inmail-template'));
 const mailTemplate = asyncRouter(() => import('./global/mail-template'));
 const mailSetting = asyncRouter(() => import('./global/mail-setting'));
+const systemSetting = asyncRouter(() => import('./global/system-setting'));
 const memberRole = asyncRouter(() => import('./global/member-role'));
 const menuSetting = asyncRouter(() => import('./global/menu-setting'));
 const msgRecord = asyncRouter(() => import('./global/msg-record'));
@@ -44,6 +48,7 @@ const projectSetting = asyncRouter(() => import('./project/project-setting'));
 const password = asyncRouter(() => import('./user/password'));
 const organizationInfo = asyncRouter(() => import('./user/organization-info'));
 const projectInfo = asyncRouter(() => import('./user/project-info'));
+const receiveSetting = asyncRouter(() => import('./user/receive-setting'));
 const userInfo = asyncRouter(() => import('./user/user-info'));
 const userMsg = asyncRouter(() => import('./user/user-msg'));
 
@@ -57,6 +62,7 @@ class IAMIndex extends React.Component {
     return (
       <IntlProviderAsync>
         <Switch>
+          <Route path={`${match.url}/outward-register-org`} component={registerOrg} />
           <Route path={`${match.url}/api-test`} component={apiTest} />
           <Route path={`${match.url}/configuration`} component={configuration} />
           <Route path={`${match.url}/inmail-template`} component={inmailTemplate} />
@@ -66,6 +72,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/msg-record`} component={msgRecord} />
           <Route path={`${match.url}/mail-template`} component={mailTemplate} />
           <Route path={`${match.url}/mail-setting`} component={mailSetting} />
+          <Route path={`${match.url}/system-setting`} component={systemSetting} />
           <Route path={`${match.url}/send-setting`} component={sendSetting} />
           <Route path={`${match.url}/microservice`} component={microService} />
           <Route path={`${match.url}/organization`} component={organization} />
@@ -88,6 +95,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/password`} component={password} />
           <Route path={`${match.url}/organization-info`} component={organizationInfo} />
           <Route path={`${match.url}/project-info`} component={projectInfo} />
+          <Route path={`${match.url}/receive-setting`} component={receiveSetting} />
           <Route path={`${match.url}/user-info`} component={userInfo} />
           <Route path={`${match.url}/user-msg`} component={userMsg} />
           <Route path="*" component={nomatch} />

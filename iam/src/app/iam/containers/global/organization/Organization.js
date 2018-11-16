@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip, Row, Col } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import classnames from 'classnames';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import './Organization.scss';
 
+const ORGANIZATION_TYPE = 'organization';
+const PROJECT_TYPE = 'project';
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -21,6 +25,7 @@ const formItemLayout = {
   },
 };
 const inputWidth = 512;
+const intlPrefix = 'global.organization';
 
 @Form.create()
 @withRouter
@@ -74,22 +79,40 @@ export default class Organization extends Component {
     }, 10);
   };
 
+  showDetail = (data) => {
+    const { OrganizationStore } = this.props;
+    runInAction(() => {
+      OrganizationStore.setEditData(data);
+      OrganizationStore.loadOrgDetail(data.id).then((message) => {
+        if (message) {
+          Choerodon.prompt(message);
+        }
+      });
+      OrganizationStore.show = 'detail';
+    });
+  }
+
+
   handleSubmit = (e) => {
     e.preventDefault();
     const { form, intl, OrganizationStore, HeaderStore } = this.props;
-    form.validateFields((err, values, modify) => {
-      Object.keys(values).forEach((key) => {
-        // 去除form提交的数据中的全部前后空格
-        if (typeof values[key] === 'string') values[key] = values[key].trim();
+    if (OrganizationStore.show !== 'detail') {
+      form.validateFields((err, values, modify) => {
+        Object.keys(values).forEach((key) => {
+          // 去除form提交的数据中的全部前后空格
+          if (typeof values[key] === 'string') values[key] = values[key].trim();
+        });
+        if (!err) {
+          OrganizationStore.createOrUpdateOrg(values, modify, HeaderStore)
+            .then((message) => {
+              OrganizationStore.hideSideBar();
+              Choerodon.prompt(intl.formatMessage({ id: message }));
+            });
+        }
       });
-      if (!err) {
-        OrganizationStore.createOrUpdateOrg(values, modify, HeaderStore)
-          .then((message) => {
-            OrganizationStore.hideSideBar();
-            Choerodon.prompt(intl.formatMessage({ id: message }));
-          });
-      }
-    });
+    } else {
+      OrganizationStore.hideSideBar();
+    }
   };
 
   handleCancelFun = () => {
@@ -98,12 +121,13 @@ export default class Organization extends Component {
   };
 
   handleDisable = ({ enabled, id }) => {
-    const { intl, OrganizationStore } = this.props;
+    const { intl, OrganizationStore, HeaderStore, AppState } = this.props;
+    const userId = AppState.getUserId;
     OrganizationStore.toggleDisable(id, enabled)
       .then(() => {
         Choerodon.prompt(intl.formatMessage({ id: enabled ? 'disable.success' : 'enable.success' }));
-      })
-      .catch(Choerodon.handleResponseError);
+        HeaderStore.axiosGetOrgAndPro(sessionStorage.userId || userId);
+      }).catch(Choerodon.handleResponseError);
   };
 
   /**
@@ -124,13 +148,82 @@ export default class Organization extends Component {
       });
   };
 
+  renderSidebarTitle() {
+    const { show } = this.props.OrganizationStore;
+    switch (show) {
+      case 'create':
+        return 'global.organization.create';
+      case 'edit':
+        return 'global.organization.modify';
+      case 'detail':
+        return 'global.organization.detail';
+      default:
+        return '';
+    }
+  }
+
+  // 渲染侧边栏成功按钮文字
+  renderSidebarOkText() {
+    const { OrganizationStore: { show } } = this.props;
+    if (show === 'create') {
+      return <FormattedMessage id="create" />;
+    } else if (show === 'edit') {
+      return <FormattedMessage id="save" />;
+    } else {
+      return <FormattedMessage id="close" />;
+    }
+  }
+
+  renderSidebarDetail() {
+    const { intl: { formatMessage }, OrganizationStore: { editData, partDetail } } = this.props;
+    const infoList = [{
+      key: formatMessage({ id: `${intlPrefix}.name` }),
+      value: editData.name,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.code` }),
+      value: editData.code,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.region` }),
+      value: editData.address ? editData.address : '无',
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.owner.login.name` }),
+      value: partDetail.ownerLoginName,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.owner.user.name` }),
+      value: partDetail.ownerRealName,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.phone` }),
+      value: partDetail.ownerPhone ? partDetail.ownerPhone : '无',
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.mailbox` }),
+      value: partDetail.ownerEmail,
+    }];
+    return (
+      <Content
+        className="sidebar-content"
+        code={'global.organization.detail'}
+        values={{ name: `${editData.code}` }}
+      >
+        {
+          infoList.map(({ key, value }) =>
+            <Row key={key} className={classnames('c7n-organization-detail-row', { 'c7n-organization-detail-row': value === null })}>
+              <Col span={3}>{key}:</Col>
+              <Col span={21}>{value}</Col>
+            </Row>,
+          )
+        }
+      </Content>
+    );
+  }
+
   renderSidebarContent() {
-    const { intl, form: { getFieldDecorator }, OrganizationStore: { show, editData } } = this.props;
+    const { intl, form: { getFieldDecorator }, OrganizationStore: { show, editData }, AppState } = this.props;
+
     return (
       <Content
         className="sidebar-content"
         code={show === 'create' ? 'global.organization.create' : 'global.organization.modify'}
-        values={{ name: show === 'create' ? `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` : `${editData.code}` }}
+        values={{ name: show === 'create' ? `${AppState.getSiteInfo.systemName || 'Choerodon'}` : `${editData.code}` }}
       >
         <Form>
           {
@@ -147,7 +240,7 @@ export default class Organization extends Component {
                     max: 15,
                     message: intl.formatMessage({ id: 'global.organization.codemaxmsg' }),
                   }, {
-                    pattern: /^[a-z]([-a-z0-9]*[a-z0-9])?$/,
+                    pattern: /^[a-z](([a-z0-9]|-(?!-))*[a-z0-9])*$/,
                     message: intl.formatMessage({ id: 'global.organization.codepatternmsg' }),
                   }, {
                     validator: this.checkCode,
@@ -162,7 +255,7 @@ export default class Organization extends Component {
                     label={<FormattedMessage id="global.organization.code" />}
                     autoComplete="off"
                     style={{ width: inputWidth }}
-                    maxLength={14}
+                    maxLength={15}
                     showLengthInfo={false}
                   />,
                 )}
@@ -188,6 +281,21 @@ export default class Organization extends Component {
                 showLengthInfo={false}
               />,
             )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('address', {
+                rules: [],
+                initialValue: show === 'create' ? undefined : editData.address,
+              })(
+                <Input
+                  label={<FormattedMessage id="global.organization.region" />}
+                  autoComplete="off"
+                  style={{ width: inputWidth }}
+                />,
+              )}
           </FormItem>
         </Form>
       </Content>
@@ -243,10 +351,10 @@ export default class Organization extends Component {
         value: 'false',
       }],
       filteredValue: filters.enabled || [],
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
     }, {
       title: '',
-      width: 100,
+      width: 150,
       key: 'action',
       align: 'right',
       render: (text, record) => (
@@ -277,6 +385,19 @@ export default class Organization extends Component {
               />
             </Tooltip>
           </Permission>
+          <Permission service={['iam-service.organization.query']}>
+            <Tooltip
+              title={<FormattedMessage id="detail" />}
+              placement="bottom"
+            >
+              <Button
+                shape="circle"
+                icon="find_in_page"
+                size="small"
+                onClick={this.showDetail.bind(this, record)}
+              />
+            </Tooltip>
+          </Permission>
         </div>
       ),
     }];
@@ -287,13 +408,13 @@ export default class Organization extends Component {
       intl, OrganizationStore: {
         params, loading, pagination, sidebarVisible, submitting, show, orgData,
       },
+      AppState,
     } = this.props;
 
     return (
       <Page
         service={[
           'iam-service.organization.list',
-          'iam-service.organization.check',
           'iam-service.organization.query',
           'organization-service.organization.create',
           'iam-service.organization.update',
@@ -319,6 +440,7 @@ export default class Organization extends Component {
         </Header>
         <Content
           code="global.organization"
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Table
             columns={this.getTableColumns()}
@@ -331,15 +453,16 @@ export default class Organization extends Component {
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
-            title={<FormattedMessage id={show === 'create' ? 'global.organization.create' : 'global.organization.modify'} />}
+            title={<FormattedMessage id={this.renderSidebarTitle()} />}
             visible={sidebarVisible}
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun}
-            okText={<FormattedMessage id={show === 'create' ? 'create' : 'save'} />}
+            okCancel={show !== 'detail'}
+            okText={this.renderSidebarOkText()}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={submitting}
           >
-            {this.renderSidebarContent()}
+            {show !== 'detail' ? this.renderSidebarContent() : this.renderSidebarDetail()}
           </Sidebar>
         </Content>
       </Page>

@@ -15,6 +15,8 @@ import {
 import MailTemplateStore from '../../../stores/global/mail-template';
 import './MailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
+import '../../../common/ConfirmModal.scss';
 
 
 // 公用方法类
@@ -26,7 +28,7 @@ class MailTemplateType {
     const { type, id, name } = this.data;
     const codePrefix = type === 'organization' ? 'organization' : 'global';
     this.code = `${codePrefix}.mailtemplate`;
-    this.values = { name: name || 'Choerodon' };
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
     this.type = type;
     this.orgId = id;
     this.orgName = name;
@@ -163,6 +165,7 @@ export default class MailTemplate extends Component {
   handleDelete(record) {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: 'mailtemplate.delete.owntitle' }),
       content: intl.formatMessage({ id: 'mailtemplate.delete.owncontent' }, {
         name: record.name,
@@ -182,25 +185,6 @@ export default class MailTemplate extends Component {
         });
       },
     });
-  }
-
-
-  renderBuiltIn = (isPredefined) => {
-    if (isPredefined) {
-      return (
-        <div>
-          <Icon type="settings" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id="mailtemplate.predefined" />
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Icon type="av_timer" style={{ verticalAlign: 'text-bottom' }} />
-          <FormattedMessage id="mailtemplate.selfdefined" />
-        </div>
-      );
-    }
   }
 
   // 跳转至创建页
@@ -294,7 +278,12 @@ export default class MailTemplate extends Component {
       dataIndex: 'isPredefined',
       key: 'isPredefined',
       width: '30%',
-      render: isPredefined => this.renderBuiltIn(isPredefined),
+      render: isPredefined => (
+        <StatusTag
+          mode="icon"
+          name={intl.formatMessage({ id: isPredefined ? 'predefined' : 'custom' })}
+          colorCode={isPredefined ? 'PREDEFINE' : 'CUSTOM'}
+        />),
       filteredValue: filters.isPredefined || [],
       filters: [{
         text: intl.formatMessage({ id: 'mailtemplate.predefined' }),
@@ -333,7 +322,7 @@ export default class MailTemplate extends Component {
             action: this.handleDelete.bind(this, record),
           });
         }
-        return <Action data={actionsDatas} />;
+        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
       },
     }];
 

@@ -5,15 +5,15 @@
   }
 
   .enabled {
-    color: #1ab16f;
+    color: #00bfa5;
   }
 
   .disabled {
-    color: #F44336;
+    color: #f44336;
   }
 
   .end {
-    color: #FFB100;
+    color: #ffb100;
   }
 }
 
@@ -38,6 +38,11 @@
       &-select {
         margin-top: 13px;
       }
+    }
+    &-set-task {
+      width: 260px;
+      display: inline-block;
+      margin-right: 42px;
     }
 
     div.c7n-create-task-inline-formitem {
@@ -86,6 +91,18 @@
       margin-right: 22px;
     }
   }
+
+  &-empty {
+    a:link {
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    a:visited {
+      text-decoration: none;
+    }
+  }
 }
 
 .c7n-task-detail-popover {
@@ -128,10 +145,3 @@
   z-index: 10;
   transform: translateY(-50%);
 }
-
-
-
-
-
-
-

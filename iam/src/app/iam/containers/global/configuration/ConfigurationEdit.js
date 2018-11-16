@@ -94,6 +94,7 @@ class EditConfig extends Component {
         disabled
         style={{ width: '512px' }}
         label={<FormattedMessage id={`${intlPrefix}.template`} />}
+        getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
         filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         filter
       >
@@ -229,6 +230,7 @@ class EditConfig extends Component {
               <Select
                 disabled
                 style={{ width: inputWidth }}
+                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
                 label={<FormattedMessage id={`${intlPrefix}.service`} />}
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 filter

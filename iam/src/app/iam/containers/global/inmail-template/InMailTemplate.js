@@ -15,6 +15,7 @@ import {
 import InMailTemplateStore from '../../../stores/global/inmail-template';
 import './InMailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import '../../../common/ConfirmModal.scss';
 
 // 公用方法类
 class MailTemplateType {
@@ -25,7 +26,7 @@ class MailTemplateType {
     const { type, id, name } = this.data;
     const codePrefix = type === 'organization' ? 'organization' : 'global';
     this.code = `${codePrefix}.inmailtemplate`;
-    this.values = { name: name || 'Choerodon' };
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
     this.type = type;
     this.orgId = id;
     this.orgName = name;
@@ -162,6 +163,7 @@ export default class InMailTemplate extends Component {
   handleDelete(record) {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: 'inmailtemplate.delete.owntitle' }),
       content: intl.formatMessage({ id: 'inmailtemplate.delete.owncontent' }, {
         name: record.name,
@@ -351,7 +353,7 @@ export default class InMailTemplate extends Component {
             action: this.handleDelete.bind(this, record),
           });
         }
-        return <Action data={actionsDatas} />;
+        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
       },
     }];
 

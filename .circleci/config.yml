@@ -13,7 +13,8 @@ jobs:
       - checkout
       - run: |
             cd iam && npm install -registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ && cd ..
-            python ./iam/node_modules/choerodon-front-boot/structure/configAuto.py iam
+            python ./iam/node_modules/choerodon-front-boot/structure/menu/__init__.py -o yml -m iam
+            python ./iam/node_modules/choerodon-front-boot/structure/dashboard/__init__.py -o yml -m iam
             cd iam
             chmod -R 777 node_modules
             npm run build
@@ -21,7 +22,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - config.yml
+            - menu.yml
+            - dashboard.yml
             - iam/dist
             - iam/node_modules/choerodon-front-boot/structure
   docker_build:

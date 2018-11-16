@@ -7,6 +7,7 @@ import SagaImg from '../saga/SagaImg';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
 import './style/saga-instance.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
 
 const intlPrefix = 'global.saga-instance';
 const { Sidebar } = Modal;
@@ -23,6 +24,7 @@ export default class SagaInstance extends Component {
 
   getInitState() {
     return {
+      data: '',
       visible: false,
       pagination: {
         current: 1,
@@ -124,48 +126,6 @@ export default class SagaInstance extends Component {
     });
   }
 
-  renderStatus(status) {
-    let obj = {};
-    switch (status) {
-      case 'RUNNING':
-        obj = {
-          icon: 'timelapse',
-          value: '运行中',
-          color: '#1f78d1',
-        };
-        break;
-      case 'FAILED':
-        obj = {
-          icon: 'cancel',
-          value: '失败',
-          color: '#f44336',
-        };
-        break;
-      case 'NON_CONSUMER':
-      case 'COMPLETED':
-        obj = {
-          icon: 'check_circle',
-          value: '完成',
-          color: '#00bfa5',
-        };
-        break;
-      default:
-        break;
-    }
-    return (
-      <span>
-        <Icon
-          type={obj.icon}
-          style={{
-            paddingRight: '6px',
-            verticalAlign: 'top',
-            color: `${obj.color}`,
-          }}
-        />{obj.value}
-      </span>
-    );
-  }
-
   renderTable() {
     const { intl } = this.props;
     const { filters, activeTab } = this.state;
@@ -180,7 +140,7 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id={`${intlPrefix}.status`} />,
         key: 'status',
         dataIndex: 'status',
-        render: status => this.renderStatus(status),
+        render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
         filters: activeTab === 'all' ? [{
           value: 'RUNNING',
           text: '运行中',
@@ -188,7 +148,7 @@ export default class SagaInstance extends Component {
           value: 'FAILED',
           text: '失败',
         }, {
-          value: 'COMPLETED',
+          value: 'COMPLETED' || 'NON_CONSUMER',
           text: '完成',
         }] : null,
         filteredValue: (activeTab === 'all' && filters.status) || [],
@@ -271,6 +231,7 @@ export default class SagaInstance extends Component {
 
   render() {
     const { data, activeTab } = this.state;
+    const { AppState } = this.props;
     return (
       <Page
         className="c7n-saga-instance"
@@ -289,6 +250,7 @@ export default class SagaInstance extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <div className="c7n-saga-instance-btns">
             <span className="text">
@@ -317,6 +279,7 @@ export default class SagaInstance extends Component {
             <Content
               className="sidebar-content"
               code={`${intlPrefix}.detail`}
+              values={{ name: data.id }}
             >
               <SagaImg data={data} instance />
             </Content>

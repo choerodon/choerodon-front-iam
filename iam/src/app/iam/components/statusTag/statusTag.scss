@@ -5,23 +5,40 @@
   border-radius: 2px;
   text-align: center;
   padding: 0 2px;
-
+  > span {
+    vertical-align: middle;
+  }
   div {
     transform: scale(0.8);
   }
   &-with-icon {
     color: #000;
+    > span {
+      vertical-align: middle;
+    }
     i {
       padding-right: 6px;
-      vertical-align: top;
+      vertical-align: middle;
     }
 
     .icon-check_circle {
-      color: #1ab16f;
+      color: #00bfa5;
     }
 
     .icon-remove_circle {
+      color: #d3d3d3;
+    }
+
+    .icon-state_over {
+      color: #ffb100;
+    }
+
+    .icon-cancel {
       color: #f44336;
+    }
+
+    .icon-timelapse {
+      color: #1f78d1;
     }
   }
 }

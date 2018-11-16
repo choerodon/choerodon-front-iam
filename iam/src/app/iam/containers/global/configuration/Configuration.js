@@ -11,6 +11,7 @@ import querystring from 'query-string';
 import ConfigurationStore from '../../../stores/global/configuration';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './Configuration.scss';
+import '../../../common/ConfirmModal.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -185,6 +186,7 @@ export default class Configuration extends Component {
   deleteConfig = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
       onOk: () => {
@@ -242,7 +244,7 @@ export default class Configuration extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { sort: { columnKey, order }, filters, pagination, params } = this.state;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.id`} />,
@@ -325,7 +327,7 @@ export default class Configuration extends Component {
             action: this.setDefaultConfig.bind(this, record.id),
           });
         }
-        return <Action data={actionsDatas} />;
+        return <Action data={actionsDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
       },
     }];
     return (
@@ -357,7 +359,7 @@ export default class Configuration extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {this.filterBar}
           <Table

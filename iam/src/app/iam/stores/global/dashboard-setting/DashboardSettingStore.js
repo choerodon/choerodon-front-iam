@@ -70,6 +70,11 @@ class DashboardSettingStore {
       }));
   }
 
+  dashboardDisable(record) {
+    return axios.post(`/iam/v1/dashboards/${record.id}?update_role=false`, JSON.stringify(Object.assign({}, record, { enabled: !record.enabled })))
+      .then(() => this.loadData());
+  }
+
   @action
   loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params) {
     const { columnKey, order } = sort;
@@ -90,6 +95,7 @@ class DashboardSettingStore {
       name: filters.name,
       code: filters.code,
       level: filters.level,
+      enable: filters.enabled,
       params: params.join(','),
       sort: sorter.join(','),
     })}`)

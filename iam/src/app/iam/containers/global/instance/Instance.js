@@ -170,7 +170,7 @@ export default class Instance extends Component {
 
   render() {
     const { sort: { columnKey, order }, filters, pagination, params } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.id`} />,
       dataIndex: 'instanceId',
@@ -243,7 +243,7 @@ export default class Instance extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Select
             style={{ width: '512px', marginBottom: '32px' }}

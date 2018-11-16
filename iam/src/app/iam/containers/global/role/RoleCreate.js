@@ -167,9 +167,11 @@ export default class CreateRole extends Component {
           RoleStore.createRole(role)
             .then((data) => {
               this.setState({ submitting: false });
-              if (data) {
+              if (data && !data.failed) {
                 Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
                 this.linkToChange('/iam/role');
+              } else {
+                Choerodon.prompt(data.message);
               }
             })
             .catch((errors) => {
@@ -247,7 +249,7 @@ export default class CreateRole extends Component {
 
   render() {
     const { currentPermission, firstLoad, submitting, initLevel } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -274,6 +276,7 @@ export default class CreateRole extends Component {
         />
         <Content
           code={`${intlPrefix}.create`}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <div>
             <Form layout="vertical">

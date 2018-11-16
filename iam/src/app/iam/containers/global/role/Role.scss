@@ -1,11 +1,10 @@
 .c7n-role {
-  &-permission-table{
-    table{
-      table-layout:fixed;
+  &-permission-table {
+    table {
+      table-layout: fixed;
     }
   }
 }
-
 
 .choerodon-role {
   .choerodon-loading {
@@ -34,7 +33,7 @@
     width: 60%;
     overflow: hidden;
   }
-  &-description{
+  &-description {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 40%;
@@ -87,10 +86,6 @@
   .flex-right {
     display: flex;
     justify-content: flex-end;
-  }
-
-  .mt-md {
-    margin-top: 2rem;
   }
 
   .mt-sm {

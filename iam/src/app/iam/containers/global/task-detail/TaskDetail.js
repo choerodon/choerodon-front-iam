@@ -4,14 +4,16 @@ import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row, Spin, InputNumber } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, Action } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../../stores/global/task-detail';
 import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
+import '../../../common/ConfirmModal.scss';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
-const intlPrefix = 'global.taskdetail';
+const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -21,6 +23,35 @@ const Option = Select.Option;
 const { TabPane } = Tabs;
 
 configure({ enforceActions: false });
+
+// 公用方法类
+class TaskDetailType {
+  constructor(context) {
+    this.context = context;
+    const { AppState } = this.context.props;
+    this.data = AppState.currentMenuType;
+    const { type, id, name } = this.data;
+    let codePrefix;
+    switch (type) {
+      case 'organization':
+        codePrefix = 'organization';
+        break;
+      case 'project':
+        codePrefix = 'project';
+        break;
+      case 'site':
+        codePrefix = 'global';
+        break;
+      default:
+        break;
+    }
+    this.code = `${codePrefix}.taskdetail`;
+    this.values = { name: name || AppState.getSiteInfo.systemName || 'Choerodon' };
+    this.type = type;
+    this.id = id; // 项目或组织id
+    this.name = name; // 项目或组织名称
+  }
+}
 
 @Form.create()
 @withRouter
@@ -78,10 +109,20 @@ export default class TaskDetail extends Component {
   }
 
   componentWillMount() {
+    this.initTaskDetail();
     this.loadTaskDetail();
   }
 
+  componentWillUnmount() {
+    TaskDetailStore.setData([]);
+  }
+
+  initTaskDetail() {
+    this.taskdetail = new TaskDetailType(this);
+  }
+
   loadTaskDetail(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.taskdetail;
     const {
       pagination: paginationState,
       sort: sortState,
@@ -94,7 +135,7 @@ export default class TaskDetail extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
-    TaskDetailStore.loadData(pagination, filters, sort, params).then((data) => {
+    TaskDetailStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       TaskDetailStore.setData(data.content);
       this.setState({
         pagination: {
@@ -123,9 +164,10 @@ export default class TaskDetail extends Component {
    * 任务信息
    * @param id 任务ID
    */
-  loadInfo = (id) => {
-    TaskDetailStore.loadInfo(id).then((data) => {
-      if (data.faield) {
+  loadInfo = (taskId) => {
+    const { type, id } = this.taskdetail;
+    TaskDetailStore.loadInfo(taskId, type, id).then((data) => {
+      if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
         TaskDetailStore.setInfo(data);
@@ -138,6 +180,7 @@ export default class TaskDetail extends Component {
 
   // 任务日志列表
   loadLog(paginationIn, filtersIn, sortIn, paramsIn) {
+    const { type, id } = this.taskdetail;
     const {
       logPagination: paginationState,
       logSort: sortState,
@@ -150,7 +193,7 @@ export default class TaskDetail extends Component {
     const logParams = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ logFilters, logLoading: true });
-    TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id).then((data) => {
+    TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id, type, id).then((data) => {
       TaskDetailStore.setLog(data.content);
       this.setState({
         logPagination: {
@@ -184,74 +227,43 @@ export default class TaskDetail extends Component {
   };
 
   /**
-   * 渲染任务明细列表状态列
-   * @param status
-   * @returns {*}
-   */
-  renderStatus(status) {
-    let obj = {};
-    let type;
-    if (status === 'ENABLE') {
-      obj = {
-        key: 'enabled',
-        value: '启用',
-      };
-      type = 'check_circle';
-    } else if (status === 'DISABLE') {
-      obj = {
-        key: 'disabled',
-        value: '停用',
-      };
-      type = 'remove_circle';
-    } else {
-      obj = {
-        key: 'end',
-        value: '结束',
-      };
-      type = 'state_over';
-    }
-
-    return (
-      <span className="c7n-task-container-status">
-        <Icon type={type} className={`${obj.key}`} />
-        <span>{obj.value}</span>
-      </span>
-    );
-  }
-
-  /**
    * 渲染任务明细列表启停用按钮
    * @param record 表格行数据
    * @returns {*}
    */
   showActionButton(record) {
+    const { enableService, disableService } = this.getPermission();
     if (record.status === 'ENABLE') {
       return (
-        <Tooltip
-          title={<FormattedMessage id="disable" />}
-          placement="bottom"
-        >
-          <Button
-            size="small"
-            icon="remove_circle_outline"
-            shape="circle"
-            onClick={this.handleAble.bind(this, record)}
-          />
-        </Tooltip>
+        <Permission service={disableService}>
+          <Tooltip
+            title={<FormattedMessage id="disable" />}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="remove_circle_outline"
+              shape="circle"
+              onClick={this.handleAble.bind(this, record)}
+            />
+          </Tooltip>
+        </Permission>
       );
     } else if (record.status === 'DISABLE') {
       return (
-        <Tooltip
-          title={<FormattedMessage id="enable" />}
-          placement="bottom"
-        >
-          <Button
-            size="small"
-            icon="finished"
-            shape="circle"
-            onClick={this.handleAble.bind(this, record)}
-          />
-        </Tooltip>
+        <Permission service={disableService}>
+          <Tooltip
+            title={<FormattedMessage id="enable" />}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="finished"
+              shape="circle"
+              onClick={this.handleAble.bind(this, record)}
+            />
+          </Tooltip>
+        </Permission>
       );
     } else {
       return (
@@ -273,7 +285,7 @@ export default class TaskDetail extends Component {
     const { id, objectVersionNumber } = record;
     const { intl } = this.props;
     const status = record.status === 'ENABLE' ? 'disable' : 'enable';
-    TaskDetailStore.ableTask(id, objectVersionNumber, status).then((data) => {
+    TaskDetailStore.ableTask(id, objectVersionNumber, status, this.taskdetail.type, this.taskdetail.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -291,10 +303,12 @@ export default class TaskDetail extends Component {
    */
   handleDelete = (record) => {
     const { intl } = this.props;
+    const { type, id } = this.taskdetail;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
-      onOk: () => TaskDetailStore.deleteTask(record.id).then(({ failed, message }) => {
+      onOk: () => TaskDetailStore.deleteTask(record.id, type, id).then(({ failed, message }) => {
         if (failed) {
           Choerodon.prompt(message);
         } else {
@@ -361,6 +375,7 @@ export default class TaskDetail extends Component {
     }
   }
 
+
   // 关闭侧边栏
   handleCancel = () => {
     this.setState({
@@ -411,7 +426,7 @@ export default class TaskDetail extends Component {
   // 获取对应服务名的类名
   loadClass = () => {
     const { currentService } = TaskDetailStore;
-    TaskDetailStore.loadClass(currentService.name).then((data) => {
+    TaskDetailStore.loadClass(currentService.name, this.taskdetail.type, this.taskdetail.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else if (data.length) {
@@ -435,8 +450,9 @@ export default class TaskDetail extends Component {
       paramsLoading: true,
     });
     const { currentClassNames } = TaskDetailStore;
+    const { type, id } = this.taskdetail;
     if (currentClassNames.id) {
-      TaskDetailStore.loadParams(currentClassNames.id).then((data) => {
+      TaskDetailStore.loadParams(currentClassNames.id, type, id).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -481,7 +497,8 @@ export default class TaskDetail extends Component {
    */
   checkName = (rule, value, callback) => {
     const { intl } = this.props;
-    TaskDetailStore.checkName(value).then(({ failed }) => {
+    const { type, id } = this.taskdetail;
+    TaskDetailStore.checkName(value, type, id).then(({ failed }) => {
       if (failed) {
         callback(intl.formatMessage({ id: `${intlPrefix}.task.name.exist` }));
       } else {
@@ -492,6 +509,7 @@ export default class TaskDetail extends Component {
 
   checkCron = () => {
     const { getFieldValue } = this.props.form;
+    const { type, id } = this.taskdetail;
     const cron = getFieldValue('cronExpression');
     if (this.state.currentCron === cron) return;
     this.setState({
@@ -506,7 +524,7 @@ export default class TaskDetail extends Component {
         cronLoading: true,
       });
 
-      TaskDetailStore.checkCron(cron).then((data) => {
+      TaskDetailStore.checkCron(cron, type, id).then((data) => {
         if (data.failed) {
           this.setState({
             cronLoading: false,
@@ -557,6 +575,7 @@ export default class TaskDetail extends Component {
     e.preventDefault();
     if (this.state.selectType === 'create') {
       const { intl } = this.props;
+      const { type, id } = this.taskdetail;
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (values.methodId === 'empty') {
           Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.noprogram` }));
@@ -580,7 +599,7 @@ export default class TaskDetail extends Component {
             simpleRepeatIntervalUnit: flag ? simpleRepeatIntervalUnit : null,
             simpleRepeatCount: flag ? Number(simpleRepeatCount) : null,
           };
-          TaskDetailStore.createTask(body).then(({ failed, message }) => {
+          TaskDetailStore.createTask(body, type, id).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
               this.setState({
@@ -720,11 +739,16 @@ export default class TaskDetail extends Component {
 
   getCronContent = () => {
     const { cronLoading, cronTime } = this.state;
+    const { intl } = this.props;
     let content;
     if (cronLoading === 'empty') {
       content = (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          请填写cron表达式
+        <div className="c7n-task-deatil-cron-container-empty">
+          <FormattedMessage id={`${intlPrefix}.cron.tip`} />
+          <a href={intl.formatMessage({ id: `${intlPrefix}.cron.tip.link` })} target="_blank">
+            <span>{intl.formatMessage({ id: 'learnmore' })}</span>
+            <Icon type="open_in_new" style={{ fontSize: '13px' }} />
+          </a>
         </div>
       );
     } else if (cronLoading === true) {
@@ -735,10 +759,10 @@ export default class TaskDetail extends Component {
     } else if (cronLoading === 'right') {
       content = (
         <div className="c7n-task-deatil-cron-container">
-          <span>示例</span>
+          <FormattedMessage id={`${intlPrefix}.cron.example`} />
           {
             cronTime.map((value, key) => (
-              <li><span>第{key + 1}次执行时间:</span><span>{value}</span></li>
+              <li><FormattedMessage id={`${intlPrefix}.cron.runtime`} values={{ time: key + 1 }} /><span>{value}</span></li>
             ))
           }
         </div>
@@ -746,7 +770,7 @@ export default class TaskDetail extends Component {
     } else {
       content = (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          cron表达式错误，请重新输入
+          <FormattedMessage id={`${intlPrefix}.cron.wrong`} />
         </div>
       );
     }
@@ -756,7 +780,7 @@ export default class TaskDetail extends Component {
   // 渲染创建任务
   renderCreateContent() {
     const { triggerType } = this.state;
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const inputWidth = '512px';
     const service = TaskDetailStore.service;
@@ -862,8 +886,8 @@ export default class TaskDetail extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.create`}
-        values={{ name: process.env.HEADER_TITLE_NAME || 'Choerodon' }}
+        code={`${this.taskdetail.code}.create`}
+        values={{ name: `${this.taskdetail.values.name || 'Choerodon'}` }}
       >
         <div>
           <Form
@@ -924,6 +948,7 @@ export default class TaskDetail extends Component {
                   disabledDate={this.disabledStartDate}
                   disabledTime={this.disabledDateStartTime}
                   showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
                   onChange={this.onStartChange}
                   onOpenChange={this.clearStartTimes}
                 />,
@@ -943,6 +968,7 @@ export default class TaskDetail extends Component {
                   disabledDate={this.disabledEndDate.bind(this)}
                   disabledTime={this.disabledDateEndTime.bind(this)}
                   showTime={{ defaultValue: moment() }}
+                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
                   onChange={this.onEndChange}
                   onOpenChange={this.clearEndTimes}
                 />,
@@ -965,43 +991,46 @@ export default class TaskDetail extends Component {
               )}
             </FormItem>
             <div style={{ display: triggerType === 'easy' ? 'block' : 'none' }}>
-              <FormItem
-                {...formItemLayout}
+              <div className="c7n-create-task-set-task">
+                <FormItem
+                  {...formItemLayout}
+                  className="c7n-create-task-inline-formitem"
+                >
+                  {getFieldDecorator('simpleRepeatInterval', {
+                    rules: [{
+                      required: triggerType === 'easy',
+                      message: intl.formatMessage({ id: `${intlPrefix}.repeat.required` }),
+                    }, {
+                      pattern: /^[1-9]\d*$/,
+                      message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
+                    }],
+                    validateFirst: true,
+                  })(
+                    <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  className="c7n-create-task-inline-formitem c7n-create-task-inline-formitem-select"
+                >
+                  {getFieldDecorator('simpleRepeatIntervalUnit', {
+                    rules: [],
+                    initialValue: 'SECONDS',
+                  })(
+                    <Select
+                      style={{ width: '124px' }}
+                      getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    >
+                      <Option value="SECONDS">秒</Option>
+                      <Option value="MINUTES">分</Option>
+                      <Option value="HOURS">时</Option>
+                      <Option value="DAYS">天</Option>
+                    </Select>,
+                  )}
+                </FormItem>
+              </div>
+              <FormItem 
                 className="c7n-create-task-inline-formitem"
-              >
-                {getFieldDecorator('simpleRepeatInterval', {
-                  rules: [{
-                    required: triggerType === 'easy',
-                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.required` }),
-                  }, {
-                    pattern: /^[1-9]\d*$/,
-                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
-                  }],
-                  validateFirst: true,
-                })(
-                  <Input style={{ width: '318px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
-                )}
-              </FormItem>
-              <FormItem
-                {...formItemLayout}
-                className="c7n-create-task-inline-formitem c7n-create-task-inline-formitem-select"
-              >
-                {getFieldDecorator('simpleRepeatIntervalUnit', {
-                  rules: [],
-                  initialValue: 'SECONDS',
-                })(
-                  <Select
-                    style={{ width: '176px' }}
-                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                  >
-                    <Option value="SECONDS">秒</Option>
-                    <Option value="MINUTES">分</Option>
-                    <Option value="HOURS">时</Option>
-                    <Option value="DAYS">天</Option>
-                  </Select>,
-                )}
-              </FormItem>
-              <FormItem
                 {...formItemLayout}
               >
                 {getFieldDecorator('simpleRepeatCount', {
@@ -1013,7 +1042,7 @@ export default class TaskDetail extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
                   }],
                 })(
-                  <Input style={{ width: inputWidth }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
+                  <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
                 )}
               </FormItem>
             </div>
@@ -1031,7 +1060,13 @@ export default class TaskDetail extends Component {
                   <Input style={{ width: inputWidth }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.cron.expression`} />} />,
                 )}
               </FormItem>
-              <Popover content={this.getCronContent()} trigger="click" placement="bottom" overlayClassName="c7n-task-detail-popover">
+              <Popover
+                content={this.getCronContent()}
+                trigger="click"
+                placement="bottom"
+                overlayClassName="c7n-task-detail-popover"
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+              >
                 <Icon
                   onClick={this.checkCron}
                   style={{ display: triggerType === 'cron' ? 'inline-block' : 'none' }}
@@ -1126,8 +1161,7 @@ export default class TaskDetail extends Component {
   // 渲染任务详情
   renderDetailContent() {
     const { intl: { formatMessage } } = this.props;
-    const { selectType, showLog } = this.state;
-    const { logFilters, logParams, logPagination, logLoading } = this.state;
+    const { selectType, showLog, logFilters, logParams, logPagination, logLoading } = this.state;
     const info = TaskDetailStore.info;
     let unit;
     switch (info.simpleRepeatIntervalUnit) {
@@ -1169,7 +1203,7 @@ export default class TaskDetail extends Component {
       value: info.triggerType === 'simple-trigger' ? `${info.simpleRepeatInterval}${unit}` : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.time` }),
-      value: info.simpleRepeatCount + 1,
+      value: info.simpleRepeatCount,
     }, {
       key: formatMessage({ id: `${intlPrefix}.last.execution.time` }),
       value: info.lastExecTime,
@@ -1233,7 +1267,7 @@ export default class TaskDetail extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${intlPrefix}.detail`}
+        code={`${this.taskdetail.code}.detail`}
         values={{ name: info.name }}
       >
         <Tabs activeKey={showLog ? 'log' : 'info'} onChange={this.handleTabChange}>
@@ -1274,22 +1308,67 @@ export default class TaskDetail extends Component {
     );
   }
 
+  // 页面权限
+  getPermission() {
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    let createService = ['asgard-service.schedule-task-site.create'];
+    let enableService = ['asgard-service.schedule-task-site.enable'];
+    let disableService = ['asgard-service.schedule-task-site.disable'];
+    let deleteService = ['asgard-service.schedule-task-site.delete'];
+    let detailService = ['asgard-service.schedule-task-site.getTaskDetail'];
+    if (type === 'organization') {
+      createService = ['asgard-service.schedule-task-org.create'];
+      enableService = ['asgard-service.schedule-task-org.enable'];
+      disableService = ['asgard-service.schedule-task-org.disable'];
+      deleteService = ['asgard-service.schedule-task-org.delete'];
+      detailService = ['asgard-service.schedule-task-org.getTaskDetail'];
+    } else if (type === 'project') {
+      createService = ['asgard-service.schedule-task-project.create'];
+      enableService = ['asgard-service.schedule-task-project.enable'];
+      disableService = ['asgard-service.schedule-task-project.disable'];
+      deleteService = ['asgard-service.schedule-task-project.delete'];
+      detailService = ['asgard-service.schedule-task-project.getTaskDetail'];
+    }
+    return {
+      createService,
+      enableService,
+      disableService,
+      deleteService,
+      detailService,
+    };
+  }
+
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
+    const { deleteService, detailService } = this.getPermission();
     const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
+    const { createService } = this.getPermission();
     const TaskData = TaskDetailStore.getData.slice();
     const columns = [{
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
+      width: '20%',
       filters: [],
       filteredValue: filters.name || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id="description" />,
+      width: '20%',
       dataIndex: 'description',
       key: 'description',
       filters: [],
       filteredValue: filters.description || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.last.execution.time`} />,
       dataIndex: 'lastExecTime',
@@ -1304,16 +1383,16 @@ export default class TaskDetail extends Component {
       key: 'status',
       filters: [{
         value: 'ENABLE',
-        text: '启用',
+        text: intl.formatMessage({ id: 'enable' }),
       }, {
         value: 'DISABLE',
-        text: '停用',
+        text: intl.formatMessage({ id: 'disable' }),
       }, {
         value: 'FINISHED',
-        text: '结束',
+        text: intl.formatMessage({ id: 'finished' }),
       }],
       filteredValue: filters.status || [],
-      render: status => this.renderStatus(status),
+      render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
     }, {
       title: '',
       key: 'action',
@@ -1321,58 +1400,86 @@ export default class TaskDetail extends Component {
       width: '130px',
       render: (text, record) => (
         <div>
-          <Tooltip
-            title={<FormattedMessage id="detail" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="find_in_page"
-              shape="circle"
-              onClick={this.handleOpen.bind(this, 'detail', record)}
-            />
-          </Tooltip>
+          <Permission service={detailService}>
+            <Tooltip
+              title={<FormattedMessage id="detail" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="find_in_page"
+                shape="circle"
+                onClick={this.handleOpen.bind(this, 'detail', record)}
+              />
+            </Tooltip>
+          </Permission>
           {this.showActionButton(record)}
-          <Tooltip
-            title={<FormattedMessage id="delete" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="delete_forever"
-              shape="circle"
-              onClick={this.handleDelete.bind(this, record)}
-            />
-          </Tooltip>
+          <Permission service={deleteService}>
+            <Tooltip
+              title={<FormattedMessage id="delete" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="delete_forever"
+                shape="circle"
+                onClick={this.handleDelete.bind(this, record)}
+              />
+            </Tooltip>
+          </Permission>
         </div>
       ),
     }];
     return (
       <Page
         service={[
-          'asgard-service.schedule-task.pagingQuery',
-          'asgard-service.schedule-task.create',
-          'asgard-service.schedule-task.check',
-          'asgard-service.schedule-task.cron',
-          'asgard-service.schedule-task.getTaskDetail',
-          'asgard-service.schedule-task.delete',
-          'asgard-service.schedule-task.disable',
-          'asgard-service.schedule-task.enable',
-          'asgard-service.schedule-task-instance.pagingQueryByTaskId',
-          'asgard-service.schedule-method.getMethodByService',
-          'asgard-service.schedule-method.pagingQuery',
+          'asgard-service.schedule-task-site.pagingQuery',
+          'asgard-service.schedule-task-org.pagingQuery',
+          'asgard-service.schedule-task-project.pagingQuery',
+          'asgard-service.schedule-task-site.create',
+          'asgard-service.schedule-task-org.create',
+          'asgard-service.schedule-task-project.create',
+          'asgard-service.schedule-task-site.enable',
+          'asgard-service.schedule-task-org.enable',
+          'asgard-service.schedule-task-project.enable',
+          'asgard-service.schedule-task-site.disable',
+          'asgard-service.schedule-task-org.disable',
+          'asgard-service.schedule-task-project.disable',
+          'asgard-service.schedule-task-site.delete',
+          'asgard-service.schedule-task-org.delete',
+          'asgard-service.schedule-task-project.delete',
+          'asgard-service.schedule-task-site.getTaskDetail',
+          'asgard-service.schedule-task-org.getTaskDetail',
+          'asgard-service.schedule-task-project.getTaskDetail',
+          'asgard-service.schedule-task-site.check',
+          'asgard-service.schedule-task-org.check',
+          'asgard-service.schedule-task-project.check',
+          'asgard-service.schedule-task-site.cron',
+          'asgard-service.schedule-task-org.cron',
+          'asgard-service.schedule-task-project.cron',
+          'asgard-service.schedule-task-instance-site.pagingQueryByTaskId',
+          'asgard-service.schedule-task-instance-org.pagingQueryByTaskId',
+          'asgard-service.schedule-task-instance-project.pagingQueryByTaskId',
+          'asgard-service.schedule-method-site.getMethodByService',
+          'asgard-service.schedule-method-org.getMethodByService',
+          'asgard-service.schedule-method-project.getMethodByService',
+          'asgard-service.schedule-method-site.pagingQuery',
+          'asgard-service.schedule-method-org.pagingQuery',
+          'asgard-service.schedule-method-project.pagingQuery',
           'manager-service.service.pageAll',
         ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
-          <Button
-            icon="playlist_add"
-            onClick={this.handleOpen.bind(this, 'create')}
-          >
-            <FormattedMessage id={`${intlPrefix}.create.service`} />
-          </Button>
+          <Permission service={createService}>
+            <Button
+              icon="playlist_add"
+              onClick={this.handleOpen.bind(this, 'create')}
+            >
+              <FormattedMessage id={`${intlPrefix}.create`} />
+            </Button>
+          </Permission>
           <Button
             icon="refresh"
             onClick={this.handleRefresh}
@@ -1381,7 +1488,8 @@ export default class TaskDetail extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
+          code={this.taskdetail.code}
+          values={{ name: `${this.taskdetail.values.name || 'Choerodon'}` }}
         >
           <Table
             loading={loading}

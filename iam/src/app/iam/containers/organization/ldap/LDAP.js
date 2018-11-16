@@ -8,6 +8,7 @@ import { inject, observer } from 'mobx-react';
 import TestLdap from './TestLdap';
 import LoadingBar from '../../../components/loadingBar/index';
 import './LDAP.scss';
+import '../../../common/ConfirmModal.scss';
 
 const Sidebar = Modal.Sidebar;
 const RadioGroup = Radio.Group;
@@ -204,6 +205,7 @@ export default class LDAP extends Component {
     const ldapData = LDAPStore.getLDAPData;
     if (ldapData.enabled) {
       Modal.confirm({
+        className: 'c7n-iam-confirm-modal',
         title: intl.formatMessage({ id: `${intlPrefix}.disable.title` }),
         content: intl.formatMessage({ id: `${intlPrefix}.disable.content` }),
         onOk: () => LDAPStore.disabledLdap(organizationId, ldapData.id).then((data) => {
@@ -309,6 +311,7 @@ export default class LDAP extends Component {
         onRef={(node) => {
           this.TestLdap = node;
         }}
+        onAbort={() => { this.closeSidebar(); this.getSyncInfo(); }}
       />
     );
   }

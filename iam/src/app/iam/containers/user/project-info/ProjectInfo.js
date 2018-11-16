@@ -70,7 +70,7 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
-      width: 300,
+      width: '25%',
       render: (text, record) => {
         let icon = '';
         if ('organizationId' in record) {
@@ -79,7 +79,7 @@ export default class ProjectInfo extends Component {
           icon = 'person';
         }
         return (
-          <MouseOverWrapper text={text} width={0.28} className={'c7n-pro-info-proname'}>
+          <MouseOverWrapper text={text} width={0.2} className={'c7n-pro-info-proname'}>
             <Icon type={icon} style={{ verticalAlign: 'text-bottom' }} /> {text}
           </MouseOverWrapper>
         );
@@ -88,9 +88,9 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id="code" />,
       dataIndex: 'code',
       key: 'code',
-      width: 300,
+      width: '30%',
       render: text => (
-        <MouseOverWrapper text={text} width={0.2}>
+        <MouseOverWrapper text={text} width={0.25}>
           {text}
         </MouseOverWrapper>
       ),
@@ -98,7 +98,7 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id={`${intlPrefix}.belongorg`} />,
       dataIndex: 'organizationName',
       key: 'organizationName',
-      width: 300,
+      width: '25%',
       render: text => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
@@ -108,12 +108,13 @@ export default class ProjectInfo extends Component {
       title: <FormattedMessage id="type" />,
       dataIndex: 'type',
       key: 'type',
+      width: '10%',
       render: (text, record) => (
         'organizationId' in record ? '项目' : '角色'
       ),
     }, {
       title: '',
-      width: 100,
+      width: '10%',
       key: 'action',
       align: 'right',
       render: (text, record) => {
@@ -162,7 +163,12 @@ export default class ProjectInfo extends Component {
     let proId;
 
     return (
-      <Page>
+      <Page
+        service={[
+          'iam-service.user.listProjectAndRoleById',
+          'iam-service.role.listPermissionById',
+        ]}
+      >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button
             onClick={this.handleRefresh}

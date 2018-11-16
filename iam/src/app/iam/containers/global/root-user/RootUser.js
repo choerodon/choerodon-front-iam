@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import RootUserStore from '../../../stores/global/root-user/RootUserStore';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import StatusTag from '../../../components/statusTag';
+import '../../../common/ConfirmModal.scss';
 
 const { Sidebar } = Modal;
 const intlPrefix = 'global.rootuser';
@@ -107,6 +108,7 @@ export default class RootUser extends Component {
   handleDelete = (record) => {
     const { intl } = this.props;
     Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.remove.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.remove.content` }, {
         name: record.realName,
@@ -176,7 +178,7 @@ export default class RootUser extends Component {
         title: <FormattedMessage id={`${intlPrefix}.status.enabled`} />,
         key: 'enabled',
         dataIndex: 'enabled',
-        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'FAILED'} />),
+        render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
         filters: [{
           text: intl.formatMessage({ id: 'enable' }),
           value: 'true',
@@ -282,6 +284,7 @@ export default class RootUser extends Component {
         </Header>
         <Content
           code={intlPrefix}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           {this.renderTable()}
           <Sidebar
@@ -296,6 +299,7 @@ export default class RootUser extends Component {
             <Content
               className="sidebar-content"
               code={`${intlPrefix}.add`}
+              values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
             >
               <Form layout="vertical">
                 <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`} />} style={{ marginTop: '-15px' }} form={form} />

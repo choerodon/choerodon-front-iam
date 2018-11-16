@@ -1,4 +1,4 @@
-const docServer = 'http://v0-10.choerodon.io/zh/docs';
+const docServer = 'http://v0-11.choerodon.io/zh/docs';
 
 const pageDetail = {
   // menusetting
@@ -34,17 +34,21 @@ const pageDetail = {
   'global.rootuser.add.link': `${docServer}/user-guide/system-configuration/platform/rootuser/`,
 
   // 角色分配
-  'global.memberrole.title': '平台"{name}"的角色分配',
-  'global.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
+  'global.memberrole.title': '向成员分配平台"{name}"的角色',
+  'global.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',
   'global.memberrole.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  'global.memberrole.add.title': '在平台"{name}"中添加成员角色',
-  'global.memberrole.add.description': '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
+  'global.memberrole.add.title': '向平台"{name}"添加成员的角色',
+  'global.memberrole.add.description': '请先选择成员类型，在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
   'global.memberrole.add.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  'global.memberrole.modify.title': '对成员"{name}"的角色进行修改',
-  'global.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
+  'global.memberrole.modify.title': '对用户"{name}"进行角色修改',
+  'global.memberrole.modify.description': '您可以在此增删改此用户在平台层的角色。',
   'global.memberrole.modify.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
+
+  'global.memberrole.modify.client.title': '对客户端"{name}"进行角色修改',
+  'global.memberrole.modify.client.description': '您可以在此增删改此客户端在平台层的角色。',
+  'global.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
   'global.memberrole.upload.description': '您可以在此将文件中的角色信息导入到平台中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
   'global.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
@@ -237,6 +241,7 @@ const pageDetail = {
   'global.dashboard-setting.modify.link': '',
   'global.dashboard-setting.role': '卡片角色',
   'global.dashboard-setting.open-role': '开启角色控制',
+  'global.dashboard-setting.close-role': '关闭角色控制',
   // 项目管理
   'organization.project.title': '组织"{name}"的项目管理',
   'organization.project.description': '项目是最小粒度的管理层次。您可以在组织下创建项目，则创建的项目属于这个组织。',
@@ -251,17 +256,21 @@ const pageDetail = {
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
   // 组织角色分配
-  'organization.memberrole.title': '组织"{name}"的角色分配',
-  'organization.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
+  'organization.memberrole.title': '向成员分配组织"{name}"的角色',
+  'organization.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',
   'organization.memberrole.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
-  'organization.memberrole.add.title': '在组织"{name}"中添加成员角色',
-  'organization.memberrole.add.description': '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
+  'organization.memberrole.add.title': '向组织"{name}"添加成员的角色',
+  'organization.memberrole.add.description': '请先选择成员类型，在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
   'organization.memberrole.add.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
-  'organization.memberrole.modify.title': '对成员"{name}"的角色进行修改',
-  'organization.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
+  'organization.memberrole.modify.title': '对用户"{name}"进行角色修改',
+  'organization.memberrole.modify.description': '您可以在此增删改此用户在组织层的角色。',
   'organization.memberrole.modify.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
+
+  'organization.memberrole.modify.client.title': '对客户端"{name}"进行角色修改',
+  'organization.memberrole.modify.client.description': '您可以在此增删改此客户端在组织层的角色。',
+  'organization.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
   'organization.memberrole.upload.title': '在组织"{name}"中导入角色',
   'organization.memberrole.upload.description': '您可以在此将文件中的角色信息导入到组织中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
@@ -362,6 +371,33 @@ const pageDetail = {
   'organization.inmailtemplate.modify.description': '由特定事件触发后，系统自动发送站内信给用户，站内信模版统一了用户接收的站内信内容。',
   'organization.inmailtemplate.modify.link': `${docServer}/user-guide/system-configuration/tenant/email-template/`,
 
+  // 任务明细
+  'organization.taskdetail.title': '组织"{name}"的任务明细',
+  'organization.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
+  'organization.taskdetail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+
+  'organization.taskdetail.create.title': '在组织"{name}"中创建任务',
+  'organization.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
+  'organization.taskdetail.create.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+
+  'organization.taskdetail.detail.title': '"{name}"的任务详情',
+  'organization.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
+  'organization.taskdetail.detail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+
+  // 执行记录
+  'organization.execution.title': '组织"{name}"的执行记录',
+  'organization.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
+  'organization.execution.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+
+  // 可执行程序
+  'organization.executable.program.title': '组织"{name}"的可执行程序',
+  'organization.executable.program.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
+  'organization.executable.program.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+
+  'organization.executable.program.class.title': '"{name}"的参数详情',
+  'organization.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
+  'organization.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+
 
   // 项目设置
   'project.info.title': '对项目"{name}"进行项目设置',
@@ -377,17 +413,48 @@ const pageDetail = {
   'organization.pwdpolicy.link': `${docServer}/user-guide/system-configuration/tenant/secret_policy/`,
 
   // 项目角色分配
-  'project.memberrole.title': '项目"{name}"的角色分配',
-  'project.memberrole.description': '角色分配是给成员分配角色。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除成员的角色来控制成员的访问权限。',
+  'project.memberrole.title': '向成员分配项目"{name}"的角色',
+  'project.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',
   'project.memberrole.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
-  'project.memberrole.add.title': '在项目"{name}"中添加成员角色',
-  'project.memberrole.add.description': '请在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
+  'project.memberrole.add.title': '向项目"{name}"添加成员的角色',
+  'project.memberrole.add.description': '请先选择成员类型，在下面输入一个或多个成员，然后为这些成员选择角色，以便授予他们访问权限。您可以分配多个角色。',
   'project.memberrole.add.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
 
-  'project.memberrole.modify.title': '对成员"{name}"的角色进行修改',
-  'project.memberrole.modify.description': '您可以在此为成员删除、添加角色。',
+  'project.memberrole.modify.client.title': '对客户端"{name}"进行角色修改',
+  'project.memberrole.modify.client.description': '您可以在此增删改此客户端在项目层的角色。',
+  'project.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
+
+  'project.memberrole.modify.title': '对用户"{name}"的进行角色修改',
+  'project.memberrole.modify.description': '您可以在此增删改此用户在项目层的角色。',
   'project.memberrole.modify.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
+
+  // 任务调度
+  'project.taskdetail.title': '项目"{name}"的任务明细',
+  'project.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
+  'project.taskdetail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+
+  'project.taskdetail.create.title': '在项目"{name}"中创建任务',
+  'project.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
+  'project.taskdetail.create.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+
+  'project.taskdetail.detail.title': '"{name}"的任务详情',
+  'project.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
+  'project.taskdetail.detail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+
+  // 执行记录
+  'project.execution.title': '项目"{name}"的执行记录',
+  'project.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
+  'project.execution.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+
+  // 可执行程序
+  'project.executable.program.title': '项目"{name}"的可执行程序',
+  'project.executable.program.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
+  'project.executable.program.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+
+  'project.executable.program.class.title': '"{name}"的参数详情',
+  'project.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
+  'project.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
 
 
   // 个人信息
@@ -424,12 +491,21 @@ const pageDetail = {
   'user.permissioninfo.description': '{description}',
   'user.permissioninfo.link': '{link}',
 
+  // 接收设置
+  'user.receive-setting.title': '站内信和邮件接收设置',
+  'user.receive-setting.description': '您可以为你所在每个组织或项目的每一类信息设置接收状态，组织项目状态变化、密码修改等一系列重要消息，建议您务必接收，防止消息遗漏造成损失。',
+  'user.receive-setting.link': `${docServer}/user-guide/system-configuration/person/notify_setting/`,
+  'user.receive-setting.header.title': '接收设置',
+  'user.receive-setting.uncheck-all.title': '确认要全部关闭{name}通知吗？',
+  'user.receive-setting.uncheck-all.content': '组织项目状态变更，密码修改确认等重要通知，建议您务必接收，防止消息遗漏造成损失。',
+
   // 富文本编辑器
   'editor.add.pic': '添加图片',
   'editor.pic.url': '图片URL',
   'editor.view': '浏览',
   'editor.pic.url.required': '请输入图片URL',
   'editor.back.gui': '返回可视化编辑',
+  'editor.preview': '预览区',
 };
 
 /* eslint-disable-next-line */
@@ -471,10 +547,13 @@ const zh_CN = {
   'confirm.delete': '确认删除',
   cancel: '取消',
   refresh: '刷新',
+  reset: '重置',
   detail: '详情',
   enable: '启用',
   disable: '停用',
   baseon: '基于此创建',
+  selectall: '全选',
+  selectnone: '取消全选',
 
   // status
   // success
@@ -504,6 +583,9 @@ const zh_CN = {
   'disable.error': '停用失败',
   'upload.error': '上传失败',
 
+  // finished
+  finished: '结束',
+
   // 统一字段
   name: '名称',
   code: '编码',
@@ -515,6 +597,11 @@ const zh_CN = {
   running: '运行中',
   failed: '失败',
   completed: '完成',
+  non_consumer: '完成',
+  predefined: '预定义',
+  custom: '自定义',
+  email: '邮件',
+  pm: '站内信',
 
   // type
   global: '全局',
@@ -529,6 +616,11 @@ const zh_CN = {
   'global.organization.description': '组织是项目的上一级。通过组织您可以管理项目、用户。您可以创建组织，创建后平台默认您是这个组织的组织管理员。',
   'global.organization.name': '组织名称',
   'global.organization.code': '组织编码',
+  'global.organization.region': '组织所在地',
+  'global.organization.owner.login.name': '组织所有者登录名',
+  'global.organization.owner.user.name': '组织所有者用户名',
+  'global.organization.phone': '手机号码',
+  'global.organization.mailbox': '邮箱',
   'global.organization.status.enabled': '启用状态',
   'global.organization.modify': '修改组织',
   'global.organization.modify.title': '对组织"{name}"进行修改',
@@ -538,9 +630,12 @@ const zh_CN = {
   'global.organization.onlymsg': '组织编码已存在，请输入其他组织编码',
   'global.organization.coderequiredmsg': '请输入组织编码',
   'global.organization.codemaxmsg': '组织编码不能超过15个字符',
-  'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
   'global.organization.namerequiredmsg': '请输入组织名称',
   'global.organization.project.count': '项目数量',
+  'global.organization.detail': '组织信息',
+  'global.organization.detail.title': '查看组织"{name}"的组织信息',
+  'global.organization.detail.description': '您可以在此查看组织和组织管理员的基本信息。',
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',
@@ -577,6 +672,8 @@ const zh_CN = {
   'global.menusetting.menu.withoutpermission': '此菜单无对应权限',
   'global.menusetting.menu.permission': '菜单所具有权限:',
   'global.menusetting.delete.disable.tooltip': '该目录下有菜单，将菜单移空后即可删除目录',
+  'global.menusetting.prompt.inform.title': '离开此页',
+  'global.menusetting.prompt.inform.message': '此页面修改项尚未保存，确定要离开此页面？',
 
   // 角色标签
   'global.rolelabel.header.title': '角色标签',
@@ -633,69 +730,73 @@ const zh_CN = {
   'global.role.level.nothing.msg': '请先选择角色层级',
 
   // 任务明细
-  'global.taskdetail.header.title': '任务明细',
-  'global.taskdetail.create.service': '创建任务',
-  'global.taskdetail.last.execution.time': '上次执行时间',
-  'global.taskdetail.next.execution.time': '下次执行时间',
-  'global.taskdetail.create.header.title': '创建任务',
-  'global.taskdetail.task.name': '任务名称',
-  'global.taskdetail.task.name.required': '请输入任务名称',
-  'global.taskdetail.task.name.exist': '任务名称已存在，请输入其他任务名称',
-  'global.taskdetail.task.description': '任务描述',
-  'global.taskdetail.task.description.required': '请输入任务描述',
-  'global.taskdetail.task.start.time': '开始时间',
-  'global.taskdetail.task.start.time.required': '请输入开始时间',
-  'global.taskdetail.task.end.time': '结束时间',
-  'global.taskdetail.task.end.time.required': '请输入结束时间',
-  'global.taskdetail.trigger.type': '触发类型',
-  'global.taskdetail.easy.task': '简单任务',
-  'global.taskdetail.cron.task': 'Cron任务',
-  'global.taskdetail.cron.expression': 'Cron表达式',
-  'global.taskdetail.cron.expression.required': '请输入Cron表达式',
-  'global.taskdetail.service.required': '请选择服务名',
-  'global.taskdetail.task.class.required': '请选择任务类名',
-  'global.taskdetail.service.name': '服务名',
-  'global.taskdetail.task.class.name': '任务程序',
-  'global.taskdetail.params.name': '参数名称',
-  'global.taskdetail.params.value': '参数值',
-  'global.taskdetail.params.type': '参数类型',
-  'global.taskdetail.params.data': '参数数据',
-  'global.taskdetail.repeat.interval': '重复间隔',
-  'global.taskdetail.repeat.required': '请输入重复间隔',
-  'global.taskdetail.repeat.pattern': '请输入正整数',
-  'global.taskdetail.repeat.time': '执行次数',
-  'global.taskdetail.repeat.time.required': '请输入重复次数',
-  'global.taskdetail.detail.header.title': '任务详情',
-  'global.taskdetail.task.info': '任务信息',
-  'global.taskdetail.task.log': '任务日志',
-  'global.taskdetail.task.status': '状态',
-  'global.taskdetail.instance.id': '实例ID',
-  'global.taskdetail.plan.execution.time': '计划执行时间',
-  'global.taskdetail.actual.execution.time': '实际执行时间',
-  'global.taskdetail.delete.title': '删除任务',
-  'global.taskdetail.delete.content': '确定要删除任务"{name}"吗',
-  'global.taskdetail.noprogram': '无可选任务程序时，无法创建任务',
-  'global.taskdetail.num.required': '请输入数字',
-  'global.taskdetail.default.required': '无默认值时必填',
-
+  'taskdetail.header.title': '任务明细',
+  'taskdetail.create': '创建任务',
+  'taskdetail.last.execution.time': '上次执行时间',
+  'taskdetail.next.execution.time': '下次执行时间',
+  'taskdetail.create.header.title': '创建任务',
+  'taskdetail.task.name': '任务名称',
+  'taskdetail.task.name.required': '请输入任务名称',
+  'taskdetail.task.name.exist': '任务名称已存在，请输入其他任务名称',
+  'taskdetail.task.description': '任务描述',
+  'taskdetail.task.description.required': '请输入任务描述',
+  'taskdetail.task.start.time': '开始时间',
+  'taskdetail.task.start.time.required': '请输入开始时间',
+  'taskdetail.task.end.time': '结束时间',
+  'taskdetail.task.end.time.required': '请输入结束时间',
+  'taskdetail.trigger.type': '触发类型',
+  'taskdetail.easy.task': '简单任务',
+  'taskdetail.cron.task': 'Cron任务',
+  'taskdetail.cron.expression': 'Cron表达式',
+  'taskdetail.cron.expression.required': '请输入Cron表达式',
+  'taskdetail.cron.tip': '请填写Cron表达式, 了解如何填写Cron表达式。',
+  'taskdetail.cron.tip.link': `${docServer}/user-guide/microservice-development/job/cron-expression/`,
+  'taskdetail.cron.example': '示例',
+  'taskdetail.cron.runtime': '第{time}次执行时间:',
+  'taskdetail.cron.wrong': 'Cron表达式错误，请重新输入',
+  'taskdetail.service.required': '请选择服务名',
+  'taskdetail.task.class.required': '请选择任务类名',
+  'taskdetail.service.name': '服务名',
+  'taskdetail.task.class.name': '任务程序',
+  'taskdetail.params.name': '参数名称',
+  'taskdetail.params.value': '参数值',
+  'taskdetail.params.type': '参数类型',
+  'taskdetail.params.data': '参数数据',
+  'taskdetail.repeat.interval': '重复间隔',
+  'taskdetail.repeat.required': '请输入重复间隔',
+  'taskdetail.repeat.pattern': '请输入正整数',
+  'taskdetail.repeat.time': '执行次数',
+  'taskdetail.repeat.time.required': '请输入重复次数',
+  'taskdetail.detail.header.title': '任务详情',
+  'taskdetail.task.info': '任务信息',
+  'taskdetail.task.log': '任务日志',
+  'taskdetail.task.status': '状态',
+  'taskdetail.instance.id': '实例ID',
+  'taskdetail.plan.execution.time': '计划执行时间',
+  'taskdetail.actual.execution.time': '实际执行时间',
+  'taskdetail.delete.title': '删除任务',
+  'taskdetail.delete.content': '确定要删除任务"{name}"吗？',
+  'taskdetail.noprogram': '无可选任务程序时，无法创建任务',
+  'taskdetail.num.required': '请输入数字',
+  'taskdetail.default.required': '无默认值时必填',
 
   // 执行记录
-  'global.execution.header.title': '执行记录',
-  'global.execution.failed.reason': '失败原因',
+  'execution.header.title': '执行记录',
+  'execution.failed.reason': '失败原因',
 
   // 可执行程序
-  'global.executable.program.header.title': '可执行程序',
-  'global.executable.program.code': '程序编码',
-  'global.executable.program.belong.service': '所属微服务',
-  'global.executable.program.name': '程序名',
-  'global.executable.program.online.instance.count': '在线实例数',
-  'global.executable.program.program.header.title': '参数详情',
-  'global.executable.program.params.list': '参数列表',
-  'global.executable.program.params.json': 'JSON',
-  'global.executable.program.params.name': '参数名称',
-  'global.executable.program.params.description': '参数描述',
-  'global.executable.program.params.type': '参数类型',
-  'global.executable.program.params.default': '默认值',
+  'executable.program.header.title': '可执行程序',
+  'executable.program.code': '程序编码',
+  'executable.program.belong.service': '所属微服务',
+  'executable.program.name': '程序名',
+  'executable.program.online.instance.count': '在线实例数',
+  'executable.program.program.header.title': '参数详情',
+  'executable.program.params.list': '参数列表',
+  'executable.program.params.json': 'JSON',
+  'executable.program.params.name': '参数名称',
+  'executable.program.params.description': '参数描述',
+  'executable.program.params.type': '参数类型',
+  'executable.program.params.default': '默认值',
 
   // 微服务管理
   'global.microservice.header.title': '微服务',
@@ -827,6 +928,19 @@ const zh_CN = {
   'global.apitest.authorize': '授权',
   'global.apitest.authorize.title': 'API测试授权认证',
   'global.apitest.authorize.change': '更改授权账号',
+  'global.apitest.code': '权限编码',
+  'global.apitest.method': '请求方式',
+  'global.apitest.url': '路径',
+  'global.apitest.remark': '描述',
+  'global.apitest.action': 'Action',
+  'global.apitest.level': '权限层级',
+  'global.apitest.login.accessible': '是否为登录可访问',
+  'global.apitest.public.permission': '是否为公开权限',
+  'global.apitest.request.format': '请求格式',
+  'global.apitest.response.format': '响应格式',
+  'global.apitest.default.role': '默认角色',
+  'global.apitest.inner': '内部',
+  'global.apitest.outer': '外部',
 
   // 发送设置
   'sendsetting.header.title': '发送设置',
@@ -841,6 +955,9 @@ const zh_CN = {
   'sendsetting.trigger.type': '触发类型',
   'sendsetting.code': '编码',
   'sendsetting.description': '描述',
+  'sendsetting.pmtemplate.type': '站内信类型',
+  'sendsetting.pmtemplate.msg': '消息',
+  'sendsetting.pmtemplate.notice': '通知',
 
   // 消息记录
   'msgrecord.header.title': '消息记录',
@@ -992,11 +1109,39 @@ const zh_CN = {
   'global.dashboard-setting.card.title': '卡片标题',
   'global.dashboard-setting.card.title.required': '请输入卡片标题',
 
+  // 系统设置
+  'global.system-setting.header': '系统设置',
+  'global.system-setting.title': '对平台的自定义设置',
+  'global.system-setting.description': '设置平台的名称、logo、系统默认密码和默认语言，以便于提高您的企业辨识度，个性化定制您的平台',
+  'global.system-setting.file.size.limit': '图标大小不能大于{size}',
+  'global.system-setting.favicon': '平台徽标',
+  'global.system-setting.favicon.error': '请填写您的平台徽标',
+  'global.system-setting.favicon.modifyTitle': '对您的平台徽标进行修改',
+  'global.system-setting.systemName': '平台简称',
+  'global.system-setting.systemName.error': '请填写您的平台简称',
+  'global.system-setting.systemLogo': '平台导航栏图形标',
+  'global.system-setting.systemTitle': '平台全称',
+  'global.system-setting.defaultPassword': '平台默认密码',
+  'global.system-setting.defaultPassword.error': '请填写您的默认密码',
+  'global.system-setting.defaultLanguage': '平台默认语言',
+  'global.system-setting.defaultLanguage.error': '请填写您的默认语言',
+  'global.system-setting.language.zhcn': '简体中文',
+  'global.system-setting.language.enus': 'English',
+  'global.system-setting.favicon.tips': '展示在平台的登录页面，作为贵企业在平台上的标识',
+  'global.system-setting.logo.tips': '企业自己的特示图案，加强品牌的识别，展示在导航栏左边',
+  'global.system-setting.title.tips': '企业平台简称，展示在导航栏右边',
+  'global.system-setting.name.tips': '企业平台全称，显示为网页标题',
+  'global.system-setting.save.success': '保存成功',
+  'global.system-setting.save.conflict': '未进行修改',
+  'global.system-setting.reset.confirm.title': '重置配置',
+  'global.system-setting.reset.confirm.content': '确定要重置系统自定义配置吗？您的自定义配置将被删除。',
+  'global.system-setting.reset': '重置成功',
+  
   // 组织层
   // 项目管理
   'organization.project.code.exist.msg': '项目编码已存在，请输入其他项目编码',
   'organization.project.code.require.msg': '请输入项目编码',
-  'organization.project.code.pattern.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'organization.project.code.pattern.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
   'organization.project.code.length.msg': '项目编码不能超过14个字符',
   'organization.project.create': '创建项目',
   'organization.project.modify': '修改项目',
@@ -1014,6 +1159,8 @@ const zh_CN = {
   'organization.client.delete.content': '确认删除客户端"{name}"吗?',
   'organization.client.name': '客户端名称',
   'organization.client.name.exist.msg': '客户端名称已存在，请输入其他客户端名称',
+  'organization.client.name.pattern.msg': '客户端名称只能由1-12位的数字或字母组成',
+  'organization.client.secret.pattern.msg': '密钥只能由6-16位的数字或字母组成',
   'organization.client.name.require.msg': '请输入客户端名称',
   'organization.client.secret': '密钥',
   'organization.client.secret.require.msg': '请输入密钥',
@@ -1084,6 +1231,8 @@ const zh_CN = {
   'organization.ldap.password.require.msg': '请输入LDAP密码',
   'organization.ldap.address.msg': 'ldap的服务地址为空',
   'organization.ldap.address.require.msg': 'LDAP的服务地址为空，请先填写LDAP信息',
+  'organization.ldap.abort.title': '确认终止',
+  'organization.ldap.abort.content': '您的同步似乎已经超出正常同步的时间，确定要强制终止同步吗？终止之后您可以重新同步。',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',
@@ -1133,6 +1282,7 @@ const zh_CN = {
   'organization.user.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
   'organization.user.addinfo.pattern.msg': '请输入json格式的数据',
   'organization.user.loginname.require.msg': '请输入登录名',
+  'organization.user.loginname.pattern.msg': '登录名只能包含数字和字母',
   'organization.user.realname.require.msg': '请输入用户名',
   'organization.user.email.require.msg': '请输入邮箱',
   'organization.user.email.pattern.msg': '请输入正确的邮箱',
@@ -1178,6 +1328,7 @@ const zh_CN = {
   'user.userinfo.email.pattern.msg': '请输入正确的邮箱',
   'user.userinfo.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
   'user.userinfo.phone': '手机',
+  'user.userinfo.phone.pattern.msg': '请输入正确的手机号',
   'user.userinfo.language': '语言',
   'user.userinfo.language.zhcn': '简体中文',
   'user.userinfo.language.enus': 'English',
@@ -1219,13 +1370,13 @@ const zh_CN = {
   'user.usermsg.header.title': '消息通知',
   'user.usermsg.title': '用户"{name}"的消息通知',
   'user.usermsg.description': '展示你能使用的消息模版发送的特定触发事件，您可以规定对应触发事件所要应用的模版，发送频率等。',
-  'user.usermsg.view': '查看消息',
+  'user.usermsg.view': '查看消息：',
   'user.usermsg.unread': '未读消息',
   'user.usermsg.all': '全部消息',
   'user.usermsg.markread': '标记为已读',
-  'user.usermsg.markreadall': '全部标记为已读',
-  'user.usermsg.empty': '已看完所有通知！',
-  'user.usermsg.allempty': '暂无消息',
+  'user.usermsg.markreadall': '标记为已读',
+  'user.usermsg.empty': '已看完所有',
+  'user.usermsg.allempty': '暂无',
   'user.usermsg.delete.owntitle': '删除消息记录',
   'user.usermsg.delete.owncontent': '确定要删除选中的{count}条记录吗',
   'user.usermsg.nomore': '暂无更多消息',
@@ -1241,7 +1392,10 @@ const zh_CN = {
   'project.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'memberrole.member': '成员',
+  'memberrole.user.require.msg': '必须至少选择一个用户',
+  'memberrole.client.require.msg': '必须至少选择一个客户端',
   'memberrole.role.require.msg': '必须至少选择一个角色',
+  'memberrole.notfound.msg': '没有符合条件的结果',
   'memberrole.role.label': '请选择一个角色',
   'memberrole.remove.select.all.content': '确认移除当前选中的成员下的所有角色?',
   'memberrole.remove.select.content': '确认移除当前选中的成员的这些角色?',
@@ -1257,13 +1411,23 @@ const zh_CN = {
   'memberrole.member.type': '成员类型',
   'memberrole.role': '角色',
   'memberrole.role.disabled.tip': '该角色已停用',
-  'memberrole.rolemember': '角色/成员',
+  'memberrole.rolemember': '角色/登录名',
+  'memberrole.roleclient': '角色/客户端',
   'memberrole.view': '查看方式',
   'memberrole.fileloading.text': '正在上传...',
   'memberrole.uploading.text': '正在导入...',
   'memberrole.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
+  'memberrole.loginname': '登录名',
+  'memberrole.realname': '用户名',
+  'memberrole.type.user': '用户',
+  'memberrole.client': '客户端',
+  'memberrole.remove.select.all.client.content': '确认移除当前选中的客户端下的所有角色?',
+  'memberrole.remove.select.client.content': '确认移除当前选中的客户端的这些角色?',
+  'memberrole.remove.all.client.content': '确认移除客户端"{name}"下的所有角色?',
+  'memberrole.remove.client.content': '确认移除客户端"{member}"的角色"{role}"?',
 
-  // MemberLabel
+
+  // 角色标签
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
@@ -1280,6 +1444,53 @@ const zh_CN = {
   'uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
   'download.failed.detail': '点击下载失败详情',
   'download.failed.error': '失败详情文件丢失，无法下载',
+
+  // 注册组织
+  'register.organization.register.organization': '注册组织',
+  'register.organization.step1.title': '填写组织信息',
+  'register.organization.step2.title': '填写负责人信息',
+  'register.organization.step3.title': '邮箱验证',
+  'register.organization.step4.title': '完成注册',
+  'register.organization.step.next': '下一步',
+  'register.organization.step.prev': '上一步',
+  'register.organization.code': '组织编码',
+  'register.organization.coderequiredmsg': '请输入组织编码',
+  'register.organization.codemaxmsg': '组织编码不能超过15个字符',
+  'register.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
+  'register.organization.name': '组织名称',
+  'register.organization.namerequiredmsg': '请输入组织名称',
+  'register.organization.region': '组织所在地',
+  'register.organization.loginname': '登录名',
+  'register.organization.loginname.require.msg': '请输入登录名',
+  'register.organization.loginname.pattern.msg': '登录名只能包含数字和字母',
+  'register.organization.realname': '用户名',
+  'register.organization.realname.require.msg': '请输入用户名',
+  'register.organization.email': '邮箱',
+  'register.organization.email.require.msg': '请输入邮箱',
+  'register.organization.email.pattern.msg': '请输入正确的邮箱',
+  'register.organization.phone': '手机号码',
+  'register.organization.phone.require.msg': '请输入手机号码',
+  'register.organization.phone.pattern.msg': '请输入正确的手机号码',
+  'register.organization.password': '密码',
+  'register.organization.password.require.msg': '请输入密码',
+  'register.organization.password.min.msg': '密码至少为6位',
+  'register.organization.password.pattern.msg': '密码由数字或大小写字母组成',
+  'register.organization.repassword.require.msg': '请确认密码',
+  'register.organization.repassword': '确认密码',
+  'register.organization.onlymsg': '组织编码已存在，请输入其他组织编码',
+  'register.organization.name.exist.msg': '已存在该登录名，请输入其他登录名',
+  'register.organization.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
+  'register.organization.password.unrepeat.msg': '两次密码输入不一致',
+  'register.organization.captcha': '验证码',
+  'register.organization.captcha.require.msg': '请输入验证码',
+  'register.organization.send.success': '发送成功',
+  'register.organization.send.failed': '发送失败',
+  'register.organization.send.captcha': '发送验证码',
+  'register.organization.send.retry.seconds': '{interval}秒后重试',
+  'register.organization.congratulations': '恭喜',
+  'register.organization.register.success': '您的组织{name}注册成功',
+  'register.organization.register.failed': '注册失败',
+  'register.organization.login': '直接登录',
 
   // page
   ...pageDetail,

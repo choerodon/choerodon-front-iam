@@ -57,7 +57,7 @@ class SendSettingStore {
 
   loadData(
     { current, pageSize },
-    { name, code, description },
+    { name, code, description, level },
     { columnKey = 'id', order = 'descend' },
     params, appType, orgId) {
     const queryObj = {
@@ -66,6 +66,7 @@ class SendSettingStore {
       name,
       code,
       description,
+      level,
       params,
     };
     if (columnKey) {

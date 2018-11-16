@@ -9,6 +9,17 @@
         permission:
           - 'iam-service.organization.list'
           - 'organization-service.organization.create'
+          - 'iam-service.organization.query'
+          - 'iam-service.organization.update'
+          - 'iam-service.organization.disableOrganization'
+          - 'iam-service.organization.enableOrganization'
+    - "system-setting":
+        icon: settings
+        Routes: /iam/system-setting
+        sort: 8
+        permission:
+          - 'iam-service.organization.list'
+          - 'organization-service.organization.create'
           - 'iam-service.organization.check'
           - 'iam-service.organization.query'
           - 'iam-service.organization.update'
@@ -55,6 +66,9 @@
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel'
           - 'iam-service.role-member.listRolesWithUserCountOnSiteLevel'
           - 'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnSiteLevel'
+          - 'iam-service.role-member.listRolesWithClientCountOnSiteLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithSiteLevelRoles'
     - "root-user":
         icon: root
         Routes: /iam/root-user
@@ -122,6 +136,7 @@
         sort: 1
         permission:
         - 'manager-service.service.pageManager'
+        - 'manager-service.api.queryPathDetail'
 
 # 消息中心
 "msg-center":
@@ -179,31 +194,25 @@
         Routes: /iam/task-detail
         sort: 1
         permission:
-          - 'asgard-service.schedule-task.pagingQuery'
-          - 'asgard-service.schedule-task.create'
-          - 'asgard-service.schedule-task.check'
-          - 'asgard-service.schedule-task.cron'
-          - 'asgard-service.schedule-task.getTaskDetail'
-          - 'asgard-service.schedule-task.delete'
-          - 'asgard-service.schedule-task.disable'
-          - 'asgard-service.schedule-task.enable'
-          - 'asgard-service.schedule-task-instance.pagingQueryByTaskId'
-          - 'asgard-service.schedule-method.getMethodByService'
-          - 'asgard-service.schedule-method.pagingQuery'
-          - 'manager-service.service.pageAll'
+          - 'asgard-service.schedule-task-site.pagingQuery'
+          - 'asgard-service.schedule-task-site.create'
+          - 'asgard-service.schedule-task-site.enable'
+          - 'asgard-service.schedule-task-site.disable'
+          - 'asgard-service.schedule-task-site.delete'
+          - 'asgard-service.schedule-task-site.getTaskDetail'
     - "execution-record":
         icon: work_log
         Routes: /iam/execution-record
         sort: 2
         permission:
-          - 'asgard-service.schedule-task-instance.pagingQuery'
+          - 'asgard-service.schedule-task-instance-site.pagingQuery'
     - "task-classname":
         icon: classname
         Routes: /iam/executable-program
         sort: 3
         permission:
-          - 'asgard-service.schedule-method.getParams'
-          - 'asgard-service.schedule-method.pagingQuery'
+          - 'asgard-service.schedule-method-site.pagingQuery'
+          - 'asgard-service.schedule-method-site.getParams'
 
 # 事务管理
 "global-transaction":
@@ -264,6 +273,9 @@
           - 'iam-service.role-member.listRolesWithUserCountOnOrganizationLevel'
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnOrganizationLevel'
           - 'iam-service.role-member.pagingQueryUsersWithOrganizationLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnOrganizationLevel'
+          - 'iam-service.role-member.pagingQueryClientsByRoleIdOnOrganizationLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithOrganizationLevelRoles'
     - "client":
         icon: laptop_mac
         Routes: /iam/client
@@ -312,17 +324,20 @@
 "msg-center-organization":
   icon: center
   sort: 3
+  delete: true
   organization:
     - "send-setting-organization":
         icon: mail_set
         Routes: /iam/send-setting
         sort: 1
+        delete: true
         permission:
           - 'notify-service.send-setting-org.pageOrganization'
     - "mail-template-organization":
         icon: application_model
         Routes: /iam/mail-template
         sort: 2
+        delete: true
         permission:
           - 'notify-service.email-template-org.pageOrganization'
           - 'notify-service.email-template-org.create'
@@ -334,8 +349,39 @@
         icon: speaker_notes
         Routes: /iam/msg-record
         sort: 4
+        delete: true
         permission:
           - 'notify-service.message-record-org.pageEmail'
+
+# 组织层任务调度
+"task-dispatch-organization":
+  icon: task_schedule
+  sort: 4
+  organization:
+    - "task-detail-organization":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - 'asgard-service.schedule-task-org.pagingQuery'
+          - 'asgard-service.schedule-task-org.create'
+          - 'asgard-service.schedule-task-org.enable'
+          - 'asgard-service.schedule-task-org.disable'
+          - 'asgard-service.schedule-task-org.delete'
+          - 'asgard-service.schedule-task-org.getTaskDetail'
+    - "execution-record-organization":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - 'asgard-service.schedule-task-instance-org.pagingQuery'
+    - "task-classname-organization":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - 'asgard-service.schedule-method-org.pagingQuery'
+          - 'asgard-service.schedule-method-org.getParams'
 
 # 项目设置
 "prosetting":
@@ -352,6 +398,9 @@
           - 'iam-service.role-member.listRolesWithUserCountOnProjectLevel'
           - 'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel'
           - 'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithProjectLevelRoles'
+          - 'iam-service.role-member.pagingQueryClientsByRoleIdOnProjectLevel'
     - "proManage":
         icon: settings_applications
         Routes: /iam/project-setting
@@ -360,6 +409,36 @@
           - 'iam-service.project.disableProject'
           - 'iam-service.project.query'
           - 'iam-service.project.update'
+
+# 项目层任务调度
+"task-dispatch-project":
+  icon: task_schedule
+  sort: 7
+  project:
+    - "task-detail-project":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - 'asgard-service.schedule-task-project.pagingQuery'
+          - 'asgard-service.schedule-task-project.create'
+          - 'asgard-service.schedule-task-project.enable'
+          - 'asgard-service.schedule-task-project.disable'
+          - 'asgard-service.schedule-task-project.delete'
+          - 'asgard-service.schedule-task-project.getTaskDetail'
+    - "execution-record-project":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - 'asgard-service.schedule-task-instance-project.pagingQuery'
+    - "task-classname-project":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - 'asgard-service.schedule-method-project.pagingQuery'
+          - 'asgard-service.schedule-method-project.getParams'
 
 # 个人中心
 "usercenter":
@@ -387,15 +466,23 @@
         sort: 3
         permission:
           - 'iam-service.user.listOrganizationAndRoleById'
+          - 'iam-service.role.listPermissionById'
     - "project-info":
         icon: project
         Routes: /iam/project-info
         sort: 4
         permission:
           - 'iam-service.user.listProjectAndRoleById'
+          - 'iam-service.role.listPermissionById'
     - "user-msg":
         icon: message_notification
         Routes: /iam/user-msg
         sort: 5
         permission:
-        - 'iam-service.user.listProjectAndRoleById'
+          - 'iam-service.user.listProjectAndRoleById'
+    - "receive-setting":
+        icon: settings
+        Routes: /iam/receive-setting
+        sort: 6
+        permission:
+        - 'iam-service.user.queryInfo'

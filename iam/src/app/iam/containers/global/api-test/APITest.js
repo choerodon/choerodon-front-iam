@@ -64,9 +64,8 @@ export default class APITest extends Component {
 
   /* 微服务版本下拉框 */
   getVersionList() {
-    const { versions, currentService } = APITestStore;
+    const { versions } = APITestStore;
     return versions && versions.length > 0 ? (
-
       APITestStore.versions.map((version, index) => (
         <Option key={index}><Tooltip title={version} placement="right" align={{ offset: [20, 0] }}>
           <span style={{ display: 'inline-block', width: '100%' }}>{version}</span>
@@ -88,6 +87,7 @@ export default class APITest extends Component {
           version: location.split('=')[1],
         }));
         APITestStore.setService(services);
+        // 判断是否从详情页面跳转
         if (!APITestStore.detailFlag) {
           APITestStore.setApiToken(null);
           APITestStore.setUserInfo(null);
@@ -103,6 +103,7 @@ export default class APITest extends Component {
 
   loadVersions = () => {
     const { service, currentService } = APITestStore;
+    APITestStore.setFilters([]);
     const newVersions = [];
     if (service && service.length > 0) {
       APITestStore.service.forEach(({ name, value, version }, index) => {
@@ -136,7 +137,7 @@ export default class APITest extends Component {
         this.setState({
           pagination: {
             current: data.number + 1,
-            pageSize: data.size,
+            pageSize: 10,
             total: data.totalElements,
           },
           params,
@@ -155,7 +156,7 @@ export default class APITest extends Component {
     APITestStore.setLoading(true);
     const queryObj = {
       page: current - 1,
-      size: pageSize,
+      size: pageSize + 999,
       version,
       params,
     };
@@ -163,12 +164,31 @@ export default class APITest extends Component {
   }
 
   handlePageChange = (pagination, filters, sorter = {}, params) => {
-    this.loadApi(pagination, filters, params);
+    if (params.length > 1) APITestStore.setFilters(params.slice(1));
+    else APITestStore.setFilters(params);
+    const data = APITestStore.getFilteredData;
+    const newPagination = {
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      total: data.length,
+    };
+    if (params.length > 1) {
+      this.setState({
+        pagination: newPagination,
+        params: params.slice(1),
+      });
+    } else {
+      this.setState({
+        pagination: newPagination,
+        params,
+      });
+    }
   };
 
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       APITestStore.setCurrentService(APITestStore.service[0]);
+      APITestStore.setFilters([]);
       this.loadApi();
       APITestStore.clearIsExpand();
     });
@@ -181,6 +201,7 @@ export default class APITest extends Component {
   handleChange(serviceName) {
     const currentService = APITestStore.service.find(service => service.value === serviceName);
     APITestStore.clearIsExpand();
+    APITestStore.setFilters([]);
     this.loadVersions();
     APITestStore.setCurrentService(currentService);
     this.setState(this.getInitState(), () => {
@@ -195,6 +216,7 @@ export default class APITest extends Component {
   handleVersionChange(serviceVersion) {
     const currentVersion = APITestStore.versions.find(version => version === serviceVersion);
     APITestStore.clearIsExpand();
+    APITestStore.setFilters([]);
     APITestStore.setCurrentVersion(currentVersion);
     this.setState(this.getInitState(), () => {
       this.loadApi();
@@ -213,7 +235,7 @@ export default class APITest extends Component {
   }
 
   render() {
-    const { intl } = this.props;
+    const { intl, AppState } = this.props;
     const { pagination, params } = this.state;
     const columns = [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
@@ -249,7 +271,7 @@ export default class APITest extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
       dataIndex: 'remark',
-      width: '30%',
+      width: '28%',
       key: 'remark',
       render: (text, data) => {
         const { description, remark } = data;
@@ -266,13 +288,7 @@ export default class APITest extends Component {
       title: <FormattedMessage id={`${intlPrefix}.available.range`} />,
       dataIndex: 'innerInterface',
       key: 'innerInterface',
-      render: (text) => {
-        if (text === true) {
-          return <span>内部</span>;
-        } else if (text === false) {
-          return <span>外部</span>;
-        }
-      },
+      render: text => intl.formatMessage({ id: text === true ? `${intlPrefix}.inner` : `${intlPrefix}.outer` }),
     }, {
       title: '',
       width: 56,
@@ -295,7 +311,10 @@ export default class APITest extends Component {
     }];
     return (
       <Page
-        service={['manager-service.service.pageManager']}
+        service={[
+          'manager-service.service.pageManager',
+          'manager-service.api.queryPathDetail',
+        ]}
       >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
@@ -309,7 +328,7 @@ export default class APITest extends Component {
         </Header>
         <Content
           code={intlPrefix}
-          values={{ name: `${process.env.HEADER_TITLE_NAME || 'Choerodon'}` }}
+          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
           <Select
             style={{ width: '247px', marginBottom: '32px' }}
@@ -337,19 +356,21 @@ export default class APITest extends Component {
             loading={APITestStore.loading}
             indentSize={0}
             columns={columns}
-            dataSource={APITestStore.getApiData.slice()}
+            dataSource={APITestStore.getFilteredData}
             pagination={pagination}
             childrenColumnName="paths"
             filters={params}
+            noFilter
             onChange={this.handlePageChange}
             rowKey={record => ('paths' in record ? record.name : record.operationId)}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
-            onRowClick={(record) => {
-              APITestStore.setIsExpand(record.name);
-              this.setState({
-                expandedRow: APITestStore.getExpandKeys,
-              });
-            }
+            onRow={record =>
+              ({ onClick: () => {
+                APITestStore.setIsExpand(record.name);
+                this.setState({
+                  expandedRow: APITestStore.getExpandKeys,
+                });
+              } })
             }
             expandRowByClick
             expandedRowKeys={this.state.expandedRow}

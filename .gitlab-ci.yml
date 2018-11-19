@@ -14,25 +14,6 @@ node_build:
     - node_build build
     - cp -r dist /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/dist
     - cp -r node_modules/choerodon-front-boot/structure /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/structure
-  only:
-    - master
-    - develop
-    - /^release-.*$/
-    - /^hotfix-.*$/
-    - tags
-
-node_build_dev:
-  stage: node_build
-  script:
-    - node_module iam
-    - node_build build -- --env development
-    - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
-  except:
-    - master
-    - develop
-    - /^release-.*$/
-    - /^hotfix-.*$/
-    - tags
 
 docker_build:
   image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.6.0
@@ -41,12 +22,6 @@ docker_build:
     - docker_build
     - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
     - chart_build
-  only:
-    - master
-    - develop
-    - /^release-.*$/
-    - /^hotfix-.*$/
-    - tags
 
 .auto_devops: &auto_devops |
     http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=front"`

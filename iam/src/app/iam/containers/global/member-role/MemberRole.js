@@ -1670,6 +1670,8 @@ export default class MemberRole extends Component {
           'iam-service.role-member.listRolesWithClientCountOnProjectLevel',
           'iam-service.role-member.pagingQueryClientsWithProjectLevelRoles',
           'iam-service.role-member.pagingQueryClientsByRoleIdOnProjectLevel',
+          'iam-service.role-member.queryAllUsers',
+          'iam-service.role-member.queryAllClients',
         ]}
       >
         <Header title={<FormattedMessage id={`${this.roles.code}.header.title`} />}>

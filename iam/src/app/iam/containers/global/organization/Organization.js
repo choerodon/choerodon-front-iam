@@ -502,6 +502,7 @@ export default class Organization extends Component {
           'iam-service.organization.update',
           'iam-service.organization.disableOrganization',
           'iam-service.organization.enableOrganization',
+          'iam-service.role-member.queryAllUsers',
         ]}
       >
         <Header title={<FormattedMessage id="global.organization.header.title" />}>

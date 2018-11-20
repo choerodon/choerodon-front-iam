@@ -6,6 +6,8 @@ import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './SystemSetting.scss';
 import '../../../common/ConfirmModal.scss';
+import LogoUploader from './LogoUploader';
+// import AvatarUploader from '../../../components/AvatarUploader';
 
 const intlPrefix = 'global.system-setting';
 const prefixClas = 'c7n-iam-system-setting';
@@ -58,6 +60,8 @@ export default class SystemSetting extends Component {
   state = {
     loading: false,
     submitting: false,
+    visible: false,
+    uploadLogoVisible: false,
   };
   componentWillMount() {
     this.init();
@@ -95,28 +99,34 @@ export default class SystemSetting extends Component {
       },
     });
   };
+
+  handleVisibleChange = () => {
+    const { visible } = this.state;
+    this.setState({
+      visible: !visible,
+    });
+  };
+
+  handleUploadLogoVisibleChange = () => {
+    const { uploadLogoVisible } = this.state;
+    this.setState({
+      uploadLogoVisible: !uploadLogoVisible,
+    });
+  };
+
   faviconContainer() {
     const { SystemSettingStore } = this.props;
+    const { visible } = this.state;
     const favicon = SystemSettingStore.getFavicon;
     return (
       <div className={`${prefixClas}-avatar-wrap`}>
         <div className={`${prefixClas}-avatar`} style={favicon ? { backgroundImage: `url(${favicon})` } : {}}>
-          <Upload
-            className={`${prefixClas}-avatar-button`}
-            name="file"
-            showUploadList={false}
-            accept="image/jpeg, image/png, image/jpg，image/gif"
-            beforeUpload={this.beforeUpload}
-            action={`${Choerodon.API_HOST}/iam/v1/system/setting/upload/logo`}
-            onChange={this.handleFaviconChange}
-            headers={{
-              Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
-            }}
-          >
+          <Button className={`${prefixClas}-avatar-button`} onClick={() => this.setState({ visible: true })}>
             <div className={`${prefixClas}-avatar-button-icon`}>
               <Icon type="photo_camera" style={{ display: 'block', textAlign: 'center' }} />
             </div>
-          </Upload>
+          </Button>
+          <LogoUploader type="favicon" visible={visible} onVisibleChange={this.handleVisibleChange} onSave={(res) => { SystemSettingStore.setFavicon(res); }} />
         </div>
         <span className={`${prefixClas}-tips`}>
           <FormattedMessage id={`${intlPrefix}.favicon`} />
@@ -240,7 +250,7 @@ export default class SystemSetting extends Component {
   render() {
     const { SystemSettingStore, intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { logoLoadingStatus, submitting } = this.state;
+    const { logoLoadingStatus, submitting, uploadLogoVisible } = this.state;
     const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = AppState.getSiteInfo.defaultTitle } = SystemSettingStore.getUserSetting;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
@@ -254,7 +264,7 @@ export default class SystemSetting extends Component {
       },
     };
     const uploadButton = (
-      <div>
+      <div onClick={this.handleUploadLogoVisibleChange}>
         {logoLoadingStatus ? <Spin /> : <div className={'initLogo'} />}
       </div>
     );
@@ -298,21 +308,10 @@ export default class SystemSetting extends Component {
               <Icon type="help" style={{ fontSize: 16, color: '#bdbdbd' }} />
             </Popover>
           </span>
-
-          <Upload
-            name="file"
-            listType="picture-card"
-            showUploadList={false}
-            accept="image/jpeg, image/png, image/jpg"
-            beforeUpload={this.beforeUpload}
-            action={`${Choerodon.API_HOST}/iam/v1/system/setting/upload/logo`}
-            onChange={this.handleLogoChange}
-            headers={{
-              Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
-            }}
-          >
-            {systemLogo ? <img src={systemLogo} alt="" style={{ width: '80px', height: '80px' }} /> : uploadButton}
-          </Upload>
+          <div className="ant-upload ant-upload-select ant-upload-select-picture-card">
+            <LogoUploader type="logo" visible={uploadLogoVisible} onVisibleChange={this.handleUploadLogoVisibleChange} onSave={(res) => { SystemSettingStore.setLogo(res); }} />
+            {systemLogo ? <div className="ant-upload" onClick={this.handleUploadLogoVisibleChange}><img src={systemLogo} alt="" style={{ width: '80px', height: '80px' }} /></div> : uploadButton}
+          </div>
         </FormItem>
         <FormItem
           {...formItemLayout}

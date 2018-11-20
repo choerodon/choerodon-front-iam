@@ -279,7 +279,7 @@ export default class SystemSetting extends Component {
             }],
           })(
             <Input
-              autoComplete="off"
+              autoComplete="new-password"
               label={<FormattedMessage id={`${intlPrefix}.systemName`} />}
               ref={(e) => { this.editFocusInput = e; }}
               maxLength={18}
@@ -322,7 +322,7 @@ export default class SystemSetting extends Component {
             initialValue: systemTitle,
           })(
             <Input
-              autoComplete="off"
+              autoComplete="new-password"
               label={<FormattedMessage id={`${intlPrefix}.systemTitle`} />}
               ref={(e) => { this.editFocusInput = e; }}
               maxLength={32}
@@ -345,7 +345,7 @@ export default class SystemSetting extends Component {
             }],
           })(
             <Input
-              autoComplete="off"
+              autoComplete="new-password"
               label={<FormattedMessage id={`${intlPrefix}.defaultPassword`} />}
               maxLength={15}
               type="password"

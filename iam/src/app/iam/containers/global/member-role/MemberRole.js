@@ -113,6 +113,7 @@ export default class MemberRole extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+    clearTimeout(timer);
     const { MemberRoleStore } = this.props;
     MemberRoleStore.setRoleMemberDatas([]);
     MemberRoleStore.setRoleData([]);
@@ -1063,7 +1064,6 @@ export default class MemberRole extends Component {
   };
 
   clientRoleMemberTableChange = (pageInfo, { name, ...clientRoleMemberFilters }, sort, params) => {
-    debugger;
     const newState = {
       clientRoleMemberFilterRole: name,
       clientRoleMemberFilters,

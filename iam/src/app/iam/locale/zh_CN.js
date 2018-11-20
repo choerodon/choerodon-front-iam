@@ -636,6 +636,7 @@ const zh_CN = {
   'global.organization.detail': '组织信息',
   'global.organization.detail.title': '查看组织"{name}"的组织信息',
   'global.organization.detail.description': '您可以在此查看组织和组织管理员的基本信息。',
+  'global.organization.owner': '组织所有者',
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',

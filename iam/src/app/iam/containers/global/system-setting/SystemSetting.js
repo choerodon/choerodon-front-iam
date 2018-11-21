@@ -251,7 +251,7 @@ export default class SystemSetting extends Component {
     const { SystemSettingStore, intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { logoLoadingStatus, submitting, uploadLogoVisible } = this.state;
-    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = AppState.getSiteInfo.defaultTitle } = SystemSettingStore.getUserSetting;
+    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle } = SystemSettingStore.getUserSetting;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {
@@ -318,7 +318,7 @@ export default class SystemSetting extends Component {
         >
           <Input style={{ display: 'none' }} />
           {getFieldDecorator('systemTitle', {
-            initialValue: systemTitle,
+            initialValue: systemTitle || AppState.getSiteInfo.defaultTitle,
           })(
             <Input
               autoComplete="new-password"

@@ -934,7 +934,7 @@ export default class TaskDetail extends Component {
                 }, {
                   validator: this.checkName,
                 }],
-                // validateTrigger: 'onBlur',
+                validateTrigger: 'onBlur',
                 validateFirst: true,
               })(
                 <Input

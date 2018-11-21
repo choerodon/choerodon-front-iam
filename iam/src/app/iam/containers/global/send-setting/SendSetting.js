@@ -179,6 +179,7 @@ export default class SendSetting extends Component {
           isManualRetry: values.manual === 'allow',
           pmTemplateId: values.pmTemplateId === 'empty' ? null : values.pmTemplateId,
           pmType: values.pmType,
+          allowConfig: values.allowConfig === 'allow',
         };
         SendSettingStore.modifySetting(SendSettingStore.getCurrentRecord.id, body, type, orgId).then((data) => {
           if (data.failed) {
@@ -391,6 +392,24 @@ export default class SendSetting extends Component {
                 >
                   <Radio value="msg">{intl.formatMessage({ id: 'sendsetting.pmtemplate.msg' })}</Radio>
                   <Radio value="notice">{intl.formatMessage({ id: 'sendsetting.pmtemplate.notice' })}</Radio>
+                </RadioGroup>,
+              )
+            }
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('allowConfig', {
+                rules: [],
+                initialValue: getCurrentRecord.allowConfig ? 'allow' : 'notallow',
+              })(
+                <RadioGroup
+                  label={<FormattedMessage id="sendsetting.pmtemplate.receive" />}
+                  className="radioGroup"
+                >
+                  <Radio value="allow">{intl.formatMessage({ id: 'yes' })}</Radio>
+                  <Radio value="notallow">{intl.formatMessage({ id: 'no' })}</Radio>
                 </RadioGroup>,
               )
             }

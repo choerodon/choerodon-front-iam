@@ -3,7 +3,7 @@ import { Button, Modal, Table, Tooltip, Upload, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { Action, axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import UserEdit from './UserEdit';
 import './User.scss';
@@ -132,7 +132,7 @@ export default class User extends Component {
       Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.unlock.success` }));
       this.loadUser();
     }).catch((error) => {
-      window.console.log(error);
+      Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.unlock.failed` }));
     });
   };
 
@@ -160,6 +160,22 @@ export default class User extends Component {
       });
     }
   };
+
+  /**
+   * 重置用户密码
+   * @param record
+   */
+  handleReset = (record) => {
+    const { intl } = this.props;
+    const { loginName } = record;
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: intl.formatMessage({ id: `${intlPrefix}.reset.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.reset.content` }, { loginName }),
+      // onOk: () => axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
+      // }),
+    });
+  }
 
   changeLanguage = (code) => {
     if (code === 'zh_CN') {
@@ -488,7 +504,7 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.loginname`} />,
         dataIndex: 'loginName',
         key: 'loginName',
-        width: '15%',
+        width: '17%',
         filters: [],
         filteredValue: filters.loginName || [],
         render: text => (
@@ -500,7 +516,7 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
-        width: '15%',
+        width: '17%',
         filters: [],
         filteredValue: filters.realName || [],
         render: text => (
@@ -512,6 +528,7 @@ export default class User extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.source`} />,
         key: 'ldap',
+        width: '17%',
         render: (text, record) => (
           record.ldap
             ? <FormattedMessage id={`${intlPrefix}.ldap`} />
@@ -532,6 +549,7 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.language`} />,
         dataIndex: 'language',
         key: 'language',
+        width: '17%',
         render: (text, record) => (
           this.changeLanguage(record.language)
         ),
@@ -550,6 +568,7 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.enabled`} />,
         key: 'enabled',
         dataIndex: 'enabled',
+        width: '15%',
         render: text => (<StatusTag mode="icon" name={intl.formatMessage({ id: text ? 'enable' : 'disable' })} colorCode={text ? 'COMPLETED' : 'DISABLE'} />),
         filters: [
           {
@@ -564,6 +583,7 @@ export default class User extends Component {
       }, {
         title: <FormattedMessage id={`${intlPrefix}.locked`} />,
         key: 'locked',
+        width: '15%',
         render: (text, record) => (
           record.locked
             ? <FormattedMessage id={`${intlPrefix}.lock`} />
@@ -584,91 +604,44 @@ export default class User extends Component {
         title: '',
         key: 'action',
         align: 'right',
-        width: '130px',
-        render: (text, record) => (
-          <div>
-            <Permission
-              service={['iam-service.organization-user.update']}
-              type={type}
-              organizationId={organizationId}
-            >
-              <Tooltip
-                title={<FormattedMessage id="modify" />}
-                placement="bottom"
-              >
-                <Button
-                  size="small"
-                  icon="mode_edit"
-                  shape="circle"
-                  onClick={this.onEdit.bind(this, record.id)}
-                />
-              </Tooltip>
-            </Permission>
-            {record.enabled ? (
-              <Permission
-                service={['iam-service.organization-user.disableUser']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip
-                  title={<FormattedMessage id="disable" />}
-                  placement="bottom"
-                >
-                  <Button
-                    icon="remove_circle_outline"
-                    shape="circle"
-                    size="small"
-                    onClick={this.handleAble.bind(this, record)}
-                  />
-                </Tooltip>
-              </Permission>
-            ) : (
-              <Permission
-                service={['iam-service.organization-user.enableUser']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip
-                  title={<FormattedMessage id="enable" />}
-                  placement="bottom"
-                >
-                  <Button
-                    icon="finished"
-                    shape="circle"
-                    size="small"
-                    onClick={this.handleAble.bind(this, record)}
-                  />
-                </Tooltip>
-              </Permission>
-            )
-            }
-            {record.locked
-              ? (
-                <Permission
-                  service={['iam-service.organization-user.unlock']}
-                  type={type}
-                  organizationId={organizationId}
-                >
-                  <Tooltip
-                    title={<FormattedMessage id={`${intlPrefix}.unlock`} />}
-                    placement="bottom"
-                  >
-                    <Button size="small" icon="lock_open" shape="circle" onClick={this.handleUnLock.bind(this, record)} />
-                  </Tooltip>
-                </Permission>
-              )
-              : (
-                <Permission
-                  service={['iam-service.organization-user.unlock']}
-                  type={type}
-                  organizationId={organizationId}
-                >
-                  <Button size="small" icon="lock_open" shape="circle" disabled />
-                </Permission>
-              )
-            }
-          </div>
-        ),
+        render: (text, record) => {
+          const actionDatas = [{
+            service: ['iam-service.organization-user.update'],
+            icon: '',
+            text: intl.formatMessage({ id: 'modify' }),
+            action: this.onEdit.bind(this, record.id),
+          }];
+          if (record.enabled) {
+            actionDatas.push({
+              service: ['iam-service.organization-user.disableUser'],
+              icon: '',
+              text: intl.formatMessage({ id: 'disable' }),
+              action: this.handleAble.bind(this, record),
+            });
+          } else {
+            actionDatas.push({
+              service: ['iam-service.organization-user.enableUser'],
+              icon: '',
+              text: intl.formatMessage({ id: 'enable' }),
+              action: this.handleAble.bind(this, record),
+            });
+          }
+          if (record.locked) {
+            actionDatas.push({
+              service: ['iam-service.organization-user.unlock'],
+              icon: '',
+              text: intl.formatMessage({ id: `${intlPrefix}.unlock` }),
+              action: this.handleUnLock.bind(this, record),
+            });
+          }
+          actionDatas.push({
+            service: ['iam-service.role.update'],
+            icon: '',
+            text: intl.formatMessage({ id: `${intlPrefix}.reset` }),
+            action: this.handleReset.bind(this, record),
+          });
+          return <Action data={actionDatas} getPopupContainer={() => document.getElementsByClassName('page-content')[0]} />;
+        },
       }];
     return (
       <Page

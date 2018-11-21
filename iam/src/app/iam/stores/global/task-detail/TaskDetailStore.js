@@ -129,7 +129,7 @@ class TaskDetailStore {
   deleteTask = (taskId, type, id) => axios.delete(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/${taskId}`);
 
 
-  checkName = (name, type, id) => axios.post(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/check?name=${name}`);
+  checkName = (name, type, id) => axios.post(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/check`, name);
 
 
   createTask = (body, type, id) => axios.post(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks`, JSON.stringify(body));

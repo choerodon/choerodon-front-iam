@@ -13,3 +13,9 @@
     display: none;
   }
 }
+
+.c7n-iam-organization-sidebar {
+  &.ant-modal-sidebar .ant-modal-body {
+    height: calc(100% - 132px);
+  }
+}

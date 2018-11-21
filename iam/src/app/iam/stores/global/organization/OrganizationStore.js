@@ -24,6 +24,7 @@ class OrganizationStore {
   @observable myOrg = {};
   @observable myRoles = [];
   @observable partDetail = {};
+  @observable usersData = [];
 
   @action
   setPartDetail(data) {
@@ -43,6 +44,14 @@ class OrganizationStore {
   @action
   hideSideBar() {
     this.sidebarVisible = false;
+  }
+
+  @action setUsersData(data) {
+    this.usersData = data;
+  }
+
+  @computed get getUsersData() {
+    return this.usersData;
   }
 
   refresh() {
@@ -97,7 +106,7 @@ class OrganizationStore {
     axios.post('/iam/v1/organizations/check', JSON.stringify({ code: value }));
 
   @action
-  createOrUpdateOrg({ code, name, address }, modify, HeaderStore) {
+  createOrUpdateOrg({ code, name, address, userId }, modify, HeaderStore) {
     const { show, editData: { id, code: originCode, objectVersionNumber } } = this;
     const isCreate = show === 'create';
     if (!modify && !isCreate) {
@@ -117,6 +126,11 @@ class OrganizationStore {
         if (address) {
           body.address = address;
         }
+
+        if (userId) {
+          body.userId = userId;
+        }
+
         message = 'create.success';
         method = 'post';
       } else {
@@ -184,6 +198,8 @@ class OrganizationStore {
       this.showSideBar();
     }
   }).catch(Choerodon.handleResponseError);
+
+  loadUsers = (queryObj = { sort: 'id' }) => axios.get(`/iam/v1/all/users?${queryString.stringify(queryObj)}`);
 }
 
 export default new OrganizationStore();

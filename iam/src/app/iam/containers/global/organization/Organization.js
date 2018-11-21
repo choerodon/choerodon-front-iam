@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Input, Modal, Table, Tooltip, Row, Col } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip, Row, Col, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
@@ -13,6 +13,7 @@ import './Organization.scss';
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
 const { Sidebar } = Modal;
+const Option = Select.Option;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -26,6 +27,7 @@ const formItemLayout = {
 };
 const inputWidth = 512;
 const intlPrefix = 'global.organization';
+let timer;
 
 @Form.create()
 @withRouter
@@ -37,10 +39,17 @@ export default class Organization extends Component {
     super(props);
     this.editOrgFocusInput = React.createRef();
     this.creatOrgFocusInput = React.createRef();
+    this.state = {
+      selectLoading: true,
+    };
   }
 
   componentWillMount() {
     this.loadOrganizations();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(timer);
   }
 
   handleRefresh = () => {
@@ -95,13 +104,15 @@ export default class Organization extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, intl, OrganizationStore, HeaderStore } = this.props;
+    const { form, intl, OrganizationStore, HeaderStore, AppState } = this.props;
     if (OrganizationStore.show !== 'detail') {
       form.validateFields((err, values, modify) => {
         Object.keys(values).forEach((key) => {
           // 去除form提交的数据中的全部前后空格
           if (typeof values[key] === 'string') values[key] = values[key].trim();
         });
+        const { loginName, realName, id } = AppState.getUserInfo;
+        if (values.userId === `${loginName}${realName}`) values.userId = false;
         if (!err) {
           OrganizationStore.createOrUpdateOrg(values, modify, HeaderStore)
             .then((message) => {
@@ -147,6 +158,52 @@ export default class Organization extends Component {
         }
       });
   };
+
+  handleSelectFilter = (value) => {
+    this.setState({
+      selectLoading: true,
+    });
+
+    const queryObj = {
+      param: value,
+      sort: 'id',
+    };
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    if (value) {
+      timer = setTimeout(() => this.loadUsers(queryObj), 300);
+    } else {
+      return this.loadUsers(queryObj);
+    }
+  }
+
+  // 加载全平台用户信息
+  loadUsers = (queryObj) => {
+    const { OrganizationStore } = this.props;
+    OrganizationStore.loadUsers(queryObj).then((data) => {
+      OrganizationStore.setUsersData(data.content.slice());
+      this.setState({
+        selectLoading: false,
+      });
+    });
+  }
+
+  /**
+   * 获取组织所有者下拉选项
+   * @returns {any[]}
+   */
+  getOption() {
+    const { OrganizationStore } = this.props;
+    const usersData = OrganizationStore.getUsersData;
+    return usersData && usersData.length > 0 ? (
+      usersData.map(({ id, loginName, realName }) => (
+        <Option key={id} value={id}>{loginName}{realName}</Option>
+      ))
+    ) : null;
+  }
 
   renderSidebarTitle() {
     const { show } = this.props.OrganizationStore;
@@ -218,7 +275,7 @@ export default class Organization extends Component {
 
   renderSidebarContent() {
     const { intl, form: { getFieldDecorator }, OrganizationStore: { show, editData }, AppState } = this.props;
-
+    const { loginName, realName } = AppState.getUserInfo;
     return (
       <Content
         className="sidebar-content"
@@ -297,6 +354,31 @@ export default class Organization extends Component {
                 />,
               )}
           </FormItem>
+          {
+            show === 'create' && (
+              <FormItem
+                {...formItemLayout}
+              >
+                {getFieldDecorator('userId', {
+                  initialValue: `${loginName}${realName}`,
+                })(
+                  <Select
+                    style={{ width: 300 }}
+                    label={<FormattedMessage id={`${intlPrefix}.owner`} />}
+                    notFoundContent={intl.formatMessage({ id: 'memberrole.notfound.msg' })}
+                    onFilterChange={this.handleSelectFilter}
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    filterOption={false}
+                    optionFilterProp="children"
+                    loading={this.state.selectLoading}
+                    filter
+                  >
+                    {this.getOption()}
+                  </Select>,
+                )}
+              </FormItem>
+            )
+          }
         </Form>
       </Content>
     );
@@ -420,6 +502,7 @@ export default class Organization extends Component {
           'iam-service.organization.update',
           'iam-service.organization.disableOrganization',
           'iam-service.organization.enableOrganization',
+          'iam-service.role-member.queryAllUsers',
         ]}
       >
         <Header title={<FormattedMessage id="global.organization.header.title" />}>
@@ -461,6 +544,7 @@ export default class Organization extends Component {
             okText={this.renderSidebarOkText()}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={submitting}
+            className={classnames({ 'c7n-iam-organization-sidebar': show === 'create' })}
           >
             {show !== 'detail' ? this.renderSidebarContent() : this.renderSidebarDetail()}
           </Sidebar>

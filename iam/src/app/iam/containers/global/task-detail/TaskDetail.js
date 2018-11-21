@@ -12,6 +12,7 @@ import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
 import '../../../common/ConfirmModal.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
@@ -135,6 +136,21 @@ export default class TaskDetail extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      TaskDetailStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
+
     TaskDetailStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       TaskDetailStore.setData(data.content);
       this.setState({
@@ -145,7 +161,6 @@ export default class TaskDetail extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     }).catch((error) => {
@@ -193,6 +208,22 @@ export default class TaskDetail extends Component {
     const logParams = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ logFilters, logLoading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(logParams, logFilters);
+    if (isIncludeSpecialCode) {
+      TaskDetailStore.setLog([]);
+      this.setState({
+        logPagination: {
+          total: 0,
+        },
+        logLoading: false,
+        logSort,
+        logParams,
+        tempTaskId: TaskDetailStore.currentTask.id,
+      });
+      return;
+    }
+
     TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id, type, id).then((data) => {
       TaskDetailStore.setLog(data.content);
       this.setState({
@@ -203,7 +234,6 @@ export default class TaskDetail extends Component {
         },
         logLoading: false,
         logSort,
-        logFilters,
         logParams,
         tempTaskId: TaskDetailStore.currentTask.id,
       });

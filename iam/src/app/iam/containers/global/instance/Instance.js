@@ -10,6 +10,7 @@ import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
 import InstanceStore from '../../../stores/global/instance';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import { handleFiltersParams } from '../../../common/util';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -81,11 +82,24 @@ export default class Instance extends Component {
     const service = InstanceStore.getCurrentService.name === 'total' ? '' : InstanceStore.getCurrentService.name;
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      InstanceStore.setInstanceData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        sort,
+        params,
+      });
+      InstanceStore.setLoading(false);
+      return;
+    }
     this.fetch(service, pagination, sort, filters, params)
       .then((data) => {
         this.setState({
           sort,
-          filters,
           params,
           pagination: {
             current: data.number + 1,
@@ -102,7 +116,6 @@ export default class Instance extends Component {
   }
 
   fetch(serviceName, { current, pageSize }, { columnKey = 'service', order = 'asc' }, { instanceId, version }, params) {
-    InstanceStore.setLoading(true);
     const queryObj = {
       page: current - 1,
       size: pageSize,

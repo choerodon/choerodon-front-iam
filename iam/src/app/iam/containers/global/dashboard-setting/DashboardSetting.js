@@ -91,13 +91,7 @@ class DashboardSetting extends Component {
   };
 
   fetchData(pagination, filters, sort, params) {
-    const { DashboardSettingStore } = this.props;
     this.props.DashboardSettingStore.loadData(pagination, filters, sort, params);
-    RoleStore.loadRole({ pageSize: 999 }, {}, {}).then((data) => {
-      data.content.forEach((v) => {
-        DashboardSettingStore.roleMap.set(v.id, v);
-      });
-    });
   }
 
   editCard(record) {

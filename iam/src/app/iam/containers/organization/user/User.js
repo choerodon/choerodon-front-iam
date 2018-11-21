@@ -8,6 +8,7 @@ import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import UserEdit from './UserEdit';
 import './User.scss';
 import StatusTag from '../../../components/statusTag';
+import { handleFiltersParams } from '../../../common/util';
 
 const { Sidebar } = Modal;
 const intlPrefix = 'organization.user';
@@ -78,6 +79,20 @@ export default class User extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      UserStore.setUsers([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        params,
+        sort,
+      });
+      return;
+    }
+
     UserStore.loadUsers(
       id,
       pagination,
@@ -92,7 +107,6 @@ export default class User extends Component {
           pageSize: data.size,
           total: data.totalElements,
         },
-        filters,
         params,
         sort,
       });

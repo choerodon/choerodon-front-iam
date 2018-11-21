@@ -11,6 +11,7 @@ import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import SendSettingStore from '../../../stores/global/send-setting';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './SendSetting.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 const { Sidebar } = Modal;
 const { Option } = Select;
@@ -88,6 +89,21 @@ export default class SendSetting extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      SendSettingStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
+
     SendSettingStore.loadData(pagination, filters, sort, params, this.setting.type, this.setting.orgId).then((data) => {
       SendSettingStore.setData(data.content);
       this.setState({
@@ -98,7 +114,6 @@ export default class SendSetting extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     }).catch((error) => {

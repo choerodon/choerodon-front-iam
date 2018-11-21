@@ -8,6 +8,7 @@ import ExecutableProgramStore from '../../../stores/global/executable-program';
 import jsonFormat from '../../../common/json-format';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './ExecutableProgram.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 const { Sidebar } = Modal;
 const { TabPane } = Tabs;
@@ -94,6 +95,21 @@ export default class ExecutableProgram extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      ExecutableProgramStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
+
     ExecutableProgramStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       ExecutableProgramStore.setData(data.content);
       this.setState({
@@ -104,7 +120,6 @@ export default class ExecutableProgram extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     }).catch((error) => {

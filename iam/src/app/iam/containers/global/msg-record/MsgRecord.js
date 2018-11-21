@@ -12,6 +12,7 @@ import MsgRecordStore from '../../../stores/global/msg-record';
 import './MsgRecord.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import { handleFiltersParams } from '../../../common/util';
 
 // 公用方法类
 class MsgRecordType {
@@ -74,6 +75,21 @@ export default class APITest extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      MsgRecordStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
+
     MsgRecordStore.loadData(pagination, filters, sort, params, this.msgrecord.type, this.msgrecord.orgId).then((data) => {
       MsgRecordStore.setData(data.content);
       this.setState({

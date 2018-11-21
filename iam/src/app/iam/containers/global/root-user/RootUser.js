@@ -1,10 +1,10 @@
-
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Modal, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import { handleFiltersParams } from '../../../common/util';
 import RootUserStore from '../../../stores/global/root-user/RootUserStore';
 import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import StatusTag from '../../../components/statusTag';
@@ -52,6 +52,7 @@ export default class RootUser extends Component {
     }
     return true;
   }
+
   reload = (paginationIn, filtersIn, sortIn, paramsIn) => {
     const {
       pagination: paginationState,
@@ -67,6 +68,21 @@ export default class RootUser extends Component {
       loading: true,
       filters,
     });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      RootUserStore.setRootUserData([]);
+      this.setState({
+        loading: false,
+        sort,
+        params,
+        pagination: {
+          total: 0,
+        },
+      });
+      return;
+    }
+
     RootUserStore.loadRootUserData(pagination, filters, sort, params).then((data) => {
       if (this.isEmptyFilters(filters) && !params.length) {
         this.setState({
@@ -82,11 +98,11 @@ export default class RootUser extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     });
   }
+
   tableChange = (pagination, filters, sort, params) => {
     this.reload(pagination, filters, sort, params);
   }

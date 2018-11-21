@@ -12,6 +12,7 @@ import ConfigurationStore from '../../../stores/global/configuration';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import './Configuration.scss';
 import '../../../common/ConfirmModal.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -86,11 +87,25 @@ export default class Configuration extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      ConfigurationStore.setConfigData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        sort,
+        params,
+      });
+      ConfigurationStore.setLoading(false);
+      return;
+    }
+
     this.fetch(ConfigurationStore.getCurrentService.name, pagination, sort, filters, params)
       .then((data) => {
         this.setState({
           sort,
-          filters,
           params,
           pagination: {
             current: data.number + 1,
@@ -107,7 +122,6 @@ export default class Configuration extends Component {
   }
 
   fetch(serviceName, { current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, configVersion, isDefault }, params) {
-    ConfigurationStore.setLoading(true);
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -126,7 +140,6 @@ export default class Configuration extends Component {
     }
     return axios.get(`/manager/v1/services/${serviceName}/configs?${querystring.stringify(queryObj)}`);
   }
-
 
   handlePageChange = (pagination, filters, sorter, params) => {
     this.loadConfig(pagination, sorter, filters, params);

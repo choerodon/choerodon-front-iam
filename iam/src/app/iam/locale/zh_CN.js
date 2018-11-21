@@ -959,6 +959,7 @@ const zh_CN = {
   'sendsetting.pmtemplate.type': '站内信类型',
   'sendsetting.pmtemplate.msg': '消息',
   'sendsetting.pmtemplate.notice': '通知',
+  'sendsetting.pmtemplate.receive': '允许配置接收',
 
   // 消息记录
   'msgrecord.header.title': '消息记录',
@@ -1270,6 +1271,12 @@ const zh_CN = {
   // 用户管理
   'organization.user.unlock': '解锁',
   'organization.user.unlock.success': '解锁成功',
+  'organization.user.unlock.failed': '解锁失败',
+  'organization.user.reset': '重置密码',
+  'organization.user.reset.success': '重置密码成功',
+  'organization.user.reset.failed': '重置密码失败',
+  'organization.user.reset.title': '确认重置当前用户密码',
+  'organization.user.reset.content': '{loginName}用户的当前密码将失效。如果您启用组织密码策略，将重置为组织默认密码，否则将重置为平台密码。',
   'organization.user.language': '语言',
   'organization.user.create': '创建用户',
   'organization.user.modify': '修改用户',

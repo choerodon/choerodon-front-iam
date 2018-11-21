@@ -4,6 +4,7 @@
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import queryString from 'query-string';
+import { handleFiltersParams } from '../../../common/util';
 
 @store('OrganizationStore')
 class OrganizationStore {
@@ -72,6 +73,20 @@ class OrganizationStore {
     this.filters = filters;
     this.sort = sort;
     this.params = params;
+
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      this.orgData.length = 0;
+      this.pagination = {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+      };
+      this.loading = false;
+      return;
+    }
+
     return axios.get(`/iam/v1/organizations?${queryString.stringify({
       page: pagination.current - 1,
       size: pagination.pageSize,

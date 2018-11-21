@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, axios } from 'choerodon-front-boot';
 import RoleStore from '../../../stores/global/role/RoleStore';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import { handleFiltersParams } from '../../../common/util';
 import './Role.scss';
 
 const { Option } = Select;
@@ -230,12 +231,24 @@ export default class CreateRole extends Component {
 
   handlePageChange = (pagination, filters, sorter, params) => {
     const level = RoleStore.getChosenLevel;
-    const newFilters = {
-      params: (params && params.join(',')) || '',
-    };
     this.setState({
       permissionParams: params,
     });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      RoleStore.setCanChosePermission(level, []);
+      RoleStore.setPermissionPage(level, {
+        current: 1,
+        total: 0,
+        size: 10,
+      });
+      return;
+    }
+
+    const newFilters = {
+      params: (params && params.join(',')) || '',
+    };
     RoleStore.getWholePermission(level, pagination, newFilters).subscribe((data) => {
       RoleStore.handleCanChosePermission(level, data);
     });

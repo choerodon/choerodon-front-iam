@@ -8,6 +8,7 @@ import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstance
 import './style/saga-instance.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'global.saga-instance';
 const { Sidebar } = Modal;
@@ -56,6 +57,20 @@ export default class SagaInstance extends Component {
       loading: true,
       filters,
     });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      SagaInstanceStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
     SagaInstanceStore.loadData(pagination, filters, sort, params).then((data) => {
       SagaInstanceStore.setData(data.content);
       this.setState({
@@ -66,7 +81,6 @@ export default class SagaInstance extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     });

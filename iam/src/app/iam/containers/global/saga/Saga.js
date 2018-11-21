@@ -9,6 +9,7 @@ import SagaStore from '../../../stores/global/saga/SagaStore';
 import './style/saga.scss';
 import './style/json.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'global.saga';
 const { Sidebar } = Modal;
@@ -58,6 +59,20 @@ export default class Saga extends Component {
       loading: true,
       filters,
     });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      SagaStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
     SagaStore.loadData(pagination, filters, sort, params).then((data) => {
       SagaStore.setData(data.content);
       this.setState({
@@ -68,7 +83,6 @@ export default class Saga extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     });

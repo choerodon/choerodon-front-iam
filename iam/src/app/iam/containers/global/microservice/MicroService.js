@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page } from 'choerodon-front-boot';
 import querystring from 'query-string';
 import './MicroService.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'global.microservice';
 
@@ -53,7 +54,21 @@ export default class MicroService extends Component {
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
     // 防止标签闪烁
-    this.setState({ filters });
+    this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      this.setState({
+        loading: false,
+        pagination: {
+          total: 0,
+        },
+        content: [],
+        sort,
+        params,
+      });
+      return;
+    }
     this.fetch(pagination, sort, filters, params).then((data) => {
       this.setState({
         pagination: {
@@ -64,16 +79,12 @@ export default class MicroService extends Component {
         content: data.content,
         loading: false,
         sort,
-        filters,
         params,
       });
     });
   }
 
   fetch({ current, pageSize }, { columnKey, order }, { serviceName }, params) {
-    this.setState({
-      loading: true,
-    });
     const queryObj = {
       page: current - 1,
       size: pageSize,

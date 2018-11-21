@@ -287,10 +287,10 @@ export default class MailTemplate extends Component {
       filteredValue: filters.isPredefined || [],
       filters: [{
         text: intl.formatMessage({ id: 'mailtemplate.predefined' }),
-        value: true,
+        value: 'true',
       }, {
         text: intl.formatMessage({ id: 'mailtemplate.selfdefined' }),
-        value: false,
+        value: 'false',
       }],
     },
     {

@@ -318,10 +318,10 @@ export default class InMailTemplate extends Component {
       filteredValue: filters.isPredefined || [],
       filters: [{
         text: intl.formatMessage({ id: 'inmailtemplate.predefined' }),
-        value: true,
+        value: 'true',
       }, {
         text: intl.formatMessage({ id: 'inmailtemplate.selfdefined' }),
-        value: false,
+        value: 'false',
       }],
     },
     {

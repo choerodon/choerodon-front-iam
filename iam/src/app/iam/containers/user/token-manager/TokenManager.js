@@ -180,7 +180,7 @@ export default class TokenManager extends Component {
           </Button>
         </Header>
         <Content
-          className="c7n-iam-receive-setting"
+          className="c7n-iam-token-manager"
           code={intlPrefix}
         >
           <Table
@@ -191,7 +191,6 @@ export default class TokenManager extends Component {
             rowKey="accesstoken"
             fixed
             onChange={this.handlePageChange}
-            className="c7n-iam-token-manager"
           />
         </Content>
       </Page>

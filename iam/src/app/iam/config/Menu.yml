@@ -486,3 +486,10 @@
         sort: 6
         permission:
         - 'iam-service.user.queryInfo'
+    - "token-manager":
+        icon: authority
+        Routes: /iam/token-manager
+        sort: 7
+        permission:
+        - 'iam-service.access-token.list'
+        - 'iam-service.access-token.delete'

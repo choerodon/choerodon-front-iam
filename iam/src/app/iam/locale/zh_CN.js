@@ -1397,6 +1397,17 @@ const zh_CN = {
   'user.usermsg.nomore': '暂无更多消息',
   'user.usermsg.load-more': '加载更多',
 
+  // 授权管理
+  'user.token-manager.header.title': '授权管理',
+  'user.token-manager.title': 'ACCESS-TOKEN管理',
+  'user.token-manager.description': '您可以在此查看自己的 access-token 情况。',
+  'user.token-manager.client-id': '客户端名称',
+  'user.token-manager.redirect-uri': '重定向地址',
+  'user.token-manager.create-time': '创建时间',
+  'user.token-manager.expiration-time': '失效时间',
+  'user.token-manager.remove.title': '移除access-token',
+  'user.token-manager.remove.content': '确定要移除{name}吗？移除后您将无法获取该token的授权信息。',
+
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',
   'global.memberrole.upload.title': '在平台"{name}"中导入角色',

@@ -48,6 +48,7 @@ const projectSetting = asyncRouter(() => import('./project/project-setting'));
 const password = asyncRouter(() => import('./user/password'));
 const organizationInfo = asyncRouter(() => import('./user/organization-info'));
 const projectInfo = asyncRouter(() => import('./user/project-info'));
+const tokenManager = asyncRouter(() => import('./user/token-manager'));
 const receiveSetting = asyncRouter(() => import('./user/receive-setting'));
 const userInfo = asyncRouter(() => import('./user/user-info'));
 const userMsg = asyncRouter(() => import('./user/user-msg'));
@@ -95,6 +96,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/password`} component={password} />
           <Route path={`${match.url}/organization-info`} component={organizationInfo} />
           <Route path={`${match.url}/project-info`} component={projectInfo} />
+          <Route path={`${match.url}/token-manager`} component={tokenManager} />
           <Route path={`${match.url}/receive-setting`} component={receiveSetting} />
           <Route path={`${match.url}/user-info`} component={userInfo} />
           <Route path={`${match.url}/user-msg`} component={userMsg} />

@@ -1145,6 +1145,8 @@ const zh_CN = {
   'global.system-setting.edit.hint': '您可以在此裁剪、旋转图片，然后点击"保存" 完成徽标的修改',
   'global.system-setting.edit.preview': '徽标预览',
   'global.system-setting.edit.button': '重新上传',
+  'global.system-setting.min-length': '平台默认最小密码长度',
+  'global.system-setting.max-length': '平台默认最大密码长度',
 
   // 组织层
   // 项目管理
@@ -1321,6 +1323,13 @@ const zh_CN = {
   'organization.user.download.failed.detail': '点击下载失败详情',
   'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
 
+  // 系统公告
+  'organization.announcement.header.title': '系统公告',
+  'organization.announcement.title': '组织{name}的系统公告',
+  'organization.announcement.description': '这是系统公告的描述',
+  'organization.announcement.content': '公告内容',
+  'organization.announcement.send-time': '发送时间',
+
   // 项目层
   // 项目信息
   'project.info.disable.title': '停用项目',
@@ -1457,6 +1466,12 @@ const zh_CN = {
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
+
+  // 系统公告
+  'announcement.unstart': '未开始',
+  'announcement.finish': '完成',
+  'announcement.running': '发送中',
+  'announcement.fail': '失败',
 
   // Upload
   'download.template': '下载',

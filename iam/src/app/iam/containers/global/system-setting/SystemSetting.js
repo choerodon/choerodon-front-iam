@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer, trace } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Icon, Input, Select, Spin, Upload, Popover, Modal } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Select, Spin, InputNumber, Popover, Modal } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './SystemSetting.scss';
@@ -11,6 +11,7 @@ import LogoUploader from './LogoUploader';
 
 const intlPrefix = 'global.system-setting';
 const prefixClas = 'c7n-iam-system-setting';
+const inputPrefix = 'organization.pwdpolicy';
 const limitSize = 1024;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -112,6 +113,28 @@ export default class SystemSetting extends Component {
     this.setState({
       uploadLogoVisible: !uploadLogoVisible,
     });
+  };
+
+  checkMaxLength = (rule, value, callback) => {
+    const { getFieldValue } = this.props.form;
+    const { intl } = this.props;
+    const minPasswordLength = getFieldValue('minPasswordLength');
+    if (value < 0) {
+      callback(intl.formatMessage({ id: `${inputPrefix}.max.length` }));
+    } else if (value < minPasswordLength) {
+      callback('最大密码长度须大于或等于最小密码长度');
+    }
+    this.props.form.validateFields(['minPasswordLength'], { force: true });
+    callback();
+  };
+
+  checkMinLength = (rule, value, callback) => {
+    const { intl } = this.props;
+    const { getFieldValue } = this.props.form;
+    const maxPasswordLength = getFieldValue('maxPasswordLength');
+    if (value < 0) callback(intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }));
+    else if (value > maxPasswordLength) callback(intl.formatMessage({ id: `${inputPrefix}.min.lessthan.more` }));
+    callback();
   };
 
   faviconContainer() {
@@ -229,7 +252,19 @@ export default class SystemSetting extends Component {
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
       if (Object.keys(prevSetting).length) {
         if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
-          SystemSettingStore.putUserSetting(submitSetting).then(() => window.location.reload(true));
+          SystemSettingStore.putUserSetting(submitSetting).then((data) => {
+            if (!data.failed) {
+              window.location.reload(true);
+            } else {
+              this.setState({
+                submitting: false,
+              });
+            }
+          }).catch((error) => {
+            this.setState({
+              submitting: false,
+            });
+          });
         } else {
           Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.conflict` }));
           this.setState({
@@ -242,7 +277,19 @@ export default class SystemSetting extends Component {
           submitting: false,
         });
       } else {
-        SystemSettingStore.postUserSetting(submitSetting).then(() => window.location.reload(true));
+        SystemSettingStore.postUserSetting(submitSetting).then((data) => {
+          if (!data.failed) {
+            window.location.reload(true);
+          } else {
+            this.setState({
+              submitting: false,
+            });
+          }
+        }).catch((error) => {
+          this.setState({
+            submitting: false,
+          });
+        });
       }
     });
   };
@@ -251,7 +298,7 @@ export default class SystemSetting extends Component {
     const { SystemSettingStore, intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { logoLoadingStatus, submitting, uploadLogoVisible } = this.state;
-    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle } = SystemSettingStore.getUserSetting;
+    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle, maxPasswordLength, minPasswordLength } = SystemSettingStore.getUserSetting;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {
@@ -263,11 +310,13 @@ export default class SystemSetting extends Component {
         sm: { span: 16 },
       },
     };
+    const inputHalfWidth = '236px';
     const uploadButton = (
       <div onClick={this.handleUploadLogoVisibleChange}>
         {logoLoadingStatus ? <Spin /> : <div className={'initLogo'} />}
       </div>
     );
+
     const mainContent = (
       <Form onSubmit={this.handleSubmit} layout="vertical" className={prefixClas}>
         <FormItem>
@@ -349,6 +398,48 @@ export default class SystemSetting extends Component {
               maxLength={15}
               type="password"
               showPasswordEye
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          style={{ display: 'inline-block' }}
+        >
+          {getFieldDecorator('minPasswordLength', {
+            rules: [
+              {
+                validator: this.checkMinLength,
+                validateFirst: true,
+              },
+            ],
+            initialValue: minPasswordLength,
+          })(
+            <InputNumber
+              label={<FormattedMessage id={`${intlPrefix}.min-length`} />}
+              style={{ width: inputHalfWidth }}
+              max={65535}
+              min={0}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          style={{ display: 'inline-block', marginLeft: 40 }}
+        >
+          {getFieldDecorator('maxPasswordLength', {
+            rules: [
+              {
+                validator: this.checkMaxLength,
+                validateFirst: true,
+              },
+            ],
+            initialValue: maxPasswordLength,
+          })(
+            <InputNumber
+              label={<FormattedMessage id={`${intlPrefix}.max-length`} />}
+              style={{ width: inputHalfWidth }}
+              max={65535}
+              min={0}
             />,
           )}
         </FormItem>

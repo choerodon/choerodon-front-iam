@@ -195,6 +195,8 @@ class UserStore {
 
   UnenableUser = (orgId, userId, data) => axios.put(`/iam/v1/organizations/${orgId}/users/${userId}/disable`);
 
+  resetUserPwd = (orgId, userId) => axios.put(`/iam/v1/organizations/${orgId}/users/${userId}/reset`);
+
 
   // 加载用户列表
   loadUsers = (organizationId, page, sortParam, {

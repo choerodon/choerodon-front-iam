@@ -168,12 +168,21 @@ export default class User extends Component {
   handleReset = (record) => {
     const { intl } = this.props;
     const { loginName } = record;
+    const { UserStore, AppState } = this.props;
+    const organizationId = AppState.currentMenuType.id;
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.reset.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.reset.content` }, { loginName }),
-      // onOk: () => axios.delete(`/manager/v1/routes/${record.id}`).then(({ failed, message }) => {
-      // }),
+      onOk: () => UserStore.resetUserPwd(organizationId, record.id).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.reset.success` }));
+        }
+      }).catch(() => {
+        Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.reset.failed` }));
+      }),
     });
   }
 
@@ -635,7 +644,7 @@ export default class User extends Component {
             });
           }
           actionDatas.push({
-            service: ['iam-service.role.update'],
+            service: ['iam-service.organization-user.resetUserPassword'],
             icon: '',
             text: intl.formatMessage({ id: `${intlPrefix}.reset` }),
             action: this.handleReset.bind(this, record),
@@ -655,6 +664,7 @@ export default class User extends Component {
           'iam-service.organization-user.enableUser',
           'iam-service.organization-user.unlock',
           'iam-service.organization-user.check',
+          'iam-service.organization-user.resetUserPassword',
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>

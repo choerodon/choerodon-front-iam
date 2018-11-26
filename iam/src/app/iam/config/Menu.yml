@@ -263,6 +263,7 @@
           - 'iam-service.organization-user.disableUser'
           - 'iam-service.organization-user.enableUser'
           - 'iam-service.organization-user.unlock'
+          - 'iam-service.organization-user.resetUserPassword'
     - "member-role-organization":
         icon: person_add
         Routes: /iam/member-role

@@ -183,6 +183,12 @@
         sort: 5
         permission:
         - 'notify-service.message-record-site.pageEmail'
+    - "announcement":
+        icon: volume_up
+        Routes: /iam/announcement
+        sort: 6
+        permission:
+        - 'notify-service.send-setting-site.pageSite'
 
 # 任务调度
 "task-dispatch":
@@ -319,6 +325,14 @@
           - 'notify-service.email-template-org.delete'
           - 'notify-service.email-template-org.query'
           - 'notify-service.send-setting-org.listNames'
+    - "announcement-organization":
+        icon: volume_up
+        Routes: /iam/announcement
+        sort: 8
+        permission:
+          - 'iam-service.password-policy.create'
+          - 'iam-service.password-policy.queryByOrganizationId'
+          - 'iam-service.password-policy.update'
 
 # 组织层消息中心
 "msg-center-organization":

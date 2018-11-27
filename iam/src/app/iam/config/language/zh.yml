@@ -28,6 +28,7 @@
 "msg-center.inmail-template": "站内信模板"
 "msg-center.mail-setting": "邮箱配置"
 "msg-center.msg-record": "消息记录"
+"msg-center.announcement": "系统公告"
 
 "task-dispatch": "任务调度"
 "task-dispatch.task-detail": "任务明细"
@@ -43,6 +44,7 @@
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "密码策略"
 "rentsetting.mail-template-organization": "邮件模板"
+"rentsetting.announcement-organization": "系统公告"
 
 "msg-center-organization": "消息中心"
 "msg-center-organization.send-setting-organization": "发送设置"

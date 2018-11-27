@@ -1,0 +1,14 @@
+.c7n-iam-announcement {
+  &-detail {
+    width: 512px;
+    &-content {
+      // background-color: #d3d3d3;
+    }
+  }
+  .nowarp {
+    max-width: 500px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}

@@ -1148,6 +1148,15 @@ const zh_CN = {
   'global.system-setting.min-length': '平台默认最小密码长度',
   'global.system-setting.max-length': '平台默认最大密码长度',
 
+  // 系统公告
+  'global.announcement.header.title': '系统公告',
+  'global.announcement.title': '平台"{name}"的系统公告',
+  'global.announcement.description': '在这里你可以发送通知给所有人',
+  'global.announcement.content': '公告内容',
+  'global.announcement.send-time': '发送时间',
+  'global.announcement.sidebar.title': '添加公告',
+  'global.announcement.sidebar.title.detail': '查看公告',
+
   // 组织层
   // 项目管理
   'organization.project.code.exist.msg': '项目编码已存在，请输入其他项目编码',
@@ -1325,10 +1334,12 @@ const zh_CN = {
 
   // 系统公告
   'organization.announcement.header.title': '系统公告',
-  'organization.announcement.title': '组织{name}的系统公告',
-  'organization.announcement.description': '这是系统公告的描述',
+  'organization.announcement.title': '组织"{name}"的系统公告',
+  'organization.announcement.description': '在这里你可以发送通知给组织下的所有人。',
   'organization.announcement.content': '公告内容',
   'organization.announcement.send-time': '发送时间',
+  'organization.announcement.sidebar.title': '添加公告',
+  'organization.announcement.sidebar.title.detail': '查看公告',
 
   // 项目层
   // 项目信息
@@ -1468,10 +1479,15 @@ const zh_CN = {
   'memberlabel.member.require.msg': '必须至少输入一个成员',
 
   // 系统公告
-  'announcement.unstart': '未开始',
-  'announcement.finish': '完成',
-  'announcement.running': '发送中',
-  'announcement.fail': '失败',
+  'announcement.waiting': '未开始',
+  'announcement.completed': '完成',
+  'announcement.sending': '发送中',
+  'announcement.failed': '失败',
+  'announcement.add': '添加公告',
+  'announcement.detail': '查看详情',
+  'announcement.content.required': '公告内容不可为空',
+  'announcement.delete.title': '确定要删除这条公告记录吗？',
+  'announcement.delete.content': '删除后您将看不到该条公告的记录。',
 
   // Upload
   'download.template': '下载',

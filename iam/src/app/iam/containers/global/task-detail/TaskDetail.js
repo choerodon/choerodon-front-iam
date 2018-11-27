@@ -798,22 +798,22 @@ export default class TaskDetail extends Component {
         let editableNode;
         if (record.type === 'Boolean') {
           editableNode = (
-            <FormItem style={{ marginBottom: 0 }}>
+            <FormItem style={{ marginBottom: 0, width: '55px' }}>
               {
                 getFieldDecorator(`params.${record.name}`, {
-                  rules: [],
+                  rules: [{
+                    required: text === null,
+                    message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
+                  }],
                   initialValue: text,
                 })(
-                  <div style={{ width: '55px' }}>
-                    <Select
-                      dropdownStyle={{ width: '55px' }}
-                      getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                    >
-                      <Option value={null} style={{ height: '22px' }} />
-                      <Option value>true</Option>
-                      <Option value={false}>false</Option>
-                    </Select>
-                  </div>,
+                  <Select
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                  >
+                    <Option value={null} style={{ height: '22px' }} />
+                    <Option value>true</Option>
+                    <Option value={false}>false</Option>
+                  </Select>,
                 )
               }
             </FormItem>);
@@ -826,12 +826,14 @@ export default class TaskDetail extends Component {
                     required: text === null,
                     message: intl.formatMessage({ id: `${intlPrefix}.num.required` }),
                   }, {
-                    validator: this.checkIsNumber,
+                    transform: value => Number(value),
+                    type: 'number',
+                    message: intl.formatMessage({ id: `${intlPrefix}.number.pattern` }),
                   }],
                   validateFirst: true,
                   initialValue: text === null ? undefined : text,
                 })(
-                  <InputNumber
+                  <Input
                     style={{ width: '200px' }}
                     onFocus={this.inputOnFocus}
                     autoComplete="off"
@@ -849,7 +851,7 @@ export default class TaskDetail extends Component {
                     whitespace: true,
                     message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
                   }],
-                  initialValue: text,
+                  initialValue: text === null ? undefined : text,
                 })(
                   <Input
                     style={{ width: '200px' }}

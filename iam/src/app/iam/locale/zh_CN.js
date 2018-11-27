@@ -780,6 +780,7 @@ const zh_CN = {
   'taskdetail.noprogram': '无可选任务程序时，无法创建任务',
   'taskdetail.num.required': '请输入数字',
   'taskdetail.default.required': '无默认值时必填',
+  'taskdetail.number.pattern': '请输入数字',
 
   // 执行记录
   'execution.header.title': '执行记录',

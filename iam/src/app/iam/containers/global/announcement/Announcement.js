@@ -11,6 +11,14 @@ import Editor from '../../../components/editor';
 
 // 匹配html界面为空白的正则。
 const patternHTMLEmpty = /^(((<[^(>|img)]+>)*\s*)|&nbsp;)*$/g;
+
+const iconType = {
+  COMPLETED: 'COMPLETED',
+  SENDING: 'RUNNING',
+  WAITING: 'UN_START',
+  FAILED: 'FAILED',
+};
+
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -65,27 +73,33 @@ export default class Announcement extends Component {
   };
 
   handleOk = () => {
-    const { AnnouncementStore: { editorContent }, AnnouncementStore, form, intl } = this.props;
-    form.validateFields((err, { date }) => {
-      if (!err) {
-        if (editorContent === null || patternHTMLEmpty.test(editorContent)) {
-          Choerodon.prompt(intl.formatMessage({ id: 'announcement.content.required' }));
-        } else if (editorContent && !patternHTMLEmpty.test(editorContent)) {
-          AnnouncementStore.createAnnouncement({
-            content: editorContent,
-            startTime: date.format('YYYY-MM-DD HH:mm:ss'),
-          }).then((data) => {
-            if (!data.failed) {
-              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-              this.handleRefresh();
-              AnnouncementStore.hideSideBar();
-            } else {
-              Choerodon.prompt(data.message);
-            }
-          });
+    const { AnnouncementStore: { editorContent, currentRecord }, AnnouncementStore, form, intl } = this.props;
+    if (!currentRecord) {
+      form.validateFields((err, { date }) => {
+        if (!err) {
+          AnnouncementStore.setSubmitting(true);
+          if (editorContent === null || patternHTMLEmpty.test(editorContent)) {
+            Choerodon.prompt(intl.formatMessage({ id: 'announcement.content.required' }));
+          } else if (editorContent && !patternHTMLEmpty.test(editorContent)) {
+            AnnouncementStore.createAnnouncement({
+              content: editorContent,
+              startTime: date.format('YYYY-MM-DD HH:mm:ss'),
+            }).then((data) => {
+              AnnouncementStore.setSubmitting(false);
+              if (!data.failed) {
+                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+                this.handleRefresh();
+                AnnouncementStore.hideSideBar();
+              } else {
+                Choerodon.prompt(data.message);
+              }
+            });
+          }
         }
-      }
-    });
+      });
+    } else {
+      AnnouncementStore.hideSideBar();
+    }
   };
 
   handleRefresh = () => {
@@ -141,12 +155,6 @@ export default class Announcement extends Component {
   getTableColumns() {
     const { intl, AnnouncementStore: { filters } } = this.props;
     const { intlPrefix } = this.announcementType;
-    const iconType = {
-      COMPLETED: 'COMPLETED',
-      SENDING: 'RUNNING',
-      WAITING: 'UN_START',
-      FAILED: 'FAILED',
-    };
     return [
       {
         title: <FormattedMessage id={`${intlPrefix}.content`} />,
@@ -208,6 +216,15 @@ export default class Announcement extends Component {
     </Permission>
   );
 
+  renderSidebarOkText() {
+    const { AnnouncementStore: { currentRecord } } = this.props;
+    if (currentRecord) {
+      return <FormattedMessage id="close" />;
+    } else {
+      return <FormattedMessage id="save" />;
+    }
+  }
+
   renderForm() {
     const {
       AnnouncementStore: { editorContent },
@@ -221,7 +238,25 @@ export default class Announcement extends Component {
         // code={`${intlPrefix}.create`}
         // values={{ name }}
       >
-        <p>公告内容：</p>
+        <Form>
+          <span className="send-time">发送时间：</span>
+          <FormItem {...formItemLayout} className="inline">
+            {getFieldDecorator('date', {
+              rules: [{
+                validator: this.validateDatePicker,
+              }],
+            })(
+              <DatePicker
+                style={{ width: '180px' }}
+                format="YYYY-MM-DD HH:mm:ss"
+                showTime
+                getCalendarContainer={that => that}
+              />,
+            )
+            }
+          </FormItem>
+        </Form>
+        <p className="content-text">公告内容：</p>
         <Editor
           value={editorContent}
           onRef={(node) => {
@@ -231,24 +266,6 @@ export default class Announcement extends Component {
             AnnouncementStore.setEditorContent(value);
           }}
         />
-        <Form>
-          <FormItem {...formItemLayout}>
-            {getFieldDecorator('date', {
-              rules: [{
-                validator: this.validateDatePicker,
-              }],
-            })(
-              <DatePicker
-                label="发送时间"
-                style={{ width: '248px' }}
-                format="YYYY-MM-DD HH:mm:ss"
-                showTime
-                getCalendarContainer={that => that}
-              />,
-            )
-            }
-          </FormItem>
-        </Form>
       </Content>
     );
   }
@@ -258,20 +275,30 @@ export default class Announcement extends Component {
     const { intl } = this.props;
     return (
       <div className="c7n-iam-announcement-detail">
-        <div><FormattedMessage id={`${intlPrefix}.content`} />:</div>
+
+        <div><span>状态：</span>
+          <div className="inline">
+            <StatusTag
+              style={{ fontSize: 14, color: 'rgba(0,0,0,0.65)' }}
+              mode="icon"
+              name={intl.formatMessage({ id: `announcement.${status.toLowerCase()}` })}
+              colorCode={iconType[status]}
+            />
+          </div>
+        </div>
+        <div><span>发送时间：</span><span className="send-time">{sendTime}</span></div>
+        <div><span>公告内容：</span></div>
         <div
           className="c7n-iam-announcement-detail-content"
           dangerouslySetInnerHTML={{ __html: `${content}` }}
         />
-        <div><span>状态：</span>{intl.formatMessage({ id: `announcement.${status.toLowerCase()}` })}</div>
-        <div><span>发送时间：</span>{sendTime}</div>
       </div>
     );
   }
 
   render() {
     const { AppState, intl,
-      AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord },
+      AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord, submitting },
     } = this.props;
     const { intlPrefix } = this.announcementType;
     return (
@@ -310,9 +337,11 @@ export default class Announcement extends Component {
           <Sidebar
             title={<FormattedMessage id={`${intlPrefix}.sidebar.title${currentRecord ? '.detail' : ''}`} />}
             onOk={this.handleOk}
-            okText={<FormattedMessage id="save" />}
+            okText={this.renderSidebarOkText()}
             cancelText={<FormattedMessage id="cancel" />}
+            okCancel={!currentRecord}
             onCancel={this.handleCancel}
+            confirmLoading={submitting}
             visible={sidebarVisible}
           >
             { currentRecord ? this.renderDetail(currentRecord) : this.renderForm() }

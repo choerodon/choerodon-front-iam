@@ -188,7 +188,9 @@
         Routes: /iam/announcement
         sort: 6
         permission:
-        - 'notify-service.send-setting-site.pageSite'
+        - 'asgard-service.system-notification.pagingQuerySiteNotification'
+        - 'asgard-service.system-notification.createNotificationOnSite'
+        - 'asgard-service.system-notification.deleteSiteNotification'
 
 # 任务调度
 "task-dispatch":
@@ -331,9 +333,9 @@
         Routes: /iam/announcement
         sort: 8
         permission:
-          - 'iam-service.password-policy.create'
-          - 'iam-service.password-policy.queryByOrganizationId'
-          - 'iam-service.password-policy.update'
+          - 'asgard-service.system-notification.pagingQueryOrgNotificaton'
+          - 'asgard-service.system-notification.createNotificationOnOrg'
+          - 'asgard-service.system-notification.deleteOrgNotification'
 
 # 组织层消息中心
 "msg-center-organization":

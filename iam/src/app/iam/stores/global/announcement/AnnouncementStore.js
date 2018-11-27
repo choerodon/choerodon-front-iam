@@ -8,6 +8,7 @@ class AnnouncementStore {
   @observable announcementData = [];
   @observable editorContent = null;
   @observable loading = false;
+  @observable submitting = false;
   @observable sidebarVisible = false;
   @observable currentRecord = false;
   @observable pagination = {
@@ -16,11 +17,8 @@ class AnnouncementStore {
     total: 0,
   };
   @observable params = [];
-
   @observable filters = {};
-
   @observable sort = {};
-
   @observable announcementType = null;
 
   @action
@@ -30,6 +28,11 @@ class AnnouncementStore {
 
   refresh() {
     this.loadData({ current: 1, pageSize: 10, total: 0 }, {}, {}, []);
+  }
+
+  @action
+  setSubmitting(flag) {
+    this.submitting = flag;
   }
 
   @action

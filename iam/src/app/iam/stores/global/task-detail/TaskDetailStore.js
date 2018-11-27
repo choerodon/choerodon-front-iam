@@ -12,6 +12,7 @@ class TaskDetailStore {
   @observable classNames = []; // 任务类名下拉框数据
   @observable currentClassNames = {}; // 当前任务程序
   @observable currentTask = {};
+  @observable userdata = [];
 
   @action setData(data) {
     this.data = data;
@@ -66,6 +67,14 @@ class TaskDetailStore {
     this.currentTask = data;
   }
 
+  @action setUserData(data) {
+    this.userdata = data;
+  }
+
+  @computed get getUserData() {
+    return this.userdata;
+  }
+
   getLevelType = (type, id) => (type === 'site' ? '' : `/${type}s/${id}`);
 
   loadData(
@@ -113,6 +122,26 @@ class TaskDetailStore {
       queryObj.sort = sorter.join(',');
     }
     return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/instances/${taskId}?${querystring.stringify(queryObj)}`);
+  }
+
+  loadUserData(
+    { current, pageSize },
+    { columnKey = 'id', order = 'descend' },
+    params) {
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+      params,
+    };
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/iam/v1/all/users?${querystring.stringify(queryObj)}`);
   }
 
   loadService = () => axios.get('manager/v1/services');

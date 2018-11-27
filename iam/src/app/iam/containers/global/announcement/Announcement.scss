@@ -10,10 +10,13 @@
       display: inline-block;
     }
     width: 100%;
-    &-content {
+    &-wrapper {
       background: #f8f8f8;
       border-radius: 4px;
       padding: 20px;
+    }
+    &-content {
+      width: 559px;
     }
     > div {
       margin-bottom: 14px;

@@ -38,7 +38,7 @@ class AnnouncementType {
     this.orgId = id;
     this.apiPrefix = type === 'organization' ? `/asgard/v1/system_notice/organization/${this.orgId}` : '/asgard/v1/system_notice';
     this.intlPrefix = `${codePrefix}.announcement`;
-    this.intlValue = 'organization' ? name : AppState.getSiteInfo.systemName || 'Choerodon';
+    this.intlValue = type === 'organization' ? name : AppState.getSiteInfo.systemName || 'Choerodon';
   }
 }
 

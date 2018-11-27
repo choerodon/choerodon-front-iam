@@ -21,6 +21,7 @@ const IconType = {
   RUNNING: 'timelapse',
   PREDEFINE: 'settings',
   CUSTOM: 'av_timer',
+  UN_START: 'timer',
 };
 
 export default class StatusTag extends Component {
@@ -46,7 +47,6 @@ export default class StatusTag extends Component {
 
   renderIconMode() {
     const { name, colorCode, iconType } = this.props;
-
     return (
       <span
         className="c7n-iam-status-tag-with-icon"

@@ -7,6 +7,7 @@ import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot'
 const registerOrg = asyncRouter(() => import('./outward/register-org'));
 
 // global 对应目录
+const announcement = asyncRouter(() => import('./global/announcement'));
 const apiTest = asyncRouter(() => import('./global/api-test'));
 const configuration = asyncRouter(() => import('./global/configuration'));
 const instance = asyncRouter(() => import('./global/instance'));
@@ -64,6 +65,7 @@ class IAMIndex extends React.Component {
       <IntlProviderAsync>
         <Switch>
           <Route path={`${match.url}/outward-register-org`} component={registerOrg} />
+          <Route path={`${match.url}/announcement`} component={announcement} />
           <Route path={`${match.url}/api-test`} component={apiTest} />
           <Route path={`${match.url}/configuration`} component={configuration} />
           <Route path={`${match.url}/inmail-template`} component={inmailTemplate} />

@@ -21,8 +21,8 @@ class TokenManagerStore {
     this.loadData(token, { current: 1, pageSize: 10 }, []);
   }
 
-  deleteTokenById(tokenId) {
-    return axios.delete(`/iam/v1/token?tokenId=${tokenId}`);
+  deleteTokenById(tokenId, token) {
+    return axios.delete(`/iam/v1/token?tokenId=${tokenId}&currentToken=${token}`);
   }
 
   @action

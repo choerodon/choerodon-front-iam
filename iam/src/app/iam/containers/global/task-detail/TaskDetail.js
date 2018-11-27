@@ -398,7 +398,7 @@ export default class TaskDetail extends Component {
    * @param id
    */
   handleChangeClass(id) {
-    const currentClass = TaskDetailStore.service.find(item => item.id === id);
+    const currentClass = TaskDetailStore.classNames.find(item => item.id === id);
     TaskDetailStore.setCurrentClassNames(currentClass);
     this.loadParamsTable();
   }
@@ -793,23 +793,29 @@ export default class TaskDetail extends Component {
       title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
       dataIndex: 'defaultValue',
       key: 'defaultValue',
+      width: 258,
       render: (text, record) => {
         let editableNode;
         if (record.type === 'Boolean') {
           editableNode = (
             <FormItem style={{ marginBottom: 0 }}>
               {
-              getFieldDecorator(`params.${record.name}`, {
-                rules: [],
-                initialValue: text,
-              })(
-                <Select>
-                  <Option value>true</Option>
-                  <Option value={false}>false</Option>
-                  <Option value={null} style={{ display: text === null ? 'none' : 'block' }} />
-                </Select>,
-              )
-            }
+                getFieldDecorator(`params.${record.name}`, {
+                  rules: [],
+                  initialValue: text,
+                })(
+                  <div style={{ width: '55px' }}>
+                    <Select
+                      dropdownStyle={{ width: '55px' }}
+                      getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                    >
+                      <Option value={null} style={{ height: '22px' }} />
+                      <Option value>true</Option>
+                      <Option value={false}>false</Option>
+                    </Select>
+                  </div>,
+                )
+              }
             </FormItem>);
         } else if (record.type === 'Integer' || record.type === 'Long' || record.type === 'Double' || record.type === 'Float') {
           editableNode = (
@@ -825,13 +831,11 @@ export default class TaskDetail extends Component {
                   validateFirst: true,
                   initialValue: text === null ? undefined : text,
                 })(
-                  <div className="c7n-taskdetail-text">
-                    <InputNumber
-                      onFocus={this.inputOnFocus}
-                      autoComplete="off"
-                    />
-                    <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
-                  </div>,
+                  <InputNumber
+                    style={{ width: '200px' }}
+                    onFocus={this.inputOnFocus}
+                    autoComplete="off"
+                  />,
                 )
               }
             </FormItem>);
@@ -848,6 +852,7 @@ export default class TaskDetail extends Component {
                   initialValue: text,
                 })(
                   <Input
+                    style={{ width: '200px' }}
                     onFocus={this.inputOnFocus}
                     autoComplete="off"
                   />,

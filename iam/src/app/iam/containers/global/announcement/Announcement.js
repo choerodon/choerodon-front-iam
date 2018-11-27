@@ -67,6 +67,21 @@ export default class Announcement extends Component {
     AnnouncementStore.loadData();
   };
 
+  getPermission() {
+    const { AppState } = this.props;
+    const { type } = AppState.currentMenuType;
+    let createService = ['asgard-service.system-notification.createNotificationOnSite'];
+    let deleteService = ['asgard-service.system-notification.deleteSiteNotification'];
+    if (type === 'organization') {
+      createService = ['asgard-service.system-notification.createNotificationOnOrg'];
+      deleteService = ['asgard-service.system-notification.deleteOrgNotification'];
+    }
+    return {
+      createService,
+      deleteService,
+    };
+  }
+
   handleTableChange = (pagination, filters, sort, params) => {
     this.fetchData(pagination, filters, sort, params);
   };
@@ -173,7 +188,12 @@ export default class Announcement extends Component {
           value,
         })),
         filteredValue: filters.status || [],
-        render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: `announcement.${status.toLowerCase()}` })} colorCode={iconType[status]} />),
+        render: status => (
+          <StatusTag
+            mode="icon"
+            name={intl.formatMessage({ id: `announcement.${status.toLowerCase()}` })}
+            colorCode={iconType[status]}
+          />),
       }, {
         title: <FormattedMessage id={`${intlPrefix}.send-time`} />,
         dataIndex: 'sendTime',
@@ -188,32 +208,43 @@ export default class Announcement extends Component {
     ];
   }
 
-  renderAction = (text, record) => (
-    <Permission service={[]}>
-      <Tooltip
-        title={<FormattedMessage id="announcement.detail" />}
-        placement="bottom"
-      >
-        <Button
-          shape="circle"
-          icon="find_in_page"
-          size="small"
-          onClick={() => this.showDetail(record)}
-        />
-      </Tooltip>
-      <Tooltip
-        title={<FormattedMessage id="delete" />}
-        placement="bottom"
-      >
-        <Button
-          size="small"
-          icon="delete_forever"
-          shape="circle"
-          onClick={() => this.handleDelete(record)}
-        />
-      </Tooltip>
-    </Permission>
-  );
+  renderAction = (text, record) => {
+    const { deleteService } = this.getPermission();
+
+    return (
+      <React.Fragment>
+        <Tooltip
+          title={<FormattedMessage id="announcement.detail" />}
+          placement="bottom"
+        >
+          <Button
+            shape="circle"
+            icon="find_in_page"
+            size="small"
+            onClick={() => this.showDetail(record)}
+          />
+        </Tooltip>
+
+        <Permission
+          service={deleteService}
+          type={this.announcementType.type}
+          organizationId={this.announcementType.orgId}
+        >
+          <Tooltip
+            title={<FormattedMessage id="delete" />}
+            placement="bottom"
+          >
+            <Button
+              size="small"
+              icon="delete_forever"
+              shape="circle"
+              onClick={() => this.handleDelete(record)}
+            />
+          </Tooltip>
+        </Permission>
+      </React.Fragment>
+    );
+  };
 
   renderSidebarOkText() {
     const { AnnouncementStore: { currentRecord } } = this.props;
@@ -295,17 +326,28 @@ export default class Announcement extends Component {
   render() {
     const { intl, AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord, submitting } } = this.props;
     const { intlPrefix } = this.announcementType;
+    const { createService } = this.getPermission();
     return (
       <Page
-        service={[]}
+        service={[
+          'asgard-service.system-notification.pagingQuerySiteNotification',
+          'asgard-service.system-notification.createNotificationOnSite',
+          'asgard-service.system-notification.deleteSiteNotification',
+          'asgard-service.system-notification.pagingQueryOrgNotificaton',
+          'asgard-service.system-notification.createNotificationOnOrg',
+          'asgard-service.system-notification.deleteOrgNotification',
+        ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
-          <Button
-            onClick={this.showCreate}
-            icon="playlist_add"
-          >
-            <FormattedMessage id="announcement.add" />
-          </Button>
+          <Permission service={createService}>
+            <Button
+              onClick={this.showCreate}
+              icon="playlist_add"
+            >
+              <FormattedMessage id="announcement.add" />
+            </Button>
+          </Permission>
+
           <Button
             onClick={this.handleRefresh}
             icon="refresh"

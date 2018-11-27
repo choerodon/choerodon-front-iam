@@ -3,8 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { Button, Table, Modal, Tooltip, Form, DatePicker } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import moment from 'moment';
-import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import './Announcement.scss';
 import StatusTag from '../../../components/statusTag';
 import Editor from '../../../components/editor';
@@ -227,16 +226,12 @@ export default class Announcement extends Component {
 
   renderForm() {
     const {
-      AnnouncementStore: { editorContent },
-      AnnouncementStore, intl,
+      AnnouncementStore: { editorContent }, AnnouncementStore,
       form: { getFieldDecorator },
     } = this.props;
-    const { intlPrefix } = this.announcementType;
     return (
       <Content
         className="c7n-iam-announcement-siderbar-content"
-        // code={`${intlPrefix}.create`}
-        // values={{ name }}
       >
         <Form>
           <span className="send-time">发送时间：</span>
@@ -271,7 +266,6 @@ export default class Announcement extends Component {
   }
 
   renderDetail({ content, status, sendTime }) {
-    const { intlPrefix } = this.announcementType;
     const { intl } = this.props;
     return (
       <div className="c7n-iam-announcement-detail">
@@ -288,18 +282,18 @@ export default class Announcement extends Component {
         </div>
         <div><span>发送时间：</span><span className="send-time">{sendTime}</span></div>
         <div><span>公告内容：</span></div>
-        <div
-          className="c7n-iam-announcement-detail-content"
-          dangerouslySetInnerHTML={{ __html: `${content}` }}
-        />
+        <div className="c7n-iam-announcement-detail-wrapper">
+          <div
+            className="c7n-iam-announcement-detail-content"
+            dangerouslySetInnerHTML={{ __html: `${content}` }}
+          />
+        </div>
       </div>
     );
   }
 
   render() {
-    const { AppState, intl,
-      AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord, submitting },
-    } = this.props;
+    const { intl, AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord, submitting } } = this.props;
     const { intlPrefix } = this.announcementType;
     return (
       <Page

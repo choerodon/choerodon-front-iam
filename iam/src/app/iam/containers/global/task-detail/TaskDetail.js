@@ -351,6 +351,27 @@ export default class TaskDetail extends Component {
     });
   }
 
+
+  createTask() {
+    const { type, id, name } = this.taskdetail;
+    let createUrl;
+    switch (type) {
+      case 'organization':
+        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
+        break;
+      case 'project':
+        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&projectId=${id}`;
+        break;
+      case 'site':
+        createUrl = '/iam/task-detail/create';
+        break;
+      default:
+        break;
+    }
+    this.props.history.push(createUrl);
+  }
+
+
   /**
    * 开启侧边栏
    * @param selectType create/detail
@@ -1502,6 +1523,14 @@ export default class TaskDetail extends Component {
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
+          {/* <Permission service={createService}> */}
+          {/* <Button */}
+          {/* icon="playlist_add" */}
+          {/* onClick={this.createTask.bind(this)} */}
+          {/* > */}
+          {/* <FormattedMessage id={`${intlPrefix}.create`} /> */}
+          {/* </Button> */}
+          {/* </Permission> */}
           <Permission service={createService}>
             <Button
               icon="playlist_add"

@@ -479,7 +479,9 @@
         Routes: /iam/user-msg
         sort: 5
         permission:
-          - 'iam-service.user.listProjectAndRoleById'
+          - 'notify-service.site-msg-record.pagingQuery'
+          - 'notify-service.site-msg-record.batchDeleted'
+          - 'notify-service.site-msg-record.batchRead'
     - "receive-setting":
         icon: settings
         Routes: /iam/receive-setting

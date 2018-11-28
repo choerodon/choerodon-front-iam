@@ -14,6 +14,7 @@ const zh_CN = {
   // ProjectInfo
   'dashboard.projectinfo.name': '项目名称',
   'dashboard.projectinfo.code': '项目编码',
+  'dashboard.projectinfo.type': '项目类型',
   'dashboard.projectinfo.organization': '所属组织',
   'dashboard.projectinfo.role': '我的角色',
   'dashboard.projectinfo.redirect': '转至项目设置',

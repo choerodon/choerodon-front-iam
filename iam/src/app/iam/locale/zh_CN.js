@@ -1149,6 +1149,7 @@ const zh_CN = {
   'organization.project.modify': '修改项目',
   'organization.project.code': '项目编码',
   'organization.project.name': '项目名称',
+  'organization.project.type': '项目类型',
   'organization.project.name.require.msg': '请输入项目名称',
   'organization.project.status.enabled': '启用状态',
   'organization.project.header.title': '项目管理',

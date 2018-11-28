@@ -1523,14 +1523,14 @@ export default class TaskDetail extends Component {
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
-          {/* <Permission service={createService}> */}
-          {/* <Button */}
-          {/* icon="playlist_add" */}
-          {/* onClick={this.createTask.bind(this)} */}
-          {/* > */}
-          {/* <FormattedMessage id={`${intlPrefix}.create`} /> */}
-          {/* </Button> */}
-          {/* </Permission> */}
+          <Permission service={createService}>
+            <Button
+              icon="playlist_add"
+              onClick={this.createTask.bind(this)}
+            >
+              <FormattedMessage id={`${intlPrefix}.create`} />
+            </Button>
+          </Permission>
           <Permission service={createService}>
             <Button
               icon="playlist_add"

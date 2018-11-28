@@ -72,7 +72,7 @@ class ProjectStore {
   loadProject = (organizationId,
     { current, pageSize },
     { columnKey = 'id', order = 'descend' },
-    { name, code, type, enabled, params }) => {
+    { name, code, typeName, enabled, params }) => {
     this.changeLoading(true);
     const queryObj = {
       page: current - 1,
@@ -80,7 +80,7 @@ class ProjectStore {
       name,
       code,
       enabled,
-      type,
+      typeName,
       params,
     };
     if (columnKey) {

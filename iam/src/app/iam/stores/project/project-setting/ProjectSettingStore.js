@@ -4,6 +4,7 @@ import { axios, store } from 'choerodon-front-boot';
 @store('ProjectSettingStore')
 class ProjectSettingStore {
   @observable projectInfo = {};
+  @observable projectTypes = [];
   
   @action setProjectInfo(data) {
     this.projectInfo = data;
@@ -11,6 +12,14 @@ class ProjectSettingStore {
 
   @computed get getProjectInfo() {
     return this.projectInfo;
+  }
+
+  @action setProjectTypes(data) {
+    this.projectTypes = data;
+  }
+
+  @computed get getProjectTypes() {
+    return this.projectTypes;
   }
 
   axiosGetProjectInfo(id) {
@@ -24,6 +33,8 @@ class ProjectSettingStore {
   disableProject(proId) {
     return axios.put(`/iam/v1/projects/${proId}/disable`);
   }
+
+  loadProjectTypes = () => axios.get('/iam/v1/projects/types');
 }
 
 const projectSettingStore = new ProjectSettingStore();

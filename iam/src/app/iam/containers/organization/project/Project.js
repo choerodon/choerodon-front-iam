@@ -170,7 +170,6 @@ export default class Project extends Component {
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 this.handleTabClose();
                 this.loadProjects();
-                value.projectType = value.type;
                 value.type = 'project';
                 HeaderStore.addProject(value);
               }
@@ -209,7 +208,6 @@ export default class Project extends Component {
               Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
               this.handleTabClose();
               this.loadProjects();
-              value.projectType = value.type;
               value.type = 'project';
               HeaderStore.updateProject(value);
             }
@@ -385,17 +383,17 @@ export default class Project extends Component {
             })(
               <Select
                 style={{ width: '300px' }}
-                label="项目类型"
+                label={<FormattedMessage id={`${intlPrefix}.type`} />}
                 getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 filter
               >
                 {
-                  types && types.length ? [<Option key="no" value="no">无</Option>].concat(
+                  types && types.length ? [<Option key="no" value="no">{intl.formatMessage({ id: `${intlPrefix}.empty` })}</Option>].concat(
                     types.map(({ name, code }) => (
                       <Option key={code} value={code}>{name}</Option>
                     )),
-                  ) : <Option key="empty">无项目类型</Option>
+                  ) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.type.empty` })}</Option>
                 }
               </Select>,
             )}
@@ -414,8 +412,8 @@ export default class Project extends Component {
     const orgname = menuType.name;
     const { filters, operation } = this.state;
     const type = menuType.type;
-    const filtersType = projectTypes && projectTypes.map(({ name, code }) => ({
-      value: code,
+    const filtersType = projectTypes && projectTypes.map(({ name }) => ({
+      value: name,
       text: name,
     }));
     const columns = [{
@@ -444,11 +442,11 @@ export default class Project extends Component {
       ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.type`} />,
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'typeName',
+      key: 'typeName',
       width: '25%',
       filters: filtersType,
-      filteredValue: filters.type || [],
+      filteredValue: filters.typeName || [],
     }, {
       title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
@@ -570,6 +568,7 @@ export default class Project extends Component {
             okText={<FormattedMessage id={operation === 'create' ? 'create' : 'save'} />}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={this.state.submitting}
+            className="c7n-iam-project-sidebar"
           >
             {operation && this.renderSidebarContent()}
           </Sidebar>

@@ -1,6 +1,6 @@
 /* eslint-disable-next-line */
 const zh_CN = {
-
+  'dashboard.empty': '无',
   // UserInfo
   'dashboard.userinfo.realname': '用户名',
   'dashboard.userinfo.loginname': '登录名',

@@ -1476,7 +1476,26 @@ export default class TaskCreate extends Component {
   render() {
     const { current } = this.state;
     return (
-      <Page>
+      <Page
+        service={[
+          'asgard-service.schedule-task-site.check',
+          'asgard-service.schedule-task-org.check',
+          'asgard-service.schedule-task-project.check',
+          'asgard-service.schedule-task-site.cron',
+          'asgard-service.schedule-task-org.cron',
+          'asgard-service.schedule-task-project.cron',
+          'manager-service.service.pageAll',
+          'asgard-service.schedule-method-site.getMethodByService',
+          'asgard-service.schedule-method-org.getMethodByService',
+          'asgard-service.schedule-method-project.getMethodByService',
+          'asgard-service.schedule-method-site.pagingQuery',
+          'asgard-service.schedule-method-org.pagingQuery',
+          'asgard-service.schedule-method-project.pagingQuery',
+          'asgard-service.schedule-task-site.create',
+          'asgard-service.schedule-task-org.create',
+          'asgard-service.schedule-task-project.create',
+        ]}
+      >
         <Header
           title={<FormattedMessage id={`${intlPrefix}.create`} />}
           backPath={this.getBackPath()}

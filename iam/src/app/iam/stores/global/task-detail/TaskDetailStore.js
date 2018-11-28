@@ -76,6 +76,7 @@ class TaskDetailStore {
   }
 
   getLevelType = (type, id) => (type === 'site' ? '' : `/${type}s/${id}`);
+  getRoleLevelType = (type, id) => (type === 'site' ? `/iam/v1/${type}` : `/iam/v1/${type}s/${id}`);
 
   loadData(
     { current, pageSize },
@@ -124,14 +125,17 @@ class TaskDetailStore {
     return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/instances/${taskId}?${querystring.stringify(queryObj)}`);
   }
 
-  loadUserData(
+
+  loadUserDatas(
     { current, pageSize },
     { columnKey = 'id', order = 'descend' },
-    params) {
+    params, type, id) {
+    const body = {
+      param: params,
+    };
     const queryObj = {
-      page: current - 1,
       size: pageSize,
-      params,
+      page: current - 1,
     };
     if (columnKey) {
       const sorter = [];
@@ -141,7 +145,7 @@ class TaskDetailStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.get(`/iam/v1/all/users?${querystring.stringify(queryObj)}`);
+    return axios.post(`${this.getRoleLevelType(type, id)}/role_members/users/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
   }
 
   loadService = () => axios.get('manager/v1/services');

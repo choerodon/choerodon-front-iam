@@ -10,9 +10,7 @@ import classnames from 'classnames';
 import _ from 'lodash';
 import TaskDetailStore from '../../../stores/global/task-detail';
 import './TaskDetail.scss';
-import { handleFiltersParams } from '../../../common/util';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import TaskDetail from './TaskDetail';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -102,13 +100,20 @@ export default class TaskCreate extends Component {
       createSelected: [], // 模态框中选中的row
       showSelectedRowKeys: [], // 页面显示的key
       showSelected: [], // 页面的row
-      params: {},
+      params: {}, // 参数列表参数
     };
   }
 
 
   componentWillMount() {
     this.initTaskDetail();
+  }
+
+  componentWillUnmount() {
+    TaskDetailStore.setService([]);
+    TaskDetailStore.setClassNames([]);
+    TaskDetailStore.setCurrentService({});
+    TaskDetailStore.setCurrentClassNames({});
   }
 
   initTaskDetail() {
@@ -140,10 +145,6 @@ export default class TaskCreate extends Component {
   goBack = () => {
     const backPath = this.getBackPath();
     this.props.history.push(backPath);
-    TaskDetailStore.setService([]);
-    TaskDetailStore.setClassNames([]);
-    TaskDetailStore.setCurrentService({});
-    TaskDetailStore.setCurrentClassNames({});
   }
 
   /**
@@ -456,21 +457,6 @@ export default class TaskCreate extends Component {
     this.setState({
       paramsLoading: true,
     });
-    const fakeData = [
-      {
-        default: false,
-        defaultValue: true,
-        description: '布尔值',
-        name: '吧啦啦啦啦',
-        type: 'Boolean',
-      }, {
-        default: true,
-        defaultValue: 24,
-        description: '年龄',
-        name: '年龄',
-        type: 'Long',
-      },
-    ];
     const { currentClassNames } = TaskDetailStore;
     const { type, id } = this.taskdetail;
     if (currentClassNames.id) {
@@ -479,7 +465,7 @@ export default class TaskCreate extends Component {
           Choerodon.prompt(data.message);
         } else {
           this.setState({
-            paramsData: data.paramsList.concat(fakeData),
+            paramsData: data.paramsList,
           });
         }
         this.setState({
@@ -499,12 +485,6 @@ export default class TaskCreate extends Component {
    * @param index
    */
   goPrevStep = (index) => {
-    const { params, paramsData } = this.state;
-    const { setFieldsValue } = this.props.form;
-    if (index === 2) {
-    //   Object.entries(params).map(item => setFieldsValue({ params[item[0]]: item[1] }));
-
-    }
     this.setState({ current: index });
   };
 
@@ -514,7 +494,7 @@ export default class TaskCreate extends Component {
    */
   handleRenderFirstStep = () => {
     const { intl, form: { getFieldDecorator } } = this.props;
-    const { submitLoading, name, description, startTime, endTime, triggerType, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, cronExpression } = this.state;
+    const { submitLoading, firstStepValues, triggerType } = this.state;
     const stepPrefix = 'c7n-iam-create-task-content-step1-container';
     const contentPrefix = 'c7n-iam-create-task-content';
     return (
@@ -538,7 +518,7 @@ export default class TaskCreate extends Component {
               }, {
                 validator: this.checkName,
               }],
-              initialValue: name || undefined,
+              initialValue: firstStepValues ? firstStepValues.name : undefined,
               validateTrigger: 'onBlur',
               validateFirst: true,
             })(
@@ -561,7 +541,7 @@ export default class TaskCreate extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.task.description.required` }),
               }],
-              initialValue: description || undefined,
+              initialValue: firstStepValues ? firstStepValues.description : undefined,
             })(
               <TextArea autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.task.description`} />} />,
             )}
@@ -575,7 +555,7 @@ export default class TaskCreate extends Component {
                 required: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.task.start.time.required` }),
               }],
-              initialValue: startTime || undefined,
+              initialValue: firstStepValues ? firstStepValues.startTime : undefined,
             })(
               <DatePicker
                 label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
@@ -595,7 +575,7 @@ export default class TaskCreate extends Component {
             className={`${contentPrefix}-inline-formitem`}
           >
             {getFieldDecorator('endTime', {
-              initialValue: endTime || undefined,
+              initialValue: firstStepValues ? firstStepValues.endTime : undefined,
             })(
               <DatePicker
                 label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
@@ -615,7 +595,7 @@ export default class TaskCreate extends Component {
           >
             {getFieldDecorator('triggerType', {
               rules: [],
-              initialValue: triggerType || 'simple-trigger',
+              initialValue: firstStepValues ? firstStepValues.triggerType : 'simple-trigger',
             })(
               <RadioGroup
                 className={`${contentPrefix}-radio-container`}
@@ -642,7 +622,7 @@ export default class TaskCreate extends Component {
                     message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
                   }],
                   validateFirst: true,
-                  initialValue: simpleRepeatInterval || undefined,
+                  initialValue: firstStepValues ? firstStepValues.simpleRepeatInterval : undefined,
                 })(
                   <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
                 )}
@@ -653,7 +633,7 @@ export default class TaskCreate extends Component {
               >
                 {getFieldDecorator('simpleRepeatIntervalUnit', {
                   rules: [],
-                  initialValue: simpleRepeatIntervalUnit || 'SECONDS',
+                  initialValue: firstStepValues ? firstStepValues.simpleRepeatIntervalUnit : 'SECONDS',
                 })(
                   <Select
                     style={{ width: '124px' }}
@@ -679,7 +659,7 @@ export default class TaskCreate extends Component {
                   pattern: /^[1-9]\d*$/,
                   message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
                 }],
-                initialValue: simpleRepeatCount || undefined,
+                initialValue: firstStepValues ? firstStepValues.simpleRepeatCount : undefined,
               })(
                 <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
               )}
@@ -697,7 +677,7 @@ export default class TaskCreate extends Component {
                 }, {
                   validator: triggerType === 'cron-trigger' ? this.checkCronExpression : '',
                 }],
-                initialValue: cronExpression || undefined,
+                initialValue: firstStepValues ? firstStepValues.cronExpression : undefined,
                 validateTrigger: 'onBlur',
                 validateFirst: true,
               })(
@@ -751,7 +731,7 @@ export default class TaskCreate extends Component {
    */
   handleRenderSecStep = () => {
     const { intl, form: { getFieldDecorator } } = this.props;
-    const { submitLoading, params } = this.state;
+    const { submitLoading } = this.state;
     const service = TaskDetailStore.service;
     const classNames = TaskDetailStore.classNames;
     const stepPrefix = 'c7n-iam-create-task-content-step2-container';
@@ -772,7 +752,10 @@ export default class TaskCreate extends Component {
             <FormItem style={{ marginBottom: 0, width: '55px' }}>
               {
                 getFieldDecorator(`params.${record.name}`, {
-                  rules: [],
+                  rules: [{
+                    required: text === null,
+                    message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
+                  }],
                   initialValue: this.getParamsInitvalue(text, record),
                 })(
                   <Select
@@ -1116,11 +1099,8 @@ export default class TaskCreate extends Component {
         pageSize: 10,
         total: 0,
       },
-      sort: {
-        columnKey: 'id',
-        order: 'descend',
-      },
       filters: {},
+      userParams: [],
       loading: true,
     }, () => {
       this.loadUsers();
@@ -1143,23 +1123,10 @@ export default class TaskCreate extends Component {
     const pagination = paginationIn || paginationState;
     const sort = sortIn || sortState;
     const userParams = paramsIn || paramsState;
+    const { type, id } = this.taskdetail;
     // 防止标签闪烁
     this.setState({ loading: true });
-    // 若params或filters含特殊字符表格数据置空
-    const isIncludeSpecialCode = handleFiltersParams(userParams, {});
-    if (isIncludeSpecialCode) {
-      TaskDetail.setUsersData([]);
-      this.setState({
-        pagination: {
-          total: 0,
-        },
-        loading: false,
-        sort,
-        userParams,
-      });
-      return;
-    }
-    TaskDetailStore.loadUserData(pagination, sort, userParams).then((data) => {
+    TaskDetailStore.loadUserDatas(pagination, sort, userParams, type, id).then((data) => {
       TaskDetailStore.setUserData(data.content.slice());
       this.setState({
         pagination: {
@@ -1168,7 +1135,6 @@ export default class TaskCreate extends Component {
           total: data.totalElements,
         },
         loading: false,
-        sort,
         userParams,
       });
     });
@@ -1277,13 +1243,11 @@ export default class TaskCreate extends Component {
     const contentPrefix = 'c7n-iam-create-task-content';
     const { intl: { formatMessage }, AppState } = this.props;
     const level = this.getLevelName();
-    const { name, description, startTime, endTime, triggerType, cronExpression,
-      simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, serviceName, submitLoading, params, informArr, showSelected } = this.state;
+    const { firstStepValues, serviceName, submitLoading, params, informArr, showSelected } = this.state;
     const tableData = [];
     Object.entries(params).map(item => tableData.push({ name: item[0], value: item[1] }));
-
     let unit;
-    switch (simpleRepeatIntervalUnit) {
+    switch (firstStepValues.simpleRepeatIntervalUnit) {
       case 'SECONDS':
         unit = formatMessage({ id: `${intlPrefix}.seconds` });
         break;
@@ -1301,28 +1265,28 @@ export default class TaskCreate extends Component {
     }
     const infoList = [{
       key: formatMessage({ id: `${intlPrefix}.task.name` }),
-      value: name,
+      value: firstStepValues.name,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.description` }),
-      value: description,
+      value: firstStepValues.description,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.start.time` }),
-      value: startTime.format('YYYY-MM-DD HH:mm:ss'),
+      value: firstStepValues.startTime.format('YYYY-MM-DD HH:mm:ss'),
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.end.time` }),
-      value: endTime ? endTime.format('YYYY-MM-DD HH:mm:ss') : null,
+      value: firstStepValues.endTime ? firstStepValues.endTime.format('YYYY-MM-DD HH:mm:ss') : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.cron.expression` }),
-      value: triggerType === 'simple-trigger' ? null : cronExpression,
+      value: firstStepValues.triggerType === 'simple-trigger' ? null : firstStepValues.cronExpression,
     }, {
       key: formatMessage({ id: `${intlPrefix}.trigger.type` }),
-      value: formatMessage({ id: triggerType === 'simple-trigger' ? `${intlPrefix}.simple.trigger` : `${intlPrefix}.cron.trigger` }),
+      value: formatMessage({ id: firstStepValues.triggerType === 'simple-trigger' ? `${intlPrefix}.simple.trigger` : `${intlPrefix}.cron.trigger` }),
     }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.interval` }),
-      value: triggerType === 'simple-trigger' ? `${simpleRepeatInterval}${unit}` : null,
+      value: firstStepValues.triggerType === 'simple-trigger' ? `${firstStepValues.simpleRepeatInterval}${unit}` : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.repeat.time` }),
-      value: simpleRepeatCount || null,
+      value: firstStepValues.simpleRepeatCount || null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.service.name` }),
       value: serviceName,
@@ -1422,7 +1386,8 @@ export default class TaskCreate extends Component {
 
   handleSubmit = (step, e) => {
     e.preventDefault();
-    const { form, intl } = this.props;
+    const { form, intl, AppState } = this.props;
+    const { type, id } = this.taskdetail;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({
@@ -1430,7 +1395,9 @@ export default class TaskCreate extends Component {
         });
         if (step === 1) {
           this.setState({
-            ...values,
+            firstStepValues: {
+              ...values,
+            },
             current: step + 1,
             submitLoading: false,
           }, () => {
@@ -1458,7 +1425,46 @@ export default class TaskCreate extends Component {
             submitLoading: false,
           });
         } else {
-          Choerodon.prompt('接口还没写好');
+          const { informArr, showSelectedRowKeys, methodId, params, firstStepValues: { startTime, endTime, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
+          const flag = triggerType === 'simple-trigger';
+          const body = {
+            ...this.state.firstStepValues,
+            startTime: startTime.format('YYYY-MM-DD HH:mm:ss'),
+            endTime: endTime ? endTime.format('YYYY-MM-DD HH:mm:ss') : null,
+            cronExpression: flag ? null : cronExpression,
+            simpleRepeatInterval: flag ? Number(simpleRepeatInterval) : null,
+            simpleRepeatIntervalUnit: flag ? simpleRepeatIntervalUnit : null,
+            simpleRepeatCount: flag ? Number(simpleRepeatCount) : null,
+            params,
+            methodId,
+            notifyUser: {
+              administrator: informArr.indexOf('manager') !== -1,
+              creator: informArr.indexOf(AppState.getUserInfo.id) !== -1,
+              assigner: informArr.indexOf('user') !== -1,
+            },
+            assignUserIds: showSelectedRowKeys,
+          };
+
+          TaskDetailStore.createTask(body, type, id).then(({ failed, message }) => {
+            if (failed) {
+              Choerodon.prompt(message);
+              this.setState({
+                isSubmitting: false,
+              });
+            } else {
+              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+              this.setState({
+                isSubmitting: false,
+              }, () => {
+                this.goBack();
+              });
+            }
+          }).catch(() => {
+            Choerodon.prompt(intl.formatMessage({ id: 'create.error' }));
+            this.setState({
+              isSubmitting: false,
+            });
+          });
           this.setState({
             submitLoading: false,
           });

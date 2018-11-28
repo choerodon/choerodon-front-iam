@@ -69,6 +69,7 @@ export default class ProjectSetting extends Component {
           objectVersionNumber,
           ...value,
         };
+        body.type = body.type === 'no' || undefined ? null : value.type;
         this.setState({ submitting: true });
         ProjectSettingStore.axiosSaveProjectInfo(body)
           .then((data) => {

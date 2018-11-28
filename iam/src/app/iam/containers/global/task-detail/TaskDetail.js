@@ -1502,22 +1502,9 @@ export default class TaskDetail extends Component {
           'asgard-service.schedule-task-site.getTaskDetail',
           'asgard-service.schedule-task-org.getTaskDetail',
           'asgard-service.schedule-task-project.getTaskDetail',
-          'asgard-service.schedule-task-site.check',
-          'asgard-service.schedule-task-org.check',
-          'asgard-service.schedule-task-project.check',
-          'asgard-service.schedule-task-site.cron',
-          'asgard-service.schedule-task-org.cron',
-          'asgard-service.schedule-task-project.cron',
           'asgard-service.schedule-task-instance-site.pagingQueryByTaskId',
           'asgard-service.schedule-task-instance-org.pagingQueryByTaskId',
           'asgard-service.schedule-task-instance-project.pagingQueryByTaskId',
-          'asgard-service.schedule-method-site.getMethodByService',
-          'asgard-service.schedule-method-org.getMethodByService',
-          'asgard-service.schedule-method-project.getMethodByService',
-          'asgard-service.schedule-method-site.pagingQuery',
-          'asgard-service.schedule-method-org.pagingQuery',
-          'asgard-service.schedule-method-project.pagingQuery',
-          'manager-service.service.pageAll',
         ]}
       >
         <Header
@@ -1531,14 +1518,14 @@ export default class TaskDetail extends Component {
               <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
-          <Permission service={createService}>
-            <Button
-              icon="playlist_add"
-              onClick={this.handleOpen.bind(this, 'create')}
-            >
-              <FormattedMessage id={`${intlPrefix}.create`} />
-            </Button>
-          </Permission>
+          {/* <Permission service={createService}> */}
+          {/* <Button */}
+          {/* icon="playlist_add" */}
+          {/* onClick={this.handleOpen.bind(this, 'create')} */}
+          {/* > */}
+          {/* <FormattedMessage id={`${intlPrefix}.create`} /> */}
+          {/* </Button> */}
+          {/* </Permission> */}
           <Button
             icon="refresh"
             onClick={this.handleRefresh}

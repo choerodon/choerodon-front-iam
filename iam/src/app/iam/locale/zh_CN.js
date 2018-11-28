@@ -1182,7 +1182,7 @@ const zh_CN = {
   // 系统公告
   'global.announcement.header.title': '系统公告',
   'global.announcement.title': '平台"{name}"的系统公告',
-  'global.announcement.description': '在这里你可以发送通知给所有人',
+  'global.announcement.description': '您可以在此编辑系统公告，并且指定时间发送到全局。',
   'global.announcement.content': '公告内容',
   'global.announcement.send-time': '发送时间',
   'global.announcement.sidebar.title': '添加公告',
@@ -1366,7 +1366,7 @@ const zh_CN = {
   // 系统公告
   'organization.announcement.header.title': '系统公告',
   'organization.announcement.title': '组织"{name}"的系统公告',
-  'organization.announcement.description': '在这里你可以发送通知给组织下的所有人。',
+  'organization.announcement.description': '你可以在此编辑系统公告，并且指定时间发送到组织成员。',
   'organization.announcement.content': '公告内容',
   'organization.announcement.send-time': '发送时间',
   'organization.announcement.sidebar.title': '添加公告',
@@ -1517,8 +1517,8 @@ const zh_CN = {
   'announcement.add': '添加公告',
   'announcement.detail': '查看详情',
   'announcement.content.required': '公告内容不可为空',
-  'announcement.delete.title': '确定要删除这条公告记录吗？',
-  'announcement.delete.content': '删除后您将看不到该条公告的记录。',
+  'announcement.delete.title': '删除公告',
+  'announcement.delete.content': '确定要删除此系统公告？',
 
   // Upload
   'download.template': '下载',

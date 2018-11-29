@@ -170,7 +170,8 @@ export default class Project extends Component {
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 this.handleTabClose();
                 this.loadProjects();
-                value.typeName = (ProjectStore.getProjectTypes.find(item => item.code === value.type)).name;
+                const targetType = (ProjectStore.getProjectTypes.find(item => item.code === value.type));
+                value.typeName = targetType ? targetType.name : null;
                 value.type = 'project';
                 HeaderStore.addProject(value);
               }

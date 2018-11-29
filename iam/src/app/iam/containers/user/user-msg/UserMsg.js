@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, List, Tabs, Collapse, Modal, Icon, Checkbox, Avatar, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page } from 'choerodon-front-boot';
+import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import './UserMsg.scss';
@@ -236,7 +236,13 @@ export default class UserMsg extends Component {
     const pagination = UserMsgStore.getPagination;
     const userMsg = UserMsgStore.getUserMsg;
     return (
-      <Page>
+      <Page
+        service={[
+          'notify-service.site-msg-record.pagingQuery',
+          'notify-service.site-msg-record.batchDeleted',
+          'notify-service.site-msg-record.batchRead',
+        ]}
+      >
         <Header
           title={<FormattedMessage id="user.usermsg.header.title" />}
         >
@@ -247,20 +253,28 @@ export default class UserMsg extends Component {
           >
             <FormattedMessage id={UserMsgStore.getUserMsg.length > 0 && UserMsgStore.isAllSelected ? 'selectnone' : 'selectall'} />
           </Button>
-          <Button
-            icon="all_read"
-            disabled={UserMsgStore.getSelectMsg.size === 0}
-            onClick={this.handleBatchRead}
+          <Permission
+            service={['notify-service.site-msg-record.batchRead']}
           >
-            <FormattedMessage id={`${intlPrefix}.markreadall`} />
-          </Button>
-          <Button
-            icon="delete"
-            disabled={UserMsgStore.getSelectMsg.size === 0}
-            onClick={this.handleDelete}
+            <Button
+              icon="all_read"
+              disabled={UserMsgStore.getSelectMsg.size === 0}
+              onClick={this.handleBatchRead}
+            >
+              <FormattedMessage id={`${intlPrefix}.markreadall`} />
+            </Button>
+          </Permission>
+          <Permission
+            service={['notify-service.site-msg-record.batchDeleted']}
           >
-            <FormattedMessage id={'remove'} />
-          </Button>
+            <Button
+              icon="delete"
+              disabled={UserMsgStore.getSelectMsg.size === 0}
+              onClick={this.handleDelete}
+            >
+              <FormattedMessage id={'remove'} />
+            </Button>
+          </Permission>
           <Button
             icon="refresh"
             onClick={this.refresh}

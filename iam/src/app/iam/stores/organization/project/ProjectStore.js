@@ -14,6 +14,7 @@ class ProjectStore {
   @observable totalPage;
   @observable isLoading = true;
   @observable myRoles = [];
+  @observable projectTypes = [];
 
   constructor(totalPage = 1, totalSize = 0) {
     this.totalPage = totalPage;
@@ -60,10 +61,18 @@ class ProjectStore {
     return this.isLoading;
   }
 
+  @action setProjectTypes(data) {
+    this.projectTypes = data;
+  }
+
+  @computed get getProjectTypes() {
+    return this.projectTypes;
+  }
+
   loadProject = (organizationId,
     { current, pageSize },
     { columnKey = 'id', order = 'descend' },
-    { name, code, enabled, params }) => {
+    { name, code, typeName, enabled, params }) => {
     this.changeLoading(true);
     const queryObj = {
       page: current - 1,
@@ -71,6 +80,7 @@ class ProjectStore {
       name,
       code,
       enabled,
+      typeName,
       params,
     };
     if (columnKey) {
@@ -106,6 +116,8 @@ class ProjectStore {
   getRolesById(organizationId, userId) {
     return axios.get(`/iam/v1/projects/${organizationId}/role_members/users/${userId}`);
   }
+
+  loadProjectTypes = () => axios.get('/iam/v1/projects/types');
 
   loadMyData = (organizationId, userId) => {
     this.getRolesById(organizationId, userId).then(action((roles) => {

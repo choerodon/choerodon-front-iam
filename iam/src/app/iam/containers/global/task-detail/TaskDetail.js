@@ -449,7 +449,7 @@ export default class TaskDetail extends Component {
    * @param id
    */
   handleChangeClass(id) {
-    const currentClass = TaskDetailStore.service.find(item => item.id === id);
+    const currentClass = TaskDetailStore.classNames.find(item => item.id === id);
     TaskDetailStore.setCurrentClassNames(currentClass);
     this.loadParamsTable();
   }
@@ -844,23 +844,29 @@ export default class TaskDetail extends Component {
       title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
       dataIndex: 'defaultValue',
       key: 'defaultValue',
+      width: 258,
       render: (text, record) => {
         let editableNode;
         if (record.type === 'Boolean') {
           editableNode = (
-            <FormItem style={{ marginBottom: 0 }}>
+            <FormItem style={{ marginBottom: 0, width: '55px' }}>
               {
-              getFieldDecorator(`params.${record.name}`, {
-                rules: [],
-                initialValue: text,
-              })(
-                <Select>
-                  <Option value>true</Option>
-                  <Option value={false}>false</Option>
-                  <Option value={null} style={{ display: text === null ? 'none' : 'block' }} />
-                </Select>,
-              )
-            }
+                getFieldDecorator(`params.${record.name}`, {
+                  rules: [{
+                    required: text === null,
+                    message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
+                  }],
+                  initialValue: text,
+                })(
+                  <Select
+                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                  >
+                    <Option value={null} style={{ height: '22px' }} />
+                    <Option value>true</Option>
+                    <Option value={false}>false</Option>
+                  </Select>,
+                )
+              }
             </FormItem>);
         } else if (record.type === 'Integer' || record.type === 'Long' || record.type === 'Double' || record.type === 'Float') {
           editableNode = (
@@ -871,18 +877,18 @@ export default class TaskDetail extends Component {
                     required: text === null,
                     message: intl.formatMessage({ id: `${intlPrefix}.num.required` }),
                   }, {
-                    validator: this.checkIsNumber,
+                    transform: value => Number(value),
+                    type: 'number',
+                    message: intl.formatMessage({ id: `${intlPrefix}.number.pattern` }),
                   }],
                   validateFirst: true,
                   initialValue: text === null ? undefined : text,
                 })(
-                  <div className="c7n-taskdetail-text">
-                    <InputNumber
-                      onFocus={this.inputOnFocus}
-                      autoComplete="off"
-                    />
-                    <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
-                  </div>,
+                  <Input
+                    style={{ width: '200px' }}
+                    onFocus={this.inputOnFocus}
+                    autoComplete="off"
+                  />,
                 )
               }
             </FormItem>);
@@ -896,9 +902,10 @@ export default class TaskDetail extends Component {
                     whitespace: true,
                     message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
                   }],
-                  initialValue: text,
+                  initialValue: text === null ? undefined : text,
                 })(
                   <Input
+                    style={{ width: '200px' }}
                     onFocus={this.inputOnFocus}
                     autoComplete="off"
                   />,

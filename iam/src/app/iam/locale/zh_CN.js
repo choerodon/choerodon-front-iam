@@ -1198,9 +1198,12 @@ const zh_CN = {
   'organization.project.modify': '修改项目',
   'organization.project.code': '项目编码',
   'organization.project.name': '项目名称',
+  'organization.project.type': '项目类型',
   'organization.project.name.require.msg': '请输入项目名称',
   'organization.project.status.enabled': '启用状态',
   'organization.project.header.title': '项目管理',
+  'organization.project.type.empty': '无项目类型',
+  'organization.project.empty': '无',
 
   // 客户端
   'organization.client.header.title': '客户端',
@@ -1380,6 +1383,9 @@ const zh_CN = {
   'project.info.name': '项目名称',
   'project.info.code': '项目编码',
   'project.info.namerequiredmsg': '请输入项目名称',
+  'project.info.type': '项目类型',
+  'project.info.type.empty': '无项目类型',
+  'project.info.empty': '无',
 
   // 个人中心
   // 个人信息

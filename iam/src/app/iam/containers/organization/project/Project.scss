@@ -39,3 +39,9 @@
     text-decoration: underline;
   }
 }
+
+.c7n-iam-project-sidebar {
+   .ant-modal-body {
+    min-height: calc(100% - 450px);
+  }
+}

@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Button, Form, Input, Modal, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip, Select } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -15,6 +15,7 @@ const FormItem = Form.Item;
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
 const { Sidebar } = Modal;
+const Option = Select.Option;
 const intlPrefix = 'organization.project';
 
 @Form.create({})
@@ -63,12 +64,26 @@ export default class Project extends Component {
 
   componentDidMount() {
     this.loadProjects();
+    this.loadProjectTypes();
   }
 
   linkToChange = (url) => {
     const { history } = this.props;
     history.push(url);
   };
+
+  loadProjectTypes = () => {
+    const { ProjectStore } = this.props;
+    ProjectStore.loadProjectTypes().then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        ProjectStore.setProjectTypes(data);
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+    });
+  }
 
   loadProjects = (paginationIn, sortIn, filtersIn) => {
     const {
@@ -124,7 +139,8 @@ export default class Project extends Component {
   };
 
   handleopenTab = (data, operation) => {
-    this.props.form.resetFields();
+    const { form } = this.props;
+    form.resetFields();
     this.setState({
       errorMeg: '',
       successMeg: '',
@@ -142,6 +158,7 @@ export default class Project extends Component {
       }, 10);
     }
   };
+
   handleTabClose = () => {
     this.setState({
       sidebar: false,
@@ -156,16 +173,17 @@ export default class Project extends Component {
     const organizationId = menuType.id;
     const id = this.state.id;
     let data;
-    // const editData = this.state.resourceData;
     if (this.state.operation === 'create') {
       const { validateFields } = this.props.form;
-      validateFields((err, { code, name }) => {
+      validateFields((err, { code, name, type }) => {
         if (!err) {
           data = {
             code,
             name: name.trim(),
             organizationId,
+            type: type === 'no' || undefined ? null : type,
           };
+
           this.setState({ submitting: true });
           ProjectStore.createProject(organizationId, data)
             .then((value) => {
@@ -174,6 +192,8 @@ export default class Project extends Component {
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 this.handleTabClose();
                 this.loadProjects();
+                const targetType = (ProjectStore.getProjectTypes.find(item => item.code === value.type));
+                value.typeName = targetType ? targetType.name : null;
                 value.type = 'project';
                 HeaderStore.addProject(value);
               }
@@ -188,7 +208,7 @@ export default class Project extends Component {
       });
     } else {
       const { validateFields } = this.props.form;
-      validateFields((err, { name }, modify) => {
+      validateFields((err, { name, type }, modify) => {
         if (!err) {
           if (!modify) {
             Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
@@ -197,6 +217,7 @@ export default class Project extends Component {
           }
           data = {
             name: name.trim(),
+            type: type === 'no' || undefined ? null : type,
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,
@@ -306,9 +327,10 @@ export default class Project extends Component {
   }
 
   renderSidebarContent() {
-    const { intl } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { intl, ProjectStore, form } = this.props;
+    const { getFieldDecorator } = form;
     const { operation, projectDatas } = this.state;
+    const types = ProjectStore.getProjectTypes;
     const inputWidth = 512;
     const contentInfo = this.getSidebarContentInfo(operation);
     const formItemLayout = {
@@ -321,10 +343,11 @@ export default class Project extends Component {
         sm: { span: 16 },
       },
     };
+
     return (
       <Content
-        style={{ padding: 0 }}
         {...contentInfo}
+        className="sidebar-content"
       >
         <Form layout="vertical" className="rightForm">
           {operation === 'create' ? (<FormItem
@@ -378,6 +401,27 @@ export default class Project extends Component {
               />,
             )}
           </FormItem>
+          <FormItem>
+            {getFieldDecorator('type', {
+              initialValue: operation === 'create' ? undefined : projectDatas.type ? projectDatas.type : undefined,
+            })(
+              <Select
+                style={{ width: '300px' }}
+                label={<FormattedMessage id={`${intlPrefix}.type`} />}
+                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                filter
+              >
+                {
+                  types && types.length ? [<Option key="no" value="no">{intl.formatMessage({ id: `${intlPrefix}.empty` })}</Option>].concat(
+                    types.map(({ name, code }) => (
+                      <Option key={code} value={code}>{name}</Option>
+                    )),
+                  ) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.type.empty` })}</Option>
+                }
+              </Select>,
+            )}
+          </FormItem>
         </Form>
       </Content>
     );
@@ -386,19 +430,23 @@ export default class Project extends Component {
   render() {
     const { ProjectStore, AppState, intl } = this.props;
     const projectData = ProjectStore.getProjectData;
+    const projectTypes = ProjectStore.getProjectTypes;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
     const orgname = menuType.name;
     const { filters, operation } = this.state;
-
     const type = menuType.type;
+    const filtersType = projectTypes && projectTypes.map(({ name }) => ({
+      value: name,
+      text: name,
+    }));
     const columns = [{
       title: <FormattedMessage id="name" />,
       dataIndex: 'name',
       key: 'name',
       filters: [],
       filteredValue: filters.name || [],
-      width: '35%',
+      width: '25%',
       render: text => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
@@ -410,12 +458,19 @@ export default class Project extends Component {
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
-      width: '35%',
+      width: '25%',
       render: text => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.type`} />,
+      dataIndex: 'typeName',
+      key: 'typeName',
+      width: '25%',
+      filters: filtersType,
+      filteredValue: filters.typeName || [],
     }, {
       title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
@@ -537,6 +592,7 @@ export default class Project extends Component {
             okText={<FormattedMessage id={operation === 'create' ? 'create' : 'save'} />}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={this.state.submitting}
+            className="c7n-iam-project-sidebar"
           >
             {operation && this.renderSidebarContent()}
           </Sidebar>

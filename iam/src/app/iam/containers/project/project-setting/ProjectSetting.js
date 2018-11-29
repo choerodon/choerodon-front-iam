@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Input, Modal } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
@@ -11,6 +11,7 @@ import '../../../common/ConfirmModal.scss';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
+const Option = Select.Option;
 const intlPrefix = 'project.info';
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
@@ -26,13 +27,31 @@ export default class ProjectSetting extends Component {
     submitting: false,
   };
 
-  componentWillMount() {
+  componentDidMount() {
+    this.loadProject();
+    this.loadProjectTypes();
+  }
+
+  loadProject = () => {
     const { AppState } = this.props;
     const id = AppState.currentMenuType.id;
     ProjectSettingStore.axiosGetProjectInfo(id).then((data) => {
       ProjectSettingStore.setProjectInfo(data);
     }).catch(Choerodon.handleResponseError);
   }
+
+  loadProjectTypes = () => {
+    ProjectSettingStore.loadProjectTypes().then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        ProjectSettingStore.setProjectTypes(data);
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+    });
+  }
+
 
   handleSave(e) {
     e.preventDefault();
@@ -50,6 +69,7 @@ export default class ProjectSetting extends Component {
           objectVersionNumber,
           ...value,
         };
+        body.type = body.type === 'no' || undefined ? null : value.type;
         this.setState({ submitting: true });
         ProjectSettingStore.axiosSaveProjectInfo(body)
           .then((data) => {
@@ -113,7 +133,8 @@ export default class ProjectSetting extends Component {
     const { submitting } = this.state;
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { enabled, name, code } = ProjectSettingStore.getProjectInfo;
+    const { enabled, name, code, type } = ProjectSettingStore.getProjectInfo;
+    const types = ProjectSettingStore.getProjectTypes;
     return (
       <Page
         service={[
@@ -147,7 +168,7 @@ export default class ProjectSetting extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({ id: 'project.info.namerequiredmsg' }),
+                    message: intl.formatMessage({ id: `${intlPrefix}.namerequiredmsg` }),
                   }],
                   initialValue: name,
                 })(
@@ -159,6 +180,28 @@ export default class ProjectSetting extends Component {
                   initialValue: code,
                 })(
                   <Input autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.code`} />} disabled style={{ width: 512 }} />,
+                )}
+              </FormItem>
+              <FormItem>
+                {getFieldDecorator('type', {
+                  initialValue: type || undefined,
+                })(
+                  <Select
+                    disabled={!enabled}
+                    style={{ width: '300px' }}
+                    label={<FormattedMessage id={`${intlPrefix}.type`} />}
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0].parentNode}
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    filter
+                  >
+                    {
+                      types && types.length ? [<Option key="no" value="no">{intl.formatMessage({ id: `${intlPrefix}.empty` })}</Option>].concat(
+                        types.map(({ name: projectName, code: projectCode }) => (
+                          <Option key={projectCode} value={projectCode}>{projectName}</Option>
+                        )),
+                      ) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.type.empty` })}</Option>
+                    }
+                  </Select>,
                 )}
               </FormItem>
               <div className="divider" />

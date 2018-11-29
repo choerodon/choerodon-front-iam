@@ -187,6 +187,7 @@ export default class ProjectSetting extends Component {
                   initialValue: type || undefined,
                 })(
                   <Select
+                    disabled={!enabled}
                     style={{ width: '300px' }}
                     label={<FormattedMessage id={`${intlPrefix}.type`} />}
                     getPopupContainer={() => document.getElementsByClassName('page-content')[0].parentNode}

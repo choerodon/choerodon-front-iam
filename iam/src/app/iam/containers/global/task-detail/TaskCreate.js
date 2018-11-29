@@ -1449,12 +1449,12 @@ export default class TaskCreate extends Component {
             if (failed) {
               Choerodon.prompt(message);
               this.setState({
-                isSubmitting: false,
+                submitLoading: false,
               });
             } else {
               Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
               this.setState({
-                isSubmitting: false,
+                submitLoading: false,
               }, () => {
                 this.goBack();
               });
@@ -1462,7 +1462,7 @@ export default class TaskCreate extends Component {
           }).catch(() => {
             Choerodon.prompt(intl.formatMessage({ id: 'create.error' }));
             this.setState({
-              isSubmitting: false,
+              submitLoading: false,
             });
           });
           this.setState({

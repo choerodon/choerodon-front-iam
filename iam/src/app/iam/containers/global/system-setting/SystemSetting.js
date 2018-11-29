@@ -16,6 +16,7 @@ const limitSize = 1024;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const confirm = Modal.confirm;
+const dirty = false;
 const cardContentFavicon = (
   <div>
     <p><FormattedMessage id={`${intlPrefix}.favicon.tips`} /></p>
@@ -251,7 +252,7 @@ export default class SystemSetting extends Component {
       const { defaultLanguage, defaultPassword, systemName, systemTitle, favicon, systemLogo } = submitSetting;
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
       if (Object.keys(prevSetting).length) {
-        if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
+        if (this.dirty || Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
           SystemSettingStore.putUserSetting(submitSetting).then((data) => {
             if (!data.failed) {
               window.location.reload(true);
@@ -271,7 +272,7 @@ export default class SystemSetting extends Component {
             submitting: false,
           });
         }
-      } else if (defaultLanguage === 'zh_CN' && systemName === 'Choerodon' && systemTitle === 'Choerodon | 企业数字化服务平台' && defaultPassword === 'abcd1234' && !favicon && !systemLogo) {
+      } else if (!this.dirty && defaultLanguage === 'zh_CN' && systemName === 'Choerodon' && systemTitle === 'Choerodon | 企业数字化服务平台' && defaultPassword === 'abcd1234' && !favicon && !systemLogo) {
         Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.conflict` }));
         this.setState({
           submitting: false,
@@ -419,6 +420,7 @@ export default class SystemSetting extends Component {
               style={{ width: inputHalfWidth }}
               max={65535}
               min={0}
+              onChange={() => { this.dirty = true; }}
             />,
           )}
         </FormItem>
@@ -440,6 +442,7 @@ export default class SystemSetting extends Component {
               style={{ width: inputHalfWidth }}
               max={65535}
               min={0}
+              onChange={() => { this.dirty = true; }}
             />,
           )}
         </FormItem>

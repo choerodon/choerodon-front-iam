@@ -17,6 +17,7 @@ import './MailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 import '../../../common/ConfirmModal.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 
 // 公用方法类
@@ -102,14 +103,27 @@ export default class MailTemplate extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      MailTemplateStore.setMailTemplate([]);
+      this.setState({
+        sort,
+        params,
+        pagination: {
+          total: 0,
+        },
+      });
+      MailTemplateStore.setLoading(false);
+      return;
+    }
+
     MailTemplateStore.loadMailTemplate(pagination, filters, sort, params,
       this.mail.type, this.mail.orgId)
       .then((data) => {
-        MailTemplateStore.setLoading(false);
         MailTemplateStore.setMailTemplate(data.content);
         this.setState({
           sort,
-          filters,
           params,
           pagination: {
             current: data.number + 1,

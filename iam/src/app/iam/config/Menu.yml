@@ -183,6 +183,14 @@
         sort: 5
         permission:
         - 'notify-service.message-record-site.pageEmail'
+    - "announcement":
+        icon: volume_up
+        Routes: /iam/announcement
+        sort: 6
+        permission:
+        - 'asgard-service.system-notification.pagingQuerySiteNotification'
+        - 'asgard-service.system-notification.createNotificationOnSite'
+        - 'asgard-service.system-notification.deleteSiteNotification'
 
 # 任务调度
 "task-dispatch":
@@ -263,6 +271,7 @@
           - 'iam-service.organization-user.disableUser'
           - 'iam-service.organization-user.enableUser'
           - 'iam-service.organization-user.unlock'
+          - 'iam-service.organization-user.resetUserPassword'
     - "member-role-organization":
         icon: person_add
         Routes: /iam/member-role
@@ -319,6 +328,14 @@
           - 'notify-service.email-template-org.delete'
           - 'notify-service.email-template-org.query'
           - 'notify-service.send-setting-org.listNames'
+    - "announcement-organization":
+        icon: volume_up
+        Routes: /iam/announcement
+        sort: 8
+        permission:
+          - 'asgard-service.system-notification.pagingQueryOrgNotificaton'
+          - 'asgard-service.system-notification.createNotificationOnOrg'
+          - 'asgard-service.system-notification.deleteOrgNotification'
 
 # 组织层消息中心
 "msg-center-organization":
@@ -488,3 +505,10 @@
         sort: 6
         permission:
         - 'iam-service.user.queryInfo'
+    - "token-manager":
+        icon: authority
+        Routes: /iam/token-manager
+        sort: 7
+        permission:
+        - 'iam-service.access-token.list'
+        - 'iam-service.access-token.delete'

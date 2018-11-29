@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import ExecutionRecordStore from '../../../stores/global/execution-record';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'execution';
 const tablePrefix = 'taskdetail';
@@ -86,6 +87,20 @@ export default class ExecutionRecord extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      ExecutionRecordStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
     ExecutionRecordStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       ExecutionRecordStore.setData(data.content);
       this.setState({
@@ -96,7 +111,6 @@ export default class ExecutionRecord extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     }).catch((error) => {

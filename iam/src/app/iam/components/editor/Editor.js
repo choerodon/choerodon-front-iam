@@ -175,7 +175,7 @@ export default class Editor extends Component {
    * @param editor 文本框对象
    */
   onQuillChange = (content, delta, source, editor) => {
-    this.props.onChange(content);
+    if (this.props.onChange) this.props.onChange(content);
     const currentDelta = editor.getContents();
     const originalHtml = editor.getHTML();
     this.setState({

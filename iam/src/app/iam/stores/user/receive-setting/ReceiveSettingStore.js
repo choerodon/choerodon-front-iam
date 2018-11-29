@@ -182,7 +182,9 @@ class ReceiveSettingStore {
    * @returns {boolean} 这个组是否是全选中的
    */
   isGroupAllSelected(id, type) {
-    return !this.receiveSettingData.filter(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}`).some(v => !this.isChecked(`${id}-${v.sendSettingId}`, type));
+    return !this.receiveSettingData.filter(v => v.messageType === type
+      && id === `${v.sourceType}-${v.sourceId}`)
+      .some(v => !this.isChecked(`${id}-${v.sendSettingId}`, type));
   }
 
   /**

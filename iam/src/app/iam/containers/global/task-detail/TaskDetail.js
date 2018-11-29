@@ -12,6 +12,7 @@ import StatusTag from '../../../components/statusTag';
 import './TaskDetail.scss';
 import '../../../common/ConfirmModal.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
@@ -135,6 +136,21 @@ export default class TaskDetail extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      TaskDetailStore.setData([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        loading: false,
+        sort,
+        params,
+      });
+      return;
+    }
+
     TaskDetailStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
       TaskDetailStore.setData(data.content);
       this.setState({
@@ -145,7 +161,6 @@ export default class TaskDetail extends Component {
         },
         loading: false,
         sort,
-        filters,
         params,
       });
     }).catch((error) => {
@@ -193,6 +208,22 @@ export default class TaskDetail extends Component {
     const logParams = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ logFilters, logLoading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(logParams, logFilters);
+    if (isIncludeSpecialCode) {
+      TaskDetailStore.setLog([]);
+      this.setState({
+        logPagination: {
+          total: 0,
+        },
+        logLoading: false,
+        logSort,
+        logParams,
+        tempTaskId: TaskDetailStore.currentTask.id,
+      });
+      return;
+    }
+
     TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id, type, id).then((data) => {
       TaskDetailStore.setLog(data.content);
       this.setState({
@@ -203,7 +234,6 @@ export default class TaskDetail extends Component {
         },
         logLoading: false,
         logSort,
-        logFilters,
         logParams,
         tempTaskId: TaskDetailStore.currentTask.id,
       });
@@ -320,6 +350,27 @@ export default class TaskDetail extends Component {
       }),
     });
   }
+
+
+  createTask() {
+    const { type, id, name } = this.taskdetail;
+    let createUrl;
+    switch (type) {
+      case 'organization':
+        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
+        break;
+      case 'project':
+        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&projectId=${id}`;
+        break;
+      case 'site':
+        createUrl = '/iam/task-detail/create';
+        break;
+      default:
+        break;
+    }
+    this.props.history.push(createUrl);
+  }
+
 
   /**
    * 开启侧边栏
@@ -911,7 +962,7 @@ export default class TaskDetail extends Component {
                 }, {
                   validator: this.checkName,
                 }],
-                // validateTrigger: 'onBlur',
+                validateTrigger: 'onBlur',
                 validateFirst: true,
               })(
                 <Input
@@ -1458,22 +1509,9 @@ export default class TaskDetail extends Component {
           'asgard-service.schedule-task-site.getTaskDetail',
           'asgard-service.schedule-task-org.getTaskDetail',
           'asgard-service.schedule-task-project.getTaskDetail',
-          'asgard-service.schedule-task-site.check',
-          'asgard-service.schedule-task-org.check',
-          'asgard-service.schedule-task-project.check',
-          'asgard-service.schedule-task-site.cron',
-          'asgard-service.schedule-task-org.cron',
-          'asgard-service.schedule-task-project.cron',
           'asgard-service.schedule-task-instance-site.pagingQueryByTaskId',
           'asgard-service.schedule-task-instance-org.pagingQueryByTaskId',
           'asgard-service.schedule-task-instance-project.pagingQueryByTaskId',
-          'asgard-service.schedule-method-site.getMethodByService',
-          'asgard-service.schedule-method-org.getMethodByService',
-          'asgard-service.schedule-method-project.getMethodByService',
-          'asgard-service.schedule-method-site.pagingQuery',
-          'asgard-service.schedule-method-org.pagingQuery',
-          'asgard-service.schedule-method-project.pagingQuery',
-          'manager-service.service.pageAll',
         ]}
       >
         <Header
@@ -1482,11 +1520,19 @@ export default class TaskDetail extends Component {
           <Permission service={createService}>
             <Button
               icon="playlist_add"
-              onClick={this.handleOpen.bind(this, 'create')}
+              onClick={this.createTask.bind(this)}
             >
               <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
+          {/* <Permission service={createService}> */}
+          {/* <Button */}
+          {/* icon="playlist_add" */}
+          {/* onClick={this.handleOpen.bind(this, 'create')} */}
+          {/* > */}
+          {/* <FormattedMessage id={`${intlPrefix}.create`} /> */}
+          {/* </Button> */}
+          {/* </Permission> */}
           <Button
             icon="refresh"
             onClick={this.handleRefresh}

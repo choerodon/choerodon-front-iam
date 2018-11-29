@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import './Project.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
+import { handleFiltersParams } from '../../../common/util';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -36,7 +37,9 @@ export default class Project extends Component {
       checkName: false,
       buttonClicked: false,
       state: {},
-      filters: {},
+      filters: {
+        params: [],
+      },
       pagination: {
         current: 1,
         pageSize: 10,
@@ -97,12 +100,31 @@ export default class Project extends Component {
     ProjectStore.changeLoading(true);
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const currentParams = filters.params;
+    const currentFilters = {
+      name: filters.name,
+      code: filters.code,
+      enabled: filters.enabled,
+    };
+    const isIncludeSpecialCode = handleFiltersParams(currentParams, currentFilters);
+    if (isIncludeSpecialCode) {
+      ProjectStore.changeLoading(false);
+      ProjectStore.setProjectData([]);
+      this.setState({
+        sort,
+        pagination: {
+          total: 0,
+        },
+      });
+      return;
+    }
+
     ProjectStore.loadProject(organizationId, pagination, sort, filters)
       .then((data) => {
         ProjectStore.changeLoading(false);
         ProjectStore.setProjectData(data.content);
         this.setState({
-          filters,
           sort,
           pagination: {
             current: data.number + 1,

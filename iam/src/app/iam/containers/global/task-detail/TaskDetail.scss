@@ -118,9 +118,7 @@
 }
 
 .c7n-taskdetail-text {
-  cursor: text;
-  position: relative;
-  padding: 0 20px 2px 0;
+  display: flex;
 }
 
 .c7n-taskdetail-text .c7n-taskdetail-text-icon {
@@ -129,19 +127,180 @@
 }
 
 .c7n-taskdetail-text:hover .c7n-taskdetail-text-icon {
-  position: absolute;
-  bottom: 0;
-  right: 0;
   display: block;
-  z-index: 10;
-  transform: translateY(-50%);
 }
 
 .ant-input-focus + .c7n-taskdetail-text-icon {
-  position: absolute;
-  bottom: 0;
-  right: 0;
   display: block;
-  z-index: 10;
-  transform: translateY(-50%);
+}
+
+.c7n-iam-create-task {
+  &-container {
+    background: #fff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
+    padding: 32px;
+
+    .ant-select-dropdown--multiple {
+      display: none;
+    }
+  }
+
+  &-content {
+    padding: 36px 38px 30px;
+
+    &-des {
+      width: 512px;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      margin-bottom: 24px;
+
+      a:link {
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      a:visited {
+        text-decoration: none;
+      }
+    }
+
+    &-inline-formitem {
+      display: inline-block;
+
+      &-select {
+        margin-top: 13px;
+      }
+    }
+
+    div &-inline-formitem {
+      margin-right: 18px;
+    }
+
+    &-radio-container > label:first-child {
+      margin-right: 52px;
+    }
+
+    &-btn-group {
+      margin-top: 32px;
+
+      button:not(:first-child) {
+        margin-left: 12px;
+      }
+    }
+
+    &-step1-container {
+      &-simpletask-time-container {
+        display: inline-block;
+        margin-right: 60px;
+      }
+
+      &-popover {
+        width: 272px;
+        height: 156px;
+
+        &-icon {
+          position: absolute;
+          left: 589px;
+          margin-top: 16px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &-step3-container {
+      &-checkbox-group {
+        label {
+          margin-right: 60px;
+        }
+      }
+
+      &-specified-container {
+        margin-top: 30px;
+
+        &-title {
+          margin-right: 26px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #000;
+        }
+
+        &-btn {
+          .icon {
+            margin-right: 0;
+          }
+
+          span {
+            margin-left: 2px !important;
+          }
+        }
+      }
+
+      &-select {
+        .ant-select-underline {
+          display: none;
+        }
+      }
+    }
+
+    &-step4-container {
+      &-row {
+        margin-bottom: 20px;
+        font-size: 14px;
+
+        .ant-col-21 {
+          color: rgba(0, 0, 0, 0.65);
+        }
+
+        &-hide {
+          display: none;
+        }
+      }
+
+      &-informlist {
+        margin-top: 20px;
+        font-size: 14px;
+
+        &-li-hide {
+          display: none;
+        }
+
+        ul {
+          padding: 0;
+          color: rgba(0, 0, 0, 0.65);
+
+          li {
+            margin-bottom: 6px;
+            vertical-align: middle;
+          }
+        }
+
+        &-name-container {
+          display: inline;
+          margin-left: 10px;
+
+          div {
+            display: inline;
+          }
+
+          div:last-child {
+            span:last-child {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.c7n-iam-create-task-modal {
+  .ant-modal-title {
+    margin-bottom: 20px;
+  }
+
+  .ant-table-body {
+    height: 330px;
+    overflow-y: scroll;
+  }
 }

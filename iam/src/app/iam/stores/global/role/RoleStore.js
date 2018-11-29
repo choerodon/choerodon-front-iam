@@ -288,7 +288,7 @@ class RoleStore {
     });
   }
 
-  loadRole({ current, pageSize },
+  loadRole({ current = 1, pageSize },
     { columnKey, order },
     { name, code, level, enabled, builtIn }, params = []) {
     const body = {

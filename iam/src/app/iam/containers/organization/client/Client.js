@@ -9,6 +9,7 @@ import LoadingBar from '../../../components/loadingBar/index';
 import ClientStore from '../../../stores/organization/client/ClientStore';
 import './Client.scss';
 import '../../../common/ConfirmModal.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
@@ -121,9 +122,23 @@ export default class Client extends Component {
     const params = paramsIn || paramsState;
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      ClientStore.setClients([]);
+      this.setState({
+        pagination: {
+          total: 0,
+        },
+        sort,
+        params,
+      });
+      ClientStore.changeLoading(false);
+      return;
+    }
+
     ClientStore.loadClients(organizationId, pagination, sort, filters, params)
       .then((data) => {
-        ClientStore.changeLoading(false);
         ClientStore.setClients(data.content);
         this.setState({
           pagination: {
@@ -131,10 +146,10 @@ export default class Client extends Component {
             pageSize: data.size,
             total: data.totalElements,
           },
-          filters,
           sort,
           params,
         });
+        ClientStore.changeLoading(false);
       });
   };
 

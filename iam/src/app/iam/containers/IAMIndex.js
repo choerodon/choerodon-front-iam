@@ -7,6 +7,7 @@ import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-front-boot'
 const registerOrg = asyncRouter(() => import('./outward/register-org'));
 
 // global 对应目录
+const announcement = asyncRouter(() => import('./global/announcement'));
 const apiTest = asyncRouter(() => import('./global/api-test'));
 const configuration = asyncRouter(() => import('./global/configuration'));
 const instance = asyncRouter(() => import('./global/instance'));
@@ -48,6 +49,7 @@ const projectSetting = asyncRouter(() => import('./project/project-setting'));
 const password = asyncRouter(() => import('./user/password'));
 const organizationInfo = asyncRouter(() => import('./user/organization-info'));
 const projectInfo = asyncRouter(() => import('./user/project-info'));
+const tokenManager = asyncRouter(() => import('./user/token-manager'));
 const receiveSetting = asyncRouter(() => import('./user/receive-setting'));
 const userInfo = asyncRouter(() => import('./user/user-info'));
 const userMsg = asyncRouter(() => import('./user/user-msg'));
@@ -63,6 +65,7 @@ class IAMIndex extends React.Component {
       <IntlProviderAsync>
         <Switch>
           <Route path={`${match.url}/outward-register-org`} component={registerOrg} />
+          <Route path={`${match.url}/announcement`} component={announcement} />
           <Route path={`${match.url}/api-test`} component={apiTest} />
           <Route path={`${match.url}/configuration`} component={configuration} />
           <Route path={`${match.url}/inmail-template`} component={inmailTemplate} />
@@ -95,6 +98,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/password`} component={password} />
           <Route path={`${match.url}/organization-info`} component={organizationInfo} />
           <Route path={`${match.url}/project-info`} component={projectInfo} />
+          <Route path={`${match.url}/token-manager`} component={tokenManager} />
           <Route path={`${match.url}/receive-setting`} component={receiveSetting} />
           <Route path={`${match.url}/user-info`} component={userInfo} />
           <Route path={`${match.url}/user-msg`} component={userMsg} />

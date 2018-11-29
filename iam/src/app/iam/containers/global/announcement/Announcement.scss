@@ -1,0 +1,56 @@
+.c7n-iam-announcement {
+  &-detail {
+    .send-time {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 20px;
+      width: 270px;
+    }
+    .inline {
+      display: inline-block;
+    }
+    width: 100%;
+    &-wrapper {
+      background: #f8f8f8;
+      border-radius: 4px;
+      padding: 20px;
+    }
+    &-content {
+      width: 559px;
+    }
+    > div {
+      margin-bottom: 14px;
+      > span {
+        display: inline-block;
+        width: 70px;
+        margin-right: 70px;
+        font-size: 14px;
+        color: #000;
+        line-height: 20px;
+      }
+    }
+  }
+  .nowarp {
+    max-width: 500px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  &-siderbar-content {
+    .inline {
+      display: inline-block;
+    }
+    .send-time {
+      vertical-align: sub;
+      margin-right: 70px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 20px;
+    }
+    .content-text {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 20px;
+    }
+  }
+}

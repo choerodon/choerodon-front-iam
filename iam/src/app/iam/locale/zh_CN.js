@@ -750,7 +750,7 @@ const zh_CN = {
   'taskdetail.cron.task': 'Cron任务',
   'taskdetail.cron.expression': 'Cron表达式',
   'taskdetail.cron.expression.required': '请输入Cron表达式',
-  'taskdetail.cron.tip': '请填写Cron表达式, 了解如何填写Cron表达式。',
+  'taskdetail.cron.tip': '请填写Cron表达式',
   'taskdetail.cron.tip.link': `${docServer}/user-guide/microservice-development/job/cron-expression/`,
   'taskdetail.cron.example': '示例',
   'taskdetail.cron.runtime': '第{time}次执行时间:',
@@ -780,7 +780,37 @@ const zh_CN = {
   'taskdetail.noprogram': '无可选任务程序时，无法创建任务',
   'taskdetail.num.required': '请输入数字',
   'taskdetail.default.required': '无默认值时必填',
+  'taskdetail.step1.title': '填写任务基本信息',
+  'taskdetail.step2.title': '配置执行程序',
+  'taskdetail.step3.title': '设置通知对象',
+  'taskdetail.step4.title': '确认信息',
+  'taskdetail.step1.description': '填写任务的名称及描述说明，为任务配置触发条件。您可以选择简单任务或者Cron任务。了解如何填写cron表达式。',
+  'taskdetail.step2.description': '您可以在此配置任务要执行的程序。',
+  'taskdetail.step3.description': '在这里你可以选择任务状态发生变化的通知对象。在任务状态发生变化或者出故障时可以及时通知到相关用户。',
+  'taskdetail.step.next': '下一步',
+  'taskdetail.step.prev': '上一步',
+  'taskdetail.add.specified.user': '添加指定用户',
+  'taskdetail.login.name': '登录名',
+  'taskdetail.real.name': '用户名',
+  'taskdetail.seconds': '秒',
+  'taskdetail.minutes': '分',
+  'taskdetail.hours': '时',
+  'taskdetail.days': '天',
+  'taskdetail.noservice': '无服务',
+  'taskdetail.noprograms': '无任务程序',
+  'taskdetail.creator': '创建者',
+  'taskdetail.manager': '管理员',
+  'taskdetail.user': '指定用户',
+  'taskdetail.site': '平台',
+  'taskdetail.organization': '组织',
+  'taskdetail.project': '项目',
+  'taskdetail.inform.person': '通知对象',
+  'taskdetail.nousers': '暂无指定用户',
+  'taskdetail.simple.trigger': '简单任务',
+  'taskdetail.cron.trigger': 'Cron任务',
+  'taskdetail.empty': '无',
   'taskdetail.number.pattern': '请输入数字',
+
 
   // 执行记录
   'execution.header.title': '执行记录',
@@ -960,6 +990,7 @@ const zh_CN = {
   'sendsetting.pmtemplate.type': '站内信类型',
   'sendsetting.pmtemplate.msg': '消息',
   'sendsetting.pmtemplate.notice': '通知',
+  'sendsetting.pmtemplate.receive': '允许配置接收',
 
   // 消息记录
   'msgrecord.header.title': '消息记录',
@@ -1138,7 +1169,25 @@ const zh_CN = {
   'global.system-setting.reset.confirm.title': '重置配置',
   'global.system-setting.reset.confirm.content': '确定要重置系统自定义配置吗？您的自定义配置将被删除。',
   'global.system-setting.reset': '重置成功',
-  
+  'global.system-setting.edit.title': '对平台的徽标进行修改',
+  'global.system-setting.edit.dragger.text': '点击或将图片拖到此区域上传图片',
+  'global.system-setting.edit.dragger.hint': '图片支持PNG、JPG、JPEG格式，且不能大于1M',
+  'global.system-setting.edit.text': '上传徽标',
+  'global.system-setting.edit.hint': '您可以在此裁剪、旋转图片，然后点击"保存" 完成徽标的修改',
+  'global.system-setting.edit.preview': '徽标预览',
+  'global.system-setting.edit.button': '重新上传',
+  'global.system-setting.min-length': '平台默认最小密码长度',
+  'global.system-setting.max-length': '平台默认最大密码长度',
+
+  // 系统公告
+  'global.announcement.header.title': '系统公告',
+  'global.announcement.title': '平台"{name}"的系统公告',
+  'global.announcement.description': '您可以在此编辑系统公告，并且指定时间发送到全局。',
+  'global.announcement.content': '公告内容',
+  'global.announcement.send-time': '发送时间',
+  'global.announcement.sidebar.title': '添加公告',
+  'global.announcement.sidebar.title.detail': '查看公告',
+
   // 组织层
   // 项目管理
   'organization.project.code.exist.msg': '项目编码已存在，请输入其他项目编码',
@@ -1267,6 +1316,12 @@ const zh_CN = {
   // 用户管理
   'organization.user.unlock': '解锁',
   'organization.user.unlock.success': '解锁成功',
+  'organization.user.unlock.failed': '解锁失败',
+  'organization.user.reset': '重置密码',
+  'organization.user.reset.success': '重置密码成功',
+  'organization.user.reset.failed': '重置密码失败',
+  'organization.user.reset.title': '确认重置当前用户密码',
+  'organization.user.reset.content': '{loginName}用户的当前密码将失效。如果您启用组织密码策略，将重置为组织默认密码，否则将重置为平台密码。',
   'organization.user.language': '语言',
   'organization.user.create': '创建用户',
   'organization.user.modify': '修改用户',
@@ -1310,6 +1365,15 @@ const zh_CN = {
   'organization.user.uploading.tip': '（本次导入将会耗时较长，您可以先返回进行其他操作）',
   'organization.user.download.failed.detail': '点击下载失败详情',
   'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
+
+  // 系统公告
+  'organization.announcement.header.title': '系统公告',
+  'organization.announcement.title': '组织"{name}"的系统公告',
+  'organization.announcement.description': '你可以在此编辑系统公告，并且指定时间发送到组织成员。',
+  'organization.announcement.content': '公告内容',
+  'organization.announcement.send-time': '发送时间',
+  'organization.announcement.sidebar.title': '添加公告',
+  'organization.announcement.sidebar.title.detail': '查看公告',
 
   // 项目层
   // 项目信息
@@ -1390,6 +1454,17 @@ const zh_CN = {
   'user.usermsg.nomore': '暂无更多消息',
   'user.usermsg.load-more': '加载更多',
 
+  // 授权管理
+  'user.token-manager.header.title': '授权管理',
+  'user.token-manager.title': 'ACCESS-TOKEN管理',
+  'user.token-manager.description': '您可以在此查看自己的 access-token 情况。',
+  'user.token-manager.client-id': '客户端名称',
+  'user.token-manager.redirect-uri': '重定向地址',
+  'user.token-manager.create-time': '创建时间',
+  'user.token-manager.expiration-time': '失效时间',
+  'user.token-manager.remove.title': '移除access-token',
+  'user.token-manager.remove.content': '确定要移除{name}吗？移除后您将无法获取该token的授权信息。',
+
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',
   'global.memberrole.upload.title': '在平台"{name}"中导入角色',
@@ -1439,6 +1514,17 @@ const zh_CN = {
   'memberlabel.member.disabled.msg': '用户已被停用，无法给此用户分配角色，请先启用此用户',
   'memberlabel.member.notexist.msg': '不存在此用户，请输入正确的登录名',
   'memberlabel.member.require.msg': '必须至少输入一个成员',
+
+  // 系统公告
+  'announcement.waiting': '未开始',
+  'announcement.completed': '完成',
+  'announcement.sending': '发送中',
+  'announcement.failed': '失败',
+  'announcement.add': '添加公告',
+  'announcement.detail': '查看详情',
+  'announcement.content.required': '公告内容不可为空',
+  'announcement.delete.title': '删除公告',
+  'announcement.delete.content': '确定要删除此系统公告？',
 
   // Upload
   'download.template': '下载',

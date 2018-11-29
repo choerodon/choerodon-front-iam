@@ -463,6 +463,7 @@ export default class MemberRole extends Component {
           })(
             <Select
               label={<FormattedMessage id="memberrole.type.user" />}
+              optionLabelProp="label"
               allowClear
               style={{ width: 512 }}
               mode="multiple"
@@ -631,8 +632,18 @@ export default class MemberRole extends Component {
     const { MemberRoleStore } = this.props;
     const usersData = MemberRoleStore.getUsersData;
     return usersData && usersData.length > 0 ? (
-      usersData.map(({ id, loginName, realName }) => (
-        <Option key={id} value={id}>{loginName}{realName}</Option>
+      usersData.map(({ id, imageUrl, loginName, realName }) => (
+        <Option key={id} value={id} label={`${loginName}${realName}`}>
+          <div className="c7n-iam-memberrole-user-option">
+            <div className="c7n-iam-memberrole-user-option-avatar">
+              {
+                imageUrl ? <img src={imageUrl} alt="userAvatar" style={{ width: '100%' }} /> :
+                <span className="c7n-iam-memberrole-user-option-avatar-noavatar">{realName && realName.split('')[0]}</span>
+              }
+            </div>
+            <span>{loginName}{realName}</span>
+          </div>
+        </Option>
       ))
     ) : null;
   }

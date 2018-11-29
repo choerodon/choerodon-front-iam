@@ -103,24 +103,6 @@ export default class InMailTemplateModify extends Component {
     return backPath;
   }
 
-  /**
-   * 模板编码校验
-   * @param rule 表单校验规则
-   * @param value 模板编码
-   * @param callback 回调函数
-   */
-  checkCode = (rule, value, callback) => {
-    const { intl } = this.props;
-    const path = this.mail.type === 'site' ? '' : `/organizations/${this.mail.orgId}`;
-    axios.get(`notify/v1/notices/letters/templates/check${path}?code=${value}`).then((mes) => {
-      if (mes.failed) {
-        callback(intl.formatMessage({ id: 'inmailtemplate.code.exist' }));
-      } else {
-        callback();
-      }
-    });
-  };
-
   handleSubmit = (e) => {
     e.preventDefault();
     const { intl } = this.props;

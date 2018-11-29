@@ -28,6 +28,7 @@
 "msg-center.inmail-template": "Website Mail Template"
 "msg-center.mail-setting": "Mail Config"
 "msg-center.msg-record": "Message Record"
+"msg-center.announcement": "Announcement"
 
 "task-dispatch": "Task Dispatch"
 "task-dispatch.task-detail": "Task Detail"
@@ -43,6 +44,7 @@
 "rentsetting.ldap": "LDAP"
 "rentsetting.password-policy": "Password Policy"
 "rentsetting.mail-template-organization": "Mail Template"
+"rentsetting.announcement-organization": "Announcement"
 
 "msg-center-organization": "Message Center"
 "msg-center-organization.send-setting-organization": "Send Setting"
@@ -71,4 +73,5 @@
 "usercenter.organization-info": "Organization Information"
 "usercenter.project-info": "Project Information"
 "usercenter.user-msg": "Message Notification"
-"usercenter.receive-setting": "接收设置"
+"usercenter.receive-setting": "Receive Setting"
+"usercenter.token-manager": "Token Manager"

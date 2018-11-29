@@ -9,6 +9,7 @@ import './Route.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 import '../../../common/ConfirmModal.scss';
+import { handleFiltersParams } from '../../../common/util';
 
 const { Sidebar } = Modal;
 const Option = Select.Option;
@@ -125,12 +126,26 @@ export default class Route extends Component {
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
     // 防止标签闪烁
-    this.setState({ filters });
+    this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      this.setState({
+        loading: false,
+        pagination: {
+          total: 0,
+        },
+        content: [],
+        sort,
+        params,
+      });
+      return;
+    }
+
     this.fetch(pagination, sort, filters, params)
       .then((data) => {
         this.setState({
           sort,
-          filters,
           params,
           pagination: {
             current: data.number + 1,
@@ -147,9 +162,6 @@ export default class Route extends Component {
   }
 
   fetch({ current, pageSize }, { columnKey = 'id', order = 'descend' }, { name, path, serviceId, builtIn }, params) {
-    this.setState({
-      loading: true,
-    });
     const queryObj = {
       page: current - 1,
       size: pageSize,
@@ -169,7 +181,6 @@ export default class Route extends Component {
     }
     return axios.get(`/manager/v1/routes?${querystring.stringify(queryObj)}`);
   }
-
 
   handlePageChange = (pagination, filters, sorter, params) => {
     this.loadRouteList(pagination, sorter, filters, params);

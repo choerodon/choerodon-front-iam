@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import { inject, observer, trace } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Icon, Input, Select, Spin, Upload, Popover, Modal } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Select, Spin, InputNumber, Popover, Modal } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './SystemSetting.scss';
 import '../../../common/ConfirmModal.scss';
+import LogoUploader from './LogoUploader';
+// import AvatarUploader from '../../../components/AvatarUploader';
 
 const intlPrefix = 'global.system-setting';
 const prefixClas = 'c7n-iam-system-setting';
+const inputPrefix = 'organization.pwdpolicy';
 const limitSize = 1024;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -58,6 +61,8 @@ export default class SystemSetting extends Component {
   state = {
     loading: false,
     submitting: false,
+    visible: false,
+    uploadLogoVisible: false,
   };
   componentWillMount() {
     this.init();
@@ -95,28 +100,56 @@ export default class SystemSetting extends Component {
       },
     });
   };
+
+  handleVisibleChange = () => {
+    const { visible } = this.state;
+    this.setState({
+      visible: !visible,
+    });
+  };
+
+  handleUploadLogoVisibleChange = () => {
+    const { uploadLogoVisible } = this.state;
+    this.setState({
+      uploadLogoVisible: !uploadLogoVisible,
+    });
+  };
+
+  checkMaxLength = (rule, value, callback) => {
+    const { getFieldValue } = this.props.form;
+    const { intl } = this.props;
+    const minPasswordLength = getFieldValue('minPasswordLength');
+    if (value < 0) {
+      callback(intl.formatMessage({ id: `${inputPrefix}.max.length` }));
+    } else if (value < minPasswordLength) {
+      callback('最大密码长度须大于或等于最小密码长度');
+    }
+    this.props.form.validateFields(['minPasswordLength'], { force: true });
+    callback();
+  };
+
+  checkMinLength = (rule, value, callback) => {
+    const { intl } = this.props;
+    const { getFieldValue } = this.props.form;
+    const maxPasswordLength = getFieldValue('maxPasswordLength');
+    if (value < 0) callback(intl.formatMessage({ id: `${inputPrefix}.number.pattern.msg` }));
+    else if (value > maxPasswordLength) callback(intl.formatMessage({ id: `${inputPrefix}.min.lessthan.more` }));
+    callback();
+  };
+
   faviconContainer() {
     const { SystemSettingStore } = this.props;
+    const { visible } = this.state;
     const favicon = SystemSettingStore.getFavicon;
     return (
       <div className={`${prefixClas}-avatar-wrap`}>
         <div className={`${prefixClas}-avatar`} style={favicon ? { backgroundImage: `url(${favicon})` } : {}}>
-          <Upload
-            className={`${prefixClas}-avatar-button`}
-            name="file"
-            showUploadList={false}
-            accept="image/jpeg, image/png, image/jpg，image/gif"
-            beforeUpload={this.beforeUpload}
-            action={`${Choerodon.API_HOST}/iam/v1/system/setting/upload/logo`}
-            onChange={this.handleFaviconChange}
-            headers={{
-              Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
-            }}
-          >
+          <Button className={`${prefixClas}-avatar-button`} onClick={() => this.setState({ visible: true })}>
             <div className={`${prefixClas}-avatar-button-icon`}>
               <Icon type="photo_camera" style={{ display: 'block', textAlign: 'center' }} />
             </div>
-          </Upload>
+          </Button>
+          <LogoUploader type="favicon" visible={visible} onVisibleChange={this.handleVisibleChange} onSave={(res) => { SystemSettingStore.setFavicon(res); }} />
         </div>
         <span className={`${prefixClas}-tips`}>
           <FormattedMessage id={`${intlPrefix}.favicon`} />
@@ -219,7 +252,19 @@ export default class SystemSetting extends Component {
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
       if (Object.keys(prevSetting).length) {
         if (Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
-          SystemSettingStore.putUserSetting(submitSetting).then(() => window.location.reload(true));
+          SystemSettingStore.putUserSetting(submitSetting).then((data) => {
+            if (!data.failed) {
+              window.location.reload(true);
+            } else {
+              this.setState({
+                submitting: false,
+              });
+            }
+          }).catch((error) => {
+            this.setState({
+              submitting: false,
+            });
+          });
         } else {
           Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.conflict` }));
           this.setState({
@@ -232,7 +277,19 @@ export default class SystemSetting extends Component {
           submitting: false,
         });
       } else {
-        SystemSettingStore.postUserSetting(submitSetting).then(() => window.location.reload(true));
+        SystemSettingStore.postUserSetting(submitSetting).then((data) => {
+          if (!data.failed) {
+            window.location.reload(true);
+          } else {
+            this.setState({
+              submitting: false,
+            });
+          }
+        }).catch((error) => {
+          this.setState({
+            submitting: false,
+          });
+        });
       }
     });
   };
@@ -240,8 +297,8 @@ export default class SystemSetting extends Component {
   render() {
     const { SystemSettingStore, intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { logoLoadingStatus, submitting } = this.state;
-    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle = AppState.getSiteInfo.defaultTitle } = SystemSettingStore.getUserSetting;
+    const { logoLoadingStatus, submitting, uploadLogoVisible } = this.state;
+    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle, maxPasswordLength, minPasswordLength } = SystemSettingStore.getUserSetting;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {
@@ -253,11 +310,13 @@ export default class SystemSetting extends Component {
         sm: { span: 16 },
       },
     };
+    const inputHalfWidth = '236px';
     const uploadButton = (
-      <div>
+      <div onClick={this.handleUploadLogoVisibleChange}>
         {logoLoadingStatus ? <Spin /> : <div className={'initLogo'} />}
       </div>
     );
+
     const mainContent = (
       <Form onSubmit={this.handleSubmit} layout="vertical" className={prefixClas}>
         <FormItem>
@@ -279,7 +338,7 @@ export default class SystemSetting extends Component {
             }],
           })(
             <Input
-              autoComplete="off"
+              autoComplete="new-password"
               label={<FormattedMessage id={`${intlPrefix}.systemName`} />}
               ref={(e) => { this.editFocusInput = e; }}
               maxLength={18}
@@ -298,31 +357,20 @@ export default class SystemSetting extends Component {
               <Icon type="help" style={{ fontSize: 16, color: '#bdbdbd' }} />
             </Popover>
           </span>
-
-          <Upload
-            name="file"
-            listType="picture-card"
-            showUploadList={false}
-            accept="image/jpeg, image/png, image/jpg"
-            beforeUpload={this.beforeUpload}
-            action={`${Choerodon.API_HOST}/iam/v1/system/setting/upload/logo`}
-            onChange={this.handleLogoChange}
-            headers={{
-              Authorization: `bearer ${Choerodon.getCookie('access_token')}`,
-            }}
-          >
-            {systemLogo ? <img src={systemLogo} alt="" style={{ width: '80px', height: '80px' }} /> : uploadButton}
-          </Upload>
+          <div className="ant-upload ant-upload-select ant-upload-select-picture-card">
+            <LogoUploader type="logo" visible={uploadLogoVisible} onVisibleChange={this.handleUploadLogoVisibleChange} onSave={(res) => { SystemSettingStore.setLogo(res); }} />
+            {systemLogo ? <div className="ant-upload" onClick={this.handleUploadLogoVisibleChange}><img src={systemLogo} alt="" style={{ width: '80px', height: '80px' }} /></div> : uploadButton}
+          </div>
         </FormItem>
         <FormItem
           {...formItemLayout}
         >
           <Input style={{ display: 'none' }} />
           {getFieldDecorator('systemTitle', {
-            initialValue: systemTitle,
+            initialValue: systemTitle || AppState.getSiteInfo.defaultTitle,
           })(
             <Input
-              autoComplete="off"
+              autoComplete="new-password"
               label={<FormattedMessage id={`${intlPrefix}.systemTitle`} />}
               ref={(e) => { this.editFocusInput = e; }}
               maxLength={32}
@@ -345,11 +393,53 @@ export default class SystemSetting extends Component {
             }],
           })(
             <Input
-              autoComplete="off"
+              autoComplete="new-password"
               label={<FormattedMessage id={`${intlPrefix}.defaultPassword`} />}
               maxLength={15}
               type="password"
               showPasswordEye
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          style={{ display: 'inline-block' }}
+        >
+          {getFieldDecorator('minPasswordLength', {
+            rules: [
+              {
+                validator: this.checkMinLength,
+                validateFirst: true,
+              },
+            ],
+            initialValue: minPasswordLength,
+          })(
+            <InputNumber
+              label={<FormattedMessage id={`${intlPrefix}.min-length`} />}
+              style={{ width: inputHalfWidth }}
+              max={65535}
+              min={0}
+            />,
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          style={{ display: 'inline-block', marginLeft: 40 }}
+        >
+          {getFieldDecorator('maxPasswordLength', {
+            rules: [
+              {
+                validator: this.checkMaxLength,
+                validateFirst: true,
+              },
+            ],
+            initialValue: maxPasswordLength,
+          })(
+            <InputNumber
+              label={<FormattedMessage id={`${intlPrefix}.max-length`} />}
+              style={{ width: inputHalfWidth }}
+              max={65535}
+              min={0}
             />,
           )}
         </FormItem>

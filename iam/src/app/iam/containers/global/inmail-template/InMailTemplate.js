@@ -12,6 +12,7 @@ import { withRouter } from 'react-router-dom';
 import {
   axios, Content, Header, Page, Permission, Action,
 } from 'choerodon-front-boot';
+import { handleFiltersParams } from '../../../common/util';
 import InMailTemplateStore from '../../../stores/global/inmail-template';
 import './InMailTemplate.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
@@ -97,10 +98,25 @@ export default class InMailTemplate extends Component {
     } = this.state;
     const pagination = paginationIn || paginationState;
     const sort = sortIn || sortState;
-    const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
+    const filters = filtersIn || filtersState;
     // 防止标签闪烁
     this.setState({ filters });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      InMailTemplateStore.setMailTemplate([]);
+      InMailTemplateStore.setLoading(false);
+      this.setState({
+        sort,
+        params,
+        pagination: {
+          total: 0,
+        },
+      });
+      return;
+    }
+
     InMailTemplateStore.loadMailTemplate(pagination, filters, sort, params,
       this.mail.type, this.mail.orgId)
       .then((data) => {
@@ -108,7 +124,6 @@ export default class InMailTemplate extends Component {
         InMailTemplateStore.setMailTemplate(data.content);
         this.setState({
           sort,
-          filters,
           params,
           pagination: {
             current: data.number + 1,
@@ -314,8 +329,6 @@ export default class InMailTemplate extends Component {
       dataIndex: 'isPredefined',
       key: 'isPredefined',
       width: '30%',
-      render: isPredefined => this.renderBuiltIn(isPredefined),
-      filteredValue: filters.isPredefined || [],
       filters: [{
         text: intl.formatMessage({ id: 'inmailtemplate.predefined' }),
         value: 'true',
@@ -323,6 +336,8 @@ export default class InMailTemplate extends Component {
         text: intl.formatMessage({ id: 'inmailtemplate.selfdefined' }),
         value: 'false',
       }],
+      filteredValue: filters.isPredefined || [],
+      render: isPredefined => this.renderBuiltIn(isPredefined),
     },
     {
       title: '',

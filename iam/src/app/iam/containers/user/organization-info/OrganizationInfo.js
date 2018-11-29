@@ -73,8 +73,8 @@ export default class ProjectInfo extends Component {
       width: '35%',
       render: (text, record) => {
         let icon = '';
-        if ('organizationId' in record) {
-          icon = 'project';
+        if ('roles' in record) {
+          icon = 'domain';
         } else {
           icon = 'person';
         }

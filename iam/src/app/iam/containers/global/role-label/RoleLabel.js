@@ -4,6 +4,7 @@ import { Button, Table } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import RoleLabelStore from '../../../stores/global/role-label/RoleLabelStore';
+import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'global.rolelabel';
 
@@ -39,11 +40,23 @@ export default class RoleLabel extends Component {
     const sort = sortIn || sortState;
     const filters = filtersIn || filtersState;
     const params = paramsIn || paramsState;
-    this.setState({
-      loading: true,
-    });
     // 防止标签闪烁
-    this.setState({ filters });
+    this.setState({ filters, loading: true });
+    // 若params或filters含特殊字符表格数据置空
+    const isIncludeSpecialCode = handleFiltersParams(params, filters);
+    if (isIncludeSpecialCode) {
+      RoleLabelStore.setData([]);
+      this.setState({
+        loading: false,
+        sort,
+        params,
+        pagination: {
+          total: 0,
+        },
+      });
+      return;
+    }
+
     RoleLabelStore.loadData(filters, sort, params).then((data) => {
       RoleLabelStore.setData(data);
       this.setState({
@@ -53,7 +66,7 @@ export default class RoleLabel extends Component {
         params,
       });
     });
-  }
+  };
 
   tableChange = (pagination, filters, sort, params) => {
     this.reload(filters, sort, params);

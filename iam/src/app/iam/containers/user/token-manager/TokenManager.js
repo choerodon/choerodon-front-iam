@@ -60,7 +60,7 @@ export default class TokenManager extends Component {
       title: 'token',
       dataIndex: 'accesstoken',
       key: 'accesstoken',
-      width: '30%',
+      width: '35%',
       className: 'c7n-iam-token-manager-token',
       render: (text, record) => (
         <React.Fragment>

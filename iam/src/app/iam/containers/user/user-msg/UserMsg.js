@@ -287,9 +287,6 @@ export default class UserMsg extends Component {
             {[{ key: 'msg', value: '消息' }, { key: 'notice', value: '通知' }].map(panelItem => (
               <TabPane tab={panelItem.value} key={panelItem.key} className="c7n-iam-user-msg-tab">
                 <div className="c7n-iam-user-msg-btns">
-                  <div className="text">
-                    {intl.formatMessage({ id: 'user.usermsg.view' })}
-                  </div>
                   <Button
                     className={this.getUserMsgClass('unRead')}
                     onClick={() => { this.showUserMsg(false); }}

@@ -123,7 +123,11 @@ export default class ReceiveSetting extends Component {
 
     return (
       <Page
-        service={[]}
+        service={[
+          'notify-service.receive-setting.update',
+          'notify-service.receive-setting.updateByUserId',
+          'notify-service.receive-setting.queryByUserId',
+        ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Button onClick={this.refresh} icon="refresh">

@@ -331,6 +331,7 @@
     - "announcement-organization":
         icon: volume_up
         Routes: /iam/announcement
+        delete: true
         sort: 8
         permission:
           - 'asgard-service.system-notification.pagingQueryOrgNotificaton'
@@ -477,24 +478,31 @@
         sort: 2
         permission:
           - 'iam-service.user.selfUpdatePassword'
+    - "token-manager":
+        icon: authority
+        Routes: /iam/token-manager
+        sort: 3
+        permission:
+          - 'iam-service.access-token.list'
+          - 'iam-service.access-token.delete'
     - "organization-info":
         icon: domain
         Routes: /iam/organization-info
-        sort: 3
+        sort: 4
         permission:
           - 'iam-service.user.listOrganizationAndRoleById'
           - 'iam-service.role.listPermissionById'
     - "project-info":
         icon: project
         Routes: /iam/project-info
-        sort: 4
+        sort: 5
         permission:
           - 'iam-service.user.listProjectAndRoleById'
           - 'iam-service.role.listPermissionById'
     - "user-msg":
         icon: message_notification
         Routes: /iam/user-msg
-        sort: 5
+        sort: 6
         permission:
           - 'notify-service.site-msg-record.pagingQuery'
           - 'notify-service.site-msg-record.batchDeleted'
@@ -502,13 +510,8 @@
     - "receive-setting":
         icon: settings
         Routes: /iam/receive-setting
-        sort: 6
-        permission:
-        - 'iam-service.user.queryInfo'
-    - "token-manager":
-        icon: authority
-        Routes: /iam/token-manager
         sort: 7
         permission:
-        - 'iam-service.access-token.list'
-        - 'iam-service.access-token.delete'
+          - 'notify-service.receive-setting.queryByUserId'
+          - 'notify-service.receive-setting.updateByUserId'
+          - 'notify-service.receive-setting.update'

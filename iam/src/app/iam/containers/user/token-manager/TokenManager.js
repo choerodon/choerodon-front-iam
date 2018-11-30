@@ -4,11 +4,14 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { Table, Button, Tooltip, Modal } from 'choerodon-ui';
 import './TokenManager.scss';
+import TimeAgo from 'timeago-react';
+import timeago from 'timeago.js';
 import { Link, withRouter } from 'react-router-dom';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 
 const intlPrefix = 'user.token-manager';
+timeago.register('zh_CN', require('./locale/zh_CN'));
 
 @withRouter
 @inject('AppState')
@@ -52,6 +55,18 @@ export default class TokenManager extends Component {
     TokenManagerStore.loadData(Choerodon.getAccessToken().split(' ')[1], pagination, params);
   }
 
+  renderTime = time => (
+    <Tooltip
+      title={time}
+      placement="top"
+    >
+      <TimeAgo
+        datetime={time}
+        locale={Choerodon.getMessage('zh_CN', 'en')}
+      />
+    </Tooltip>
+  );
+
   getColumns = () => {
     const {
       intl,
@@ -60,7 +75,7 @@ export default class TokenManager extends Component {
       title: 'token',
       dataIndex: 'accesstoken',
       key: 'accesstoken',
-      width: '35%',
+      width: '30%',
       className: 'c7n-iam-token-manager-token',
       render: (text, record) => (
         <React.Fragment>
@@ -82,7 +97,7 @@ export default class TokenManager extends Component {
       title: intl.formatMessage({ id: `${intlPrefix}.client-id` }),
       dataIndex: 'clientId',
       key: 'clientId',
-      width: '10%',
+      width: '12%',
       render: text => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}
@@ -94,7 +109,7 @@ export default class TokenManager extends Component {
       key: 'redirectUri',
       width: '20%',
       render: text => (
-        <MouseOverWrapper text={text} width={0.20}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),
@@ -103,26 +118,18 @@ export default class TokenManager extends Component {
       dataIndex: 'createTime',
       key: 'createTime',
       width: '10%',
-      render: text => (
-        <MouseOverWrapper text={text} width={0.1}>
-          {text}
-        </MouseOverWrapper>
-      ),
+      render: this.renderTime,
     }, {
       title: intl.formatMessage({ id: `${intlPrefix}.expiration-time` }),
       dataIndex: 'expirationTime',
       key: 'expirationTime',
       width: '10%',
-      render: text => (
-        <MouseOverWrapper text={text} width={0.1}>
-          {text}
-        </MouseOverWrapper>
-      ),
+      render: this.renderTime,
     }, {
       title: intl.formatMessage({ id: 'status' }),
       dataIndex: 'expire',
       key: 'expire',
-      width: '10%',
+      width: '12%',
       // filters: [
       //   {
       //     text: '正常',

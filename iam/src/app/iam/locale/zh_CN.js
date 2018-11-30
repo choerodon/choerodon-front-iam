@@ -170,8 +170,8 @@ const pageDetail = {
   'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/message/send-config/`,
 
   // 消息记录
-  'global.msgrecord.title': '平台"{name}"的消息记录',
-  'global.msgrecord.description': '通过此平台，您可以查看发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
+  'global.msgrecord.title': '平台"{name}"的邮件发送记录',
+  'global.msgrecord.description': '通过此平台，您可以查看邮件发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
   'global.msgrecord.link': `${docServer}/user-guide/system-configuration/message/record/`,
 
   // 邮件模板
@@ -333,8 +333,8 @@ const pageDetail = {
   'organization.sendsetting.modify.link': '',
 
   // 消息记录
-  'organization.msgrecord.title': '组织"{name}"的消息记录',
-  'organization.msgrecord.description': '通过此平台，您可以查看发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
+  'organization.msgrecord.title': '组织"{name}"的邮件发送记录',
+  'organization.msgrecord.description': '通过此平台，您可以查看邮件发送状态回执，并且了解发送失败的原因，手动重发发送失败的消息。',
   'organization.msgrecord.link': `${docServer}/user-guide/system-configuration/message/record/`,
 
   // 邮件模板
@@ -1457,7 +1457,7 @@ const zh_CN = {
   // 授权管理
   'user.token-manager.header.title': '授权管理',
   'user.token-manager.title': 'ACCESS-TOKEN管理',
-  'user.token-manager.description': '您可以在此查看自己的 access-token 情况。',
+  'user.token-manager.description': 'ACCESS-TOKEN是您访问平台的密钥。您可以在此查看和管理您的密钥。',
   'user.token-manager.client-id': '客户端名称',
   'user.token-manager.redirect-uri': '重定向地址',
   'user.token-manager.create-time': '创建时间',

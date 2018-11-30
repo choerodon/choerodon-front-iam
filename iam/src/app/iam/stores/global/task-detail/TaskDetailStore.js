@@ -8,7 +8,7 @@ class TaskDetailStore {
   @observable service = [];
   @observable info = {}; // 任务信息
   @observable log = []; // 任务日志
-  @observable currentService = {};
+  @observable currentService = [];
   @observable classNames = []; // 任务类名下拉框数据
   @observable currentClassNames = {}; // 当前任务程序
   @observable currentTask = {};
@@ -148,7 +148,7 @@ class TaskDetailStore {
     return axios.post(`${this.getRoleLevelType(type, id)}/role_members/users/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
   }
 
-  loadService = () => axios.get('manager/v1/services');
+  loadService = (type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/services`);
 
   loadClass = (service, type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/service?service=${service}`);
 

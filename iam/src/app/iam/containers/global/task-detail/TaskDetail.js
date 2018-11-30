@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { observable, action, configure } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
-import { Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row, Spin, InputNumber } from 'choerodon-ui';
+import { Button, Table, Tooltip, Modal, Tabs, Col, Row } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import classnames from 'classnames';
@@ -16,14 +15,7 @@ import { handleFiltersParams } from '../../../common/util';
 
 const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
-const { TextArea } = Input;
-const FormItem = Form.Item;
-const { RangePicker } = DatePicker;
-const RadioGroup = Radio.Group;
-const Option = Select.Option;
 const { TabPane } = Tabs;
-
-configure({ enforceActions: false });
 
 // 公用方法类
 class TaskDetailType {
@@ -54,29 +46,19 @@ class TaskDetailType {
   }
 }
 
-@Form.create()
 @withRouter
 @injectIntl
 @inject('AppState')
 @observer
 export default class TaskDetail extends Component {
-  @observable startTimes = null;
-
-  @observable endTimes = null;
-
   state = this.getInitState();
 
   getInitState() {
     return {
-      cronTime: [],
-      currentCron: undefined,
       tempTaskId: null,
-      startTime: null,
-      endTime: null,
       isShowSidebar: false,
       isSubmitting: false,
-      selectType: 'create', // 当前侧边栏为创建or详情
-      triggerType: 'easy', // 创建任务默认触发类型
+      selectType: 'detail',
       loading: true,
       logLoading: true,
       showLog: false,
@@ -105,7 +87,6 @@ export default class TaskDetail extends Component {
       logParams: [],
       paramsData: [], // 参数列表的数据
       paramsLoading: false, // 创建任务参数列表Loading
-      cronLoading: 'empty', // cron popover的状态
     };
   }
 
@@ -281,7 +262,7 @@ export default class TaskDetail extends Component {
       );
     } else if (record.status === 'DISABLE') {
       return (
-        <Permission service={disableService}>
+        <Permission service={enableService}>
           <Tooltip
             title={<FormattedMessage id="enable" />}
             placement="bottom"
@@ -377,38 +358,11 @@ export default class TaskDetail extends Component {
    * @param selectType create/detail
    * @param record 列表行数据
    */
-  @action
   handleOpen = (selectType, record = {}) => {
-    this.props.form.resetFields();
-    this.startTimes = null;
-    this.endTimes = null;
-    this.setState({
-      selectType,
-      showLog: false,
-      triggerType: 'easy',
-      startTime: null,
-      endTime: null,
-    });
-    if (selectType === 'create') {
-      TaskDetailStore.setCurrentService({});
-      TaskDetailStore.setClassNames([]);
-      TaskDetailStore.setCurrentClassNames({});
+    if (selectType === 'detail') {
       this.setState({
-        paramsData: [],
-      });
-      if (!TaskDetailStore.service.length) {
-        this.loadService();
-      } else {
-        this.setState({
-          isShowSidebar: true,
-        }, () => {
-          setTimeout(() => {
-            this.creatTaskFocusInput.input.focus();
-          }, 10);
-        });
-      }
-    } else {
-      this.setState({
+        selectType,
+        showLog: false,
         logPagination: {
           current: 1,
           pageSize: 10,
@@ -434,93 +388,15 @@ export default class TaskDetail extends Component {
     });
   }
 
-  /**
-   * 服务名变换时
-   * @param service 服务名
-   */
-  handleChangeService(service) {
-    const currentService = TaskDetailStore.service.find(item => item.name === service);
-    TaskDetailStore.setCurrentService(currentService);
-    this.loadClass();
-  }
-
-  /**
-   * 类名变换时
-   * @param id
-   */
-  handleChangeClass(id) {
-    const currentClass = TaskDetailStore.classNames.find(item => item.id === id);
-    TaskDetailStore.setCurrentClassNames(currentClass);
-    this.loadParamsTable();
-  }
-
-  // 获取所有服务名
-  loadService = () => {
-    TaskDetailStore.loadService().then((data) => {
-      if (data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        TaskDetailStore.setService(data);
-        this.setState({
-          isShowSidebar: true,
-        }, () => {
-          setTimeout(() => {
-            this.creatTaskFocusInput.input.focus();
-          }, 10);
-        });
-      }
-    }).catch((error) => {
-      Choerodon.handleResponseError(error);
-    });
-  }
-
-  // 获取对应服务名的类名
-  loadClass = () => {
-    const { currentService } = TaskDetailStore;
-    TaskDetailStore.loadClass(currentService.name, this.taskdetail.type, this.taskdetail.id).then((data) => {
-      if (data.failed) {
-        Choerodon.prompt(data.message);
-      } else if (data.length) {
-        const classNames = [];
-        data.map(({ method, code, id }) => classNames.push({ method, code, id }));
-        TaskDetailStore.setClassNames(classNames);
-        TaskDetailStore.setCurrentClassNames(classNames[0]);
-        this.loadParamsTable();
-      } else {
-        TaskDetailStore.setClassNames([]);
-        this.setState({
-          paramsData: [],
-        });
-      }
-    });
-  }
-
-  // 获取参数列表
-  loadParamsTable = () => {
+  // 任务详情提交
+  handleSubmit = (e) => {
+    e.preventDefault();
     this.setState({
-      paramsLoading: true,
+      isShowSidebar: false,
+      tempTaskId: null,
+    }, () => {
+      TaskDetailStore.setLog([]);
     });
-    const { currentClassNames } = TaskDetailStore;
-    const { type, id } = this.taskdetail;
-    if (currentClassNames.id) {
-      TaskDetailStore.loadParams(currentClassNames.id, type, id).then((data) => {
-        if (data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.setState({
-            paramsData: data.paramsList,
-          });
-        }
-        this.setState({
-          paramsLoading: false,
-        });
-      });
-    } else {
-      this.setState({
-        paramsData: [],
-        paramsLoading: false,
-      });
-    }
   }
 
 
@@ -540,68 +416,6 @@ export default class TaskDetail extends Component {
   }
 
 
-  /**
-   * 任务名称唯一性校验
-   * @param rule 表单校验规则
-   * @param value 任务名称
-   * @param callback 回调函数
-   */
-  checkName = (rule, value, callback) => {
-    const { intl } = this.props;
-    const { type, id } = this.taskdetail;
-    TaskDetailStore.checkName(value, type, id).then(({ failed }) => {
-      if (failed) {
-        callback(intl.formatMessage({ id: `${intlPrefix}.task.name.exist` }));
-      } else {
-        callback();
-      }
-    });
-  };
-
-  checkCron = () => {
-    const { getFieldValue } = this.props.form;
-    const { type, id } = this.taskdetail;
-    const cron = getFieldValue('cronExpression');
-    if (this.state.currentCron === cron) return;
-    this.setState({
-      currentCron: cron,
-    });
-    if (!cron) {
-      this.setState({
-        cronLoading: 'empty',
-      });
-    } else {
-      this.setState({
-        cronLoading: true,
-      });
-
-      TaskDetailStore.checkCron(cron, type, id).then((data) => {
-        if (data.failed) {
-          this.setState({
-            cronLoading: false,
-          });
-        } else {
-          this.setState({
-            cronLoading: 'right',
-            cronTime: data,
-          });
-        }
-      });
-    }
-  }
-
-
-  checkIsNumber = (rule, value, callback) => {
-    const { intl } = this.props;
-    const pattern = /^[0-9]*$/;
-    if (pattern.test(value)) {
-      callback();
-    } else {
-      callback(intl.formatMessage({ id: `${intlPrefix}.num.required` }));
-    }
-  }
-
-
   // 渲染侧边栏成功按钮文字
   renderSidebarOkText() {
     const { selectType } = this.state;
@@ -612,614 +426,34 @@ export default class TaskDetail extends Component {
     }
   }
 
-  // 创建任务切换触发类型
-  changeValue(e) {
-    const { resetFields } = this.props.form;
-    resetFields(['simpleRepeatInterval', 'simpleRepeatCount', 'simpleRepeatIntervalUnit', 'cronExpression']);
-    this.setState({
-      triggerType: e.target.value === 'simple-trigger' ? 'easy' : 'cron',
-    });
-  }
-
-  // 创建任务提交
-  handleSubmit = (e) => {
-    e.preventDefault();
-    if (this.state.selectType === 'create') {
-      const { intl } = this.props;
-      const { type, id } = this.taskdetail;
-      this.props.form.validateFieldsAndScroll((err, values) => {
-        if (values.methodId === 'empty') {
-          Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.noprogram` }));
-          return;
-        }
-
-        if (!err) {
-          this.setState({
-            isSubmitting: true,
-          });
-          const flag = values.triggerType === 'simple-trigger';
-          delete values.serviceName;
-          const { startTime, endTime, cronExpression, simpleRepeatInterval,
-            simpleRepeatIntervalUnit, simpleRepeatCount } = values;
-          const body = {
-            ...values,
-            startTime: startTime.format('YYYY-MM-DD HH:mm:ss'),
-            endTime: endTime ? endTime.format('YYYY-MM-DD HH:mm:ss') : null,
-            cronExpression: flag ? null : cronExpression,
-            simpleRepeatInterval: flag ? Number(simpleRepeatInterval) : null,
-            simpleRepeatIntervalUnit: flag ? simpleRepeatIntervalUnit : null,
-            simpleRepeatCount: flag ? Number(simpleRepeatCount) : null,
-          };
-          TaskDetailStore.createTask(body, type, id).then(({ failed, message }) => {
-            if (failed) {
-              Choerodon.prompt(message);
-              this.setState({
-                isSubmitting: false,
-              });
-            } else {
-              Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-              this.setState({
-                isSubmitting: false,
-              }, () => {
-                this.handleRefresh();
-              });
-            }
-          }).catch(() => {
-            Choerodon.prompt(intl.formatMessage({ id: 'create.error' }));
-            this.setState({
-              isSubmitting: false,
-            });
-          });
-        }
-      });
-    } else {
-      this.setState({
-        isShowSidebar: false,
-        tempTaskId: null,
-      }, () => {
-        TaskDetailStore.setLog([]);
-      });
-    }
-  }
-
-  // 时间选择器处理
-  disabledStartDate = (startTime) => {
-    const endTime = this.state.endTime;
-    if (!startTime || !endTime) {
-      return false;
-    }
-    if (endTime.format().split('T')[1] === '00:00:00+08:00') {
-      return startTime.format().split('T')[0] >= endTime.format().split('T')[0];
-    } else {
-      return startTime.format().split('T')[0] > endTime.format().split('T')[0];
-    }
-  }
-
-  disabledEndDate = (endTime) => {
-    const startTime = this.state.startTime;
-    if (!endTime || !startTime) {
-      return false;
-    }
-    return endTime.valueOf() <= startTime.valueOf();
-  }
-
-  range = (start, end) => {
-    const result = [];
-    for (let i = start; i < end; i += 1) {
-      result.push(i);
-    }
-    return result;
-  }
-
-  @action
-  disabledDateStartTime = (date) => {
-    this.startTimes = date;
-    if (date && this.endTimes && this.endTimes.day() === date.day()) {
-      if (this.endTimes.hour() === date.hour() && this.endTimes.minute() === date.minute()) {
-        return {
-          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
-          disabledMinutes: () => this.range(this.endTimes.minute() + 1, 60),
-          disabledSeconds: () => this.range(this.endTimes.second(), 60),
-        };
-      } else if (this.endTimes.hour() === date.hour()) {
-        return {
-          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
-          disabledMinutes: () => this.range(this.endTimes.minute() + 1, 60),
-        };
-      } else {
-        return {
-          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
-        };
-      }
-    }
-  }
-
-  @action
-  clearStartTimes = (status) => {
-    if (!status) {
-      this.endTimes = null;
-    }
-  }
-
-  @action
-  clearEndTimes = (status) => {
-    if (!status) {
-      this.startTimes = null;
-    }
-  }
-
-  @action
-  disabledDateEndTime = (date) => {
-    this.endTimes = date;
-    if (date && this.startTimes && this.startTimes.day() === date.day()) {
-      if (this.startTimes.hour() === date.hour() && this.startTimes.minute() === date.minute()) {
-        return {
-          disabledHours: () => this.range(0, this.startTimes.hour()),
-          disabledMinutes: () => this.range(0, this.startTimes.minute()),
-          disabledSeconds: () => this.range(0, this.startTimes.second() + 1),
-        };
-      } else if (this.startTimes.hour() === date.hour()) {
-        return {
-          disabledHours: () => this.range(0, this.startTimes.hour()),
-          disabledMinutes: () => this.range(0, this.startTimes.minute()),
-        };
-      } else {
-        return {
-          disabledHours: () => this.range(0, this.startTimes.hour()),
-        };
-      }
-    }
-  }
-
-  onStartChange = (value) => {
-    this.onChange('startTime', value);
-  }
-
-  onEndChange = (value) => {
-    this.onChange('endTime', value);
-  }
-
-  onChange = (field, value) => {
-    const { setFieldsValue } = this.props.form;
-    this.setState({
-      [field]: value,
-    }, () => {
-      setFieldsValue({ [field]: this.state[field] });
-    });
-  }
-
-  getCronContent = () => {
-    const { cronLoading, cronTime } = this.state;
+  /**
+   * 获取当前层级名称
+   * @returns {*}
+   */
+  getLevelName = () => {
     const { intl } = this.props;
-    let content;
-    if (cronLoading === 'empty') {
-      content = (
-        <div className="c7n-task-deatil-cron-container-empty">
-          <FormattedMessage id={`${intlPrefix}.cron.tip`} />
-          <a href={intl.formatMessage({ id: `${intlPrefix}.cron.tip.link` })} target="_blank">
-            <span>{intl.formatMessage({ id: 'learnmore' })}</span>
-            <Icon type="open_in_new" style={{ fontSize: '13px' }} />
-          </a>
-        </div>
-      );
-    } else if (cronLoading === true) {
-      content = (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Spin />
-        </div>);
-    } else if (cronLoading === 'right') {
-      content = (
-        <div className="c7n-task-deatil-cron-container">
-          <FormattedMessage id={`${intlPrefix}.cron.example`} />
-          {
-            cronTime.map((value, key) => (
-              <li><FormattedMessage id={`${intlPrefix}.cron.runtime`} values={{ time: key + 1 }} /><span>{value}</span></li>
-            ))
-          }
-        </div>
-      );
-    } else {
-      content = (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <FormattedMessage id={`${intlPrefix}.cron.wrong`} />
-        </div>
-      );
+    let level;
+    switch (this.taskdetail.type) {
+      case 'site':
+        level = intl.formatMessage({ id: `${intlPrefix}.site` });
+        break;
+      case 'organization':
+        level = intl.formatMessage({ id: `${intlPrefix}.organization` });
+        break;
+      case 'project':
+        level = intl.formatMessage({ id: `${intlPrefix}.project` });
+        break;
+      default:
+        break;
     }
-    return content;
-  }
-
-  // 渲染创建任务
-  renderCreateContent() {
-    const { triggerType } = this.state;
-    const { intl, AppState } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const inputWidth = '512px';
-    const service = TaskDetailStore.service;
-    const classNames = TaskDetailStore.classNames;
-    const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
-      dataIndex: 'name',
-      key: 'name',
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
-      dataIndex: 'defaultValue',
-      key: 'defaultValue',
-      width: 258,
-      render: (text, record) => {
-        let editableNode;
-        if (record.type === 'Boolean') {
-          editableNode = (
-            <FormItem style={{ marginBottom: 0, width: '55px' }}>
-              {
-                getFieldDecorator(`params.${record.name}`, {
-                  rules: [{
-                    required: text === null,
-                    message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
-                  }],
-                  initialValue: text,
-                })(
-                  <Select
-                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                  >
-                    <Option value={null} style={{ height: '22px' }} />
-                    <Option value>true</Option>
-                    <Option value={false}>false</Option>
-                  </Select>,
-                )
-              }
-            </FormItem>);
-        } else if (record.type === 'Integer' || record.type === 'Long' || record.type === 'Double' || record.type === 'Float') {
-          editableNode = (
-            <FormItem style={{ marginBottom: 0 }}>
-              {
-                getFieldDecorator(`params.${record.name}`, {
-                  rules: [{
-                    required: text === null,
-                    message: intl.formatMessage({ id: `${intlPrefix}.num.required` }),
-                  }, {
-                    transform: value => Number(value),
-                    type: 'number',
-                    message: intl.formatMessage({ id: `${intlPrefix}.number.pattern` }),
-                  }],
-                  validateFirst: true,
-                  initialValue: text === null ? undefined : text,
-                })(
-                  <Input
-                    style={{ width: '200px' }}
-                    onFocus={this.inputOnFocus}
-                    autoComplete="off"
-                  />,
-                )
-              }
-            </FormItem>);
-        } else {
-          editableNode = (
-            <FormItem style={{ marginBottom: 0 }}>
-              {
-                getFieldDecorator(`params.${record.name}`, {
-                  rules: [{
-                    required: text === null,
-                    whitespace: true,
-                    message: intl.formatMessage({ id: `${intlPrefix}.default.required` }),
-                  }],
-                  initialValue: text === null ? undefined : text,
-                })(
-                  <Input
-                    style={{ width: '200px' }}
-                    onFocus={this.inputOnFocus}
-                    autoComplete="off"
-                  />,
-                )
-              }
-            </FormItem>);
-        }
-
-        if (record.type !== 'Boolean') {
-          editableNode = (
-            <div className="c7n-taskdetail-text">
-              {editableNode}
-              <Icon type="mode_edit" className="c7n-taskdetail-text-icon" />
-            </div>
-          );
-        }
-        return editableNode;
-      },
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.params.type`} />,
-      dataIndex: 'type',
-      key: 'type',
-    }];
-
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-    };
-
-    return (
-      <Content
-        className="sidebar-content"
-        code={`${this.taskdetail.code}.create`}
-        values={{ name: `${this.taskdetail.values.name || 'Choerodon'}` }}
-      >
-        <div>
-          <Form
-            className="c7n-create-task"
-          >
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('name', {
-                rules: [{
-                  required: true,
-                  whitespace: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.task.name.required` }),
-                }, {
-                  validator: this.checkName,
-                }],
-                validateTrigger: 'onBlur',
-                validateFirst: true,
-              })(
-                <Input
-                  ref={(e) => { this.creatTaskFocusInput = e; }}
-                  maxLength={15}
-                  showLengthInfo={false}
-                  autoComplete="off"
-                  style={{ width: inputWidth }}
-                  label={<FormattedMessage id={`${intlPrefix}.task.name`} />}
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              style={{ width: inputWidth }}
-            >
-              {getFieldDecorator('description', {
-                rules: [{
-                  required: true,
-                  whitespace: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.task.description.required` }),
-                }],
-              })(
-                <TextArea autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.task.description`} />} />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              className="c7n-create-task-inline-formitem"
-            >
-              {getFieldDecorator('startTime', {
-                rules: [{
-                  required: true,
-                  message: intl.formatMessage({ id: `${intlPrefix}.task.start.time.required` }),
-                }],
-              })(
-                <DatePicker
-                  label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
-                  style={{ width: '248px' }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  disabledDate={this.disabledStartDate}
-                  disabledTime={this.disabledDateStartTime}
-                  showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
-                  onChange={this.onStartChange}
-                  onOpenChange={this.clearStartTimes}
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              className="c7n-create-task-inline-formitem"
-            >
-              {getFieldDecorator('endTime', {
-                rules: [],
-              })(
-                <DatePicker
-                  label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
-                  style={{ width: '248px' }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  disabledDate={this.disabledEndDate.bind(this)}
-                  disabledTime={this.disabledDateEndTime.bind(this)}
-                  showTime={{ defaultValue: moment() }}
-                  getCalendarContainer={() => document.getElementsByClassName('ant-modal-body')[document.getElementsByClassName('ant-modal-body').length - 1]}
-                  onChange={this.onEndChange}
-                  onOpenChange={this.clearEndTimes}
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-            >
-              {getFieldDecorator('triggerType', {
-                initialValue: 'simple-trigger',
-              })(
-                <RadioGroup
-                  className="c7n-create-task-radio-container"
-                  label={intl.formatMessage({ id: `${intlPrefix}.trigger.type` })}
-                  onChange={this.changeValue.bind(this)}
-                >
-                  <Radio value={'simple-trigger'}><FormattedMessage id={`${intlPrefix}.easy.task`} /></Radio>
-                  <Radio value={'cron-trigger'}><FormattedMessage id={`${intlPrefix}.cron.task`} /></Radio>
-                </RadioGroup>,
-              )}
-            </FormItem>
-            <div style={{ display: triggerType === 'easy' ? 'block' : 'none' }}>
-              <div className="c7n-create-task-set-task">
-                <FormItem
-                  {...formItemLayout}
-                  className="c7n-create-task-inline-formitem"
-                >
-                  {getFieldDecorator('simpleRepeatInterval', {
-                    rules: [{
-                      required: triggerType === 'easy',
-                      message: intl.formatMessage({ id: `${intlPrefix}.repeat.required` }),
-                    }, {
-                      pattern: /^[1-9]\d*$/,
-                      message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
-                    }],
-                    validateFirst: true,
-                  })(
-                    <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.interval`} />} />,
-                  )}
-                </FormItem>
-                <FormItem
-                  {...formItemLayout}
-                  className="c7n-create-task-inline-formitem c7n-create-task-inline-formitem-select"
-                >
-                  {getFieldDecorator('simpleRepeatIntervalUnit', {
-                    rules: [],
-                    initialValue: 'SECONDS',
-                  })(
-                    <Select
-                      style={{ width: '124px' }}
-                      getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                    >
-                      <Option value="SECONDS">秒</Option>
-                      <Option value="MINUTES">分</Option>
-                      <Option value="HOURS">时</Option>
-                      <Option value="DAYS">天</Option>
-                    </Select>,
-                  )}
-                </FormItem>
-              </div>
-              <FormItem 
-                className="c7n-create-task-inline-formitem"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('simpleRepeatCount', {
-                  rules: [{
-                    required: triggerType === 'easy',
-                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.time.required` }),
-                  }, {
-                    pattern: /^[1-9]\d*$/,
-                    message: intl.formatMessage({ id: `${intlPrefix}.repeat.pattern` }),
-                  }],
-                })(
-                  <Input style={{ width: '100px' }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.repeat.time`} />} />,
-                )}
-              </FormItem>
-            </div>
-            <div>
-              <FormItem
-                {...formItemLayout}
-                style={{ position: 'relative', display: triggerType === 'cron' ? 'inline-block' : 'none' }}
-              >
-                {getFieldDecorator('cronExpression', {
-                  rules: [{
-                    required: triggerType === 'cron',
-                    message: intl.formatMessage({ id: `${intlPrefix}.cron.expression.required` }),
-                  }],
-                })(
-                  <Input style={{ width: inputWidth }} autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.cron.expression`} />} />,
-                )}
-              </FormItem>
-              <Popover
-                content={this.getCronContent()}
-                trigger="click"
-                placement="bottom"
-                overlayClassName="c7n-task-detail-popover"
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-              >
-                <Icon
-                  onClick={this.checkCron}
-                  style={{ display: triggerType === 'cron' ? 'inline-block' : 'none' }}
-                  className="c7n-task-detail-popover-icon"
-                  type="find_in_page"
-                />
-              </Popover>
-            </div>
-            <div className="c7n-task-deatil-params-container">
-              <FormItem
-                {...formItemLayout}
-                className="c7n-create-task-inline-formitem"
-              >
-                {getFieldDecorator('serviceName', {
-                  rules: [{
-                    required: true,
-                    message: intl.formatMessage({ id: `${intlPrefix}.service.required` }),
-                  }],
-                  initialValue: TaskDetailStore.getCurrentService.name,
-                })(
-                  <Select
-                    style={{ width: '176px' }}
-                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                    label={<FormattedMessage id={`${intlPrefix}.service.name`} />}
-                    filterOption={(input, option) =>
-                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                    filter
-                    onChange={this.handleChangeService.bind(this)}
-                  >
-                    {
-                      service && service.length ? service.map(({ name }) => (
-                        <Option key={name}>{name}</Option>
-                      )) : <Option key="empty">无服务</Option>
-                    }
-                  </Select>,
-                )}
-              </FormItem>
-              <FormItem
-                {...formItemLayout}
-                style={{ marginRight: '0' }}
-                className="c7n-create-task-inline-formitem"
-              >
-                {getFieldDecorator('methodId', {
-                  rules: [{
-                    required: true,
-                    message: intl.formatMessage({ id: `${intlPrefix}.task.class.required` }),
-                  }],
-                  initialValue: TaskDetailStore.classNames.length ? TaskDetailStore.currentClassNames.id : 'empty',
-                })(
-                  <Select
-                    label={<FormattedMessage id={`${intlPrefix}.task.class.name`} />}
-                    style={{ width: '292px' }}
-                    getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                    filterOption={(input, option) => {
-                      const childNode = option.props.children;
-                      if (childNode && React.isValidElement(childNode)) {
-                        return childNode.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                      }
-                      return false;
-                    }}
-                    filter
-                    onChange={this.handleChangeClass.bind(this)}
-                  >
-                    {
-                      classNames && classNames.length ? classNames.map(({ method, code, id }) => (
-                        <Option key={`${method}-${code}`} value={id}>
-                          <Tooltip title={method} placement="right" align={{ offset: [20, 0] }}>
-                            <span style={{ display: 'inline-block', width: '100%' }}>{code}</span>
-                          </Tooltip>
-                        </Option>
-                      )) : <Option key="empty" value="empty">无任务程序</Option>
-                    }
-                  </Select>,
-                )}
-              </FormItem>
-              <Table
-                loading={this.state.paramsLoading}
-                pagination={false}
-                filterBar={false}
-                columns={columns}
-                rowKey="name"
-                dataSource={this.state.paramsData}
-                style={{ width: '488px', marginRight: '0' }}
-              />
-            </div>
-          </Form>
-        </div>
-      </Content>
-    );
+    return level;
   }
 
   // 渲染任务详情
   renderDetailContent() {
     const { intl: { formatMessage } } = this.props;
-    const { selectType, showLog, logFilters, logParams, logPagination, logLoading } = this.state;
+    const level = this.getLevelName();
+    const { showLog, logFilters, logParams, logPagination, logLoading } = this.state;
     const info = TaskDetailStore.info;
     let unit;
     switch (info.simpleRepeatIntervalUnit) {
@@ -1344,12 +578,43 @@ export default class TaskDetail extends Component {
             }
             <Table
               columns={paramColumns}
-              style={{ width: '512px' }}
+              style={{ width: '512px', marginBottom: '12px' }}
               pagination={false}
               filterBar={false}
               dataSource={info.params}
               rowKey="name"
             />
+            <Row>
+              <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}:</Col>
+              <Col span={21}>
+                {
+                  info.notifyUser ? (<ul style={{ paddingLeft: '0' }}>
+                    <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.creator })}>
+                      {formatMessage({ id: `${intlPrefix}.creator` })}:
+                      <span style={{ marginLeft: '10px' }}>{info.notifyUser.creator ? info.notifyUser.creator.loginName : null}{info.notifyUser.creator ? info.notifyUser.creator.realName : null}</span>
+                    </li>
+                    <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.administrator })}>
+                      {level}{formatMessage({ id: `${intlPrefix}.manager` })}
+                    </li>
+                    <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.assigner.length })}>
+                      {formatMessage({ id: `${intlPrefix}.user` })}:
+                      {info.notifyUser.assigner.length ? (
+                        <div className={'c7n-task-detail-row-inform-person-informlist-name-container'}>{
+                          info.notifyUser.assigner.map(item => (
+                            <div key={item.loginName}>
+                              <span>{item.loginName}{item.realName}</span>
+                              <span>、</span>
+                            </div>
+                          ))
+                        }</div>
+                      ) : <div>{formatMessage({ id: `${intlPrefix}.empty` })}</div>}
+                    </li>
+                  </ul>) : (
+                    <Col span={21} className={'c7n-task-detail-row-inform-person-empty'}>{formatMessage({ id: `${intlPrefix}.empty` })}</Col>
+                  )
+                }
+              </Col>
+            </Row>
           </div>)
           : (<Table
             loading={logLoading}
@@ -1525,14 +790,6 @@ export default class TaskDetail extends Component {
               <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
-          {/* <Permission service={createService}> */}
-          {/* <Button */}
-          {/* icon="playlist_add" */}
-          {/* onClick={this.handleOpen.bind(this, 'create')} */}
-          {/* > */}
-          {/* <FormattedMessage id={`${intlPrefix}.create`} /> */}
-          {/* </Button> */}
-          {/* </Permission> */}
           <Button
             icon="refresh"
             onClick={this.handleRefresh}
@@ -1564,7 +821,7 @@ export default class TaskDetail extends Component {
             confirmLoading={isSubmitting}
             className="c7n-task-detail-sidebar"
           >
-            {selectType === 'create' ? this.renderCreateContent() : this.renderDetailContent()}
+            {this.renderDetailContent()}
           </Sidebar>
         </Content>
       </Page>

@@ -486,7 +486,7 @@ export default class TaskDetail extends Component {
       value: info.endTime,
     }, {
       key: formatMessage({ id: `${intlPrefix}.trigger.type` }),
-      value: info.triggerType === 'simple-trigger' ? '简单任务' : 'Cron任务',
+      value: info.triggerType === 'simple-trigger' ? formatMessage({ id: `${intlPrefix}.easy.task` }) : formatMessage({ id: `${intlPrefix}.cron.task` }),
     }, {
       key: formatMessage({ id: `${intlPrefix}.cron.expression` }),
       value: info.cronExpression,
@@ -507,7 +507,7 @@ export default class TaskDetail extends Component {
       value: info.serviceName,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.class.name` }),
-      value: info.methodCode,
+      value: info.methodDescription,
     }, {
       key: formatMessage({ id: `${intlPrefix}.params.data` }),
       value: '',
@@ -584,7 +584,7 @@ export default class TaskDetail extends Component {
               dataSource={info.params}
               rowKey="name"
             />
-            <Row>
+            <Row className={classnames({ 'c7n-task-detail-row': !info.notifyUser })}>
               <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}:</Col>
               <Col span={21}>
                 {

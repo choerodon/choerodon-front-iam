@@ -756,7 +756,7 @@ const zh_CN = {
   'taskdetail.cron.runtime': '第{time}次执行时间:',
   'taskdetail.cron.wrong': 'Cron表达式错误，请重新输入',
   'taskdetail.service.required': '请选择服务名',
-  'taskdetail.task.class.required': '请选择任务类名',
+  'taskdetail.task.class.required': '请选择任务程序',
   'taskdetail.service.name': '服务名',
   'taskdetail.task.class.name': '任务程序',
   'taskdetail.params.name': '参数名称',

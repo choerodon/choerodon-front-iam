@@ -114,6 +114,7 @@ export default class TaskCreate extends Component {
     TaskDetailStore.setClassNames([]);
     TaskDetailStore.setCurrentService({});
     TaskDetailStore.setCurrentClassNames({});
+    TaskDetailStore.setUserData([]);
   }
 
   initTaskDetail() {
@@ -396,7 +397,7 @@ export default class TaskCreate extends Component {
    * @param service 服务名
    */
   handleChangeService(service) {
-    const currentService = TaskDetailStore.service.find(item => item.name === service);
+    const currentService = [service];
     TaskDetailStore.setCurrentService(currentService);
     this.loadClass();
   }
@@ -415,7 +416,8 @@ export default class TaskCreate extends Component {
    * 获取所有服务名
    */
   loadService = () => {
-    TaskDetailStore.loadService().then((data) => {
+    const { type, id } = this.taskdetail;
+    TaskDetailStore.loadService(type, id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -431,12 +433,12 @@ export default class TaskCreate extends Component {
    */
   loadClass = () => {
     const { currentService } = TaskDetailStore;
-    TaskDetailStore.loadClass(currentService.name, this.taskdetail.type, this.taskdetail.id).then((data) => {
+    TaskDetailStore.loadClass(currentService[0], this.taskdetail.type, this.taskdetail.id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else if (data.length) {
         const classNames = [];
-        data.map(({ method, code, id }) => classNames.push({ method, code, id }));
+        data.map(({ method, code, id, description }) => classNames.push({ method, code, id, description }));
         TaskDetailStore.setClassNames(classNames);
         TaskDetailStore.setCurrentClassNames(classNames[0]);
         this.loadParamsTable();
@@ -848,7 +850,7 @@ export default class TaskCreate extends Component {
                   required: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.service.required` }),
                 }],
-                initialValue: TaskDetailStore.getCurrentService.name,
+                initialValue: TaskDetailStore.getCurrentService.length ? TaskDetailStore.getCurrentService : undefined,
               })(
                 <Select
                   style={{ width: '176px' }}
@@ -860,8 +862,8 @@ export default class TaskCreate extends Component {
                   onChange={this.handleChangeService.bind(this)}
                 >
                   {
-                    service && service.length ? service.map(({ name }) => (
-                      <Option key={name}>{name}</Option>
+                    service && service.length ? service.map(item => (
+                      <Option key={item}>{item}</Option>
                     )) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.noservice` })}</Option>
                   }
                 </Select>,
@@ -877,9 +879,10 @@ export default class TaskCreate extends Component {
                   required: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.task.class.required` }),
                 }],
-                initialValue: TaskDetailStore.classNames.length ? TaskDetailStore.currentClassNames.id : 'empty',
+                initialValue: classNames.length ? TaskDetailStore.currentClassNames.id : undefined,
               })(
                 <Select
+                  notFoundContent={intl.formatMessage({ id: `${intlPrefix}.noprograms` })}
                   label={<FormattedMessage id={`${intlPrefix}.task.class.name`} />}
                   style={{ width: '292px' }}
                   getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
@@ -894,13 +897,20 @@ export default class TaskCreate extends Component {
                   onChange={this.handleChangeClass.bind(this)}
                 >
                   {
-                    classNames && classNames.length ? classNames.map(({ method, code, id }) => (
-                      <Option key={`${method}-${code}`} value={id}>
-                        <Tooltip title={method} placement="right" align={{ offset: [20, 0] }}>
-                          <span style={{ display: 'inline-block', width: '100%' }}>{code}</span>
+                    classNames.length && classNames.map(({ description, method, id }) => (
+                      <Option key={`${method}-${id}`} value={id}>
+                        <Tooltip
+                          title={method}
+                          placement="right"
+                          align={{ offset: [20, 0] }}
+                          getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                        >
+                          <span
+                            className={`${stepPrefix}-tooltip`}
+                          >{description}</span>
                         </Tooltip>
                       </Option>
-                    )) : <Option key="empty" value="empty">{intl.formatMessage({ id: `${intlPrefix}.noprograms` })}</Option>
+                    ))
                   }
                 </Select>,
               )}
@@ -1292,7 +1302,7 @@ export default class TaskCreate extends Component {
       value: serviceName,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.class.name` }),
-      value: TaskDetailStore.getCurrentClassNames.code,
+      value: TaskDetailStore.getCurrentClassNames.description,
     }, {
       key: formatMessage({ id: `${intlPrefix}.params.data` }),
       value: '',
@@ -1503,6 +1513,7 @@ export default class TaskCreate extends Component {
         <Content
           code={`${this.taskdetail.code}.create`}
           values={this.taskdetail.values}
+          className="c7n-iam-create-task-page"
         >
           <div className="c7n-iam-create-task-container">
             <div className="c7n-iam-create-task-container-steps">

@@ -9,14 +9,17 @@ image:
   pullPolicy: Always
 
 preJob:
+  timeout: 300
   preConfig:
-    mysql:
+    enable: true
+    db:
       host: localhost
       port: 3306
       username: choerodon
       password: 123456
       dbname: iam_service
       enabledelete: true
+      upattrs: sort
 
 service:
   enable: false

@@ -466,8 +466,9 @@ export default class TaskCreate extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
+          const filteredParamsData = data.paramsList.length ? data.paramsList.filter(item => item.default === false) : [];
           this.setState({
-            paramsData: data.paramsList,
+            paramsData: filteredParamsData,
           });
         }
         this.setState({

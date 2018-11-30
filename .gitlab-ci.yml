@@ -4,9 +4,6 @@ stages:
   - node_build
   - docker_build
 
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-
 node_build:
   stage: node_build
   script:

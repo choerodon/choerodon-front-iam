@@ -4,13 +4,15 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Select } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Select, Row, Col } from 'choerodon-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserInfoStore from '../../../stores/user/user-info/UserInfoStore';
 import AvatarUploader from './AvatarUploader';
 import './Userinfo.scss';
+import TextEditToggle from '../../../components/TextEditToggle/TextEditToggle';
 
+const { Text, Edit } = TextEditToggle;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const inputWidth = 480;
@@ -35,9 +37,12 @@ export default class UserInfo extends Component {
     super(props);
     this.editFocusInput = React.createRef();
   }
+
   state = {
     submitting: false,
     visible: false,
+    phoneZone: UserInfoStore.getUserInfo.internationalTelCode ? UserInfoStore.getUserInfo.internationalTelCode.split('+')[1] : undefined,
+    phone: UserInfoStore.getUserInfo.phone,
   };
 
   componentWillMount() {
@@ -68,6 +73,59 @@ export default class UserInfo extends Component {
     }
   };
 
+  checkPhone = (rule, value, callback) => {
+    const { intl } = this.props;
+    const pattern = /^[0-9]*$/;
+    if (value) {
+      if (pattern.test(value)) {
+        callback();
+        // if (this.state.phoneZone === '86') {
+        //   pattern = /^1[3-9]\d{9}$/;
+        //   if (pattern.test(value)) {
+        //     callback();
+        //   } else {
+        //     callback(intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }));
+        //   }
+        // } else {
+        //   callback();
+        // }
+      } else {
+        callback('只能输入数字');
+      }
+    } else {
+      callback();
+    }
+  }
+
+  checkPhoneZone = (rule, value, callback) => {
+    const pattern = /^[0-9]*$/;
+    if (value) {
+      if (pattern.test(value)) {
+        if (pattern.test(this.state.phone)) {
+          callback();
+        } else {
+          callback('请先输入正确手机号码');
+        }
+      } else {
+        callback('只能输入数字');
+      }
+    } else {
+      callback();
+    }
+  }
+
+  changePhone = (e) => {
+    this.setState({
+      phone: e.target.value,
+    });
+  }
+
+  changePhoneZone = (e) => {
+    this.setState({
+      phoneZone: e.target.value,
+    });
+  }
+
   openAvatorUploader = () => {
     this.setState({
       visible: true,
@@ -78,38 +136,36 @@ export default class UserInfo extends Component {
     this.setState({ visible });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = (formKey, value) => {
     const { AppState, intl } = this.props;
     const originUser = UserInfoStore.getUserInfo;
-    e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values, modify) => {
-      Object.keys(values).forEach((key) => {
-        // 去除form提交的数据中的全部前后空格
-        if (typeof values[key] === 'string') values[key] = values[key].trim();
-      });
-      if (!err) {
-        this.setState({
-          submitting: true,
-        });
-        const user = {
-          ...originUser,
-          ...values,
-          imageUrl: UserInfoStore.getAvatar,
-        };
-        UserInfoStore.updateUserInfo(user).then((data) => {
-          if (data) {
-            this.props.form.resetFields();
-            UserInfoStore.setUserInfo(data);
-            Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-            this.setState({ submitting: false });
-            AppState.setUserInfo(data);
-          }
-        }).catch((error) => {
-          Choerodon.handleResponseError(error);
-          this.setState({ submitting: false });
-        });
-      }
+    this.setState({
+      submitting: true,
     });
+    const user = {
+      ...originUser,
+      [formKey]: value,
+      imageUrl: UserInfoStore.getAvatar,
+    };
+
+    if (formKey === 'internationalTelCode') {
+      user[formKey] = `+${value}`;
+    }
+
+    UserInfoStore.updateUserInfo(user).then((data) => {
+      if (data) {
+        this.props.form.resetFields();
+        UserInfoStore.setUserInfo(data);
+        Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+        this.setState({ submitting: false });
+        AppState.setUserInfo(data);
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+      this.setState({ submitting: false });
+    });
+    // }
+    // });
   };
 
   getLanguageOptions() {
@@ -141,7 +197,7 @@ export default class UserInfo extends Component {
     const { intl } = this.props;
     const avatar = UserInfoStore.getAvatar;
     return (
-      <div className="user-info-avatar-wrap" style={{ width: inputWidth }}>
+      <div className="user-info-avatar-wrap">
         <div
           className="user-info-avatar"
           style={
@@ -163,7 +219,6 @@ export default class UserInfo extends Component {
             <AvatarUploader id={id} visible={visible} onVisibleChange={this.handleVisibleChange} />
           </Permission>
         </div>
-        <span className="user-info-avatar-title">{realName}</span>
       </div>
     );
   }
@@ -171,176 +226,199 @@ export default class UserInfo extends Component {
   renderForm(user) {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { submitting } = this.state;
-    const { loginName, realName, email, language, timeZone, phone } = user;
+    const { loginName, realName, email, language, timeZone, phone, ldap, organizationName, organizationCode, internationalTelCode } = user;
     return (
-      <Form onSubmit={this.handleSubmit} layout="vertical" className="user-info">
-        {this.getAvatar(user)}
-        <FormItem
-          {...formItemLayout}
-        >
-          <Icon type="assignment_ind" className="form-icon" />
-          {getFieldDecorator('loginName', {
-            initialValue: loginName,
-          })(
-            <Input
-              disabled
-              autoComplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.loginname`} />}
-              style={{ width: inputWidth }}
-              maxLength={32}
-              showLengthInfo={false}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          <Icon type="person" className="form-icon" />
-          {getFieldDecorator('realName', {
-            rules: [
-              {
-                required: true,
-                whitespace: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
-              },
-            ],
-            validateTrigger: 'onBlur',
-            initialValue: realName,
-          })(
-            <Input
-              autoComplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.name`} />}
-              style={{ width: inputWidth }}
-              ref={(e) => { this.editFocusInput = e; }}
-              maxLength={32}
-              showLengthInfo={false}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          <Icon type="markunread" className="form-icon" />
-          {getFieldDecorator('email', {
-            rules: [
-              {
-                required: true,
-                whitespace: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.email.require.msg` }),
-              },
-              {
-                type: 'email',
-                message: intl.formatMessage({ id: `${intlPrefix}.email.pattern.msg` }),
-              },
-              {
-                validator: this.checkEmailAddress,
-              },
-            ],
-            validateTrigger: 'onBlur',
-            initialValue: email,
-            validateFirst: true,
-          })(
-            <Input
-              autoComplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.email`} />}
-              style={{ width: inputWidth }}
-              maxLength={64}
-              showLengthInfo={false}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          <Icon type="phone_iphone" className="form-icon" />
-          {getFieldDecorator('phone', {
-            initialValue: phone,
-            rules: [
-              {
-                pattern: /^1[3-9]\d{9}$/,
-                whitespace: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }),
-              },
-            ],
-          })(
-            <Input
-              autoComplete="off"
-              label={<FormattedMessage id={`${intlPrefix}.phone`} />}
-              style={{ width: inputWidth }}
-              maxLength={11}
-              showLengthInfo={false}
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          <Icon type="language" className="form-icon" />
-          {getFieldDecorator('language', {
-            rules: [
-              {
-                required: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.language.require.msg` }),
-              },
-            ],
-            initialValue: language || 'zh_CN',
-          })(
-            <Select
-              label={<FormattedMessage id={`${intlPrefix}.language`} />}
-              style={{ width: inputWidth }}
-              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-            >
-              {this.getLanguageOptions()}
-            </Select>,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          <Icon type="location_city" className="form-icon" />
-          {getFieldDecorator('timeZone', {
-            rules: [
-              {
-                required: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.timezone.require.msg` }),
-              }],
-            initialValue: timeZone || 'CTT',
-          })(
-            <Select
-              label={<FormattedMessage id={`${intlPrefix}.timezone`} />}
-              style={{ width: inputWidth }}
-              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-            >
-              {this.getTimeZoneOptions()}
-            </Select>,
-          )}
-        </FormItem>
-        <Permission
-          service={['iam-service.user.queryInfo', 'iam-service.user.updateInfo', 'iam-service.user.querySelf']}
-          type="site"
-          onAccess={() => {
-            setTimeout(() => {
-              this.editFocusInput.input.focus();
-            }, 10);
-          }}
-        >
-          <FormItem>
-            <hr className="user-info-divider" />
-            <Button
-              htmlType="submit"
-              funcType="raised"
-              type="primary"
-              loading={submitting}
-            ><FormattedMessage id="save" /></Button>
-            <Button
-              funcType="raised"
-              onClick={this.refresh}
-              style={{ marginLeft: 16 }}
-              disabled={submitting}
-            ><FormattedMessage id="cancel" /></Button>
-          </FormItem>
-        </Permission>
+      <Form layout="vertical" className="user-info">
+        <div className="user-info-top-container">
+          <div className="user-info-avatar-wrap-container">
+            {this.getAvatar(user)}
+          </div>
+          <div className="user-info-login-info">
+            <div>{loginName}</div>
+            <div>{intl.formatMessage({ id: `${intlPrefix}.source` })}:{ldap ? intl.formatMessage({ id: `${intlPrefix}.ldap` }) : intl.formatMessage({ id: `${intlPrefix}.notldap` })}</div>
+            <div>
+              <span>{intl.formatMessage({ id: `${intlPrefix}.name` })}：</span>
+              <TextEditToggle
+                formKey="realName"
+                formStyle={{ minWidth: '80px' }}
+                originData={realName}
+                className="user-info-info-container-account-content-realName"
+                onSubmit={value => this.handleSubmit('realName', value)}
+                validate={{
+                  validateFirst: true,
+                }}
+                rules={[
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
+                  },
+                ]}
+              >
+                <Text style={{ fontSize: '13px' }}>
+                  <span>{realName}</span>
+                </Text>
+                <Edit>
+                  <Input autoComplete="off" />
+                </Edit>
+              </TextEditToggle>
+            </div>
+          </div>
+        </div>
+        <div className="user-info-info-container">
+          <div className="user-info-info-container-account">
+            <div>{intl.formatMessage({ id: `${intlPrefix}.account.info` })}</div>
+            <div>
+              <div>
+                <Icon type="markunread" className="form-icon" />
+                <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.email` })}:</span>
+                <TextEditToggle
+                  formStyle={{ width: '300px' }}
+                  formKey="email"
+                  originData={email}
+                  className="user-info-info-container-account-content"
+                  onSubmit={value => this.handleSubmit('email', value)}
+                  validate={{
+                    validateTrigger: 'onBlur',
+                    validateFirst: true,
+                  }}
+                  rules={[
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: intl.formatMessage({ id: `${intlPrefix}.email.require.msg` }),
+                    },
+                    {
+                      type: 'email',
+                      message: intl.formatMessage({ id: `${intlPrefix}.email.pattern.msg` }),
+                    },
+                    {
+                      validator: this.checkEmailAddress,
+                    },
+                  ]}
+
+                >
+                  <Text>
+                    <span style={{ width: '300px' }}>{email}</span>
+                  </Text>
+                  <Edit>
+                    <Input autoComplete="off" />
+                  </Edit>
+                </TextEditToggle>
+              </div>
+              <div>
+                <Icon type="phone_iphone" className="form-icon" />
+                <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.phone` })}:</span>
+                <span style={{ marginLeft: '30px', marginRight: '15px', verticalAlign: 'middle' }}>+</span>
+                <TextEditToggle
+                  formKey="internationalTelCode"
+                  style={{ maxWidth: '120px' }}
+                  originData={internationalTelCode ? internationalTelCode.split('+')[1] : undefined}
+                  className="user-info-info-container-account-content-phonezone"
+                  onSubmit={value => this.handleSubmit('internationalTelCode', value)}
+                  validate={{
+                    validateFirst: true,
+                  }}
+                  rules={
+                    [{
+                      pattern: /^[0-9]*$/,
+                      whitespace: true,
+                      message: '只能输入数字',
+                    }, {
+                      max: 3,
+                      message: '不合法的国际区号',
+                    }, {
+                      validator: this.checkPhoneZone,
+                    },
+                    ]}
+                >
+                  <Text style={{ minLength: '150px' }}>
+                    <span>{internationalTelCode ? internationalTelCode.split('+')[1] : undefined}</span>
+                  </Text>
+                  <Edit>
+                    <Input onChange={this.changePhoneZone} autoComplete="off" />
+                  </Edit>
+                </TextEditToggle>
+                <span style={{ verticalAlign: 'middle' }}>-</span>
+                <TextEditToggle
+                  formKey="phone"
+                  originData={phone}
+                  className="user-info-info-container-account-content-phone"
+                  onSubmit={value => this.handleSubmit('phone', value)}
+                  rules={
+                    [{
+                      validator: this.checkPhone,
+                    },
+                    ]}
+                >
+                  <Text style={{ minLength: '150px' }}>
+                    <span>{phone}</span>
+                  </Text>
+                  <Edit>
+                    <Input onChange={this.changePhone} autoComplete="off" />
+                  </Edit>
+                </TextEditToggle>
+              </div>
+              <div>
+                <Icon type="language" className="form-icon" />
+                <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.language` })}:</span>
+                <TextEditToggle
+                  formKey="language"
+                  originData={language}
+                  className="user-info-info-container-account-content user-info-info-container-account-content-short"
+                  formStyle={{ width: '80px' }}
+                >
+                  <Text>
+                    <span>{'简体中文'}</span>
+                  </Text>
+                  <Edit>
+                    <Select
+                      getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                    >
+                      {this.getLanguageOptions()}
+                    </Select>,
+                  </Edit>
+                </TextEditToggle>
+              </div>
+              <div>
+                <Icon type="location_city" className="form-icon" />
+                <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.timezone` })}:</span>
+                <TextEditToggle
+                  formKey="timeZone"
+                  originData={timeZone || 'CTT'}
+                  className="user-info-info-container-account-content user-info-info-container-account-content-short"
+                  formStyle={{ width: '80px' }}
+                >
+                  <Text>
+                    <span>{'中国'}</span>
+                  </Text>
+                  <Edit>
+                    <Select
+                      getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                    >
+                      {this.getTimeZoneOptions()}
+                    </Select>,
+                  </Edit>
+                </TextEditToggle>
+              </div>
+            </div>
+          </div>
+          <div className="user-info-info-container-account">
+            <div>{intl.formatMessage({ id: `${intlPrefix}.orginfo` })}</div>
+            <div>
+              <div>
+                <Icon type="domain" className="form-icon" />
+                <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.org.name` })}:</span>
+                <span className="user-info-info-container-account-content">{organizationName}</span>
+              </div>
+              <div>
+                <Icon type="copyright" className="form-icon" />
+                <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.org.code` })}:</span>
+                <span className="user-info-info-container-account-content">{organizationCode}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </Form>
     );
   }
@@ -362,11 +440,11 @@ export default class UserInfo extends Component {
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
-          <Button onClick={this.refresh} icon="refresh">
-            <FormattedMessage id="refresh" />
-          </Button>
+          {/* <Button onClick={this.refresh} icon="refresh"> */}
+          {/* <FormattedMessage id="refresh" /> */}
+          {/* </Button> */}
         </Header>
-        <Content>
+        <Content className="user-info-container">
           {this.renderForm(user)}
         </Content>
       </Page>

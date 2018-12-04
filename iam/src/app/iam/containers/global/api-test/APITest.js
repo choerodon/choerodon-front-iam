@@ -211,7 +211,7 @@ export default class APITest extends Component {
 
   /**
    * 微服务版本下拉框改变事件
-   * @param serviceName 服务名称
+   * @param serviceVersion
    */
   handleVersionChange(serviceVersion) {
     const currentVersion = APITestStore.versions.find(version => version === serviceVersion);

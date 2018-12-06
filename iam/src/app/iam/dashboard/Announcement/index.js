@@ -1,33 +1,51 @@
 import React, { Component } from 'react';
-import { Icon } from 'choerodon-ui';
-import { DashBoardNavBar } from 'choerodon-front-boot';
+import { Modal, Timeline, Button } from 'choerodon-ui';
+import { withRouter } from 'react-router-dom';
+import { inject, observer } from 'mobx-react';
+import AnnouncementInfoStore from '../../stores/user/announcement-info';
 import './index.scss';
 
+const Item = Timeline.Item;
+
+@withRouter
+@inject('AppState', 'HeaderStore')
+@observer
 export default class Announcement extends Component {
+  componentWillMount() {
+    AnnouncementInfoStore.loadData();
+  }
+
+  handleCancel = () => {
+    AnnouncementInfoStore.closeDetail();
+  };
+
   render() {
+    const { visible, title, content, announcementData } = AnnouncementInfoStore;
     return (
       <div className="c7n-iam-dashboard-announcement">
-        <ul>
-          <li>
-            <Icon type="volume_up" />
-            <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/changelog_v0.9/">Choerodon 发布0.9.0</a>
-          </li>
-          <li>
-            <Icon type="volume_up" />
-            <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/changelog_v0.8/">Choerodon 发布0.8.0</a>
-          </li>
-          <li>
-            <Icon type="volume_up" />
-            <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/changelog_v0.7/">Choerodon 发布0.7.0</a>
-          </li>
-          <li>
-            <Icon type="volume_up" />
-            <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/changelog_v0.6/">Choerodon 发布0.6.0</a>
-          </li>
-        </ul>
-        <DashBoardNavBar>
-          <a target="choerodon" href="http://choerodon.io/zh/docs/release-notes/">转至所有公告</a>
-        </DashBoardNavBar>
+        <Timeline className="c7n-iam-dashboard-announcement-timeline">
+          {announcementData.map(data => (
+            <Item className="item">
+              <div className="time"><p>{data.sendDate.split(' ')[0]}</p><p>{data.sendDate.split(' ')[1]}</p></div>
+              <div className="title"><a onClick={() => AnnouncementInfoStore.showDetail(data)}>{data.title}</a></div>
+            </Item>
+          ))}
+          <Item>null</Item>
+        </Timeline>
+        <Modal
+          visible={visible}
+          width={800}
+          title={title}
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="back" onClick={this.handleCancel}>返回</Button>,
+          ]}
+        >
+          <div
+            className="c7n-iam-dashboard-announcement-detail-content"
+            dangerouslySetInnerHTML={{ __html: `${content}` }}
+          />
+        </Modal>
       </div>
     );
   }

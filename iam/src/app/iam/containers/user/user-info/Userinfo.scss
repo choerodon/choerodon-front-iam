@@ -266,6 +266,8 @@
         float: left;
 
         > div {
+          display: flex;
+          flex-direction: row;
           margin-bottom: 24px;
         }
       }
@@ -295,7 +297,6 @@
       &-content-phone {
         margin-left: 15px;
         display: inline-block;
-        vertical-align: sub;
         font-size: 15px;
         color: #000;
       }
@@ -303,7 +304,6 @@
       &-content-phonezone {
         margin-left: 0;
         display: inline-block;
-        vertical-align: sub;
         font-size: 15px;
         color: #000;
       }

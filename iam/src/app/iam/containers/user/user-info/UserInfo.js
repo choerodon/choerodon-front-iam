@@ -11,6 +11,7 @@ import UserInfoStore from '../../../stores/user/user-info/UserInfoStore';
 import AvatarUploader from './AvatarUploader';
 import './Userinfo.scss';
 import TextEditToggle from '../../../components/TextEditToggle/TextEditToggle';
+import PhoneWrapper from '../../../components/phoneWrapper';
 
 const { Text, Edit } = TextEditToggle;
 const FormItem = Form.Item;
@@ -53,11 +54,6 @@ export default class UserInfo extends Component {
     UserInfoStore.setUserInfo(this.props.AppState.getUserInfo);
   };
 
-  refresh = () => {
-    this.props.form.resetFields();
-    this.loadUserInfo();
-  };
-
   checkEmailAddress = (rule, value, callback) => {
     const { edit, intl } = this.props;
     if (!edit || value !== this.state.userInfo.email) {
@@ -73,59 +69,6 @@ export default class UserInfo extends Component {
     }
   };
 
-  checkPhone = (rule, value, callback) => {
-    const { intl } = this.props;
-    const pattern = /^[0-9]*$/;
-    if (value) {
-      if (pattern.test(value)) {
-        callback();
-        // if (this.state.phoneZone === '86') {
-        //   pattern = /^1[3-9]\d{9}$/;
-        //   if (pattern.test(value)) {
-        //     callback();
-        //   } else {
-        //     callback(intl.formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }));
-        //   }
-        // } else {
-        //   callback();
-        // }
-      } else {
-        callback('只能输入数字');
-      }
-    } else {
-      callback();
-    }
-  }
-
-  checkPhoneZone = (rule, value, callback) => {
-    const pattern = /^[0-9]*$/;
-    if (value) {
-      if (pattern.test(value)) {
-        if (pattern.test(this.state.phone)) {
-          callback();
-        } else {
-          callback('请先输入正确手机号码');
-        }
-      } else {
-        callback('只能输入数字');
-      }
-    } else {
-      callback();
-    }
-  }
-
-  changePhone = (e) => {
-    this.setState({
-      phone: e.target.value,
-    });
-  }
-
-  changePhoneZone = (e) => {
-    this.setState({
-      phoneZone: e.target.value,
-    });
-  }
-
   openAvatorUploader = () => {
     this.setState({
       visible: true,
@@ -136,8 +79,19 @@ export default class UserInfo extends Component {
     this.setState({ visible });
   };
 
+  handleSubmitPhone = (value) => {
+    const originUser = UserInfoStore.getUserInfo;
+    const user = {
+      ...originUser,
+      ...value,
+      imageUrl: UserInfoStore.getAvatar,
+    };
+    user.internationalTelCode = user.internationalTelCode ? `+${value.internationalTelCode}` : '';
+    user.phone = user.phone || '';
+    this.submitForm(user);
+  }
+
   handleSubmit = (formKey, value) => {
-    const { AppState, intl } = this.props;
     const originUser = UserInfoStore.getUserInfo;
     this.setState({
       submitting: true,
@@ -147,11 +101,12 @@ export default class UserInfo extends Component {
       [formKey]: value,
       imageUrl: UserInfoStore.getAvatar,
     };
+    this.submitForm(user);
+  };
 
-    if (formKey === 'internationalTelCode') {
-      user[formKey] = `+${value}`;
-    }
 
+  submitForm = (user) => {
+    const { AppState, intl } = this.props;
     UserInfoStore.updateUserInfo(user).then((data) => {
       if (data) {
         this.props.form.resetFields();
@@ -160,13 +115,11 @@ export default class UserInfo extends Component {
         this.setState({ submitting: false });
         AppState.setUserInfo(data);
       }
-    }).catch((error) => {
-      Choerodon.handleResponseError(error);
+    }).catch(() => {
+      Choerodon.prompt(intl.formatMessage({ id: 'modify.error' }));
       this.setState({ submitting: false });
     });
-    // }
-    // });
-  };
+  }
 
   getLanguageOptions() {
     let language;
@@ -194,7 +147,6 @@ export default class UserInfo extends Component {
 
   getAvatar({ id, realName }) {
     const { visible } = this.state;
-    const { intl } = this.props;
     const avatar = UserInfoStore.getAvatar;
     return (
       <div className="user-info-avatar-wrap">
@@ -225,7 +177,6 @@ export default class UserInfo extends Component {
 
   renderForm(user) {
     const { intl } = this.props;
-    const { getFieldDecorator } = this.props.form;
     const { loginName, realName, email, language, timeZone, phone, ldap, organizationName, organizationCode, internationalTelCode } = user;
     return (
       <Form layout="vertical" className="user-info">
@@ -240,7 +191,7 @@ export default class UserInfo extends Component {
               <span>{intl.formatMessage({ id: `${intlPrefix}.name` })}：</span>
               <TextEditToggle
                 formKey="realName"
-                formStyle={{ minWidth: '80px' }}
+                formStyle={{ width: '80px' }}
                 originData={realName}
                 className="user-info-info-container-account-content-realName"
                 onSubmit={value => this.handleSubmit('realName', value)}
@@ -273,7 +224,7 @@ export default class UserInfo extends Component {
                 <Icon type="markunread" className="form-icon" />
                 <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.email` })}:</span>
                 <TextEditToggle
-                  formStyle={{ width: '300px' }}
+                  formStyle={{ width: '289px' }}
                   formKey="email"
                   originData={email}
                   className="user-info-info-container-account-content"
@@ -309,55 +260,60 @@ export default class UserInfo extends Component {
               <div>
                 <Icon type="phone_iphone" className="form-icon" />
                 <span className="user-info-info-container-account-title">{intl.formatMessage({ id: `${intlPrefix}.phone` })}:</span>
-                <span style={{ marginLeft: '30px', marginRight: '15px', verticalAlign: 'middle' }}>+</span>
-                <TextEditToggle
-                  formKey="internationalTelCode"
-                  style={{ maxWidth: '120px' }}
-                  originData={internationalTelCode ? internationalTelCode.split('+')[1] : undefined}
-                  className="user-info-info-container-account-content-phonezone"
-                  onSubmit={value => this.handleSubmit('internationalTelCode', value)}
-                  validate={{
-                    validateFirst: true,
-                  }}
-                  rules={
-                    [{
-                      pattern: /^[0-9]*$/,
-                      whitespace: true,
-                      message: '只能输入数字',
-                    }, {
-                      max: 3,
-                      message: '不合法的国际区号',
-                    }, {
-                      validator: this.checkPhoneZone,
-                    },
-                    ]}
-                >
-                  <Text style={{ minLength: '150px' }}>
-                    <span>{internationalTelCode ? internationalTelCode.split('+')[1] : undefined}</span>
-                  </Text>
-                  <Edit>
-                    <Input onChange={this.changePhoneZone} autoComplete="off" />
-                  </Edit>
-                </TextEditToggle>
-                <span style={{ verticalAlign: 'middle' }}>-</span>
-                <TextEditToggle
-                  formKey="phone"
-                  originData={phone}
-                  className="user-info-info-container-account-content-phone"
-                  onSubmit={value => this.handleSubmit('phone', value)}
-                  rules={
-                    [{
-                      validator: this.checkPhone,
-                    },
-                    ]}
-                >
-                  <Text style={{ minLength: '150px' }}>
-                    <span>{phone}</span>
-                  </Text>
-                  <Edit>
-                    <Input onChange={this.changePhone} autoComplete="off" />
-                  </Edit>
-                </TextEditToggle>
+                <PhoneWrapper
+                  initialPhone={phone}
+                  initialCode={internationalTelCode}
+                  onSubmit={value => this.handleSubmitPhone(value)}
+                />
+                {/* <span style={{ marginLeft: '30px', marginRight: '15px', verticalAlign: 'middle' }}>+</span> */}
+                {/* <TextEditToggle */}
+                {/* formKey="internationalTelCode" */}
+                {/* style={{ maxWidth: '120px' }} */}
+                {/* originData={internationalTelCode ? internationalTelCode.split('+')[1] : undefined} */}
+                {/* className="user-info-info-container-account-content-phonezone" */}
+                {/* onSubmit={value => this.handleSubmit('internationalTelCode', value)} */}
+                {/* validate={{ */}
+                {/* validateFirst: true, */}
+                {/* }} */}
+                {/* rules={ */}
+                {/* [{ */}
+                {/* pattern: /^[0-9]*$/, */}
+                {/* whitespace: true, */}
+                {/* message: '只能输入数字', */}
+                {/* }, { */}
+                {/* max: 3, */}
+                {/* message: '不合法的国际区号', */}
+                {/* }, { */}
+                {/* validator: this.checkPhoneZone, */}
+                {/* }, */}
+                {/* ]} */}
+                {/* > */}
+                {/* <Text style={{ minLength: '150px' }}> */}
+                {/* <span>{internationalTelCode ? internationalTelCode.split('+')[1] : undefined}</span> */}
+                {/* </Text> */}
+                {/* <Edit> */}
+                {/* <Input onChange={this.changePhoneZone} autoComplete="off" /> */}
+                {/* </Edit> */}
+                {/* </TextEditToggle> */}
+                {/* <span style={{ verticalAlign: 'middle' }}>-</span> */}
+                {/* <TextEditToggle */}
+                {/* formKey="phone" */}
+                {/* originData={phone} */}
+                {/* className="user-info-info-container-account-content-phone" */}
+                {/* onSubmit={value => this.handleSubmit('phone', value)} */}
+                {/* rules={ */}
+                {/* [{ */}
+                {/* validator: this.checkPhone, */}
+                {/* }, */}
+                {/* ]} */}
+                {/* > */}
+                {/* <Text style={{ minLength: '150px' }}> */}
+                {/* <span>{phone}</span> */}
+                {/* </Text> */}
+                {/* <Edit> */}
+                {/* <Input onChange={this.changePhone} autoComplete="off" /> */}
+                {/* </Edit> */}
+                {/* </TextEditToggle> */}
               </div>
               <div>
                 <Icon type="language" className="form-icon" />

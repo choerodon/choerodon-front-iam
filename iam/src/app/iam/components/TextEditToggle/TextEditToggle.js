@@ -10,16 +10,6 @@ const Text = props => (typeof (props.children) === 'function' ? props.children(p
 
 const Edit = props => props.children;
 const FormItem = Form.Item;
-function contains(root, n) {
-  let node = n;
-  while (node) {
-    if (node === root) {
-      return true;
-    }
-    node = node.parentNode;
-  }
-  return false;
-}
 
 @observer
 class TextEditToggle extends Component {
@@ -43,14 +33,6 @@ class TextEditToggle extends Component {
     return null;
   }
 
-  onDocumentClick = (event) => {
-    const target = event.target;
-    const root = findDOMNode(this);
-    // 如果点击不在当前元素内，就调用submit提交数据
-    if (!contains(root, target)) {
-      this.onSubmit();
-    }
-  }
 
   handleDone=() => {
     // this.setState({
@@ -60,7 +42,6 @@ class TextEditToggle extends Component {
 
   // 提交编辑
   onSubmit = () => {
-    document.removeEventListener('mousedown', this.onDocumentClick);
     try {
       this.props.form.validateFields((err, values) => {
         if (!err) {
@@ -96,7 +77,6 @@ class TextEditToggle extends Component {
     if (disabled) {
       return;
     }
-    document.addEventListener('mousedown', this.onDocumentClick);
     this.setState({
       editing: true,
       originData: this.props.originData,
@@ -106,7 +86,6 @@ class TextEditToggle extends Component {
 
   // 取消编辑
   leaveEditing = () => {
-    document.removeEventListener('mousedown', this.onDocumentClick);
     this.setState({
       editing: false,
     });

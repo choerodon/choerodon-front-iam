@@ -29,7 +29,7 @@ export default class ReceiveSetting extends Component {
       ReceiveSettingStore.setLoading(false);
       ReceiveSettingStore.setDirty(false);
     }).catch((error) => {
-      Choerodon.prompt(`${error.response.status} ${error.response.statusText}`);
+      // Choerodon.prompt(`${error.response.status} ${error.response.statusText}`);
       Choerodon.handleResponseError(error);
       ReceiveSettingStore.setLoading(false);
     });
@@ -68,6 +68,11 @@ export default class ReceiveSetting extends Component {
     }
   };
 
+  isCheckDisabled = (record, type) => {
+    if ('settings' in record) return false;
+    return ReceiveSettingStore.getAllowConfigData.get(parseInt(record.id.split('-')[2], 10)).disabled[type];
+  };
+
   render() {
     const { intl } = this.props;
     const promptMsg = intl.formatMessage({ id: 'global.menusetting.prompt.inform.title' }) + Choerodon.STRING_DEVIDER + intl.formatMessage({ id: 'global.menusetting.prompt.inform.message' });
@@ -97,6 +102,7 @@ export default class ReceiveSetting extends Component {
           indeterminate={record.id ? record.pmIndeterminate : false}
           onChange={e => this.handleCheckChange(e, record.id, 'pm')}
           checked={record.pmChecked}
+          disabled={this.isCheckDisabled(record, 'pm')}
         />
       ),
     }, {
@@ -117,6 +123,7 @@ export default class ReceiveSetting extends Component {
           indeterminate={record.id ? record.mailIndeterminate : false}
           onChange={e => this.handleCheckChange(e, record.id, 'email')}
           checked={record.mailChecked}
+          disabled={this.isCheckDisabled(record, 'email')}
         />
       ),
     }];

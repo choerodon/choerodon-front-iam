@@ -29,6 +29,10 @@ class ReceiveSettingStore {
 
   @observable dirty = false;
 
+  @computed get getAllowConfigData() {
+    return this.allowConfigData;
+  }
+
   @computed get getDirty() {
     return this.dirty;
   }
@@ -96,7 +100,7 @@ class ReceiveSettingStore {
           return data.message;
         } else {
           data.forEach((v) => {
-            this.allowConfigData.set(v.id, { name: v.name, type: v.level, pmType: v.pmType });
+            this.allowConfigData.set(v.id, { name: v.name, type: v.level, pmType: v.pmType, disabled: { pm: v.pmTemplateId === null, email: v.emailTemplateId === null } });
           });
           this.allowConfigData = new Map(this.allowConfigData);
         }
@@ -131,9 +135,9 @@ class ReceiveSettingStore {
           }
         });
       }
-    } else if (this.receiveSettingData.some(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}-${v.sendSettingId}`)) {
+    } else if (this.receiveSettingData.some(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}-${v.sendSettingId}` && !this.allowConfigData.get(parseInt(v.sendSettingId, 10)).disabled[type])) {
       this.receiveSettingData = this.receiveSettingData.filter(v => v.messageType !== type || (v.messageType === type && id !== `${v.sourceType}-${v.sourceId}-${v.sendSettingId}`));
-    } else {
+    } else if (!this.allowConfigData.get(parseInt(id.split('-')[2], 10)).disabled[type]) {
       const temp = id.split('-');
       this.receiveSettingData.push({
         messageType: type,
@@ -151,7 +155,7 @@ class ReceiveSettingStore {
    */
   @action checkAll(type) {
     this.dirty = true;
-    this.receiveSettingData = this.receiveSettingData.filter(v => v.messageType !== type);
+    this.receiveSettingData = this.receiveSettingData.filter(v => v.messageType !== type || (this.allowConfigData.get(parseInt(v.sendSettingId, 10)) && this.allowConfigData.get(parseInt(v.sendSettingId, 10)).disabled[type]));
   }
 
   /**
@@ -183,7 +187,7 @@ class ReceiveSettingStore {
    */
   isGroupAllSelected(id, type) {
     return !this.receiveSettingData.filter(v => v.messageType === type
-      && id === `${v.sourceType}-${v.sourceId}`)
+      && id === `${v.sourceType}-${v.sourceId}` && this.allowConfigData.get(parseInt(v.sendSettingId, 10)) && !this.allowConfigData.get(parseInt(v.sendSettingId, 10)).disabled[type])
       .some(v => !this.isChecked(`${id}-${v.sendSettingId}`, type));
   }
 
@@ -193,7 +197,7 @@ class ReceiveSettingStore {
    * @returns {boolean}
    */
   isAllSelected(type) {
-    return this.receiveSettingData.filter(v => v.messageType === type).length === 0;
+    return this.receiveSettingData.filter(v => v.messageType === type && this.allowConfigData.get(parseInt(v.sendSettingId, 10)) && !this.allowConfigData.get(parseInt(v.sendSettingId, 10)).disabled[type]).length === 0;
   }
 
   /**
@@ -214,8 +218,8 @@ class ReceiveSettingStore {
    */
   isGroupIndeterminate(id, type) {
     // if (this.isGroupAllSelected(id, type)) return false;
-    const selectLength = this.receiveSettingData.filter(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}`).length;
-    const checkAbleLength = [...this.allowConfigData.keys()].filter(value => this.allowConfigData.get(value).type === id.split('-')[0]).length;
+    const selectLength = this.receiveSettingData.filter(v => v.messageType === type && id === `${v.sourceType}-${v.sourceId}` && this.allowConfigData.get(parseInt(v.sendSettingId, 10)) && !this.allowConfigData.get(parseInt(v.sendSettingId, 10)).disabled[type]).length;
+    const checkAbleLength = [...this.allowConfigData.keys()].filter(value => this.allowConfigData.get(value).type === id.split('-')[0] && !this.allowConfigData.get(value).disabled[type]).length;
     return selectLength > 0 && selectLength < checkAbleLength;
   }
 

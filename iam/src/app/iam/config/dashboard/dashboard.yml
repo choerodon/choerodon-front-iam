@@ -19,7 +19,7 @@ dashboard:
     description: "公告"
     level: site
     sort: 3
-    delete: true
+    enabled: false
   - code: "UserInfo"
     icon: person
     title: "我的信息"

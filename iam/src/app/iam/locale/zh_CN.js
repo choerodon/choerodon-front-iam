@@ -276,6 +276,12 @@ const pageDetail = {
   'organization.memberrole.upload.description': '您可以在此将文件中的角色信息导入到组织中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
   'organization.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
+  // 组织事务实例
+  'organization.saga-instance.header.title': '组织事务实例',
+  'organization.saga-instance.title': '组织"{name}"的事务实例',
+  'organization.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
+  'organization.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
+
   // 客户端
   'organization.client.title': '组织"{name}"的客户端',
   'organization.client.description': '用户在使用oauth2.0的客户端授权模式认证时需要指定所属的客户端，根据客户端对应的密钥，作用域，认证有效时长和重定向地址等进行认证。客户端还可用于区分微服务环境下的不同模块。',
@@ -428,6 +434,12 @@ const pageDetail = {
   'project.memberrole.modify.title': '对用户"{name}"的进行角色修改',
   'project.memberrole.modify.description': '您可以在此增删改此用户在项目层的角色。',
   'project.memberrole.modify.link': `${docServer}/user-guide/system-configuration/project/role-assignment/`,
+
+  // 项目事务实例
+  'project.saga-instance.header.title': '项目事务实例',
+  'project.saga-instance.title': '项目"{name}"的事务实例',
+  'project.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
+  'project.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
 
   // 任务调度
   'project.taskdetail.title': '项目"{name}"的任务明细',
@@ -1116,8 +1128,8 @@ const zh_CN = {
   'global.saga-instance.header.title': '事务实例',
   'global.saga-instance.detail': '事务实例详情',
   'global.saga-instance.view': '查看实例',
-  'global.saga-instance.all': '所有实例',
-  'global.saga-instance.failed': '失败实例',
+  'global.saga-instance.instance': '事务',
+  'global.saga-instance.task': '任务',
   'global.saga-instance.id': 'ID',
   'global.saga-instance.status': '状态',
   'global.saga-instance.start.time': '开始时间',
@@ -1516,6 +1528,12 @@ const zh_CN = {
   'memberrole.remove.select.client.content': '确认移除当前选中的客户端的这些角色?',
   'memberrole.remove.all.client.content': '确认移除客户端"{name}"下的所有角色?',
   'memberrole.remove.client.content': '确认移除客户端"{member}"的角色"{role}"?',
+
+  // 事务实例
+  'saga-instance.overview': '实例状态总览',
+  'saga-instance.code': '实例状态总览',
+  'saga-instance.saga.instance': '事务实例',
+  'saga-instance.task.retry-count': '重试次数',
 
 
   // 角色标签

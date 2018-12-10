@@ -45,6 +45,7 @@
 "rentsetting.password-policy": "Password Policy"
 "rentsetting.mail-template-organization": "Mail Template"
 "rentsetting.announcement-organization": "Announcement"
+"rentsetting.saga-instance-organization": "Saga Instance"
 
 "msg-center-organization": "Message Center"
 "msg-center-organization.send-setting-organization": "Send Setting"
@@ -60,6 +61,7 @@
 # project
 "prosetting.proManage": "Project Manage"
 "prosetting.member-role-project": "Role Assignment"
+"prosetting.saga-instance-project": "Saga Instance"
 
 "task-dispatch-project": "Task Dispatch"
 "task-dispatch-project.task-detail-project": "Task Detail"

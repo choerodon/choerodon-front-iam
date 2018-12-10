@@ -241,6 +241,8 @@
         permission:
           - 'asgard-service.saga-instance.pagingQuery'
           - 'asgard-service.saga-instance.query'
+          - 'asgard-service.saga-instance.statistics'
+          - 'asgard-service.saga-instance.queryDetails'
 
 # 组织设置
 "rentsetting":
@@ -337,6 +339,15 @@
           - 'asgard-service.system-notification.pagingQueryOrgNotificaton'
           - 'asgard-service.system-notification.createNotificationOnOrg'
           - 'asgard-service.system-notification.deleteOrgNotification'
+    - "saga-instance-organization":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 9
+        permission:
+        - 'asgard-service.saga-instance-org.pagingQuery'
+        - 'asgard-service.saga-instance-org.statistics'
+        - 'asgard-service.saga-instance-org.query'
+        - 'asgard-service.saga-instance-org.queryDetails'
 
 # 组织层消息中心
 "msg-center-organization":
@@ -427,6 +438,15 @@
           - 'iam-service.project.disableProject'
           - 'iam-service.project.query'
           - 'iam-service.project.update'
+    - "saga-instance-project":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 3
+        permission:
+        - 'asgard-service.saga-instance-project.pagingQuery'
+        - 'asgard-service.saga-instance-project.statistics'
+        - 'asgard-service.saga-instance-project.query'
+        - 'asgard-service.saga-instance-project.queryDetails'
 
 # 项目层任务调度
 "task-dispatch-project":

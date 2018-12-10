@@ -1530,7 +1530,7 @@ const zh_CN = {
   'memberrole.remove.client.content': '确认移除客户端"{member}"的角色"{role}"?',
 
   // 事务实例
-  'saga-instance.overview': '实例状态总览',
+  'saga-instance.overview': '事务实例状态总览',
   'saga-instance.code': '实例状态总览',
   'saga-instance.saga.instance': '事务实例',
   'saga-instance.task.retry-count': '重试次数',

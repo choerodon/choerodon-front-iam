@@ -36,8 +36,8 @@ export default class InstanceExpandRow extends Component {
           cy="40"
           r="30"
           strokeWidth={5}
-          stroke={1 > 0 ? '#f44336' : '#f3f3f3'}
-          className="c7n-pod-circle-error"
+          stroke={failed > 0 ? '#f44336' : '#f3f3f3'}
+          className="c7n-saga-circle-error"
         />
       </Popover>
       <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-completed" />{`完成任务：${completed}`}</div>}>
@@ -45,7 +45,8 @@ export default class InstanceExpandRow extends Component {
           cx="40"
           cy="40"
           r="30"
-          className="c7n-pod-circle"
+          stroke={completed > 0 ? '#00bfa5' : '#f3f3f3'}
+          className="c7n-saga-circle"
           strokeDasharray={`${completedCorrect}, 10000`}
         />
       </Popover>
@@ -54,7 +55,8 @@ export default class InstanceExpandRow extends Component {
           cx="40"
           cy="40"
           r="30"
-          className="c7n-pod-circle-running"
+          stroke={running > 0 ? '#4d90fe' : '#f3f3f3'}
+          className="c7n-saga-circle-running"
           strokeDasharray={`${runningCorrect}, 10000`}
         />
       </Popover>
@@ -63,12 +65,13 @@ export default class InstanceExpandRow extends Component {
           cx="40"
           cy="40"
           r="30"
-          className="c7n-pod-circle-queue"
+          stroke={queue > 0 ? '#ffb100' : '#f3f3f3'}
+          className="c7n-saga-circle-queue"
           strokeDasharray={`${queueCorrect}, 10000`}
         />
       </Popover>
-      <text x="50%" y="39.5" className="c7n-pod-circle-num">{`${sum - failed}/${sum}`}</text>
-      <text x="50%" y="54" fontSize="12" className="c7n-pod-circle-text">{intl.formatMessage({ id: status.toLowerCase() })}</text>
+      <text x="50%" y="39.5" className="c7n-saga-circle-num">{`${sum - failed}/${sum}`}</text>
+      <text x="50%" y="54" fontSize="12" className="c7n-saga-circle-text">{intl.formatMessage({ id: status.toLowerCase() })}</text>
     </svg>);
   }
 

@@ -376,7 +376,6 @@ export default class SagaInstance extends Component {
         loading={this.state.loading}
         pagination={this.state.pagination}
         columns={columns}
-        expandRowByClick
         indentSize={0}
         dataSource={dataSource}
         filters={this.state.params}

@@ -23,21 +23,21 @@ export default class InstanceExpandRow extends Component {
 
   getCircle() {
     const { completed, failed, running, queue } = this.state.detail;
-    const { intl } = this.props;
+    const { intl, expand } = this.props;
     const sum = completed + failed + running + queue;
     const { status } = this.props.record;
     const completedCorrect = sum > 0 ? ((completed + running + queue) / sum) * (Math.PI * 2 * 30) : 0;
     const runningCorrect = sum > 0 ? ((running + queue) / sum) * (Math.PI * 2 * 30) : 0;
     const queueCorrect = sum > 0 ? ((queue) / sum) * (Math.PI * 2 * 30) : 0;
-    return (<svg width="80" height="80">
+    return (<svg width="80" height="80" onClick={expand}>
       <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-error" />{`失败任务：${failed}`}</div>}>
         <circle
           cx="40"
           cy="40"
           r="30"
           strokeWidth={5}
-          stroke={1 > 0 ? '#f44336' : '#f3f3f3'}
-          className="c7n-pod-circle-error"
+          stroke={failed > 0 ? '#f44336' : '#f3f3f3'}
+          className="c7n-saga-circle-error"
         />
       </Popover>
       <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-completed" />{`完成任务：${completed}`}</div>}>
@@ -45,7 +45,8 @@ export default class InstanceExpandRow extends Component {
           cx="40"
           cy="40"
           r="30"
-          className="c7n-pod-circle"
+          stroke={completed > 0 ? '#00bfa5' : '#f3f3f3'}
+          className="c7n-saga-circle"
           strokeDasharray={`${completedCorrect}, 10000`}
         />
       </Popover>
@@ -54,7 +55,8 @@ export default class InstanceExpandRow extends Component {
           cx="40"
           cy="40"
           r="30"
-          className="c7n-pod-circle-running"
+          stroke={running > 0 ? '#4d90fe' : '#f3f3f3'}
+          className="c7n-saga-circle-running"
           strokeDasharray={`${runningCorrect}, 10000`}
         />
       </Popover>
@@ -63,12 +65,13 @@ export default class InstanceExpandRow extends Component {
           cx="40"
           cy="40"
           r="30"
-          className="c7n-pod-circle-queue"
+          stroke={queue > 0 ? '#ffb100' : '#f3f3f3'}
+          className="c7n-saga-circle-queue"
           strokeDasharray={`${queueCorrect}, 10000`}
         />
       </Popover>
-      <text x="50%" y="39.5" className="c7n-pod-circle-num">{`${sum - failed}/${sum}`}</text>
-      <text x="50%" y="54" fontSize="12" className="c7n-pod-circle-text">{intl.formatMessage({ id: status.toLowerCase() })}</text>
+      <text x="50%" y="39.5" className="c7n-saga-circle-num">{`${sum - failed}/${sum}`}</text>
+      <text x="50%" y="54" fontSize="12" className="c7n-saga-circle-text">{intl.formatMessage({ id: status.toLowerCase() })}</text>
     </svg>);
   }
 

@@ -376,11 +376,10 @@ export default class SagaInstance extends Component {
         loading={this.state.loading}
         pagination={this.state.pagination}
         columns={columns}
-        expandRowByClick
         indentSize={0}
         dataSource={dataSource}
         filters={this.state.params}
-        expandedRowRender={record => <InstanceExpandRow record={record} />}
+        expandedRowRender={record => <InstanceExpandRow record={record} expand={this.openSidebar.bind(this, record.id)} />}
         rowKey="id"
         onChange={this.tableChange}
         filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

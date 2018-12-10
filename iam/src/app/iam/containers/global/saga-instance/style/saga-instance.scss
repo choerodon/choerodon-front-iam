@@ -1,6 +1,9 @@
 .c7n-saga-instance {
   .c7n-saga-expand-circle {
     position: relative;
+    svg {
+      cursor: pointer;
+    }
   }
   .c7n-saga-expand-row {
     line-height: 20px;

@@ -23,13 +23,13 @@ export default class InstanceExpandRow extends Component {
 
   getCircle() {
     const { completed, failed, running, queue } = this.state.detail;
-    const { intl } = this.props;
+    const { intl, expand } = this.props;
     const sum = completed + failed + running + queue;
     const { status } = this.props.record;
     const completedCorrect = sum > 0 ? ((completed + running + queue) / sum) * (Math.PI * 2 * 30) : 0;
     const runningCorrect = sum > 0 ? ((running + queue) / sum) * (Math.PI * 2 * 30) : 0;
     const queueCorrect = sum > 0 ? ((queue) / sum) * (Math.PI * 2 * 30) : 0;
-    return (<svg width="80" height="80">
+    return (<svg width="80" height="80" onClick={expand}>
       <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-error" />{`失败任务：${failed}`}</div>}>
         <circle
           cx="40"

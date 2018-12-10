@@ -31,6 +31,9 @@
     &.completed {
       background: #00bfa5;
     }
+    &.queue {
+      background: #ffb100;
+    }
   }
   &-btns {
     margin-bottom: 24px;
@@ -172,6 +175,13 @@
   transform: rotate(-90deg);
   transform-origin: center;
 }
+.c7n-pod-circle-queue {
+  fill: none;
+  stroke: #ffb100;
+  stroke-width: 5px;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
 .c7n-pod-circle-error {
   fill: none;
 }
@@ -200,6 +210,9 @@
   }
   &-running {
     background: #4d90fe;
+  }
+  &-queue {
+    background: #ffb100;
   }
 }
 .c7n-iam-link-icon {

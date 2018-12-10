@@ -22,12 +22,13 @@ export default class InstanceExpandRow extends Component {
   }
 
   getCircle() {
-    const { completed, failed, running } = this.state.detail;
+    const { completed, failed, running, queue } = this.state.detail;
     const { intl } = this.props;
-    const sum = completed + failed + running;
+    const sum = completed + failed + running + queue;
     const { status } = this.props.record;
-    const completedCorrect = sum > 0 ? ((completed + running) / sum) * (Math.PI * 2 * 30) : 0;
-    const runningCorrect = sum > 0 ? ((running) / sum) * (Math.PI * 2 * 30) : 0;
+    const completedCorrect = sum > 0 ? ((completed + running + queue) / sum) * (Math.PI * 2 * 30) : 0;
+    const runningCorrect = sum > 0 ? ((running + queue) / sum) * (Math.PI * 2 * 30) : 0;
+    const queueCorrect = sum > 0 ? ((queue) / sum) * (Math.PI * 2 * 30) : 0;
     return (<svg width="80" height="80">
       <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-error" />{`失败任务：${failed}`}</div>}>
         <circle
@@ -55,6 +56,15 @@ export default class InstanceExpandRow extends Component {
           r="30"
           className="c7n-pod-circle-running"
           strokeDasharray={`${runningCorrect}, 10000`}
+        />
+      </Popover>
+      <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-queue" />{`等待中任务：${queue}`}</div>}>
+        <circle
+          cx="40"
+          cy="40"
+          r="30"
+          className="c7n-pod-circle-queue"
+          strokeDasharray={`${queueCorrect}, 10000`}
         />
       </Popover>
       <text x="50%" y="39.5" className="c7n-pod-circle-num">{`${sum - failed}/${sum}`}</text>

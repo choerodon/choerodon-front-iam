@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content, Header, Page } from 'choerodon-front-boot';
-import { Table, Button, Checkbox, Modal } from 'choerodon-ui';
-import './ReceiveSetting.scss';
+import { Table, Button, Checkbox, Modal, Tooltip } from 'choerodon-ui';
 import { Prompt } from 'react-router-dom';
 import ReceiveSettingStore from '../../../stores/user/receive-setting/ReceiveSettingStore';
 
@@ -73,6 +72,26 @@ export default class ReceiveSetting extends Component {
     return ReceiveSettingStore.getAllowConfigData.get(parseInt(record.id.split('-')[2], 10)).disabled[type];
   };
 
+  getCheckbox = (record, type) => {
+    if (this.isCheckDisabled(record, type)) {
+      return (
+        <Checkbox
+          key={record.id ? record.id : `${record.id}-${record.sendSettingId}`}
+          disabled
+        />
+      );
+    } else {
+      return (
+        <Checkbox
+          key={record.id ? record.id : `${record.id}-${record.sendSettingId}`}
+          indeterminate={record.id ? (type === 'pm' ? record.pmIndeterminate : record.mailIndeterminate) : false}
+          onChange={e => this.handleCheckChange(e, record.id, type)}
+          checked={type === 'pm' ? record.pmChecked : record.mailChecked}
+        />
+      );
+    }
+  }
+
   render() {
     const { intl } = this.props;
     const promptMsg = intl.formatMessage({ id: 'global.menusetting.prompt.inform.title' }) + Choerodon.STRING_DEVIDER + intl.formatMessage({ id: 'global.menusetting.prompt.inform.message' });
@@ -96,15 +115,7 @@ export default class ReceiveSetting extends Component {
         </Checkbox>
       ),
       width: '15%',
-      render: (text, record) => (
-        <Checkbox
-          key={record.id ? record.id : `${record.id}-${record.sendSettingId}`}
-          indeterminate={record.id ? record.pmIndeterminate : false}
-          onChange={e => this.handleCheckChange(e, record.id, 'pm')}
-          checked={record.pmChecked}
-          disabled={this.isCheckDisabled(record, 'pm')}
-        />
-      ),
+      render: (text, record) => this.getCheckbox(record, 'pm'),
     }, {
       title: (
         <Checkbox
@@ -117,15 +128,7 @@ export default class ReceiveSetting extends Component {
         </Checkbox>
       ),
       width: '15%',
-      render: (text, record) => (
-        <Checkbox
-          key={record.id ? record.id : `${record.id}-${record.sendSettingId}`}
-          indeterminate={record.id ? record.mailIndeterminate : false}
-          onChange={e => this.handleCheckChange(e, record.id, 'email')}
-          checked={record.mailChecked}
-          disabled={this.isCheckDisabled(record, 'email')}
-        />
-      ),
+      render: (text, record) => this.getCheckbox(record, 'email'),
     }];
 
     return (

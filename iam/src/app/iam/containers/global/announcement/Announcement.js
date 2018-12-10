@@ -93,6 +93,7 @@ export default class Announcement extends Component {
         if (!err) {
           AnnouncementStore.setSubmitting(true);
           if (editorContent === null || patternHTMLEmpty.test(editorContent)) {
+            AnnouncementStore.setSubmitting(false);
             Choerodon.prompt(intl.formatMessage({ id: 'announcement.content.required' }));
           } else if (editorContent && !patternHTMLEmpty.test(editorContent)) {
             AnnouncementStore.createAnnouncement({
@@ -109,6 +110,8 @@ export default class Announcement extends Component {
               }
             });
           }
+        } else {
+          AnnouncementStore.setSubmitting(false);
         }
       });
     } else {

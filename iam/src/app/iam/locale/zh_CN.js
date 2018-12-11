@@ -1199,6 +1199,7 @@ const zh_CN = {
   'global.announcement.send-time': '发送时间',
   'global.announcement.sidebar.title': '添加公告',
   'global.announcement.sidebar.title.detail': '查看公告',
+  'global.announcement.link': `${docServer}/user-guide/system-configuration/message/system-notice/`,
 
   // 组织层
   // 项目管理

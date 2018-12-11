@@ -13,8 +13,8 @@ export default class InstanceExpandRow extends Component {
   };
 
   componentDidMount() {
-    const { record: { id } } = this.props;
-    axios.get(`/asgard/v1/sagas/instances/${id}/details`).then((data) => {
+    const { record: { id }, apiGateWay } = this.props;
+    axios.get(`${apiGateWay}instances/${id}/details`).then((data) => {
       this.setState({
         detail: data,
       });

@@ -379,7 +379,7 @@ export default class SagaInstance extends Component {
         indentSize={0}
         dataSource={dataSource}
         filters={this.state.params}
-        expandedRowRender={record => <InstanceExpandRow record={record} expand={this.openSidebar.bind(this, record.id)} />}
+        expandedRowRender={record => <InstanceExpandRow apiGateWay={this.sagaInstanceType.apiGetway} record={record} expand={this.openSidebar.bind(this, record.id)} />}
         rowKey="id"
         onChange={this.tableChange}
         filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

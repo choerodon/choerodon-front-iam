@@ -93,17 +93,19 @@ export default class MenuSetting extends Component {
   }
   // 初始化类型
   initMenu(type) {
-    const { menuGroup, type: typeState } = this.state;
+    const { menuGroup, type: typeState, prevMenuGroup } = this.state;
     type = type || typeState;
+    const newPrevMenuGroup = prevMenuGroup;
     this.setState({ loading: true });
     axios.get(`/iam/v1/menus/tree?level=${type}`)
       .then((value) => {
         menuGroup[type] = normalizeMenus(value);
+        newPrevMenuGroup[type] = JSON.parse(JSON.stringify(menuGroup))[type];
         // 深拷贝
         this.setState({
           menuGroup,
           loading: false,
-          prevMenuGroup: JSON.parse(JSON.stringify(menuGroup)),
+          prevMenuGroup: newPrevMenuGroup,
         });
       })
       .catch((error) => {

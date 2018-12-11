@@ -514,7 +514,7 @@ const pageDetail = {
   // 富文本编辑器
   'editor.add.pic': '添加图片',
   'editor.pic.url': '图片URL',
-  'editor.view': '浏览',
+  'editor.view': '预览',
   'editor.pic.url.required': '请输入图片URL',
   'editor.back.gui': '返回可视化编辑',
   'editor.preview': '预览区',

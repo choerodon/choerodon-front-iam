@@ -9,6 +9,7 @@ const registerOrg = asyncRouter(() => import('./outward/register-org'));
 // global 对应目录
 const announcement = asyncRouter(() => import('./global/announcement'));
 const apiTest = asyncRouter(() => import('./global/api-test'));
+const apiOverview = asyncRouter(() => import('./global/api-overview'));
 const configuration = asyncRouter(() => import('./global/configuration'));
 const instance = asyncRouter(() => import('./global/instance'));
 const inmailTemplate = asyncRouter(() => import('./global/inmail-template'));
@@ -67,6 +68,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/outward-register-org`} component={registerOrg} />
           <Route path={`${match.url}/announcement`} component={announcement} />
           <Route path={`${match.url}/api-test`} component={apiTest} />
+          <Route path={`${match.url}/api-overview`} component={apiOverview} />
           <Route path={`${match.url}/configuration`} component={configuration} />
           <Route path={`${match.url}/inmail-template`} component={inmailTemplate} />
           <Route path={`${match.url}/instance`} component={instance} />

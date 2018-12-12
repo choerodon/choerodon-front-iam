@@ -938,9 +938,6 @@ const zh_CN = {
 
   // API测试
   'global.apitest.header.title': 'API测试',
-  'global.apitest.service': '所属微服务',
-  'global.apitest.table.name': '名称/方法',
-  'global.apitest.table.path': '路径',
   'global.apitest.table.description': '描述',
   'global.apitest.available.range': '可用范围',
   'global.apitest.interface.detail': '接口详情',
@@ -983,8 +980,17 @@ const zh_CN = {
   'global.apitest.request.format': '请求格式',
   'global.apitest.response.format': '响应格式',
   'global.apitest.default.role': '默认角色',
-  'global.apitest.inner': '内部',
-  'global.apitest.outer': '外部',
+
+  'global.apitest.filter': '过滤',
+  'global.apitest.empty.find.not': '根据当前选定的服务没有查询到API信息',
+  'global.apitest.empty.try.choose': '尝试在您的树状图中选择API',
+  'global.apitest.apis.repository': '接口库',
+
+  // API概览
+  'global.apioverview.header.title': 'API概览',
+  'global.apioverview.api.total.count': '各服务API总数',
+  'global.apioverview.api.used.count': '各服务API调用总数',
+  'global.apioverview.api.single.count': '单个API调用总数',
 
   // 发送设置
   'sendsetting.header.title': '发送设置',

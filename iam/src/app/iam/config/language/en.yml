@@ -17,6 +17,7 @@
 
 "api": "API Manage"
 "api.api-test": "API Test"
+"api.api-overview": "API Overview"
 
 "global-transaction": "Global Transaction"
 "global-transaction.saga": "Saga"

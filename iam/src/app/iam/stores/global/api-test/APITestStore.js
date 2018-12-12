@@ -26,6 +26,63 @@ class ApitestStore {
   @observable initData = null; // 用来缓存APITest列表页的state实现打开新的page然后返回仍在离开时的分页
   @observable needReload = true; // 只有跳转到api详情界面然后回到api列表才不需要reload
   @observable filters = [];
+  @observable isShowTree = true; // 是否显示树形结构
+  @observable controllers = []; //
+  @observable paths = [];
+  @observable expandedKeys = [];
+  @observable pageLoading = true;
+  @observable totalData = [];
+  @observable detailFlag = 'empty';
+  @observable currentNode = null;
+
+  @action setCurrentNode(node) {
+    this.currentNode = node;
+  }
+
+  @computed get getCurrentNode() {
+    return this.currentNode;
+  }
+
+  @action setDetailFlag(flag) {
+    this.detailFlag = flag;
+  }
+
+  @computed get getDetailFlag() {
+    return toJS(this.detailFlag);
+  }
+
+  @action setTotalData(data) {
+    this.totalData = data;
+  }
+
+  @computed get getTotalData() {
+    return this.totalData;
+  }
+
+  @action setIsShowTree(flag) {
+    this.isShowTree = flag;
+  }
+
+  @action setControllers(controllers) {
+    this.controllers = controllers;
+  }
+
+  @action setPaths(paths) {
+    this.paths = paths;
+  }
+
+  @action setExpandedKeys(expandedKeys) {
+    // window.console.log(expandedKeys);
+    this.expandedKeys = expandedKeys;
+  }
+
+  @computed get getExpandedKeys() {
+    return toJS(this.expandedKeys);
+  }
+
+  @action setPageLoading(flag) {
+    this.pageLoading = flag;
+  }
 
   @action setFilters(filters) {
     this.filters = filters;
@@ -66,9 +123,9 @@ class ApitestStore {
     this.needReload = flag;
   }
 
-  @action setDetailFlag(flag) {
-    this.detailFlag = flag;
-  }
+  // @action setDetailFlag(flag) {
+  //   this.detailFlag = flag;
+  // }
 
   @action setIsExpand(name) {
     if (this.isExpand.has(name)) {
@@ -178,7 +235,7 @@ class ApitestStore {
     return this.apiDetail;
   }
 
-  loadService = () => axios.get('manager/v1/swaggers/resources');
+  loadApis = () => axios.get('/manager/v1/swaggers/tree');
 }
 
 const apitestStore = new ApitestStore();

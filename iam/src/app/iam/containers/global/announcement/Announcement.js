@@ -9,7 +9,7 @@ import StatusTag from '../../../components/statusTag';
 import Editor from '../../../components/editor';
 
 // 匹配html界面为空白的正则。
-const patternHTMLEmpty = /^(((<[^(>|img)]+>)*\s*)|&nbsp;)*$/g;
+const patternHTMLEmpty = /^(((<[^>]+>)*\s*)|&nbsp;|\s)*$/g;
 
 const iconType = {
   COMPLETED: 'COMPLETED',
@@ -109,6 +109,9 @@ export default class Announcement extends Component {
                 Choerodon.prompt(data.message);
               }
             });
+          } else {
+            AnnouncementStore.setSubmitting(false);
+            Choerodon.prompt(intl.formatMessage({ id: 'announcement.content.required' }));
           }
         } else {
           AnnouncementStore.setSubmitting(false);

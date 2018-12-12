@@ -60,6 +60,10 @@
       cursor: text;
     }
 
+    .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background: rgba(0, 0, 0, .04);
+    }
+
     .ant-tree-switcher {
       margin-top: 5px;
     }

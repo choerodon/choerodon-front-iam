@@ -15,7 +15,7 @@ import Hjson from 'hjson';
 import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import ApiTree from '../../../components/apiTree';
+import ApiTree from './apiTree';
 import emptyApi from '../../../assets/images/noright.svg';
 import jsonFormat from '../../../common/json-format';
 import AuthorizeModal from './AuthorizeModal';
@@ -83,37 +83,9 @@ export default class APITest extends Component {
     APITestStore.setPageLoading(true);
     APITestStore.setDetailFlag('empty');
     APITestStore.setIsShowResult(null);
+    APITestStore.setExpandedKeys([]);
+    APITestStore.setUserInfo(null);
   }
-
-  // componentDidMount() {
-  // this.loadInitData();
-  // const queryObj = {
-  //   operation_id: 'createBoardColumnUsingPOST',
-  //   version: '2018.12.7-120255-master',
-  // };
-  // defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/agile/controllers/board-column-controller/paths?${querystring.stringify(queryObj)}`).then((data) => {
-  //   data.paths.some((item) => {
-  //     if (item.operationId === queryObj.operation_id) {
-  //       const { basePath, url } = item;
-  //       APITestStore.setApiDetail(item);
-  //       window.console.log(item);
-  //       this.setState({
-  //         requestUrl: `${urlPrefix}${basePath}${url}`,
-  //       });
-  //       return true;
-  //     }
-  //   // return false;
-  //   });
-  // });
-  // if (APITestStore.getInitData === null || APITestStore.getNeedReload) {
-  //   this.loadInitData();
-  //   this.setState(this.getInitState());
-  //   APITestStore.clearIsExpand();
-  // } else if (!APITestStore.getNeedReload) {
-  //   this.setState(APITestStore.getInitData);
-  // }
-  // APITestStore.setNeedReload(true);
-  // }
 
   getInitState() {
     return {
@@ -135,9 +107,12 @@ export default class APITest extends Component {
 
   handleRefresh = () => {
     const currentNode = APITestStore.getCurrentNode;
-    this.setState(this.getInitState(), () => {
-      this.loadDetail(currentNode);
-    });
+    const detailFlag = APITestStore.getDetailFlag;
+    if (detailFlag !== 'empty') {
+      this.setState(this.getInitState(), () => {
+        this.loadDetail(currentNode);
+      });
+    }
   };
 
   /**
@@ -800,7 +775,7 @@ export default class APITest extends Component {
     return (
       <Page
         service={[
-          'manager-service.service.pageManager',
+          'manager-service.api.queryTreeMenu',
           'manager-service.api.queryPathDetail',
         ]}
       >
@@ -810,6 +785,7 @@ export default class APITest extends Component {
           <Button
             onClick={this.openAuthorizeModal}
             icon="person"
+            style={{ textTransform: 'initial' }}
           >
             {
               APITestStore.getUserInfo ? (<span>{APITestStore.getUserInfo}</span>) : (

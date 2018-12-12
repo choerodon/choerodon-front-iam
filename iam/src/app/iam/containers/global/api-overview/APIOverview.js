@@ -8,6 +8,7 @@ import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import './APIOverview.scss';
 import APIOverviewStore from '../../../stores/global/api-overview';
+import TimePicker from './TimePicker';
 
 const intlPrefix = 'global.apioverview';
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -23,36 +24,86 @@ export default class APIOverview extends Component {
 
   componentDidMount() {
     this.loadFirstChart();
+    this.loadSecChart();
   }
 
   getInitState() {
     return {
+      dateType: 'seven',
     };
   }
+
+  handleDateChoose = (type) => {
+    this.setState({ dateType: type });
+  };
 
   loadFirstChart = () => {
     APIOverviewStore.setFirstLoading(true);
     APIOverviewStore.loadFirstChart();
   }
 
-  getFirstChart = () => {
-    const { intl } = this.props;
-    return (
-      <div className="c7n-iam-api-overview-first-container">
-        {
+  loadSecChart = () => {
+    const startDate = APIOverviewStore.getSecStartTime.format().split('T')[0];
+    const endDate = APIOverviewStore.getSecEndTime.format().split('T')[0];
+    APIOverviewStore.loadSecChart(startDate, endDate);
+  };
+
+
+  getFirstChart = () => (
+    <div className="c7n-iam-api-overview-top-container-first-container">
+      {
           APIOverviewStore.firstLoading ? (
             <Spin spinning={APIOverviewStore.firstLoading} />
           ) : (
             <ReactEcharts
               style={{ width: '100%', height: 380 }}
-              className="c7n-buildDuration-echarts"
               option={this.getFirstChartOption()}
             />
           )
         }
+    </div>
+  )
+
+  getSecChart = () => {
+    const { dateType } = this.state;
+    return (
+      <div className="c7n-iam-api-overview-top-container-sec-container">
+        <Spin spinning={APIOverviewStore.secLoading}>
+          <div className="c7n-iam-api-overview-top-container-sec-container-timewrapper">
+            <TimePicker
+              showDatePicker={false}
+              startTime={APIOverviewStore.getSecStartTime}
+              endTime={APIOverviewStore.getSecEndTime}
+              func={this.loadSecChart}
+              type={dateType}
+              onChange={this.handleDateChoose}
+              store={APIOverviewStore}
+              sort={2}
+            />
+          </div>
+          <ReactEcharts
+            style={{ width: '100%', height: 380 }}
+            option={this.getSecChartOption()}
+          />
+        </Spin>
       </div>
     );
   }
+
+  getThirdChart = () => (
+    <div className="c7n-iam-api-overview-third-container">
+      {
+          APIOverviewStore.thirdLoaidng ? (
+            <Spin spinning={APIOverviewStore.thirdLoaidng} />
+          ) : (
+            <ReactEcharts
+              style={{ width: '100%', height: 400 }}
+              option={this.getFirstChartOption()}
+            />
+          )
+        }
+    </div>
+  )
 
 
   // 获取第一个图表的配置参数
@@ -86,7 +137,7 @@ export default class APIOverview extends Component {
         },
       },
       legend: {
-        right: 20,
+        right: 15,
         y: 'center',
         type: 'plain',
         data: firstChartData ? firstChartData.services : [],
@@ -96,33 +147,139 @@ export default class APIOverview extends Component {
       // calculable: true,
       series: [
         {
-          // name: '半径模式',
           type: 'pie',
           radius: [20, 110],
-          center: ['35%', '50%'],
+          center: ['31%', '50%'],
           roseType: 'radius',
           // minAngle: 30,
           label: {
             normal: {
               show: false,
             },
-            // emphasis: {
-            //   show: true,
-            // },
           },
-          // lableLine: {
-          //   length: 2,
-          //   length2: 1,
-          //   normal: {
-          //     show: false,
-          //   },
-          //   emphasis: {
-          //     show: true,
-          //   },
-          // },
           data: handledFirstChartData || {},
         },
       ],
+      color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
+    };
+  }
+
+  // 获取第二个图表的配置参数
+  getSecChartOption() {
+    const secChartData = APIOverviewStore.getSecChartData;
+    const { intl: { formatMessage } } = this.props;
+    let handleSeriesData = [];
+    const color = ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'];
+    if (secChartData) {
+      handleSeriesData = secChartData.details.map(item => ({
+        type: 'line',
+        name: item.service,
+        data: item.data,
+        smooth: 0.5,
+        smoothMonotone: 'x',
+        symbol: 'circle',
+        areaStyle: {
+          opacity: '0.5',
+        },
+      }));
+    }
+    return {
+      title: {
+        text: '各服务API调用总数',
+        textStyle: {
+          color: 'rgba(0,0,0,0.87)',
+          fontWeight: '400',
+        },
+        top: 20,
+        left: 16,
+      },
+      tooltip: {
+        trigger: 'axis',
+        confine: true,
+        backgroundColor: '#fff',
+        textStyle: {
+          color: '#000',
+        },
+      },
+      legend: {
+        top: 60,
+        right: 16,
+        type: 'plain',
+        orient: 'vertical', // 图例纵向排列
+        icon: 'circle',
+        data: secChartData ? secChartData.services : [],
+      },
+      grid: {
+        left: '3%',
+        top: 110,
+        containLabel: true,
+        width: '65%',
+        height: '55%',
+      },
+      xAxis: [
+        {
+          type: 'category',
+          boundaryGap: false,
+          axisTick: { show: false },
+          axisLine: {
+            lineStyle: {
+              color: '#eee',
+              type: 'solid',
+              width: 2,
+            },
+            onZero: true,
+          },
+          axisLabel: {
+            margin: 7, // X轴文字和坐标线之间的间距
+            textStyle: {
+              color: 'rgba(0, 0, 0, 0.65)',
+              fontSize: 12,
+            },
+            formatter(value) {
+              const month = value.split('-')[1];
+              const day = value.split('-')[2];
+              return `${month}-${day}`;
+            },
+          },
+          splitLine: {
+            lineStyle: {
+              color: ['#eee'],
+              width: 1,
+              type: 'solid',
+            },
+          },
+          data: secChartData ? secChartData.date : [],
+        },
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          name: '次数',
+          nameLocation: 'end',
+          nameTextStyle: {
+            color: '#000',
+          },
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: '#eee',
+            },
+          },
+          axisTick: {
+            show: false,
+          },
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: ['#eee'],
+            },
+          },
+          axisLabel: {
+            color: 'rgba(0,0,0,0.65)',
+          },
+        },
+      ],
+      series: handleSeriesData,
       color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
     };
   }
@@ -132,7 +289,9 @@ export default class APIOverview extends Component {
     return (
       <Page
         service={[
-          'manager-service.service.pageManager',
+          'manager-service.api.queryInstancesAndApiCount',
+          'manager-service.api.queryApiInvoke',
+          'manager-service.api.queryServiceInvoke',
         ]}
       >
         <Header
@@ -146,8 +305,10 @@ export default class APIOverview extends Component {
           </Button>
         </Header>
         <Content>
-          {this.getFirstChart()}
-          {/* {this.getSecChart()} */}
+          <div className="c7n-iam-api-overview-top-container">
+            {this.getFirstChart()}
+            {this.getSecChart()}
+          </div>
           {/* {this.getThirdChart()} */}
         </Content>
       </Page>

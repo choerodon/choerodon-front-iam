@@ -991,6 +991,11 @@ const zh_CN = {
   'global.apioverview.api.total.count': '各服务API总数',
   'global.apioverview.api.used.count': '各服务API调用总数',
   'global.apioverview.api.single.count': '单个API调用总数',
+  'global.apioverview.seven': '近7天',
+  'global.apioverview.fifteen': '近15天',
+  'global.apioverview.thirty': '近30天',
+  'global.apioverview.date': '日期',
+  'global.apioverview.used.totalcount': '调用总次数',
 
   // 发送设置
   'sendsetting.header.title': '发送设置',

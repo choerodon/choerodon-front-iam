@@ -97,7 +97,11 @@
 
 .c7n-saga-status-wrap {
   display: flex;
-
+  > div {
+    > p {
+      margin-bottom: 24px;
+    }
+  }
   .c7n-saga-status-content {
     margin-left: auto;
     display: flex;

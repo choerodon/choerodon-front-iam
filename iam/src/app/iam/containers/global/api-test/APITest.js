@@ -4,19 +4,74 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Select, Table, Tooltip, Tree } from 'choerodon-ui';
+import { Button, Tooltip, Tree, Input, Icon, Form, Row, Col, Select, Table, Spin, Modal } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { axios as defaultAxios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import querystring from 'query-string';
+import _ from 'lodash';
 import classnames from 'classnames';
+import Hjson from 'hjson';
 import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import ApiTree from '../../../components/apiTree';
+import emptyApi from '../../../assets/images/noright.svg';
+import jsonFormat from '../../../common/json-format';
+import AuthorizeModal from './AuthorizeModal';
 
 const intlPrefix = 'global.apitest';
+const FormItem = Form.Item;
+const { TextArea } = Input;
+const instance = defaultAxios.create();
 const { Option } = Select;
+const urlPrefix = process.env.API_HOST;
+let statusCode;
+let responseHeader;
+let response;
+let rcResponseHeader;
+let rcResponse;
+let authorization;
 
+instance.interceptors.request.use(
+  (config) => {
+    const newConfig = config;
+    newConfig.headers['Content-Type'] = 'application/json';
+    newConfig.headers.Accept = 'application/json';
+    let accessToken;
+    if (!APITestStore.getApiToken) {
+      accessToken = Choerodon.getAccessToken();
+      if (accessToken) {
+        newConfig.headers.Authorization = accessToken;
+      }
+    } else {
+      accessToken = APITestStore.getApiToken;
+      newConfig.headers.Authorization = accessToken;
+    }
+    authorization = accessToken;
+    return newConfig;
+  },
+  (err) => {
+    const error = err;
+    return Promise.reject(error);
+  },
+);
+
+instance.interceptors.response.use((res) => {
+  statusCode = res.status; // 响应码
+  responseHeader = jsonFormat(res.headers);
+  rcResponseHeader = JSON.stringify(res.headers);
+  response = res.data instanceof Object ? jsonFormat(res.data) : `${res.data}`; // 响应主体
+  rcResponse = JSON.stringify(res.data);
+}, (error) => {
+  statusCode = error.response.status; // 响应码
+  responseHeader = jsonFormat(error.response.headers);
+  rcResponseHeader = JSON.stringify(error.response.headers);
+  response = error.response.data instanceof Object ? jsonFormat(error.response.data) : `${error.response.data}`; // 响应主体
+  rcResponse = JSON.stringify(error.response.data);
+});
+
+@Form.create()
 @withRouter
 @injectIntl
 @inject('AppState')
@@ -24,291 +79,724 @@ const { Option } = Select;
 export default class APITest extends Component {
   state = this.getInitState();
 
-  componentDidMount() {
-    if (APITestStore.getInitData === null || APITestStore.getNeedReload) {
-      this.loadInitData();
-      this.setState(this.getInitState());
-      APITestStore.clearIsExpand();
-    } else if (!APITestStore.getNeedReload) {
-      this.setState(APITestStore.getInitData);
-    }
-    APITestStore.setNeedReload(true);
+  componentWillUnmount() {
+    APITestStore.setPageLoading(true);
+    APITestStore.setDetailFlag('empty');
+    APITestStore.setIsShowResult(null);
   }
+
+  // componentDidMount() {
+  // this.loadInitData();
+  // const queryObj = {
+  //   operation_id: 'createBoardColumnUsingPOST',
+  //   version: '2018.12.7-120255-master',
+  // };
+  // defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/agile/controllers/board-column-controller/paths?${querystring.stringify(queryObj)}`).then((data) => {
+  //   data.paths.some((item) => {
+  //     if (item.operationId === queryObj.operation_id) {
+  //       const { basePath, url } = item;
+  //       APITestStore.setApiDetail(item);
+  //       window.console.log(item);
+  //       this.setState({
+  //         requestUrl: `${urlPrefix}${basePath}${url}`,
+  //       });
+  //       return true;
+  //     }
+  //   // return false;
+  //   });
+  // });
+  // if (APITestStore.getInitData === null || APITestStore.getNeedReload) {
+  //   this.loadInitData();
+  //   this.setState(this.getInitState());
+  //   APITestStore.clearIsExpand();
+  // } else if (!APITestStore.getNeedReload) {
+  //   this.setState(APITestStore.getInitData);
+  // }
+  // APITestStore.setNeedReload(true);
+  // }
 
   getInitState() {
     return {
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      sort: {
-        columnKey: 'id',
-        order: 'descend',
-      },
-      filters: {},
       params: [],
-      expandedRow: [],
+      urlPrefix: '',
+      requestUrl: null,
+      isSending: false,
+      urlPathValues: {},
+      bData: {},
+      queryArr: {},
+      query: '',
+      taArr: {},
+      loadFile: null,
+      isShowModal: false,
+      pageLoading: true,
     };
   }
 
-  /* 微服务下拉框 */
-  getOptionList() {
-    const { service } = APITestStore;
-    return service && service.length > 0 ? (
-      APITestStore.service.map(({ name, value }) => (
-        <Option key={value}>{name}</Option>
-      ))
-    ) : <Option value="empty">无服务</Option>;
-  }
-
-  /* 微服务版本下拉框 */
-  getVersionList() {
-    const { versions } = APITestStore;
-    return versions && versions.length > 0 ? (
-      APITestStore.versions.map((version, index) => (
-        <Option key={index}><Tooltip title={version} placement="right" align={{ offset: [20, 0] }}>
-          <span style={{ display: 'inline-block', width: '100%' }}>{version}</span>
-        </Tooltip></Option>),
-      )
-    ) : <Option value="empty">无版本</Option>;
-  }
-
-  loadInitData = () => {
-    APITestStore.setLoading(true);
-    APITestStore.loadService().then((res) => {
-      if (res.failed) {
-        Choerodon.prompt(res.message);
-        APITestStore.setLoading(false);
-      } else if (res.length) {
-        const services = res.map(({ location, name }) => ({
-          name: name.split(':')[1],
-          value: `${name.split(':')[0]}/${location.split('=')[1]}`,
-          version: location.split('=')[1],
-        }));
-        APITestStore.setService(services);
-        // 判断是否从详情页面跳转
-        if (!APITestStore.detailFlag) {
-          APITestStore.setApiToken(null);
-          APITestStore.setUserInfo(null);
-          APITestStore.setCurrentService(services[0]);
-          APITestStore.setCurrentVersion(services[0].version);
-        } else {
-          APITestStore.setDetailFlag(false);
-        }
-        this.loadApi();
-      }
-    });
-  };
-
-  loadVersions = () => {
-    const { service, currentService } = APITestStore;
-    APITestStore.setFilters([]);
-    const newVersions = [];
-    if (service && service.length > 0) {
-      APITestStore.service.forEach(({ name, value, version }, index) => {
-        if (currentService.name === name) {
-          newVersions.push(version);
-        }
-      },
-      );
-      APITestStore.setCurrentVersion(newVersions[0]);
-      APITestStore.setVersions(newVersions);
-    }
-  }
-
-  loadApi = (paginationIn, filtersIn, paramsIn) => {
-    this.loadVersions(); // 在加载前根据store里的currentVerison加载版本
-    APITestStore.setLoading(true);
-    const {
-      pagination: paginationState,
-      filters: filtersState,
-      params: paramsState,
-    } = this.state;
-    const pagination = paginationIn || paginationState;
-    const params = paramsIn || paramsState;
-    const filters = filtersIn || filtersState;
-    const serviceName = APITestStore.getCurrentService.value.split('/')[0];
-    const version = APITestStore.getCurrentVersion; // 修改为获取当前版本号的api
-    this.fetch(serviceName, version, pagination, params)
-      .then((data) => {
-        APITestStore.setApiData(data.content);
-        APITestStore.setLoading(false);
-        this.setState({
-          pagination: {
-            current: data.number + 1,
-            pageSize: 10,
-            total: data.totalElements,
-          },
-          params,
-        });
-      })
-      .catch((error) => {
-        Choerodon.prompt(error.message);
-        this.setState(this.getInitState(), () => {
-          APITestStore.setApiData([]);
-          APITestStore.setLoading(false);
-        });
-      });
-  }
-
-  fetch(serviceName, version, { current, pageSize }, params) {
-    APITestStore.setLoading(true);
-    const queryObj = {
-      page: current - 1,
-      size: pageSize + 999,
-      version,
-      params,
-    };
-    return axios.get(`/manager/v1/swaggers/${serviceName}/controllers?${querystring.stringify(queryObj)}`);
-  }
-
-  handlePageChange = (pagination, filters, sorter = {}, params) => {
-    if (params.length > 1) APITestStore.setFilters(params.slice(1));
-    else APITestStore.setFilters(params);
-    const data = APITestStore.getFilteredData;
-    const newPagination = {
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      total: data.length,
-    };
-    if (params.length > 1) {
-      this.setState({
-        pagination: newPagination,
-        params: params.slice(1),
-      });
-    } else {
-      this.setState({
-        pagination: newPagination,
-        params,
-      });
-    }
-  };
 
   handleRefresh = () => {
+    const currentNode = APITestStore.getCurrentNode;
     this.setState(this.getInitState(), () => {
-      APITestStore.setCurrentService(APITestStore.service[0]);
-      APITestStore.setFilters([]);
-      this.loadApi();
-      APITestStore.clearIsExpand();
+      this.loadDetail(currentNode);
     });
   };
 
   /**
-   * 微服务下拉框改变事件
-   * @param serviceName 服务名称
+   * 加载API详情数据
+   * @param node 左侧树结构选中的节点
    */
-  handleChange(serviceName) {
-    const currentService = APITestStore.service.find(service => service.value === serviceName);
-    APITestStore.clearIsExpand();
-    APITestStore.setFilters([]);
-    this.loadVersions();
-    APITestStore.setCurrentService(currentService);
-    this.setState(this.getInitState(), () => {
-      this.loadApi();
+  loadDetail = (node) => {
+    const { form: { resetFields } } = this.props;
+    APITestStore.setIsShowResult(null);
+    APITestStore.setDetailFlag('loading');
+    this.setState({
+      isSending: false,
+    });
+    const { service, version, operationId, refController } = node[0].props;
+    const handleService = service.split('-')[0];
+    const queryObj = {
+      version,
+      operation_id: operationId,
+    };
+    defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/${handleService}/controllers/${refController}/paths?${querystring.stringify(queryObj)}`).then((data) => {
+      data.paths.some((item) => {
+        if (item.operationId === operationId) {
+          const { basePath, url } = item;
+          APITestStore.setApiDetail(item);
+          APITestStore.setDetailFlag('done');
+          resetFields();
+          this.setState({
+            requestUrl: `${urlPrefix}${basePath}${url}`,
+          });
+          return true;
+        }
+        return false;
+      });
     });
   }
 
-  /**
-   * 微服务版本下拉框改变事件
-   * @param serviceVersion
-   */
-  handleVersionChange(serviceVersion) {
-    const currentVersion = APITestStore.versions.find(version => version === serviceVersion);
-    APITestStore.clearIsExpand();
-    APITestStore.setFilters([]);
-    APITestStore.setCurrentVersion(currentVersion);
-    this.setState(this.getInitState(), () => {
-      this.loadApi();
+  handleSelectChange = (name, select) => {
+    const a = { target: { value: select } };
+    this.changeNormalValue(name, 'query', a);
+  };
+
+  changeTextareaValue = (name, type, e) => {
+    if (type !== 'array') {
+      this.setState({
+        bData: e.target.value,
+      });
+    } else {
+      this.changeNormalValue(name, 'array', e);
+    }
+  };
+
+  uploadRef = (node) => {
+    if (node) {
+      this.fileInput = node;
+    }
+  };
+
+  responseNode = (node) => {
+    if (node) {
+      this.responseNode = node;
+    }
+  }
+
+  curlNode = (node) => {
+    if (node) {
+      this.curlNode = node;
+    }
+  }
+
+  relateChoose = () => {
+    this.fileInput.click();
+  }
+
+  copyToLeft(value, name) {
+    const { setFieldsValue } = this.props.form;
+    setFieldsValue({ bodyData: value });
+  }
+
+  handleCopyCURL(culContent) {
+    const { intl: { formatMessage } } = this.props;
+    const curlRootEle = document.getElementById('curlContent');
+    curlRootEle.value = culContent;
+    curlRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
+  handleCopyHeader() {
+    const { intl: { formatMessage } } = this.props;
+    const headerRootEle = document.getElementById('responseHeader');
+    headerRootEle.value = rcResponseHeader;
+    headerRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
+  handleCopyBody() {
+    const { intl: { formatMessage } } = this.props;
+    const headerRootEle = document.getElementById('responseContent');
+    headerRootEle.value = rcResponse;
+    headerRootEle.select();
+    document.execCommand('Copy');
+    Choerodon.prompt(formatMessage({ id: 'copy.success' }));
+  }
+
+  changeNormalValue = (name, valIn, e) => {
+    const { urlPathValues } = this.state;
+    let query = '';
+    let requestUrl = `${urlPrefix}${APITestStore.getApiDetail.basePath}${APITestStore.getApiDetail.url}`;
+    urlPathValues[`{${name}}`] = e.target.value;
+    Object.entries(urlPathValues).forEach((items) => {
+      requestUrl = items[1] ? requestUrl.replace(items[0], items[1]) : requestUrl;
+    });
+    if (valIn === 'query' || valIn === 'array') {
+      const arr = e.target.value.split('\n');
+      this.state.taArr[name] = arr;
+      this.setState({
+        taArr: this.state.taArr,
+      });
+    }
+    Object.entries(this.state.taArr).forEach((a) => {
+      const entrieName = a[0];
+      if (Array.isArray(a[1])) {
+        a[1].forEach((v) => { query = `${query}&${entrieName}=${v}`; });
+      } else {
+        query = `${query}&${entrieName}=${a[1]}`;
+      }
+    });
+    this.setState({
+      query,
+    });
+    query = query.replace('&', '?');
+    this.setState({ requestUrl: `${requestUrl}${query}`, urlPathValues });
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        this.setState({ isSending: true });
+        APITestStore.setIsShowResult(false);
+        this.responseNode.scrollTop = 0;
+        this.curlNode.scrollLeft = 0;
+        this.curlNode.scrollTop = 0;
+        if (this.fileInput) {
+          const formData = new FormData();
+          formData.append('file', this.fileInput.files[0]);
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl, formData)
+            .then(function (res) {
+              this.setState({
+                isSending: false,
+              });
+              APITestStore.setIsShowResult(true);
+            }).catch((error) => {
+              this.setState({
+                isSending: false,
+              });
+              APITestStore.setIsShowResult(true);
+            });
+        } else if ('bodyData' in values) {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl,
+            Hjson.parse(values.bodyData || '')).then(function (res) {
+            this.setState({
+              isSending: false,
+            });
+            APITestStore.setIsShowResult(true);
+          }).catch((error) => {
+            this.setState({
+              isSending: false,
+            });
+            APITestStore.setIsShowResult(true);
+          });
+        } else {
+          instance[APITestStore.getApiDetail.method](this.state.requestUrl).then(function (res) {
+            this.setState({
+              isSending: false,
+            });
+            APITestStore.setIsShowResult(true);
+          }).catch((error) => {
+            this.setState({
+              isSending: false,
+            });
+            APITestStore.setIsShowResult(true);
+          });
+        }
+      }
     });
   }
 
-  goDetail(record) {
-    APITestStore.setApiDetail(record);
-    APITestStore.setDetailFlag(true);
-    APITestStore.setInitData(this.state); // 用来记录当前的分页状况当前页数等
-    APITestStore.setNeedReload(false);
-    const version = APITestStore.getCurrentService.value.split('/')[1];
-    const service = APITestStore.getCurrentService.value.split('/')[0];
-    const { refController, operationId } = record;
-    this.props.history.push(`/iam/api-test/detail/${refController}/${service}/${operationId}/${version}`);
+  getApiDetail() {
+    const { intl } = this.props;
+    const { url, innerInterface, code, method, remark, consumes, produces } = APITestStore.getApiDetail;
+    const desc = APITestStore.getApiDetail.description || '[]';
+    const responseDataExample = APITestStore.getApiDetail
+    && APITestStore.getApiDetail.responses.length ? APITestStore.getApiDetail.responses[0].body || 'false' : '{}';
+    let handledDescWithComment = Hjson.parse(responseDataExample, { keepWsc: true });
+    handledDescWithComment = jsonFormat(handledDescWithComment);
+    const handledDesc = Hjson.parse(desc);
+    const { permission = { roles: [] } } = handledDesc;
+    const roles = permission.roles.length && permission.roles.map(item => ({
+      name: intl.formatMessage({ id: `${intlPrefix}.default.role` }),
+      value: item,
+    }));
+
+    const tableValue = [{
+      name: intl.formatMessage({ id: `${intlPrefix}.code` }),
+      value: code,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.method` }),
+      value: method,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.url` }),
+      value: url,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.remark` }),
+      value: remark,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.action` }),
+      value: permission && permission.action,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.level` }),
+      value: permission && permission.permissionLevel,
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.login.accessible` }),
+      value: permission && permission.permissionLogin ? '是' : '否',
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.public.permission` }),
+      value: permission && permission.permissionPublic ? '是' : '否',
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.request.format` }),
+      value: consumes[0],
+    }, {
+      name: intl.formatMessage({ id: `${intlPrefix}.response.format` }),
+      value: produces[0],
+    }];
+
+    if (roles) {
+      tableValue.splice(5, 0, ...roles);
+    }
+
+    return (
+      <div className="c7n-iam-apitest-content-right-container">
+        <div className="c7n-iam-apitest-content-right-container-title">
+          <span
+            className={classnames('c7n-iam-apitest-content-right-container-title-methodTag', `c7n-iam-apitest-content-right-container-title-methodTag-${method}`)}
+          ><span>{method}</span></span>
+          <span className="c7n-iam-apitest-content-right-container-title-url">{url}</span>
+          <span className={classnames('c7n-iam-apitest-content-right-container-title-rangeTag', {
+            'c7n-iam-apitest-content-right-container-title-rangeTag-inner': innerInterface,
+            'c7n-iam-apitest-content-right-container-title-rangeTag-outer': !innerInterface,
+          })}
+          >{innerInterface ? '内部' : '公开'}</span>
+        </div>
+        <div className="c7n-iam-apitest-content-right-container-info">
+          <div className="c7n-iam-apitest-content-right-container-info-title">
+            <span>接口信息</span>
+            <span>响应数据</span>
+          </div>
+          <div className="c7n-iam-apitest-content-right-container-info-content">
+            <div className="c7n-iam-apitest-content-right-container-info-interfaceinfo">
+              {
+                tableValue.map(({ name, value }, index) =>
+                  <Row key={`${name}-${index}`} className="c7n-iam-apitest-content-right-container-info-interfaceinfo-row">
+                    <Col span={7}>{name}:</Col>
+                    <Col span={17}>{value}</Col>
+                  </Row>,
+                )
+              }
+            </div>
+            <div className="c7n-iam-apitest-content-right-container-info-responsedata">
+              <pre>
+                <code>
+                  {handledDescWithComment}
+                </code>
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  getTest() {
+    let curlContent;
+    const upperMethod = {
+      get: 'GET',
+      post: 'POST',
+      options: 'OPTIONS',
+      put: 'PUT',
+      delete: 'DELETE',
+      patch: 'PATCH',
+    };
+
+    let handledStatusCode;
+    let codeClass;
+    if (statusCode) {
+      handledStatusCode = String(statusCode).split('')[0];
+      switch (handledStatusCode) {
+        case '1':
+          codeClass = 'c7n-iam-apitest-code-1';
+          break;
+        case '2':
+          codeClass = 'c7n-iam-apitest-code-2';
+          break;
+        case '3':
+          codeClass = 'c7n-iam-apitest-code-3';
+          break;
+        case '4':
+          codeClass = 'c7n-iam-apitest-code-4';
+          break;
+        case '5':
+          codeClass = 'c7n-iam-apitest-code-5';
+          break;
+        default:
+          break;
+      }
+    }
+
+    const { intl, form: { getFieldValue, getFieldDecorator, getFieldError } } = this.props;
+    const handleUrl = encodeURI(this.state.requestUrl);
+    const handleMethod = upperMethod[APITestStore.getApiDetail.method];
+    const currentToken = APITestStore.getApiToken || authorization;
+    const token = currentToken ? currentToken.split(' ')[1] : null;
+    const bodyStr = (getFieldValue('bodyData') || '').replace(/\n/g, '\\\n');
+    let body = '';
+    if (bodyStr) {
+      body = `-d '${bodyStr}' `;
+    }
+    if (handleMethod === 'GET') {
+      curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+    } else {
+      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' ${body}'${handleUrl}'`;
+    }
+    const method = APITestStore && APITestStore.apiDetail.method;
+    const requestColumns = [{
+      title: <FormattedMessage id={`${intlPrefix}.param.name`} />,
+      dataIndex: 'name',
+      key: 'name',
+      width: '15%',
+      render: (text, record) => {
+        if (record.required) {
+          return (
+            <div>
+              <span>{text}</span>
+              <span style={{ color: '#d50000' }}>*</span>
+            </div>
+          );
+        } else {
+          return text;
+        }
+      },
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.request.data`} />,
+      dataIndex: 'in',
+      key: 'in',
+      width: '25%',
+      render: (text, record) => {
+        let editableNode;
+        if (!record.type) {
+          editableNode = (
+            <div style={{ width: '100%' }} className="c7n-iam-TextEditToggle-text">
+              <FormItem>
+                {getFieldDecorator('bodyData', {
+                  initialValue: undefined,
+                  rules: [{
+                    required: !record.type,
+                    message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
+                  }],
+                })(
+                  <TextArea className="errorTextarea" rows={6} placeholder={getFieldError('bodyData')} />,
+                )}
+              </FormItem>
+              <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
+            </div>);
+        } else if (record.type === 'boolean') {
+          editableNode = (
+            <FormItem>
+              {getFieldDecorator(`${record.name}`, {
+                rules: [],
+                initialValue: '',
+              })(
+                <div style={{ width: '55px' }}>
+                  <Select
+                    dropdownStyle={{ width: '55px' }}
+                    defaultValue=""
+                    getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                    onChange={this.handleSelectChange.bind(this, record.name)}
+                  >
+                    <Option value="" style={{ height: '22px' }} />
+                    <Option value="true">true</Option>
+                    <Option value="false">false</Option>
+                  </Select>
+                </div>,
+              )}
+            </FormItem>
+          );
+        } else if (record.type === 'array') {
+          editableNode = (
+            <div style={{ width: '100%' }}>
+              <FormItem>
+                {getFieldDecorator(`${record.name}`, {
+                  rules: [{
+                    required: !record.type,
+                    message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
+                  }],
+                  initialValue: undefined,
+                })(
+                  <div className="c7n-iam-TextEditToggle-text">
+                    <TextArea className={classnames({ errorTextarea: getFieldError(`${record.name}`) })} rows={6} placeholder={getFieldError(`${record.name}`) || '请以换行的形式输入多个值'} onChange={this.changeTextareaValue.bind(this, record.name, record.type)} />
+                    <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
+                  </div>)}
+              </FormItem>
+
+            </div>);
+        } else if (record.type === 'file') {
+          editableNode = (
+            <div className="uploadContainer">
+              <input type="file" name="file" ref={this.uploadRef} />
+              <Button onClick={this.relateChoose}>
+                <Icon type="file_upload" /> {intl.formatMessage({ id: `${intlPrefix}.choose.file` })}
+              </Button>
+              <div className="emptyMask" />
+            </div>
+          );
+        } else {
+          editableNode = (
+            <FormItem>
+              {getFieldDecorator(`${record.name}`, {
+                rules: [{
+                  required: record.required,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.required.msg` }, { name: `${record.name}` }),
+                }],
+                initialValue: undefined,
+              })(
+                <div style={{ width: '100%' }} className="c7n-iam-TextEditToggle-text">
+                  <Input onFocus={this.inputOnFocus} autoComplete="off" onChange={this.changeNormalValue.bind(this, record.name, record.in)} placeholder={getFieldError(`${record.name}`)} />
+                  <Icon type="mode_edit" className="c7n-iam-TextEditToggle-text-icon" />
+                </div>,
+              )}
+            </FormItem>
+          );
+        }
+        return editableNode;
+      },
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.request.data.type`} />,
+      dataIndex: 'type',
+      key: 'type',
+      width: '25%',
+      render: (text, record) => {
+        if (text === 'integer' && record.format === 'int64') {
+          return 'long';
+        } else if (text === 'array') {
+          return 'Array[string]';
+        } else if (!text) {
+          if (record.schema && record.schema.type) {
+            return record.schema.type;
+          } else {
+            let normalBody;
+            let value;
+            if (record.body) {
+              value = Hjson.parse(record.body, { keepWsc: true });
+              normalBody = Hjson.stringify(value, { bracesSameLine: true, quotes: 'all', separator: true });
+              value = jsonFormat(value);
+            } else {
+              value = null;
+              normalBody = null;
+            }
+            return (
+              <div>
+                Example Value
+                <Tooltip placement="left" title={intl.formatMessage({ id: `${intlPrefix}.copyleft` })}>
+                  <div className="body-container" onClick={this.copyToLeft.bind(this, normalBody, record.name)}>
+                    <pre>
+                      <code>
+                        {value}
+                      </code>
+                    </pre>
+                  </div>
+                </Tooltip>
+              </div>
+            );
+          }
+        } else {
+          return text;
+        }
+      },
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.param.desc`} />,
+      dataIndex: 'description',
+      key: 'description',
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.param.type`} />,
+      dataIndex: 'in',
+      key: 'inDefault',
+    }];
+
+    return (
+      <div className="c7n-iam-apitest-content-right-container-interface-test">
+        <div className="c7n-interface-test-response-params">
+          <h5><FormattedMessage id={`${intlPrefix}.request.parameter`} /></h5>
+          <Form>
+            <Table
+              pagination={false}
+              filterBar={false}
+              columns={requestColumns}
+              dataSource={APITestStore && APITestStore.apiDetail.parameters}
+              rowKey="name"
+              style={{ width: '100%' }}
+            />
+          </Form>
+        </div>
+        <div className="c7n-url-container">
+          <div style={{ marginBottom: '30px' }}>
+            <span className={classnames('method', `c7n-iam-apitest-content-right-container-title-methodTag-${method}`)}>{method}</span>
+            <input type="text" value={this.state.requestUrl} readOnly />
+            {!this.state.isSending ? (
+              <Button
+                funcType="raised"
+                type="primary"
+                htmlType="submit"
+                onClick={this.handleSubmit}
+              >
+                {intl.formatMessage({ id: `${intlPrefix}.send` })}
+              </Button>
+            ) : (
+              <Button
+                funcType="raised"
+                type="primary"
+                loading
+              >
+                {intl.formatMessage({ id: `${intlPrefix}.sending` })}
+              </Button>
+            )
+            }
+          </div>
+        </div>
+        <div style={{ textAlign: 'center', paddingTop: '100px', display: APITestStore.isShowResult === false ? 'block' : 'none' }}><Spin size="large" /></div>
+        <div className="c7n-response-container" style={{ display: APITestStore.isShowResult === true ? 'block' : 'none' }}>
+          <div className="c7n-response-code">
+            <h5><FormattedMessage id={`${intlPrefix}.response.code`} /></h5>
+            <span className={classnames('c7n-iam-apitest-statusCode', `${codeClass}`)}>{statusCode}</span>
+          </div>
+          <div className="c7n-response-body">
+            <h5><FormattedMessage id={`${intlPrefix}.response.body`} /></h5>
+            <div className="response-body-container" ref={this.responseNode}>
+              <pre>
+                <code>
+                  {response}
+                </code>
+              </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyBody.bind(this)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="responseContent" />
+            </div>
+          </div>
+          <div className="c7n-response-body">
+            <h5><FormattedMessage id={`${intlPrefix}.response.headers`} /></h5>
+            <div className="response-body-container">
+              <pre>
+                <code>
+                  {responseHeader}
+                </code>
+              </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyHeader.bind(this)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="responseHeader" />
+            </div>
+          </div>
+          <div className="c7n-curl">
+            <h5>CURL</h5>
+            <div className="curl-container" ref={this.curlNode}>
+              <pre>
+                <code>
+                  { curlContent }
+                </code>
+              </pre>
+              <Icon
+                type="library_books"
+                onClick={this.handleCopyCURL.bind(this, curlContent)}
+              />
+              <textarea style={{ position: 'absolute', zIndex: -10 }} id="curlContent" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  getRightContent() {
+    const { apiDetail, pageLoading } = APITestStore;
+    const detailFlag = APITestStore.getDetailFlag;
+    const { intl } = this.props;
+    let rightContent;
+    if (detailFlag === 'done') {
+      rightContent = (
+        <React.Fragment>
+          {this.getApiDetail()}
+          {this.getTest()}
+        </React.Fragment>
+      );
+    } else if (detailFlag === 'loading') {
+      rightContent = <Spin spinning={detailFlag === 'loading'} style={{ flex: 1, marginTop: '30%' }} />;
+    } else {
+      rightContent = (
+        <div style={{
+          display: 'flex', alignItems: 'center', height: 250, margin: '88px auto', padding: '50px 75px', border: '1px dashed rgba(0,0,0,0.54)',
+        }}
+        >
+          <img src={emptyApi} alt="" />
+          <div style={{ marginLeft: 40 }}>
+            <div style={{ fontSize: '14px', color: 'rgba(0,0,0,0.65)' }}>{intl.formatMessage({ id: `${intlPrefix}.empty.find.not` })}</div>
+            <div style={{ fontSize: '20px', marginTop: 10 }}>{intl.formatMessage({ id: `${intlPrefix}.empty.try.choose` })}</div>
+          </div>
+        </div>
+      );
+    }
+
+    return rightContent;
+  }
+
+  // 开启授权模态框
+  openAuthorizeModal = () => {
+    if (this.AuthorizeModal) {
+      const { resetFields } = this.AuthorizeModal.props.form;
+      resetFields();
+    }
+    APITestStore.setIsShowModal(true);
+  }
+
+  // 关闭授权模态框
+  handleCancel = () => {
+    APITestStore.setIsShowModal(false);
+  };
+
+  renderModalContent() {
+    const { isShowModal } = this.state;
+    return (
+      <AuthorizeModal
+        isShow={isShowModal}
+        onRef={(node) => {
+          this.AuthorizeModal = node;
+        }}
+      />
+    );
   }
 
   render() {
-    const { intl, AppState } = this.props;
-    const { pagination, params } = this.state;
-    const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
-      dataIndex: 'name',
-      key: 'name',
-      width: '20%',
-      render: (text, data) => {
-        const { name, method } = data;
-        if (name) {
-          // 控制展开的箭头
-          return (
-            <MouseOverWrapper text={name} width={0.18}>
-              <span className={classnames('ant-table-row-expand-icon', `ant-table-row-${(APITestStore.getIsExpand.has(name)) ? 'expanded' : 'collapsed'}`)} />
-              <span>{name}</span>
-            </MouseOverWrapper>
-          );
-        } else {
-          return (
-            <span className={classnames('methodTag', `c7n-apitest-${method}`)}>{method}</span>
-          );
-        }
-      },
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.path`} />,
-      dataIndex: 'url',
-      width: '35%',
-      key: 'url',
-      render: (text, record) => (
-        <MouseOverWrapper text={text} width={0.3}>
-          {text}
-        </MouseOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
-      dataIndex: 'remark',
-      width: '28%',
-      key: 'remark',
-      render: (text, data) => {
-        const { description, remark } = data;
-        if (remark) {
-          return (<MouseOverWrapper text={remark} width={0.26}>
-            {remark}
-          </MouseOverWrapper>);
-        } else {
-          return description;
-        }
-      },
-    }, {
-      width: 160,
-      title: <FormattedMessage id={`${intlPrefix}.available.range`} />,
-      dataIndex: 'innerInterface',
-      key: 'innerInterface',
-      render: text => intl.formatMessage({ id: text === true ? `${intlPrefix}.inner` : `${intlPrefix}.outer` }),
-    }, {
-      title: '',
-      width: 56,
-      key: 'action',
-      align: 'right',
-      render: (text, record) => {
-        if ('method' in record) {
-          return (
-            <Permission service={['manager-service.api.queryPathDetail']}>
-              <Button
-                shape="circle"
-                icon="find_in_page"
-                size="small"
-                onClick={this.goDetail.bind(this, record)}
-              />
-            </Permission>
-          );
-        }
-      },
-    }];
+    const { isShowTree, apiDetail, pageLoading } = APITestStore;
+    const { loginName, realName } = this.props.AppState.getUserInfo;
+
+    const detailFlag = APITestStore.getDetailFlag;
+    const { intl } = this.props;
+
     return (
       <Page
         service={[
@@ -320,6 +808,16 @@ export default class APITest extends Component {
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
+            onClick={this.openAuthorizeModal}
+            icon="person"
+          >
+            {
+              APITestStore.getUserInfo ? (<span>{APITestStore.getUserInfo}</span>) : (
+                <span>{loginName}{realName}</span>
+              )
+            }
+          </Button>
+          <Button
             onClick={this.handleRefresh}
             icon="refresh"
           >
@@ -327,54 +825,52 @@ export default class APITest extends Component {
           </Button>
         </Header>
         <Content
-          code={intlPrefix}
-          values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
+          className="c7n-iam-apitest"
+          style={{ padding: 0, display: 'flex' }}
         >
-          <Select
-            style={{ width: '247px', marginBottom: '32px' }}
-            value={APITestStore.currentService.value}
-            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-            onChange={this.handleChange.bind(this)}
-            label={<FormattedMessage id={`${intlPrefix}.service`} />}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            filter
+          <Spin spinning={pageLoading}>
+            <div className="c7n-iam-apitest-content">
+              {!isShowTree && (
+              <div className="c7n-iam-apitest-bar">
+                <div
+                  role="none"
+                  className="c7n-iam-apitest-bar-button"
+                  onClick={() => { APITestStore.setIsShowTree(true); }}
+                >
+                  <Icon type="navigate_next" />
+                </div>
+                <p
+                  role="none"
+                  onClick={() => { APITestStore.setIsShowTree(true); }}
+                >
+                  {intl.formatMessage({ id: `${intlPrefix}.apis.repository` })}
+                </p>
+              </div>
+              )}
+              <div className={classnames({ 'c7n-iam-apitest-content-tree-container': isShowTree, 'c7n-iam-apitest-content-tree-container-hidden': !isShowTree })}>
+                <ApiTree
+                  ref={(tree) => { this.apiTree = tree; }}
+                  onClose={() => { APITestStore.setIsShowTree(false); }}
+                  getDetail={this.loadDetail}
+                />
+              </div>
+              <div className="c7n-iam-apitest-content-right">
+                {this.getRightContent()}
+              </div>
+            </div>
+          </Spin>
+          <Modal
+            bodyStyle={{ height: '356px' }}
+            visible={APITestStore.getIsShowModal}
+            closable={false}
+            footer={null}
+            width={454}
+            maskClosable={!APITestStore.modalSaving}
+            onCancel={this.handleCancel}
+            onOk={e => this.AuthorizeModal.handleSubmit(e)}
           >
-            {this.getOptionList()}
-          </Select>
-          <Select
-            readOnly
-            style={{ width: '247px', marginBottom: '32px', marginLeft: '18px' }}
-            value={APITestStore.currentVersion}
-            getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-            onChange={this.handleVersionChange.bind(this)}
-            label={<FormattedMessage id={`${intlPrefix}.version`} />}
-          >
-            {this.getVersionList()}
-          </Select>
-          <Table
-            className="c7n-api-table"
-            loading={APITestStore.loading}
-            indentSize={0}
-            columns={columns}
-            dataSource={APITestStore.getFilteredData}
-            pagination={pagination}
-            childrenColumnName="paths"
-            filters={params}
-            noFilter
-            onChange={this.handlePageChange}
-            rowKey={record => ('paths' in record ? record.name : record.operationId)}
-            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
-            onRow={record =>
-              ({ onClick: () => {
-                APITestStore.setIsExpand(record.name);
-                this.setState({
-                  expandedRow: APITestStore.getExpandKeys,
-                });
-              } })
-            }
-            expandRowByClick
-            expandedRowKeys={this.state.expandedRow}
-          />
+            {this.renderModalContent()}
+          </Modal>
         </Content>
       </Page>
     );

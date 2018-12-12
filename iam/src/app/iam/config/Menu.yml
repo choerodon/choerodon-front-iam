@@ -137,6 +137,12 @@
         permission:
         - 'manager-service.service.pageManager'
         - 'manager-service.api.queryPathDetail'
+    - "api-overview":
+        icon: dashoboard
+        Routes: /iam/api-overview
+        sort: 2
+        permission:
+        - 'manager-service.service.pageManager'
 
 # 消息中心
 "msg-center":

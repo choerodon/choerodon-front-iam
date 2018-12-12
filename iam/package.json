@@ -18,10 +18,12 @@
   "license": "ISC",
   "dependencies": {
     "choerodon-front-boot": "0.9.3",
+    "echarts": "^4.2.0-rc.2",
+    "echarts-for-react": "^2.0.15-beta.0",
     "hjson": "^3.1.1",
     "react-codemirror": "^1.0.0",
-    "react-quill": "^1.2.6",
-    "react-image-lightbox": "^4.6.0"
+    "react-image-lightbox": "^4.6.0",
+    "react-quill": "^1.2.6"
   },
   "lint-staged": {
     "src/**/*.{js,jsx}": [

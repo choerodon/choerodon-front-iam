@@ -12,7 +12,6 @@ class ApitestStore {
   @observable versions = ['asdasd', 'asd'];
   @observable apiData = [];
   @observable isShowModal = false;
-  @observable detailFlag = false;
   @observable apitoken = null;
   @observable loading = true;
   @observable modalSaving = false;

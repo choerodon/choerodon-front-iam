@@ -133,16 +133,18 @@
     - "api-test":
         icon: APItest
         Routes: /iam/api-test
-        sort: 1
-        permission:
-        - 'manager-service.service.pageManager'
-        - 'manager-service.api.queryPathDetail'
-    - "api-overview":
-        icon: dashoboard
-        Routes: /iam/api-overview
         sort: 2
         permission:
-        - 'manager-service.service.pageManager'
+        - 'manager-service.api.queryTreeMenu'
+        - 'manager-service.api.queryPathDetail'
+    - "api-overview":
+        icon: dashboard
+        Routes: /iam/api-overview
+        sort: 1
+        permission:
+        - 'manager-service.api.queryInstancesAndApiCount'
+        - 'manager-service.api.queryApiInvoke'
+        - 'manager-service.api.queryServiceInvoke'
 
 # 消息中心
 "msg-center":

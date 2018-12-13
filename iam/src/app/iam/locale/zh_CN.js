@@ -540,6 +540,7 @@ const zh_CN = {
   download: '下载',
   uploading: '导入中',
   loading: '加载中',
+  queue: '队列中',
 
   day: '天',
   hour: '小时',

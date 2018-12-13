@@ -95,20 +95,24 @@ class SagaInstanceStore {
    * @param sagaCode
    * @param refType
    * @param refId
+   * @param taskInstanceCode
+   * @param sagaInstanceCode
+   * @param description
    * @param columnKey
    * @param order
    * @param params
    * @param sagaInstanceType
+   * @param type
    */
   loadData(
     { current, pageSize },
-    { id, status, sagaCode, refType, refId },
+    { id, status, sagaCode, refType, refId, taskInstanceCode, sagaInstanceCode, description },
     { columnKey = 'id', order = 'descend' },
     params,
     sagaInstanceType,
     type) {
     this.sagaInstanceType = sagaInstanceType;
-    const queryObj = {
+    const queryObj = type !== 'task' ? {
       page: current - 1,
       size: pageSize,
       id,
@@ -116,6 +120,15 @@ class SagaInstanceStore {
       sagaCode,
       refType,
       refId,
+      params,
+    } : {
+      page: current - 1,
+      size: pageSize,
+      id,
+      status,
+      taskInstanceCode,
+      sagaInstanceCode,
+      description,
       params,
     };
     if (columnKey) {

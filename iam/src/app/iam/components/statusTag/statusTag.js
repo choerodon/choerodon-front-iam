@@ -22,6 +22,7 @@ const IconType = {
   PREDEFINE: 'settings',
   CUSTOM: 'av_timer',
   UN_START: 'timer',
+  QUEUE: 'watch_later',
 };
 
 export default class StatusTag extends Component {

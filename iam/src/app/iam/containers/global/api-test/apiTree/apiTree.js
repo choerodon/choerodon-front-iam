@@ -154,7 +154,7 @@ export default class ApiTree extends Component {
           </TreeNode>
         );
       }
-      return <TreeNode {...item} dataRef={item} icon={icon} className={classnames({ 'c7n-iam-apitest-api-wrapper': item.method })} />;
+      return <TreeNode {...item} title={title} dataRef={item} icon={icon} className={classnames({ 'c7n-iam-apitest-api-wrapper': item.method })} />;
     });
   }
 

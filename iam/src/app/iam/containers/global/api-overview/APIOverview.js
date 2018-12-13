@@ -136,6 +136,7 @@ export default class APIOverview extends Component {
           <ReactEcharts
             style={{ width: '100%', height: 380 }}
             option={this.getSecChartOption()}
+            notMerge
           />
         </Spin>
       </div>
@@ -172,8 +173,9 @@ export default class APIOverview extends Component {
             />
           </div>
           <ReactEcharts
-            style={{ width: '100%', height: 400 }}
+            style={{ width: '98%', height: 400 }}
             option={this.getThirdChartOption()}
+            notMerge
           />
         </Spin>
       </div>
@@ -220,7 +222,7 @@ export default class APIOverview extends Component {
       },
       tooltip: {
         trigger: 'item',
-        formatter: '{b} <br/>百分比: {d}%',
+        formatter: '{b} <br/>百分比: {d}% <br/>总数: {c}',
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
         borderColor: '#DDDDDD',
@@ -245,7 +247,7 @@ export default class APIOverview extends Component {
           radius: [20, 110],
           center: ['31%', '50%'],
           roseType: 'radius',
-          // minAngle: 30,
+          minAngle: 30,
           label: {
             normal: {
               show: false,
@@ -348,6 +350,7 @@ export default class APIOverview extends Component {
       yAxis: [
         {
           type: 'value',
+          minInterval: 1,
           name: '次数',
           nameLocation: 'end',
           nameTextStyle: {
@@ -381,24 +384,40 @@ export default class APIOverview extends Component {
   // 获取第三个图表的配置参数
   getThirdChartOption() {
     const thirdChartData = APIOverviewStore.getThirdChartData;
-    let handleSeriesThirdData = [];
+    let handledData = [];
     if (thirdChartData) {
-      if (thirdChartData.details.length) {
-        handleSeriesThirdData = thirdChartData.details.map(item => ({
-          type: 'line',
-          name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
-          data: item.data,
-          smooth: 0.2,
-          lineStyle: {
-            shadowOffsetX: 6,
-            shadowOffsetY: 2,
-            opacity: 0.5,
-          },
-        }));
-      } else {
-        handleSeriesThirdData.length = 0;
-      }
+      handledData = thirdChartData.details.map(item => ({
+        type: 'line',
+        // name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
+        name: item.api,
+        data: item.data,
+        smooth: 0.2,
+        lineStyle: {
+          shadowOffsetX: 6,
+          shadowOffsetY: 2,
+          opacity: 0.5,
+        },
+      }));
     }
+
+    // let handleSeriesThirdData = [];
+    // // if (thirdChartData) {
+    //   if (thirdChartData.details.length) {
+    //     handleSeriesThirdData = thirdChartData.details.map(item => ({
+    //       type: 'line',
+    //       name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
+    //       data: item.data,
+    //       smooth: 0.2,
+    //       lineStyle: {
+    //         shadowOffsetX: 6,
+    //         shadowOffsetY: 2,
+    //         opacity: 0.5,
+    //       },
+    //     }));
+    //   } else {
+    //     handleSeriesThirdData.length = 0;
+    //   }
+    // }
     return {
       title: {
         text: '各API调用总数',
@@ -422,13 +441,23 @@ export default class APIOverview extends Component {
         show: false,
         width: '10%',
         top: 60,
-        right: 2,
+        right: '5%',
         orient: 'vertical', // 图例纵向排列
         icon: 'circle',
         // textStyle: {
         //   width: '20',
         // },
         data: thirdChartData ? thirdChartData.apis : [],
+        formatter(name) {
+          if (name.length > 5) {
+            const a = name.substring(0, 19);
+            const b = name.substring(17);
+            return `${a}
+${b}`;
+          } else {
+            return name;
+          }
+        },
         // formatter(value) {
         //   return `${value.split(':')[1]}:${value.split(':')[0]}`;
         // },
@@ -437,7 +466,7 @@ export default class APIOverview extends Component {
         left: '3%',
         top: 110,
         containLabel: true,
-        width: '73%',
+        width: '92%',
         height: '62.5%',
       },
       xAxis: [
@@ -479,6 +508,7 @@ export default class APIOverview extends Component {
       yAxis: [
         {
           type: 'value',
+          minInterval: 1,
           name: '次数',
           nameLocation: 'end',
           nameTextStyle: {
@@ -504,7 +534,7 @@ export default class APIOverview extends Component {
           },
         },
       ],
-      series: handleSeriesThirdData,
+      series: handledData,
       color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
     };
   }

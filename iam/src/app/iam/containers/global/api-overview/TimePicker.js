@@ -66,7 +66,7 @@ function TimePicker(props) {
   const disabledDate = current => current && current > moment().endOf('day');
 
   return (
-    <div className="c7n-report-date-wrap">
+    <div className="c7n-iam-apioverview-date-wrap">
       <div className="c7n-report-time-btn">
         <ButtonGroup>
           <Button
@@ -93,7 +93,7 @@ function TimePicker(props) {
         </ButtonGroup>
       </div>
       <div
-        className={classnames('c7n-report-time-pick', { 'c7n-report-time-pick-selected': type === '' })}
+        className={classnames('c7n-iam-apioverview-time-pick', { 'c7n-iam-apioverview-time-pick-selected': type === '' })}
         style={{ display: showDatePicker ? 'inlineBlock' : 'none' }}
       >
         <RangePicker

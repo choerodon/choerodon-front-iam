@@ -441,11 +441,21 @@ export default class APITest extends Component {
     if (bodyStr) {
       body = `-d '${bodyStr}' `;
     }
+
     if (handleMethod === 'GET') {
-      curlContent = `curl -X ${handleMethod} --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' '${handleUrl}'`;
+      curlContent = `curl -X ${handleMethod} \\
+'${handleUrl}' \\
+--header 'Accept: application/json' \\
+--header 'Authorization: Bearer ${token}'`;
     } else {
-      curlContent = `curl -X ${handleMethod} --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Authorization: Bearer ${token}' ${body}'${handleUrl}'`;
+      curlContent = `curl -X ${handleMethod} \\
+'${handleUrl}' \\
+--header 'Content-Type: application/json' \\
+--header 'Accept: application/json' \\
+--header 'Authorization: Bearer ${token}' \\
+${body}`;
     }
+
     const method = APITestStore && APITestStore.apiDetail.method;
     const requestColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.param.name`} />,

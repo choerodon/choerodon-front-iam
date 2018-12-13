@@ -1,19 +1,22 @@
 import { action, computed, observable, toJS } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import moment from 'moment';
+import querystring from 'query-string';
 
 @store('APIOverviewStore')
 class APIOverviewStore {
   @observable service = [];
   @observable firstChartData = null;
   @observable secChartData = null;
+  @observable thirdChartData = null;
   @observable firstLoading = true;
   @observable secLoading = true;
   @observable thirdLoaidng = true;
   @observable secStartTime = moment().subtract(6, 'days');
   @observable secEndTime = moment();
-  // @observable thirdStartTime = moment().subtract(6, 'days');
-  // @observable thirdEndTime = moment();
+  @observable thirdStartTime = moment().subtract(6, 'days');
+  @observable thirdEndTime = moment();
+  @observable currentService = [];
 
 
   @action setSecStartTime(data) {
@@ -24,13 +27,13 @@ class APIOverviewStore {
     return this.secStartTime;
   }
 
-  // @action setThirdStartTime(data) {
-  //   this.thirdStartTime = data;
-  // }
-  //
-  // @computed get getThirdStartTime() {
-  //   return this.thirdStartTime;
-  // }
+  @action setThirdStartTime(data) {
+    this.thirdStartTime = data;
+  }
+
+  @computed get getThirdStartTime() {
+    return this.thirdStartTime;
+  }
 
   @action setSecEndTime(data) {
     this.secEndTime = data;
@@ -40,13 +43,13 @@ class APIOverviewStore {
     return this.secEndTime;
   }
 
-  // @action setThirdEndTime(data) {
-  //   this.thirdEndTime = data;
-  // }
-  //
-  // @computed get getThirdEndTime() {
-  //   return this.thirdEndTime;
-  // }
+  @action setThirdEndTime(data) {
+    this.thirdEndTime = data;
+  }
+
+  @computed get getThirdEndTime() {
+    return this.thirdEndTime;
+  }
 
   @action setFirstChartData(data) {
     this.firstChartData = data;
@@ -64,6 +67,14 @@ class APIOverviewStore {
     return this.secChartData;
   }
 
+  @action setThirdChartData(data) {
+    this.thirdChartData = data;
+  }
+
+  @computed get getThirdChartData() {
+    return this.thirdChartData;
+  }
+
   @action setFirstLoading(flag) {
     this.firstLoading = flag;
   }
@@ -74,6 +85,22 @@ class APIOverviewStore {
 
   @action setThirdLoading(flag) {
     this.thirdLoaidng = flag;
+  }
+
+  @action setService(service) {
+    this.service = service;
+  }
+
+  @computed get getService() {
+    return this.service;
+  }
+
+  @action setCurrentService(data) {
+    this.currentService = data;
+  }
+
+  @computed get getCurrentService() {
+    return this.currentService;
   }
 
 
@@ -100,6 +127,26 @@ class APIOverviewStore {
     }).catch((error) => {
       Choerodon.handleResponseError(error);
     })
+
+  loadServices = () => axios.get('/manager/v1/swaggers/resources');
+
+  loadThirdChart = (beginDate, endDate, service) => {
+    const queryObj = {
+      begin_date: beginDate,
+      end_date: endDate,
+      service,
+    };
+    return axios.get(`/manager/v1/swaggers/api_invoke/count?${querystring.stringify(queryObj)}`)
+      .then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.setThirdChartData(data);
+        }
+      }).catch((error) => {
+        Choerodon.handleResponseError(error);
+      });
+  }
 }
 
 const apioverviewStore = new APIOverviewStore();

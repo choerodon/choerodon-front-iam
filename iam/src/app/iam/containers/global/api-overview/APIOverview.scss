@@ -50,5 +50,14 @@
       align-items: center;
       height: 400px;
     }
+
+    &-timewrapper {
+      display: flex;
+      align-items: flex-end;
+      position: absolute;
+      top: 30px;
+      right: 178px;
+      z-index: 222;
+    }
   }
 }

@@ -10,10 +10,8 @@ import './APIOverview.scss';
 import APIOverviewStore from '../../../stores/global/api-overview';
 import TimePicker from './TimePicker';
 
+const { Option } = Select;
 const intlPrefix = 'global.apioverview';
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-const data = { apiCounts: ['106', '134', '177', '53', '23', '6', '83', '78', '197', '4', '29', '63', '168'], services: ['gitlab-service', 'issue-service', 'devops-service', 'notify-service', 'wiki-service', 'organization-service', 'test-manager-service', 'asgard-service', 'agile-service', 'file-service', 'manager-service', 'state-machine-service', 'iam-service'] };
-
 
 @withRouter
 @injectIntl
@@ -25,17 +23,37 @@ export default class APIOverview extends Component {
   componentDidMount() {
     this.loadFirstChart();
     this.loadSecChart();
+    APIOverviewStore.loadServices().then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else if (data.length) {
+        /* eslint-disable-next-line */
+        const handledData = data.map(item => item = { name: item.name.split(':')[1] });
+        APIOverviewStore.setService(handledData);
+        APIOverviewStore.setCurrentService(handledData[0]);
+        const startDate = APIOverviewStore.thirdStartTime.format().split('T')[0];
+        const endDate = APIOverviewStore.thirdEndTime.format().split('T')[0];
+        APIOverviewStore.loadThirdChart(startDate, endDate, handledData[0].name);
+      }
+    }).catch((error) => {
+      Choerodon.handleResponseError(error);
+    });
   }
 
   getInitState() {
     return {
       dateType: 'seven',
+      thirdDateType: 'seven',
     };
   }
 
   handleDateChoose = (type) => {
     this.setState({ dateType: type });
   };
+
+  handleThirdDateChoose = (type) => {
+    this.setState({ thirdDateType: type });
+  }
 
   loadFirstChart = () => {
     APIOverviewStore.setFirstLoading(true);
@@ -47,6 +65,13 @@ export default class APIOverview extends Component {
     const endDate = APIOverviewStore.getSecEndTime.format().split('T')[0];
     APIOverviewStore.loadSecChart(startDate, endDate);
   };
+
+  loadThirdChart = () => {
+    const currentService = APIOverviewStore.getCurrentService;
+    const startDate = APIOverviewStore.getThirdStartTime.format().split('T')[0];
+    const endDate = APIOverviewStore.getThirdEndTime.format().split('T')[0];
+    APIOverviewStore.loadThirdChart(startDate, endDate, currentService.name);
+  }
 
 
   getFirstChart = () => (
@@ -90,21 +115,63 @@ export default class APIOverview extends Component {
     );
   }
 
-  getThirdChart = () => (
-    <div className="c7n-iam-api-overview-third-container">
-      {
-          APIOverviewStore.thirdLoaidng ? (
-            <Spin spinning={APIOverviewStore.thirdLoaidng} />
-          ) : (
-            <ReactEcharts
-              style={{ width: '100%', height: 400 }}
-              option={this.getFirstChartOption()}
+  getThirdChart = () => {
+    const { thirdDateType } = this.state;
+    return (
+      <div className="c7n-iam-api-overview-third-container">
+        <Spin spinning={APIOverviewStore.secLoading}>
+          <div className="c7n-iam-api-overview-third-container-timewrapper">
+            <Select
+              style={{ width: '140px', marginRight: '34px', overflow: 'hidden' }}
+              value={APIOverviewStore.currentService.name}
+              getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+              onChange={this.handleChange.bind(this)}
+              label="所属微服务"
+              // filterOption={(input, option) =>
+              //   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              // filter
+            >
+              {this.getOptionList()}
+            </Select>
+            <TimePicker
+              showDatePicker
+              startTime={APIOverviewStore.getThirdStartTime}
+              endTime={APIOverviewStore.getThirdEndTime}
+              func={this.loadThirdChart}
+              type={thirdDateType}
+              onChange={this.handleThirdDateChoose}
+              store={APIOverviewStore}
+              sort={3}
             />
-          )
-        }
-    </div>
-  )
+          </div>
+          <ReactEcharts
+            style={{ width: '100%', height: 400 }}
+            option={this.getThirdChartOption()}
+          />
+        </Spin>
+      </div>
+    );
+  }
 
+  /* 微服务下拉框 */
+  getOptionList() {
+    const service = APIOverviewStore.getService;
+    return service && service.length > 0 ? (
+      service.map(({ name }, index) => (
+        <Option key={index} value={name}>{name}</Option>
+      ))
+    ) : <Option value="empty">无服务</Option>;
+  }
+
+  /**
+   * 微服务下拉框改变事件
+   * @param serviceName 服务名称
+   */
+  handleChange(serviceName) {
+    const currentService = APIOverviewStore.service.find(service => service.name === serviceName);
+    APIOverviewStore.setCurrentService(currentService);
+    this.loadThirdChart();
+  }
 
   // 获取第一个图表的配置参数
   getFirstChartOption() {
@@ -169,7 +236,6 @@ export default class APIOverview extends Component {
     const secChartData = APIOverviewStore.getSecChartData;
     const { intl: { formatMessage } } = this.props;
     let handleSeriesData = [];
-    const color = ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'];
     if (secChartData) {
       handleSeriesData = secChartData.details.map(item => ({
         type: 'line',
@@ -238,10 +304,11 @@ export default class APIOverview extends Component {
             formatter(value) {
               const month = value.split('-')[1];
               const day = value.split('-')[2];
-              return `${month}-${day}`;
+              return `${month}/${day}`;
             },
           },
           splitLine: {
+            show: true,
             lineStyle: {
               color: ['#eee'],
               width: 1,
@@ -249,6 +316,134 @@ export default class APIOverview extends Component {
             },
           },
           data: secChartData ? secChartData.date : [],
+        },
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          name: '次数',
+          nameLocation: 'end',
+          nameTextStyle: {
+            color: '#000',
+          },
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: '#eee',
+            },
+          },
+          axisTick: {
+            show: false,
+          },
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: ['#eee'],
+            },
+          },
+          axisLabel: {
+            color: 'rgba(0,0,0,0.65)',
+          },
+        },
+      ],
+      series: handleSeriesData,
+      color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
+    };
+  }
+
+  // 获取第三个图表的配置参数
+  getThirdChartOption() {
+    const thirdChartData = APIOverviewStore.getThirdChartData;
+    let handleSeriesData = [];
+    if (thirdChartData) {
+      handleSeriesData = thirdChartData.details.map(item => ({
+        type: 'line',
+        name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
+        data: item.data,
+        smooth: 0.2,
+        symbol: 'circle',
+        lineStyle: {
+          shadowOffsetX: 6,
+          shadowOffsetY: 2,
+          opacity: 0.5,
+        },
+      }));
+    }
+    return {
+      title: {
+        text: '各API调用总数',
+        textStyle: {
+          color: 'rgba(0,0,0,0.87)',
+          fontWeight: '400',
+        },
+        top: 20,
+        left: 16,
+      },
+      tooltip: {
+        trigger: 'item',
+        confine: true,
+        backgroundColor: '#fff',
+        textStyle: {
+          color: '#000',
+        },
+      },
+      legend: {
+        type: 'scroll',
+        show: false,
+        width: '10%',
+        top: 60,
+        right: 2,
+        orient: 'vertical', // 图例纵向排列
+        icon: 'circle',
+        // textStyle: {
+        //   width: '20',
+        // },
+        data: thirdChartData ? thirdChartData.apis : [],
+        // formatter(value) {
+        //   return `${value.split(':')[1]}:${value.split(':')[0]}`;
+        // },
+      },
+      grid: {
+        left: '3%',
+        top: 110,
+        containLabel: true,
+        width: '73%',
+        height: '62.5%',
+      },
+      xAxis: [
+        {
+          type: 'category',
+          boundaryGap: false,
+          axisTick: { show: false },
+          axisLine: {
+            lineStyle: {
+              color: '#eee',
+              type: 'solid',
+              width: 2,
+            },
+            onZero: true,
+          },
+          axisLabel: {
+            margin: 7, // X轴文字和坐标线之间的间距
+            textStyle: {
+              color: 'rgba(0, 0, 0, 0.65)',
+              fontSize: 12,
+            },
+            formatter(value) {
+              const month = value.split('-')[1];
+              const day = value.split('-')[2];
+              return `${month}/${day}`;
+            },
+          },
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: ['#eee'],
+              width: 1,
+              type: 'solid',
+            },
+          },
+          data: thirdChartData ? thirdChartData.date : [],
         },
       ],
       yAxis: [
@@ -309,7 +504,7 @@ export default class APIOverview extends Component {
             {this.getFirstChart()}
             {this.getSecChart()}
           </div>
-          {/* {this.getThirdChart()} */}
+          {this.getThirdChart()}
         </Content>
       </Page>
     );

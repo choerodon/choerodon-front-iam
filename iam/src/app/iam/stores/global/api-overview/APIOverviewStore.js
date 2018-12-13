@@ -110,9 +110,10 @@ class APIOverviewStore {
         Choerodon.prompt(data.message);
       } else {
         this.setFirstChartData(data);
-        this.setFirstLoading(false);
       }
+      this.setFirstLoading(false);
     }).catch((error) => {
+      this.setFirstLoading(false);
       Choerodon.handleResponseError(error);
     })
 
@@ -122,9 +123,10 @@ class APIOverviewStore {
         Choerodon.prompt(data.message);
       } else {
         this.setSecChartData(data);
-        this.setSecLoading(false);
       }
+      this.setSecLoading(false);
     }).catch((error) => {
+      this.setSecLoading(false);
       Choerodon.handleResponseError(error);
     })
 
@@ -143,7 +145,9 @@ class APIOverviewStore {
         } else {
           this.setThirdChartData(data);
         }
+        this.setThirdLoading(false);
       }).catch((error) => {
+        this.setThirdLoading(false);
         Choerodon.handleResponseError(error);
       });
   }

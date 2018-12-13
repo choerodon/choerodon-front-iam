@@ -734,7 +734,7 @@ ${body}`;
     } else {
       rightContent = (
         <div style={{
-          display: 'flex', alignItems: 'center', height: 250, margin: '88px auto', padding: '50px 75px', border: '1px dashed rgba(0,0,0,0.54)',
+          display: 'flex', alignItems: 'center', height: 250, margin: '88px auto', padding: '50px 75px',
         }}
         >
           <img src={emptyApi} alt="" />

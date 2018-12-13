@@ -1193,7 +1193,7 @@ const zh_CN = {
   'global.system-setting.reset.confirm.title': '重置配置',
   'global.system-setting.reset.confirm.content': '确定要重置系统自定义配置吗？您的自定义配置将被删除。',
   'global.system-setting.reset': '重置成功',
-  'global.system-setting.edit.title': '对平台的徽标进行修改',
+  'global.system-setting.edit.title': '对平台的{name}进行修改',
   'global.system-setting.edit.dragger.text': '点击或将图片拖到此区域上传图片',
   'global.system-setting.edit.dragger.hint': '图片支持PNG、JPG、JPEG格式，且不能大于1M',
   'global.system-setting.edit.text': '上传徽标',

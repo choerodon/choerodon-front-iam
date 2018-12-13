@@ -373,7 +373,7 @@ export default class AvatarUploader extends Component {
   }
 
   render() {
-    const { visible } = this.props;
+    const { visible, type } = this.props;
     const { img, submitting } = this.state;
     const modalFooter = [
       <Button disabled={submitting} key="cancel" onClick={this.handleCancel}>
@@ -385,7 +385,7 @@ export default class AvatarUploader extends Component {
     ];
     return (
       <Modal
-        title={<FormattedMessage id={`${intlPrefix}.title`} />}
+        title={<FormattedMessage id={`${intlPrefix}.title`} values={{ name: type === 'favicon' ? '徽标' : '导航栏图形标' }} />}
         className="user-info-avatar-modal"
         visible={visible}
         width={980}

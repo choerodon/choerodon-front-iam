@@ -48,7 +48,6 @@ instance.interceptors.response.use((res) => {
     APITestStore.setApiToken(`${res.data.token_type} ${res.data.access_token}`);
     APITestStore.setIsShowResult(null);
     getInfoinstance.get('iam/v1/users/self').then((info) => {
-      debugger;
       APITestStore.setUserInfo(`${info.data.loginName}${info.data.realName}`);
       Choerodon.prompt('授权成功');
     });

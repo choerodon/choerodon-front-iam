@@ -198,6 +198,9 @@ export default class SagaInstance extends Component {
         }, {
           value: 'COMPLETED' || 'NON_CONSUMER',
           text: '完成',
+        }, {
+          value: 'QUEUE',
+          text: '队列中',
         }],
         filteredValue: filters.status || [],
       },
@@ -205,6 +208,8 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id="global.saga.task.code" />,
         key: 'taskInstanceCode',
         dataIndex: 'taskInstanceCode',
+        filters: [],
+        filteredValue: filters.taskInstanceCode || [],
         render: text => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
@@ -215,6 +220,8 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id="global.saga-instance.saga" />,
         key: 'sagaInstanceCode',
         dataIndex: 'sagaInstanceCode',
+        filters: [],
+        filteredValue: filters.sagaInstanceCode || [],
         render: text => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
@@ -225,6 +232,8 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id="description" />,
         key: 'description',
         dataIndex: 'description',
+        filters: [],
+        filteredValue: filters.description || [],
         render: text => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}

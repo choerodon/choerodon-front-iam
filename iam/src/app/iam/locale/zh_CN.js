@@ -983,8 +983,8 @@ const zh_CN = {
   'global.apitest.default.role': '默认角色',
 
   'global.apitest.filter': '过滤',
-  'global.apitest.empty.find.not': '根据当前选定的服务没有查询到API信息',
-  'global.apitest.empty.try.choose': '尝试在您的树状图中选择API',
+  'global.apitest.empty.find.not': '检测到您未选择任何API',
+  'global.apitest.empty.try.choose': '请在左侧树状图中选择您要查看的API',
   'global.apitest.apis.repository': '接口库',
 
   // API概览

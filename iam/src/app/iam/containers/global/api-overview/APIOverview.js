@@ -23,6 +23,7 @@ export default class APIOverview extends Component {
   componentDidMount() {
     this.loadFirstChart();
     this.loadSecChart();
+    APIOverviewStore.setThirdLoading(true);
     APIOverviewStore.loadServices().then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
@@ -47,6 +48,30 @@ export default class APIOverview extends Component {
     };
   }
 
+  handleRefresh = () => {
+    APIOverviewStore.setThirdLoading(true);
+    this.loadFirstChart();
+    this.setState(this.getInitState(), () => {
+      this.loadSecChart();
+      APIOverviewStore.loadServices().then((data) => {
+        if (data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data.length) {
+          /* eslint-disable-next-line */
+          const handledData = data.map(item => item = { name: item.name.split(':')[1] });
+          APIOverviewStore.setService(handledData);
+          APIOverviewStore.setCurrentService(handledData[0]);
+          const startDate = APIOverviewStore.thirdStartTime.format().split('T')[0];
+          const endDate = APIOverviewStore.thirdEndTime.format().split('T')[0];
+          APIOverviewStore.loadThirdChart(startDate, endDate, handledData[0].name);
+        }
+      }).catch((error) => {
+        Choerodon.handleResponseError(error);
+      });
+    });
+  };
+
+
   handleDateChoose = (type) => {
     this.setState({ dateType: type });
   };
@@ -61,12 +86,14 @@ export default class APIOverview extends Component {
   }
 
   loadSecChart = () => {
+    APIOverviewStore.setSecLoading(true);
     const startDate = APIOverviewStore.getSecStartTime.format().split('T')[0];
     const endDate = APIOverviewStore.getSecEndTime.format().split('T')[0];
     APIOverviewStore.loadSecChart(startDate, endDate);
   };
 
   loadThirdChart = () => {
+    APIOverviewStore.setThirdLoading(true);
     const currentService = APIOverviewStore.getCurrentService;
     const startDate = APIOverviewStore.getThirdStartTime.format().split('T')[0];
     const endDate = APIOverviewStore.getThirdEndTime.format().split('T')[0];
@@ -119,7 +146,7 @@ export default class APIOverview extends Component {
     const { thirdDateType } = this.state;
     return (
       <div className="c7n-iam-api-overview-third-container">
-        <Spin spinning={APIOverviewStore.secLoading}>
+        <Spin spinning={APIOverviewStore.thirdLoaidng}>
           <div className="c7n-iam-api-overview-third-container-timewrapper">
             <Select
               style={{ width: '140px', marginRight: '34px', overflow: 'hidden' }}
@@ -354,20 +381,23 @@ export default class APIOverview extends Component {
   // 获取第三个图表的配置参数
   getThirdChartOption() {
     const thirdChartData = APIOverviewStore.getThirdChartData;
-    let handleSeriesData = [];
+    let handleSeriesThirdData = [];
     if (thirdChartData) {
-      handleSeriesData = thirdChartData.details.map(item => ({
-        type: 'line',
-        name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
-        data: item.data,
-        smooth: 0.2,
-        symbol: 'circle',
-        lineStyle: {
-          shadowOffsetX: 6,
-          shadowOffsetY: 2,
-          opacity: 0.5,
-        },
-      }));
+      if (thirdChartData.details.length) {
+        handleSeriesThirdData = thirdChartData.details.map(item => ({
+          type: 'line',
+          name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
+          data: item.data,
+          smooth: 0.2,
+          lineStyle: {
+            shadowOffsetX: 6,
+            shadowOffsetY: 2,
+            opacity: 0.5,
+          },
+        }));
+      } else {
+        handleSeriesThirdData.length = 0;
+      }
     }
     return {
       title: {
@@ -474,7 +504,7 @@ export default class APIOverview extends Component {
           },
         },
       ],
-      series: handleSeriesData,
+      series: handleSeriesThirdData,
       color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
     };
   }

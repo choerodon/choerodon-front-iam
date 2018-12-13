@@ -23,15 +23,22 @@ export default class Announcement extends Component {
     const { visible, title, content, announcementData } = AnnouncementInfoStore;
     return (
       <div className="c7n-iam-dashboard-announcement">
-        <Timeline className="c7n-iam-dashboard-announcement-timeline">
-          {announcementData.map(data => (
-            <Item className="item">
-              <div className="time"><p>{data.sendDate.split(' ')[0]}</p><p>{data.sendDate.split(' ')[1]}</p></div>
-              <div className="title"><a onClick={() => AnnouncementInfoStore.showDetail(data)}>{data.title}</a></div>
-            </Item>
-          ))}
-          <Item>null</Item>
-        </Timeline>
+        {announcementData.length === 0 ? (
+          <React.Fragment>
+            <div className="c7n-iam-dashboard-announcement-empty" />
+            <div className="c7n-iam-dashboard-announcement-empty-text">暂无公告</div>
+          </React.Fragment>
+        ) : (
+          <Timeline className="c7n-iam-dashboard-announcement-timeline">
+            {announcementData.map(data => (
+              <Item className="item">
+                <div className="time"><p>{data.sendDate.split(' ')[0]}</p><p>{data.sendDate.split(' ')[1]}</p></div>
+                <div className="title"><a onClick={() => AnnouncementInfoStore.showDetail(data)}>{data.title}</a></div>
+              </Item>
+            ))}
+            <Item>null</Item>
+          </Timeline>
+        )}
         <Modal
           visible={visible}
           width={800}

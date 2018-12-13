@@ -4,9 +4,23 @@
       max-width: 800px;
     }
   }
+  &-empty {
+    background-size: 30%;
+    background-repeat: no-repeat;
+    height: 121px;
+    background-position: center;
+    background-image: url('./image/empty.svg');
+    &-text {
+      text-align: center;
+      display: block;
+      padding-bottom: 25px;
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
   &-timeline {
     margin-left: 139px;
     margin-top: 20px;
+    padding-bottom: 12px;
     li {
       padding: 0;
     }

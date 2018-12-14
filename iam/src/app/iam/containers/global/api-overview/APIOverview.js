@@ -153,6 +153,7 @@ export default class APIOverview extends Component {
 
   getThirdChart = () => {
     const { thirdDateType } = this.state;
+    const { intl } = this.props;
     return (
       <div className="c7n-iam-api-overview-third-container">
         <Spin spinning={APIOverviewStore.thirdLoaidng}>
@@ -162,10 +163,7 @@ export default class APIOverview extends Component {
               value={APIOverviewStore.currentService.name}
               getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
               onChange={this.handleChange.bind(this)}
-              label="所属微服务"
-              // filterOption={(input, option) =>
-              //   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              // filter
+              label={<FormattedMessage id={`${intlPrefix}.belong`} />}
             >
               {this.getOptionList()}
             </Select>
@@ -192,12 +190,13 @@ export default class APIOverview extends Component {
 
   /* 微服务下拉框 */
   getOptionList() {
+    const { intl } = this.props;
     const service = APIOverviewStore.getService;
     return service && service.length > 0 ? (
       service.map(({ name }, index) => (
         <Option key={index} value={name}>{name}</Option>
       ))
-    ) : <Option value="empty">无服务</Option>;
+    ) : <Option value="empty">{intl.formatMessage({ id: `${intlPrefix}.belong.empty` })}</Option>;
   }
 
   /**
@@ -212,15 +211,15 @@ export default class APIOverview extends Component {
 
   // 获取第一个图表的配置参数
   getFirstChartOption() {
+    const { intl }  = this.props;
     const { firstChartData } = APIOverviewStore;
     let handledFirstChartData;
     if (firstChartData) {
-      /* eslint-disable-next-line */
       handledFirstChartData = firstChartData.services.map((item, index) => item = { name: item, value: firstChartData.apiCounts[index] });
     }
     return {
       title: {
-        text: '各服务API总数',
+        text: intl.formatMessage({ id: `${intlPrefix}.api.total.count` }),
         textStyle: {
           color: 'rgba(0,0,0,0.87)',
           fontWeight: '400',
@@ -293,7 +292,7 @@ export default class APIOverview extends Component {
     }
     return {
       title: {
-        text: '各服务API调用总数',
+        text: formatMessage({ id: `${intlPrefix}.api.used.count` }),
         textStyle: {
           color: 'rgba(0,0,0,0.87)',
           fontWeight: '400',
@@ -432,7 +431,7 @@ export default class APIOverview extends Component {
 
     return {
       title: {
-        text: '各API调用次数',
+        text: formatMessage({ id: `${intlPrefix}.api.single.count` }),
         textStyle: {
           color: 'rgba(0,0,0,0.87)',
           fontWeight: '400',

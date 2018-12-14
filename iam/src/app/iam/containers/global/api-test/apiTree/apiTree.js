@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Input, Icon } from 'choerodon-ui';
+import { Tree, Input, Icon, Tooltip } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios } from 'choerodon-front-boot';
@@ -73,11 +73,9 @@ export default class ApiTree extends Component {
   loadDetail = (selectedKeys, {
     selected, selectedNodes, node, event,
   } = {}) => {
-    const { eventKey } = this.state;
+    const eventKey = APITestStore.getEventKey;
     if (eventKey !== node.props.eventKey) {
-      this.setState({
-        eventKey: node.props.eventKey,
-      });
+      APITestStore.setEventKey(node.props.eventKey);
       if (selectedNodes[0].props.method) {
         APITestStore.setCurrentNode(selectedNodes);
         this.props.getDetail(selectedNodes);
@@ -149,7 +147,7 @@ export default class ApiTree extends Component {
           />
         );
         return (
-          <TreeNode title={title} key={item.key} dataRef={item} icon={icon2}>
+          <TreeNode title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div className="ant-tree-title-ellipsis">{title}</div></Tooltip>} key={item.key} dataRef={item} icon={icon2}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );

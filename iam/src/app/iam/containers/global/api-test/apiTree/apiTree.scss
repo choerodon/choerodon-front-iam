@@ -6,6 +6,13 @@
     padding-left: 16px;
     flex-direction: column;
     border-right: 1px solid rgba(0, 0, 0, 0.36);
+
+    .ant-tree-title-ellipsis {
+      max-width: 200px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
 
   &-top {

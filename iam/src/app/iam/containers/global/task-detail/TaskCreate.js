@@ -788,7 +788,7 @@ export default class TaskCreate extends Component {
                   validateFirst: true,
                   initialValue: this.getParamsInitvalue(text, record),
                 })(
-                  <Input
+                  <InputNumber
                     style={{ width: '200px' }}
                     onFocus={this.inputOnFocus}
                     autoComplete="off"
@@ -1399,11 +1399,11 @@ export default class TaskCreate extends Component {
     e.preventDefault();
     const { form, intl, AppState } = this.props;
     const { type, id } = this.taskdetail;
+    this.setState({
+      submitLoading: true,
+    });
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({
-          submitLoading: true,
-        });
         if (step === 1) {
           this.setState({
             firstStepValues: {

@@ -8,7 +8,7 @@
     border-right: 1px solid rgba(0, 0, 0, 0.36);
 
     .ant-tree-title-ellipsis {
-      max-width: 200px;
+      max-width: 186px;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
@@ -128,7 +128,69 @@
         background: #ff7043;
       }
     }
+    .c7n-iam-apitest-api-wrapper-1 {
+      cursor: pointer;
+      //margin-bottom: 10px;
+      white-space: normal;
 
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        //word-break: break-word;
+        //line-height: 16px;
+      }
+    }
+
+    .c7n-iam-apitest-api-wrapper-2 {
+      cursor: pointer;
+      margin-bottom: 10px;
+      white-space: normal;
+
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        word-break: break-word;
+        line-height: 16px;
+      }
+    }
+
+    .c7n-iam-apitest-api-wrapper-3 {
+      cursor: pointer;
+      margin-bottom: 24px;
+      white-space: normal;
+
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        word-break: break-word;
+        line-height: 16px;
+      }
+    }
+
+    .c7n-iam-apitest-api-wrapper-4 {
+      cursor: pointer;
+      margin-bottom: 28px;
+      white-space: normal;
+
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        word-break: break-word;
+        line-height: 16px;
+      }
+    }
     .c7n-iam-apitest-api-wrapper {
       cursor: pointer;
       margin-bottom: 10px;

@@ -48,6 +48,8 @@ export default class APIOverview extends Component {
     APIOverviewStore.setThirdEndTime(moment());
     APIOverviewStore.setThirdStartDate(null);
     APIOverviewStore.setThirdEndDate(null);
+    APIOverviewStore.setCurrentService([]);
+    APIOverviewStore.setService([]);
   }
 
   getInitState() {
@@ -66,7 +68,7 @@ export default class APIOverview extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else if (data.length) {
-          const handledData = data.map(item => item = { name: item.name.split(':')[1] });
+          const handledData = new Set(data.map(item => item = { name: item.name.split(':')[1] }));
           APIOverviewStore.setService(handledData);
           APIOverviewStore.setCurrentService(handledData[0]);
           const startDate = APIOverviewStore.thirdStartTime.format().split('T')[0];
@@ -499,7 +501,7 @@ ${strThirdPart}`;
         left: '3%',
         top: 110,
         containLabel: true,
-        width: '65%',
+        width: '66%',
         height: '62.5%',
       },
       xAxis: [

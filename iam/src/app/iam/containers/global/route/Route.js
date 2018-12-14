@@ -212,6 +212,7 @@ export default class Route extends Component {
   handleRefresh = () => {
     this.setState(this.getInitState(), () => {
       this.loadRouteList();
+      this.getService();
     });
   };
 

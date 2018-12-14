@@ -33,6 +33,15 @@ class ApitestStore {
   @observable totalData = [];
   @observable detailFlag = 'empty';
   @observable currentNode = null;
+  @observable eventKey = null;
+
+  @action setEventKey(key) {
+    this.eventKey = key;
+  }
+
+  @computed get getEventKey() {
+    return this.eventKey;
+  }
 
   @action setCurrentNode(node) {
     this.currentNode = node;

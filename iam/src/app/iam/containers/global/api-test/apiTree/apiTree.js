@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Input, Icon } from 'choerodon-ui';
+import { Tree, Input, Icon, Tooltip } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios } from 'choerodon-front-boot';
@@ -73,11 +73,9 @@ export default class ApiTree extends Component {
   loadDetail = (selectedKeys, {
     selected, selectedNodes, node, event,
   } = {}) => {
-    const { eventKey } = this.state;
+    const eventKey = APITestStore.getEventKey;
     if (eventKey !== node.props.eventKey) {
-      this.setState({
-        eventKey: node.props.eventKey,
-      });
+      APITestStore.setEventKey(node.props.eventKey);
       if (selectedNodes[0].props.method) {
         APITestStore.setCurrentNode(selectedNodes);
         this.props.getDetail(selectedNodes);
@@ -126,10 +124,26 @@ export default class ApiTree extends Component {
       type="folder_open"
     />;
 
+    let handledApi;
     return data.map((item) => {
       const index = item.title.indexOf(searchValue);
       const beforeStr = item.title.substr(0, index);
       const afterStr = item.title.substr(index + searchValue.length);
+      const titleLength = item.title.length;
+      const splitNum = 24;
+      let apiWrapper;
+      if (titleLength < splitNum) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-1';
+      } else if (titleLength >= splitNum && titleLength < splitNum * 2) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-2';
+      } else if (titleLength >= splitNum * 2 && titleLength < splitNum * 3) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-3';
+      } else if (titleLength >= splitNum * 3 && titleLength < splitNum * 4) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-4';
+      } else {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-5';
+      }
+
       const title = index > -1 ? (
         <span>
           {beforeStr}
@@ -149,12 +163,12 @@ export default class ApiTree extends Component {
           />
         );
         return (
-          <TreeNode title={title} key={item.key} dataRef={item} icon={icon2}>
+          <TreeNode title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div className="ant-tree-title-ellipsis">{title}</div></Tooltip>} key={item.key} dataRef={item} icon={icon2}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode {...item} title={title} dataRef={item} icon={icon} className={classnames({ 'c7n-iam-apitest-api-wrapper': item.method })} />;
+      return <TreeNode {...item} title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div>{title}</div></Tooltip>} dataRef={item} icon={icon} className={classnames({ [apiWrapper]: item.method })} />;
     });
   }
 

@@ -6,6 +6,13 @@
     padding-left: 16px;
     flex-direction: column;
     border-right: 1px solid rgba(0, 0, 0, 0.36);
+
+    .ant-tree-title-ellipsis {
+      max-width: 186px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
 
   &-top {
@@ -121,15 +128,26 @@
         background: #ff7043;
       }
     }
+    .c7n-iam-apitest-api-wrapper-1 {
+      cursor: pointer;
+      //margin-bottom: 10px;
+      white-space: normal;
 
-    .c7n-iam-apitest-api-wrapper {
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        //word-break: break-word;
+        //line-height: 16px;
+      }
+    }
+
+    .c7n-iam-apitest-api-wrapper-2 {
       cursor: pointer;
       margin-bottom: 10px;
       white-space: normal;
-
-      //.ant-tree-node-content-wrapper {
-      //  align-items: flex-start !important;
-      //}
 
       .ant-tree-iconEle {
         cursor: pointer !important;
@@ -141,5 +159,64 @@
         line-height: 16px;
       }
     }
+
+    .c7n-iam-apitest-api-wrapper-3 {
+      cursor: pointer;
+      margin-bottom: 4px;
+      white-space: normal;
+
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        word-break: break-word;
+        line-height: 16px;
+      }
+
+      .ant-tree-node-content-wrapper {
+        padding: 23px 0 !important;
+      }
+    }
+
+    .c7n-iam-apitest-api-wrapper-4 {
+      cursor: pointer;
+      margin-bottom: 4px;
+      white-space: normal;
+
+      .ant-tree-iconEle {
+        cursor: pointer !important;
+      }
+
+      .ant-tree-title {
+        cursor: pointer !important;
+        word-break: break-word;
+        line-height: 16px;
+      }
+
+      .ant-tree-node-content-wrapper {
+        padding: 32px 0 !important;
+      }
+    }
+    //.c7n-iam-apitest-api-wrapper {
+    //  cursor: pointer;
+    //  margin-bottom: 10px;
+    //  white-space: normal;
+    //
+    //  //.ant-tree-node-content-wrapper {
+    //  //  align-items: flex-start !important;
+    //  //}
+    //
+    //  .ant-tree-iconEle {
+    //    cursor: pointer !important;
+    //  }
+    //
+    //  .ant-tree-title {
+    //    cursor: pointer !important;
+    //    word-break: break-word;
+    //    line-height: 16px;
+    //  }
+    //}
   }
 }

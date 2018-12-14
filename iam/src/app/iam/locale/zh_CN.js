@@ -1,4 +1,4 @@
-const docServer = 'http://v0-11.choerodon.io/zh/docs';
+const docServer = 'http://v0-12.choerodon.io/zh/docs';
 
 const pageDetail = {
   // menusetting
@@ -997,6 +997,8 @@ const zh_CN = {
   'global.apioverview.thirty': '近30天',
   'global.apioverview.date': '日期',
   'global.apioverview.used.totalcount': '调用总次数',
+  'global.apioverview.belong': '所属微服务',
+  'global.apioverview.belong.empty': '无服务',
 
   // 发送设置
   'sendsetting.header.title': '发送设置',
@@ -1193,7 +1195,7 @@ const zh_CN = {
   'global.system-setting.reset.confirm.title': '重置配置',
   'global.system-setting.reset.confirm.content': '确定要重置系统自定义配置吗？您的自定义配置将被删除。',
   'global.system-setting.reset': '重置成功',
-  'global.system-setting.edit.title': '对平台的徽标进行修改',
+  'global.system-setting.edit.title': '对平台的{name}进行修改',
   'global.system-setting.edit.dragger.text': '点击或将图片拖到此区域上传图片',
   'global.system-setting.edit.dragger.hint': '图片支持PNG、JPG、JPEG格式，且不能大于1M',
   'global.system-setting.edit.text': '上传徽标',

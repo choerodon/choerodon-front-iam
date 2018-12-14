@@ -105,9 +105,13 @@ function TimePicker(props) {
               Choerodon.prompt('暂支持最多查看30天，已自动截取开始日期后30天。');
               store.setThirdStartTime(moment(dateString[0]));
               store.setThirdEndTime(moment(dateString[0]).add(29, 'days'));
+              store.setThirdStartDate(moment(dateString[0]));
+              store.setThirdEndDate(moment(dateString[0]).add(29, 'days'));
             } else {
               store.setThirdStartTime(moment(dateString[0]));
               store.setThirdEndTime(moment(dateString[1]));
+              store.setThirdStartDate(moment(dateString[0]));
+              store.setThirdEndDate(moment(dateString[1]));
             }
             onChange && onChange('');
             func();

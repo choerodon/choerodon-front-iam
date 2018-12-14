@@ -68,8 +68,21 @@ export default class ReceiveSetting extends Component {
   };
 
   isCheckDisabled = (record, type) => {
-    if ('settings' in record) return false;
-    return ReceiveSettingStore.getAllowConfigData.get(parseInt(record.id.split('-')[2], 10)).disabled[type];
+    const level = record.id.split('-')[0];
+    if ('settings' in record) {
+      let allDisable = true;
+      ReceiveSettingStore.getAllowConfigData.forEach((value, key) => {
+        if (value.type === level) {
+          const allowConfigData = ReceiveSettingStore.getAllowConfigData.get(key);
+          if (allowConfigData && allowConfigData.disabled && !allowConfigData.disabled[type]) {
+            allDisable = false;
+          }
+        }
+      });
+      return allDisable;
+    }
+    const allowConfigData = ReceiveSettingStore.getAllowConfigData.get(parseInt(record.id.split('-')[2], 10));
+    return allowConfigData && allowConfigData.disabled && allowConfigData.disabled[type];
   };
 
   getCheckbox = (record, type) => {
@@ -90,7 +103,22 @@ export default class ReceiveSetting extends Component {
         />
       );
     }
-  }
+  };
+
+  getTitleCheckbox = (type) => {
+    const { intl } = this.props;
+    return (
+      <Checkbox
+        key={type}
+        indeterminate={!ReceiveSettingStore.isAllSelected(type) && !ReceiveSettingStore.isAllUnSelected(type)}
+        checked={ReceiveSettingStore.isAllSelected(type) && !ReceiveSettingStore.getDataSource.every(record => this.isCheckDisabled(record, type))}
+        onChange={() => this.handleCheckAllChange(type)}
+        disabled={ReceiveSettingStore.getDataSource.every(record => this.isCheckDisabled(record, type))}
+      >
+        {intl.formatMessage({ id: type })}
+      </Checkbox>
+    );
+  };
 
   render() {
     const { intl } = this.props;
@@ -104,29 +132,11 @@ export default class ReceiveSetting extends Component {
       width: '20%',
       render: (text, record) => intl.formatMessage({ id: record.id.split('-')[0] }),
     }, {
-      title: (
-        <Checkbox
-          key="pm"
-          indeterminate={!ReceiveSettingStore.isAllSelected('pm') && !ReceiveSettingStore.isAllUnSelected('pm')}
-          checked={ReceiveSettingStore.isAllSelected('pm')}
-          onChange={() => this.handleCheckAllChange('pm')}
-        >
-          {intl.formatMessage({ id: 'pm' })}
-        </Checkbox>
-      ),
+      title: this.getTitleCheckbox('pm'),
       width: '15%',
       render: (text, record) => this.getCheckbox(record, 'pm'),
     }, {
-      title: (
-        <Checkbox
-          key="email"
-          indeterminate={!ReceiveSettingStore.isAllSelected('email') && !ReceiveSettingStore.isAllUnSelected('email')}
-          checked={ReceiveSettingStore.isAllSelected('email')}
-          onChange={() => this.handleCheckAllChange('email')}
-        >
-          {intl.formatMessage({ id: 'email' })}
-        </Checkbox>
-      ),
+      title: this.getTitleCheckbox('email'),
       width: '15%',
       render: (text, record) => this.getCheckbox(record, 'email'),
     }];

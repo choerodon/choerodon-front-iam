@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -28,7 +29,6 @@ export default class APIOverview extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else if (data.length) {
-        /* eslint-disable-next-line */
         const handledData = data.map(item => item = { name: item.name.split(':')[1] });
         APIOverviewStore.setService(handledData);
         APIOverviewStore.setCurrentService(handledData[0]);
@@ -39,6 +39,17 @@ export default class APIOverview extends Component {
     }).catch((error) => {
       Choerodon.handleResponseError(error);
     });
+  }
+
+  componentWillUnmount() {
+    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setSecEndTime(moment());
+    APIOverviewStore.setThirdEndTime(moment());
+    APIOverviewStore.setThirdStartDate(null);
+    APIOverviewStore.setThirdEndDate(null);
+    APIOverviewStore.setCurrentService([]);
+    APIOverviewStore.setService([]);
   }
 
   getInitState() {
@@ -57,8 +68,7 @@ export default class APIOverview extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else if (data.length) {
-          /* eslint-disable-next-line */
-          const handledData = data.map(item => item = { name: item.name.split(':')[1] });
+          const handledData = new Set(data.map(item => item = { name: item.name.split(':')[1] }));
           APIOverviewStore.setService(handledData);
           APIOverviewStore.setCurrentService(handledData[0]);
           const startDate = APIOverviewStore.thirdStartTime.format().split('T')[0];
@@ -145,26 +155,24 @@ export default class APIOverview extends Component {
 
   getThirdChart = () => {
     const { thirdDateType } = this.state;
+    const { intl } = this.props;
     return (
       <div className="c7n-iam-api-overview-third-container">
         <Spin spinning={APIOverviewStore.thirdLoaidng}>
           <div className="c7n-iam-api-overview-third-container-timewrapper">
             <Select
-              style={{ width: '140px', marginRight: '34px', overflow: 'hidden' }}
+              style={{ width: '175px', marginRight: '34px' }}
               value={APIOverviewStore.currentService.name}
               getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
               onChange={this.handleChange.bind(this)}
-              label="所属微服务"
-              // filterOption={(input, option) =>
-              //   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              // filter
+              label={<FormattedMessage id={`${intlPrefix}.belong`} />}
             >
               {this.getOptionList()}
             </Select>
             <TimePicker
               showDatePicker
-              startTime={APIOverviewStore.getThirdStartTime}
-              endTime={APIOverviewStore.getThirdEndTime}
+              startTime={APIOverviewStore.getThirdStartDate}
+              endTime={APIOverviewStore.getThirdEndDate}
               func={this.loadThirdChart}
               type={thirdDateType}
               onChange={this.handleThirdDateChoose}
@@ -184,12 +192,13 @@ export default class APIOverview extends Component {
 
   /* 微服务下拉框 */
   getOptionList() {
+    const { intl } = this.props;
     const service = APIOverviewStore.getService;
     return service && service.length > 0 ? (
       service.map(({ name }, index) => (
         <Option key={index} value={name}>{name}</Option>
       ))
-    ) : <Option value="empty">无服务</Option>;
+    ) : <Option value="empty">{intl.formatMessage({ id: `${intlPrefix}.belong.empty` })}</Option>;
   }
 
   /**
@@ -204,15 +213,15 @@ export default class APIOverview extends Component {
 
   // 获取第一个图表的配置参数
   getFirstChartOption() {
+    const { intl }  = this.props;
     const { firstChartData } = APIOverviewStore;
     let handledFirstChartData;
     if (firstChartData) {
-      /* eslint-disable-next-line */
       handledFirstChartData = firstChartData.services.map((item, index) => item = { name: item, value: firstChartData.apiCounts[index] });
     }
     return {
       title: {
-        text: '各服务API总数',
+        text: intl.formatMessage({ id: `${intlPrefix}.api.total.count` }),
         textStyle: {
           color: 'rgba(0,0,0,0.87)',
           fontWeight: '400',
@@ -222,6 +231,7 @@ export default class APIOverview extends Component {
       },
       tooltip: {
         trigger: 'item',
+        confine: true,
         formatter: '{b} <br/>百分比: {d}% <br/>总数: {c}',
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
@@ -234,6 +244,7 @@ export default class APIOverview extends Component {
       },
       legend: {
         right: 15,
+        itemHeight: 11,
         y: 'center',
         type: 'plain',
         data: firstChartData ? firstChartData.services : [],
@@ -250,6 +261,9 @@ export default class APIOverview extends Component {
           minAngle: 30,
           label: {
             normal: {
+              show: false,
+            },
+            emphasis: {
               show: false,
             },
           },
@@ -280,7 +294,7 @@ export default class APIOverview extends Component {
     }
     return {
       title: {
-        text: '各服务API调用总数',
+        text: formatMessage({ id: `${intlPrefix}.api.used.count` }),
         textStyle: {
           color: 'rgba(0,0,0,0.87)',
           fontWeight: '400',
@@ -288,17 +302,23 @@ export default class APIOverview extends Component {
         top: 20,
         left: 16,
       },
+
       tooltip: {
         trigger: 'axis',
         confine: true,
+        borderWidth: 1,
         backgroundColor: '#fff',
+        borderColor: '#DDDDDD',
+        extraCssText: 'box-shadow: 0 2px 4px 0 rgba(0,0,0,0.20)',
         textStyle: {
-          color: '#000',
+          fontSize: 13,
+          color: '#000000',
         },
       },
       legend: {
         top: 60,
         right: 16,
+        itemHeight: 11,
         type: 'plain',
         orient: 'vertical', // 图例纵向排列
         icon: 'circle',
@@ -383,44 +403,37 @@ export default class APIOverview extends Component {
 
   // 获取第三个图表的配置参数
   getThirdChartOption() {
+    const { intl: { formatMessage } } = this.props;
     const thirdChartData = APIOverviewStore.getThirdChartData;
+    const copyThirdChartData = JSON.parse(JSON.stringify(thirdChartData));
     let handledData = [];
+    let handledApis = {};
     if (thirdChartData) {
       handledData = thirdChartData.details.map(item => ({
         type: 'line',
-        // name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
-        name: item.api,
+        name: `${item.api.split(':')[1]}: ${item.api.split(':')[0]}`,
         data: item.data,
         smooth: 0.2,
-        lineStyle: {
-          shadowOffsetX: 6,
-          shadowOffsetY: 2,
-          opacity: 0.5,
-        },
       }));
+      if (copyThirdChartData.apis.length) {
+        let selectedApis = [];
+        copyThirdChartData.apis.map((item) => { handledApis[item] = false; });
+        if (copyThirdChartData.apis.length > 10) {
+          selectedApis = copyThirdChartData.apis.splice(0, 10);
+        } else {
+          selectedApis = copyThirdChartData.apis;
+        }
+        for (let item of selectedApis) {
+          handledApis[item] = true;
+        }
+      } else {
+        handledApis = {};
+      }
     }
 
-    // let handleSeriesThirdData = [];
-    // // if (thirdChartData) {
-    //   if (thirdChartData.details.length) {
-    //     handleSeriesThirdData = thirdChartData.details.map(item => ({
-    //       type: 'line',
-    //       name: `${item.api.split(':')[1]}:  ${item.api.split(':')[0]}`,
-    //       data: item.data,
-    //       smooth: 0.2,
-    //       lineStyle: {
-    //         shadowOffsetX: 6,
-    //         shadowOffsetY: 2,
-    //         opacity: 0.5,
-    //       },
-    //     }));
-    //   } else {
-    //     handleSeriesThirdData.length = 0;
-    //   }
-    // }
     return {
       title: {
-        text: '各API调用总数',
+        text: formatMessage({ id: `${intlPrefix}.api.single.count` }),
         textStyle: {
           color: 'rgba(0,0,0,0.87)',
           fontWeight: '400',
@@ -431,42 +444,64 @@ export default class APIOverview extends Component {
       tooltip: {
         trigger: 'item',
         confine: true,
+        borderWidth: 1,
         backgroundColor: '#fff',
+        borderColor: '#DDDDDD',
+        extraCssText: 'box-shadow: 0 2px 4px 0 rgba(0,0,0,0.20)',
         textStyle: {
-          color: '#000',
+          fontSize: 13,
+          color: '#000000',
+        },
+
+        formatter(params) {
+          return `<div>
+              <div>${params.name}</div>
+              <div><span class="c7n-iam-apioverview-charts-tooltip" style="background-color:${params.color};"></span>${params.seriesName}</div>
+              <div>次数: ${params.value}</div>
+            <div>`;
         },
       },
       legend: {
+        show: true,
         type: 'scroll',
-        show: false,
-        width: '10%',
-        top: 60,
-        right: '5%',
         orient: 'vertical', // 图例纵向排列
+        itemHeight: 11,
+        top: 80,
+        right: 8,
         icon: 'circle',
-        // textStyle: {
-        //   width: '20',
-        // },
+        height: '70%',
         data: thirdChartData ? thirdChartData.apis : [],
+        selected: handledApis,
         formatter(name) {
-          if (name.length > 5) {
-            const a = name.substring(0, 19);
-            const b = name.substring(17);
-            return `${a}
-${b}`;
+          let strFirstPart;
+          let strSecPart;
+          let strThirdPart;
+          let result;
+          const length = name.length / 48;
+          const perLength = 48;
+          if (length > 1 && length <= 2) {
+            strFirstPart = name.substring(0, perLength);
+            strSecPart = name.substring(perLength);
+            result = `${strFirstPart}
+${strSecPart}`;
+          } else if (length > 2) {
+            strFirstPart = name.substring(0, perLength);
+            strSecPart = name.substring(perLength, perLength * 2);
+            strThirdPart = name.substring(perLength * 2);
+            result = `${strFirstPart}
+${strSecPart}
+${strThirdPart}`;
           } else {
-            return name;
+            result = name;
           }
+          return result;
         },
-        // formatter(value) {
-        //   return `${value.split(':')[1]}:${value.split(':')[0]}`;
-        // },
       },
       grid: {
         left: '3%',
         top: 110,
         containLabel: true,
-        width: '92%',
+        width: '66%',
         height: '62.5%',
       },
       xAxis: [

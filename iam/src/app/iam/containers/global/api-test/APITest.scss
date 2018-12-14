@@ -246,13 +246,14 @@
           }
 
           &-rangeTag {
+            display: inline-block;
             width: 50px;
             height: 25px;
             text-align: center;
             line-height: 25px;
             border-radius: 2px;
             font-size: 15px;
-            margin-left: 30px;
+            margin: -1px 0 0 30px;
 
             &-inner {
               background: rgba(244, 67, 54, 0.20);

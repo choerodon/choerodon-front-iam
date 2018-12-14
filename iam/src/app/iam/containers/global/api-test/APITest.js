@@ -133,19 +133,24 @@ export default class APITest extends Component {
       operation_id: operationId,
     };
     defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/${handleService}/controllers/${refController}/paths?${querystring.stringify(queryObj)}`).then((data) => {
-      data.paths.some((item) => {
-        if (item.operationId === operationId) {
-          const { basePath, url } = item;
-          APITestStore.setApiDetail(item);
-          APITestStore.setDetailFlag('done');
-          resetFields();
-          this.setState({
-            requestUrl: `${urlPrefix}${basePath}${url}`,
-          });
-          return true;
-        }
-        return false;
-      });
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+        APITestStore.setDetailFlag('empty');
+      } else {
+        data.paths.some((item) => {
+          if (item.operationId === operationId) {
+            const { basePath, url } = item;
+            APITestStore.setApiDetail(item);
+            APITestStore.setDetailFlag('done');
+            resetFields();
+            this.setState({
+              requestUrl: `${urlPrefix}${basePath}${url}`,
+            });
+            return true;
+          }
+          return false;
+        });
+      }
     });
   }
 

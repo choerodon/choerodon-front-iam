@@ -17,7 +17,24 @@ class APIOverviewStore {
   @observable thirdStartTime = moment().subtract(6, 'days');
   @observable thirdEndTime = moment();
   @observable currentService = [];
+  @observable thirdStartDate = null;
+  @observable thirdEndDate = null;
 
+  @action setThirdStartDate(data) {
+    this.thirdStartDate = data;
+  }
+
+  @computed get getThirdStartDate() {
+    return this.thirdStartDate;
+  }
+
+  @action setThirdEndDate(data) {
+    this.thirdEndDate = data;
+  }
+
+  @computed get getThirdEndDate() {
+    return this.thirdEndDate;
+  }
 
   @action setSecStartTime(data) {
     this.secStartTime = data;
@@ -143,6 +160,11 @@ class APIOverviewStore {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
+          if (data.apis.length) {
+            const arr = data.apis.map(item => `${item.split(':')[1]}: ${item.split(':')[0]}`);
+            data.apis = arr;
+          }
+
           this.setThirdChartData(data);
         }
         this.setThirdLoading(false);

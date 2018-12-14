@@ -232,8 +232,8 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id="description" />,
         key: 'description',
         dataIndex: 'description',
-        filters: [],
-        filteredValue: filters.description || [],
+        // filters: [],
+        // filteredValue: filters.description || [],
         render: text => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}

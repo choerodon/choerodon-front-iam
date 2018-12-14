@@ -997,6 +997,8 @@ const zh_CN = {
   'global.apioverview.thirty': '近30天',
   'global.apioverview.date': '日期',
   'global.apioverview.used.totalcount': '调用总次数',
+  'global.apioverview.belong': '所属微服务',
+  'global.apioverview.belong.empty': '无服务',
 
   // 发送设置
   'sendsetting.header.title': '发送设置',

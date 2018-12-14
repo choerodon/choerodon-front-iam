@@ -29,7 +29,6 @@ export default class APIOverview extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else if (data.length) {
-        /* eslint-disable-next-line */
         const handledData = data.map(item => item = { name: item.name.split(':')[1] });
         APIOverviewStore.setService(handledData);
         APIOverviewStore.setCurrentService(handledData[0]);
@@ -40,6 +39,15 @@ export default class APIOverview extends Component {
     }).catch((error) => {
       Choerodon.handleResponseError(error);
     });
+  }
+
+  componentWillUnmount() {
+    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setSecEndTime(moment());
+    APIOverviewStore.setThirdEndTime(moment());
+    APIOverviewStore.setThirdStartDate(null);
+    APIOverviewStore.setThirdEndDate(null);
   }
 
   getInitState() {

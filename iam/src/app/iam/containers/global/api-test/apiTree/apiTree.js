@@ -124,10 +124,26 @@ export default class ApiTree extends Component {
       type="folder_open"
     />;
 
+    let handledApi;
     return data.map((item) => {
       const index = item.title.indexOf(searchValue);
       const beforeStr = item.title.substr(0, index);
       const afterStr = item.title.substr(index + searchValue.length);
+      const titleLength = item.title.length;
+      const splitNum = 24;
+      let apiWrapper;
+      if (titleLength < splitNum) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-1';
+      } else if (titleLength >= splitNum && titleLength < splitNum * 2) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-2';
+      } else if (titleLength >= splitNum * 2 && titleLength < splitNum * 3) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-3';
+      } else if (titleLength >= splitNum * 3 && titleLength < splitNum * 4) {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-4';
+      } else {
+        apiWrapper = 'c7n-iam-apitest-api-wrapper-5';
+      }
+
       const title = index > -1 ? (
         <span>
           {beforeStr}
@@ -152,7 +168,7 @@ export default class ApiTree extends Component {
           </TreeNode>
         );
       }
-      return <TreeNode {...item} title={title} dataRef={item} icon={icon} className={classnames({ 'c7n-iam-apitest-api-wrapper': item.method })} />;
+      return <TreeNode {...item} title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div>{title}</div></Tooltip>} dataRef={item} icon={icon} className={classnames({ [apiWrapper]: item.method })} />;
     });
   }
 

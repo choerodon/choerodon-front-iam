@@ -265,55 +265,6 @@ export default class UserInfo extends Component {
                   initialCode={internationalTelCode}
                   onSubmit={value => this.handleSubmitPhone(value)}
                 />
-                {/* <span style={{ marginLeft: '30px', marginRight: '15px', verticalAlign: 'middle' }}>+</span> */}
-                {/* <TextEditToggle */}
-                {/* formKey="internationalTelCode" */}
-                {/* style={{ maxWidth: '120px' }} */}
-                {/* originData={internationalTelCode ? internationalTelCode.split('+')[1] : undefined} */}
-                {/* className="user-info-info-container-account-content-phonezone" */}
-                {/* onSubmit={value => this.handleSubmit('internationalTelCode', value)} */}
-                {/* validate={{ */}
-                {/* validateFirst: true, */}
-                {/* }} */}
-                {/* rules={ */}
-                {/* [{ */}
-                {/* pattern: /^[0-9]*$/, */}
-                {/* whitespace: true, */}
-                {/* message: '只能输入数字', */}
-                {/* }, { */}
-                {/* max: 3, */}
-                {/* message: '不合法的国际区号', */}
-                {/* }, { */}
-                {/* validator: this.checkPhoneZone, */}
-                {/* }, */}
-                {/* ]} */}
-                {/* > */}
-                {/* <Text style={{ minLength: '150px' }}> */}
-                {/* <span>{internationalTelCode ? internationalTelCode.split('+')[1] : undefined}</span> */}
-                {/* </Text> */}
-                {/* <Edit> */}
-                {/* <Input onChange={this.changePhoneZone} autoComplete="off" /> */}
-                {/* </Edit> */}
-                {/* </TextEditToggle> */}
-                {/* <span style={{ verticalAlign: 'middle' }}>-</span> */}
-                {/* <TextEditToggle */}
-                {/* formKey="phone" */}
-                {/* originData={phone} */}
-                {/* className="user-info-info-container-account-content-phone" */}
-                {/* onSubmit={value => this.handleSubmit('phone', value)} */}
-                {/* rules={ */}
-                {/* [{ */}
-                {/* validator: this.checkPhone, */}
-                {/* }, */}
-                {/* ]} */}
-                {/* > */}
-                {/* <Text style={{ minLength: '150px' }}> */}
-                {/* <span>{phone}</span> */}
-                {/* </Text> */}
-                {/* <Edit> */}
-                {/* <Input onChange={this.changePhone} autoComplete="off" /> */}
-                {/* </Edit> */}
-                {/* </TextEditToggle> */}
               </div>
               <div>
                 <Icon type="language" className="form-icon" />

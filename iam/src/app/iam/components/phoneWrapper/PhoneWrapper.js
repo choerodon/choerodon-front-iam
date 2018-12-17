@@ -117,6 +117,18 @@ export default class PhoneWrapper extends Component {
     }
   }
 
+  getInitialCode = (initialPhone, initialCode) => {
+    let code;
+    if (initialPhone && initialCode) {
+      code = initialCode.split('+')[1];
+    } else if (initialPhone && !initialCode) {
+      code = '';
+    } else if (!initialPhone && !initialCode) {
+      code = '86';
+    }
+    return code;
+  }
+
 
   render() {
     const { editing } = this.state;
@@ -132,7 +144,7 @@ export default class PhoneWrapper extends Component {
               {
                 validator: this.checkCode,
               }],
-            initialValue: initialCode ? initialCode.split('+')[1] : '86',
+            initialValue: this.getInitialCode(initialPhone, initialCode),
           })(
             <Input
               prefix="+"

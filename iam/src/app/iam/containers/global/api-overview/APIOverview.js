@@ -43,12 +43,7 @@ export default class APIOverview extends Component {
   }
 
   componentWillUnmount() {
-    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
-    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
-    APIOverviewStore.setSecEndTime(moment());
-    APIOverviewStore.setThirdEndTime(moment());
-    APIOverviewStore.setThirdStartDate(null);
-    APIOverviewStore.setThirdEndDate(null);
+    this.initTime();
     APIOverviewStore.setCurrentService({});
     APIOverviewStore.setService([]);
   }
@@ -61,12 +56,7 @@ export default class APIOverview extends Component {
   }
 
   handleRefresh = () => {
-    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
-    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
-    APIOverviewStore.setSecEndTime(moment());
-    APIOverviewStore.setThirdEndTime(moment());
-    APIOverviewStore.setThirdStartDate(null);
-    APIOverviewStore.setThirdEndDate(null);
+   this.initTime();
     APIOverviewStore.setThirdLoading(true);
     this.loadFirstChart();
     this.setState(this.getInitState(), () => {
@@ -87,6 +77,15 @@ export default class APIOverview extends Component {
       });
     });
   };
+
+  initTime = () => {
+    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setSecEndTime(moment());
+    APIOverviewStore.setThirdEndTime(moment());
+    APIOverviewStore.setThirdStartDate(null);
+    APIOverviewStore.setThirdEndDate(null);
+  }
 
 
   handleDateChoose = (type) => {

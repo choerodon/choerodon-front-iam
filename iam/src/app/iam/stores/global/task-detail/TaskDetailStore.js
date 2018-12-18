@@ -145,7 +145,11 @@ class TaskDetailStore {
       }
       queryObj.sort = sorter.join(',');
     }
-    return axios.post(`${this.getRoleLevelType(type, id)}/role_members/users/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
+    if (type === 'site') {
+      return axios.post(`${this.getRoleLevelType(type, id)}/role_members/users/roles/for_all?${querystring.stringify(queryObj)}`, JSON.stringify(body));
+    } else {
+      return axios.post(`${this.getRoleLevelType(type, id)}/role_members/users/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
+    }
   }
 
   loadService = (type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/services`);

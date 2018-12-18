@@ -1092,6 +1092,15 @@ export default class TaskCreate extends Component {
    * @param checkedValue array 选中的通知对象
    */
   changeInformPerson = (checkedValue) => {
+    if (checkedValue.indexOf('user') === -1) {
+      this.setState({
+        createSelected: [],
+        createSelectedRowKeys: [],
+        showSelected: [],
+        showSelectedRowKeys: [],
+        createSelectedTemp: [],
+      });
+    }
     this.setState({
       informArr: checkedValue,
     });

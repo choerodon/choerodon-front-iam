@@ -16,7 +16,7 @@ class APIOverviewStore {
   @observable secEndTime = moment();
   @observable thirdStartTime = moment().subtract(6, 'days');
   @observable thirdEndTime = moment();
-  @observable currentService = [];
+  @observable currentService = {};
   @observable thirdStartDate = null;
   @observable thirdEndDate = null;
 

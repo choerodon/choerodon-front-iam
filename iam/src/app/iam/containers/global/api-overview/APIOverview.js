@@ -5,6 +5,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
+import _ from 'lodash';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import './APIOverview.scss';
@@ -42,13 +43,8 @@ export default class APIOverview extends Component {
   }
 
   componentWillUnmount() {
-    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
-    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
-    APIOverviewStore.setSecEndTime(moment());
-    APIOverviewStore.setThirdEndTime(moment());
-    APIOverviewStore.setThirdStartDate(null);
-    APIOverviewStore.setThirdEndDate(null);
-    APIOverviewStore.setCurrentService([]);
+    this.initTime();
+    APIOverviewStore.setCurrentService({});
     APIOverviewStore.setService([]);
   }
 
@@ -60,6 +56,7 @@ export default class APIOverview extends Component {
   }
 
   handleRefresh = () => {
+   this.initTime();
     APIOverviewStore.setThirdLoading(true);
     this.loadFirstChart();
     this.setState(this.getInitState(), () => {
@@ -68,7 +65,7 @@ export default class APIOverview extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else if (data.length) {
-          const handledData = new Set(data.map(item => item = { name: item.name.split(':')[1] }));
+          const handledData = _.uniqBy(data.map(item => item = { name: item.name.split(':')[1] }), 'name');
           APIOverviewStore.setService(handledData);
           APIOverviewStore.setCurrentService(handledData[0]);
           const startDate = APIOverviewStore.thirdStartTime.format().split('T')[0];
@@ -80,6 +77,15 @@ export default class APIOverview extends Component {
       });
     });
   };
+
+  initTime = () => {
+    APIOverviewStore.setSecStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setThirdStartTime(moment().subtract(6, 'days'));
+    APIOverviewStore.setSecEndTime(moment());
+    APIOverviewStore.setThirdEndTime(moment());
+    APIOverviewStore.setThirdStartDate(null);
+    APIOverviewStore.setThirdEndDate(null);
+  }
 
 
   handleDateChoose = (type) => {

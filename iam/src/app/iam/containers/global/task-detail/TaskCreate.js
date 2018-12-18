@@ -1092,7 +1092,6 @@ export default class TaskCreate extends Component {
    * @param checkedValue array 选中的通知对象
    */
   changeInformPerson = (checkedValue) => {
-    window.console.log(checkedValue);
     if (checkedValue.indexOf('user') === -1) {
       this.setState({
         createSelected: [],

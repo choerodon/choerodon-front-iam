@@ -199,15 +199,12 @@
   height: 547px;
 
   &-preview-top {
-    margin-top: 20px;
-    vertical-align: middle;
+    margin-top: 6px;
 
     &-btn {
       position: absolute;
-      top: 80px;
-      right: 25px;
-      margin-left: 17px;
-      vertical-align: middle;
+      top: 68px;
+      right: 8px;
       color: #3f51b5;
     }
   }
@@ -240,5 +237,45 @@
   &-preview-sentence {
     font-size: 18px;
     color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.c7n-iam-editor-dragger {
+  display: block;
+  width: 512px;
+  height: 441px;
+  text-align: center;
+
+  .icon {
+    width: 80px;
+    height: 80px;
+    font-size: 80px;
+    color: #3f51b5;
+  }
+
+  &-text {
+    font-size: 18px;
+    line-height: 25px;
+    margin-top: 40px;
+  }
+
+  &-hint {
+    font-size: 13px;
+    color: rgba(0, 0, 0, .65);
+    line-height: 20px;
+    margin-top: 16px;
+  }
+
+  &-preview-pic {
+    position: absolute;
+    width: 512px;
+    height: 438px;
+    top: 0;
+    left: 0;
+    background: transparent;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: 41;
   }
 }

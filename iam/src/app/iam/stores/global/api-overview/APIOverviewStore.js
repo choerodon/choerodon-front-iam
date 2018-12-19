@@ -2,6 +2,7 @@ import { action, computed, observable, toJS } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import moment from 'moment';
 import querystring from 'query-string';
+import _ from 'lodash';
 
 @store('APIOverviewStore')
 class APIOverviewStore {
@@ -135,11 +136,17 @@ class APIOverviewStore {
     })
 
   loadSecChart = (beginDate, endDate) => axios.get(`/manager/v1/swaggers/service_invoke/count?begin_date=${beginDate}&end_date=${endDate}`)
-    .then((data) => {
-      if (data.failed) {
-        Choerodon.prompt(data.message);
+    .then((res) => {
+      if (res.failed) {
+        Choerodon.prompt(res.message);
       } else {
-        this.setSecChartData(data);
+        const { details, services } = res;
+        if (details.length && services.length) {
+          const handleDetails = details.map(item => ({ ...item, sortIndex: services.indexOf(item.service) }));
+          const finalDetails = _.orderBy(handleDetails, ['sortIndex'], ['asc']);
+          res.details = finalDetails;
+        }
+        this.setSecChartData(res);
       }
       this.setSecLoading(false);
     }).catch((error) => {

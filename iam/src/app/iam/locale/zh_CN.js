@@ -518,6 +518,11 @@ const pageDetail = {
   'editor.pic.url.required': '请输入图片URL',
   'editor.back.gui': '返回可视化编辑',
   'editor.preview': '预览区',
+  'editor.online.pic': '网络图片',
+  'editor.local.upload': '本地上传',
+  'editor.dragger.text': '点击或将图片拖到此区域上传图片',
+  'editor.dragger.hint': '图片支持{access}格式，且不能大于{size}',
+  'editor.file.size.limit': '图片大小不能大于{size}',
 };
 
 /* eslint-disable-next-line */

@@ -125,13 +125,12 @@ export default class APITest extends Component {
     this.setState({
       isSending: false,
     });
-    const { service, version, operationId, refController } = node[0].props;
-    const handleService = service.split('-')[0];
+    const { version, operationId, refController, servicePrefix } = node[0].props;
     const queryObj = {
       version,
       operation_id: operationId,
     };
-    defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/${handleService}/controllers/${refController}/paths?${querystring.stringify(queryObj)}`).then((data) => {
+    defaultAxios.get(`${urlPrefix}/manager/v1/swaggers/${servicePrefix}/controllers/${refController}/paths?${querystring.stringify(queryObj)}`).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
         APITestStore.setDetailFlag('empty');

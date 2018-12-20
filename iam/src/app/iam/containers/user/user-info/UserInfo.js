@@ -1,7 +1,3 @@
-/**
- * Created by YANG on 2017/6/27.
- */
-
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Icon, Input, Select } from 'choerodon-ui';

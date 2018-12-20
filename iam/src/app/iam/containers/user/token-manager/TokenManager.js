@@ -31,7 +31,7 @@ export default class TokenManager extends Component {
     const { intl } = this.props;
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
-      title: intl.formatMessage({ id: `${intlPrefix}.remove.title` }),
+      title: intl.formatMessage({ id: `${intlPrefix}.removpattern.msge.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.remove.content` }, { name: record.accesstoken }),
       onOk: () => TokenManagerStore.deleteTokenById(record.tokenId, Choerodon.getAccessToken().split(' ')[1]).then(({ failed, message }) => {
         if (failed) {
@@ -171,9 +171,7 @@ export default class TokenManager extends Component {
   };
 
   render() {
-    const {
-      TokenManagerStore: { loading, tokenData, params },
-    } = this.props;
+    const { TokenManagerStore: { loading, tokenData, params }, intl } = this.props;
 
     return (
       <Page
@@ -199,6 +197,7 @@ export default class TokenManager extends Component {
             rowKey="accesstoken"
             fixed
             onChange={this.handlePageChange}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>
       </Page>

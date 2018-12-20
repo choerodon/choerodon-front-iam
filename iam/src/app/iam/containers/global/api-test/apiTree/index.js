@@ -1,3 +1,3 @@
-import ApiTree from './apiTree';
+import ApiTree from './ApiTree';
 
 export default ApiTree;

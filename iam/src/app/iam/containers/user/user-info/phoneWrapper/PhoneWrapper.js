@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import { Form, Icon, Input } from 'choerodon-ui';
+import { inject, observer } from 'mobx-react';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { findDOMNode } from 'react-dom';
 import './PhoneWrapper.scss';
 
 const FormItem = Form.Item;
+const intlPrefix = 'user.userinfo';
 
 @Form.create({})
+@injectIntl
+@inject('AppState')
+@observer
 export default class PhoneWrapper extends Component {
   constructor(props) {
     super(props);
@@ -74,6 +80,7 @@ export default class PhoneWrapper extends Component {
   }
 
   checkCode = (rule, value, callback) => {
+    const { intl: { formatMessage } } = this.props;
     const pattern = /^[0-9]*$/;
     const { validateFields } = this.props.form;
     if (value) {
@@ -83,7 +90,7 @@ export default class PhoneWrapper extends Component {
         }
         callback();
       } else {
-        callback('请输入数字');
+        callback(formatMessage({ id: `${intlPrefix}.num.required` }));
       }
     } else {
       validateFields(['phone'], { force: true });
@@ -92,7 +99,7 @@ export default class PhoneWrapper extends Component {
   }
 
   checkPhone = (rule, value, callback) => {
-    const { getFieldValue } = this.props.form;
+    const { intl: { formatMessage }, form: { getFieldValue } } = this.props;
     const code = getFieldValue('internationalTelCode');
     let pattern = /^[0-9]*$/;
     if (value) {
@@ -102,16 +109,16 @@ export default class PhoneWrapper extends Component {
           if (pattern.test(value)) {
             callback();
           } else {
-            callback('手机号码需符合中国地区规则');
+            callback(formatMessage({ id: `${intlPrefix}.phone.district.rule` }));
           }
         } else {
           callback();
         }
       } else {
-        callback('请输入数字');
+        callback(formatMessage({ id: `${intlPrefix}.num.required` }));
       }
     } else if (code) {
-      callback('请输入手机号');
+      callback(formatMessage({ id: `${intlPrefix}.phone.pattern.msg` }));
     } else {
       callback();
     }

@@ -7,7 +7,6 @@ import { observer } from 'mobx-react';
 import './TextEditToggle.scss';
 // 防止提交前变回原值
 const Text = props => (typeof (props.children) === 'function' ? props.children(props.newData || props.originData) : props.children);
-
 const Edit = props => props.children;
 const FormItem = Form.Item;
 

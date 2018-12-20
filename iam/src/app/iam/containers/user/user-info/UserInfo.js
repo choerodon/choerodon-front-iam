@@ -1,33 +1,17 @@
-/**
- * Created by YANG on 2017/6/27.
- */
-
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Icon, Input, Select, Row, Col } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Select } from 'choerodon-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserInfoStore from '../../../stores/user/user-info/UserInfoStore';
 import AvatarUploader from './AvatarUploader';
 import './Userinfo.scss';
-import TextEditToggle from '../../../components/TextEditToggle/TextEditToggle';
-import PhoneWrapper from '../../../components/phoneWrapper';
+import TextEditToggle from '../../../components/textEditToggle/TextEditToggle';
+import PhoneWrapper from './phoneWrapper';
 
 const { Text, Edit } = TextEditToggle;
-const FormItem = Form.Item;
 const Option = Select.Option;
-const inputWidth = 480;
 const intlPrefix = 'user.userinfo';
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
 
 @Form.create({})
 @injectIntl

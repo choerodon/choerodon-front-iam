@@ -14,7 +14,6 @@ import classnames from 'classnames';
 import Hjson from 'hjson';
 import APITestStore from '../../../stores/global/api-test';
 import './APITest.scss';
-import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import ApiTree from './apiTree';
 import emptyApi from '../../../assets/images/noright.svg';
 import jsonFormat from '../../../common/json-format';
@@ -152,7 +151,7 @@ export default class APITest extends Component {
         });
       }
     });
-  }
+  };
 
   handleSelectChange = (name, select) => {
     const a = { target: { value: select } };
@@ -786,7 +785,10 @@ ${body}`;
 
     const detailFlag = APITestStore.getDetailFlag;
     const { intl } = this.props;
-
+    const hCursor = this.state.isHResize ? 'row-resize' : 'default';
+    const hColor = this.state.isHResize ? '#ddd' : '#fff';
+    const vCursor = this.state.isVResize ? 'col-resize' : 'default';
+    const vColor = this.state.isVResize ? 'red' : 'black';
     return (
       <Page
         service={[

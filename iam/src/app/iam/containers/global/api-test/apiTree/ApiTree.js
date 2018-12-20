@@ -6,7 +6,7 @@ import { axios } from 'choerodon-front-boot';
 import _ from 'lodash';
 import querystring from 'query-string';
 import classnames from 'classnames';
-import './apiTree.scss';
+import './ApiTree.scss';
 import APITestStore from '../../../../stores/global/api-test';
 
 const TreeNode = Tree.TreeNode;
@@ -124,7 +124,6 @@ export default class ApiTree extends Component {
       type="folder_open"
     />;
 
-    let handledApi;
     return data.map((item) => {
       const index = item.title.indexOf(searchValue);
       const beforeStr = item.title.substr(0, index);

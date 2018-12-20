@@ -198,6 +198,7 @@
     height: 100%;
     display: flex;
     padding-top: 12px;
+    min-height: 300px;
 
     h5 {
       font-size: 16px;
@@ -215,8 +216,20 @@
       color: #00bfa5;
     }
 
+    &-v-resize {
+      height: 100%;
+      width: 4px;
+      position: absolute;
+      background: #fff;
+      left: 500px;
+      z-index: 2;
+      cursor: col-resize;
+      user-select: none;
+    }
+
     &-tree-container {
       display: block;
+      width: 300px;
 
       &-hidden {
         display: none;

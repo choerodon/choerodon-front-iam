@@ -116,12 +116,30 @@ export default class MenuSetting extends Component {
 
   // 选择菜单类型
   selectMenuType = (type) => {
-    if (!this.state.menuGroup[type]) {
-      this.initMenu(type);
+    const { type: currentType, prevMenuGroup, menuGroup } = this.state;
+    const { intl } = this.props;
+    if (JSON.stringify(prevMenuGroup[currentType]) !== JSON.stringify(menuGroup[currentType])) {
+      Modal.confirm({
+        className: 'c7n-iam-confirm-modal',
+        title: intl.formatMessage({ id: `${intlPrefix}.prompt.inform.title` }),
+        content: intl.formatMessage({ id: `${intlPrefix}.prompt.inform.message` }),
+        onOk: () => {
+          if (!this.state.menuGroup[type]) {
+            this.initMenu(type);
+          }
+          this.setState({
+            type,
+          });
+        },
+      });
+    } else {
+      if (!this.state.menuGroup[type]) {
+        this.initMenu(type);
+      }
+      this.setState({
+        type,
+      });
     }
-    this.setState({
-      type,
-    });
   };
   // 关闭sidebar
   closeSidebar = () => {
@@ -837,7 +855,7 @@ export default class MenuSetting extends Component {
           code={intlPrefix}
           values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
         >
-          <Tabs defaultActiveKey="site" onChange={this.selectMenuType}>
+          <Tabs defaultActiveKey="site" onChange={this.selectMenuType} activeKey={typeState}>
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.global`} />} key="site" />
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.org`} />} key="organization" />
             <TabPane tab={<FormattedMessage id={`${intlPrefix}.pro`} />} key="project" />

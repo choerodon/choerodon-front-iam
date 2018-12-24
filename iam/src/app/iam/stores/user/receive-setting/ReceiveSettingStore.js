@@ -206,8 +206,19 @@ class ReceiveSettingStore {
    * @returns {boolean}
    */
   isAllUnSelected(type) {
-    const maxLength = this.receiveTypeData.reduce((previousValue, currentValue) => previousValue + (currentValue.settings ? currentValue.settings.length : 0), 0);
-    return this.receiveSettingData.filter(v => v.messageType === type).length === maxLength;
+    const maxLength = this.receiveTypeData.length;
+    let unSelectedLength;
+    switch (type) {
+      case 'pm':
+        unSelectedLength = this.getDataSource.reduce((previousValue, currentValue) => previousValue + (currentValue.pmChecked || currentValue.pmIndeterminate ? 0 : 1), 0);
+        break;
+      case 'email':
+        unSelectedLength = this.getDataSource.reduce((previousValue, currentValue) => previousValue + (currentValue.mailChecked || currentValue.mailIndeterminate ? 0 : 1), 0);
+        break;
+      default:
+        unSelectedLength = this.getDataSource.reduce((previousValue, currentValue) => previousValue + (currentValue.pmChecked || currentValue.pmIndeterminate ? 0 : 1), 0);
+    }
+    return maxLength === unSelectedLength;
   }
 
   /**

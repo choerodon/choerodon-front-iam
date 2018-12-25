@@ -10,7 +10,7 @@ class AnnouncementStore {
   @observable loading = false;
   @observable submitting = false;
   @observable sidebarVisible = false;
-  @observable currentRecord = false;
+  @observable currentRecord = {};
   @observable pagination = {
     current: 1,
     pageSize: 10,
@@ -20,6 +20,12 @@ class AnnouncementStore {
   @observable filters = {};
   @observable sort = {};
   @observable announcementType = null;
+  @observable selectType = 'create';
+
+  @action
+  setSelectType(type) {
+    this.selectType = type;
+  }
 
   @action
   setAnnouncementType(type) {
@@ -87,6 +93,7 @@ class AnnouncementStore {
       size: pagination.pageSize,
       content: filters.content && filters.content[0],
       status: filters.status && filters.status[0],
+      title: filters.title && filters.title[0],
       params: params.join(','),
       sort: sorter.join(','),
     })}`)
@@ -106,9 +113,11 @@ class AnnouncementStore {
       }));
   }
 
-  deleteAnnouncementById = id => axios.delete(`${this.announcementType.apiPrefix}/delete?taskId=${id}`);
+  deleteAnnouncementById = id => axios.delete(`${this.announcementType.apiPrefix}/${id}`);
 
   createAnnouncement = data => axios.post(`${this.announcementType.apiPrefix}/create`, JSON.stringify(data));
+
+  modifyAnnouncement = data => axios.put(`${this.announcementType.apiPrefix}/update`, JSON.stringify(data));
 }
 
 export default new AnnouncementStore();

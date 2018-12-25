@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Table, Modal, Tooltip, Form, DatePicker } from 'choerodon-ui';
+import moment from 'moment';
+import { Button, Table, Modal, Tooltip, Form, DatePicker, Input, Radio } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
@@ -10,15 +11,15 @@ import Editor from '../../../components/editor';
 
 // 匹配html界面为空白的正则。
 const patternHTMLEmpty = /^(((<[^>]+>)*\s*)|&nbsp;|\s)*$/g;
-
+const inputWidth = '512px';
 const iconType = {
   COMPLETED: 'COMPLETED',
   SENDING: 'RUNNING',
   WAITING: 'UN_START',
-  FAILED: 'FAILED',
+  // FAILED: 'FAILED',
 };
-
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -43,7 +44,7 @@ class AnnouncementType {
     this.values = { name: name || 'Choerodon' };
     this.type = type;
     this.orgId = id;
-    this.apiPrefix = type === 'organization' ? `/asgard/v1/system_notice/organization/${this.orgId}` : '/asgard/v1/system_notice';
+    this.apiPrefix = '/notify/v1/system_notice';
     this.intlPrefix = `${codePrefix}.announcement`;
     this.intlValue = type === 'organization' ? name : AppState.getSiteInfo.systemName || 'Choerodon';
   }
@@ -87,28 +88,50 @@ export default class Announcement extends Component {
   };
 
   handleOk = () => {
-    const { AnnouncementStore: { editorContent, currentRecord }, AnnouncementStore, form, intl } = this.props;
-    if (!currentRecord) {
-      form.validateFields((err, { date }) => {
+    const { AnnouncementStore: { editorContent, currentRecord, selectType }, AnnouncementStore, form, intl } = this.props;
+    if (selectType !== 'detail') {
+      form.validateFields((err, values) => {
         if (!err) {
           AnnouncementStore.setSubmitting(true);
           if (editorContent === null || patternHTMLEmpty.test(editorContent)) {
             AnnouncementStore.setSubmitting(false);
             Choerodon.prompt(intl.formatMessage({ id: 'announcement.content.required' }));
           } else if (editorContent && !patternHTMLEmpty.test(editorContent)) {
-            AnnouncementStore.createAnnouncement({
-              content: editorContent,
-              startTime: date.format('YYYY-MM-DD HH:mm:ss'),
-            }).then((data) => {
-              AnnouncementStore.setSubmitting(false);
-              if (!data.failed) {
-                Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
-                this.handleRefresh();
-                AnnouncementStore.hideSideBar();
-              } else {
-                Choerodon.prompt(data.message);
-              }
-            });
+            if (selectType === 'create') {
+              AnnouncementStore.createAnnouncement({
+                ...values,
+                content: editorContent,
+                sendDate: values.sendDate.format('YYYY-MM-DD HH:mm:ss'),
+              }).then((data) => {
+                AnnouncementStore.setSubmitting(false);
+                if (!data.failed) {
+                  Choerodon.prompt(intl.formatMessage({ id: 'create.success' }));
+                  this.handleRefresh();
+                  AnnouncementStore.hideSideBar();
+                } else {
+                  Choerodon.prompt(data.message);
+                }
+              });
+            } else {
+              AnnouncementStore.modifyAnnouncement({
+                ...values,
+                id: currentRecord.id,
+                objectVersionNumber: currentRecord.objectVersionNumber,
+                scheduleTaskId: currentRecord.scheduleTaskId,
+                status: currentRecord.status,
+                content: editorContent,
+                sendDate: values.sendDate.format('YYYY-MM-DD HH:mm:ss'),
+              }).then((data) => {
+                AnnouncementStore.setSubmitting(false);
+                if (!data.failed) {
+                  Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
+                  this.handleRefresh();
+                  AnnouncementStore.hideSideBar();
+                } else {
+                  Choerodon.prompt(data.message);
+                }
+              });
+            }
           } else {
             AnnouncementStore.setSubmitting(false);
             Choerodon.prompt(intl.formatMessage({ id: 'announcement.content.required' }));
@@ -136,7 +159,7 @@ export default class Announcement extends Component {
       className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: 'announcement.delete.title' }),
       content: intl.formatMessage({ id: 'announcement.delete.content' }, { name: record.name }),
-      onOk: () => AnnouncementStore.deleteAnnouncementById(record.taskId).then(({ failed, message }) => {
+      onOk: () => AnnouncementStore.deleteAnnouncementById(record.id).then(({ failed, message }) => {
         if (failed) {
           Choerodon.prompt(message);
         } else {
@@ -147,35 +170,54 @@ export default class Announcement extends Component {
     });
   };
 
-  showCreate = () => {
+  handleOpen = (selectType, record = {}) => {
     const { AnnouncementStore, form } = this.props;
-    AnnouncementStore.setCurrentRecord(false);
-    AnnouncementStore.setEditorContent(null);
     form.resetFields();
+    AnnouncementStore.setEditorContent(selectType === 'create' ? null : record.content);
+    AnnouncementStore.setCurrentRecord(record);
+    AnnouncementStore.setSelectType(selectType);
     AnnouncementStore.showSideBar();
-  };
-
-  showDetail(record) {
-    this.props.AnnouncementStore.showSideBar();
-    this.props.AnnouncementStore.setCurrentRecord(record);
   }
+
+  // renderSidebarContent = () => {
+  //   const { AnnouncementStore, form } = this.props;
+  //   const { selectType } = AnnouncementStore;
+  //   if (selectType === 'crea')
+  // }
+
+  // showCreate = () => {
+  //   const { AnnouncementStore, form } = this.props;
+  //   AnnouncementStore.setCurrentRecord(false);
+  //   AnnouncementStore.setEditorContent(null);
+  //   form.resetFields();
+  //   AnnouncementStore.showSideBar();
+  // };
+  //
+  // handleModify = (record) => {
+  //   this.props.AnnouncementStore.showSideBar();
+  //   this.props.AnnouncementStore.setCurrentRecord(record);
+  // }
+  //
+  // showDetail(record) {
+  //   this.props.AnnouncementStore.showSideBar();
+  //   this.props.AnnouncementStore.setCurrentRecord(record);
+  // }
 
   fetchData(pagination, filters, sort, params) {
     this.props.AnnouncementStore.loadData(pagination, filters, sort, params);
   }
 
-  validateDatePicker = (rule, value, callback) => {
-    if (value) {
-      callback();
-    } else {
-      callback('请输入发送时间');
-    }
-  };
-
   getTableColumns() {
     const { intl, AnnouncementStore: { filters } } = this.props;
     const { intlPrefix } = this.announcementType;
     return [
+      {
+        title: <FormattedMessage id={`${intlPrefix}.table.title`} />,
+        dataIndex: 'title',
+        key: 'title',
+        filters: [],
+        filteredValue: filters.title || [],
+      },
       {
         title: <FormattedMessage id={`${intlPrefix}.content`} />,
         dataIndex: 'content',
@@ -197,16 +239,16 @@ export default class Announcement extends Component {
         render: status => (
           <StatusTag
             mode="icon"
-            name={intl.formatMessage({ id: `announcement.${status.toLowerCase()}` })}
-            colorCode={iconType[status]}
+            name={intl.formatMessage({ id: status ? `announcement.${status.toLowerCase()}` : 'announcement.completed' })}
+            colorCode={status ? iconType[status] : iconType.COMPLETED}
           />),
       }, {
         title: <FormattedMessage id={`${intlPrefix}.send-time`} />,
-        dataIndex: 'sendTime',
-        key: 'sendTime',
+        dataIndex: 'sendDate',
+        key: 'sendDate',
       }, {
         title: '',
-        width: 100,
+        width: 150,
         key: 'action',
         align: 'right',
         render: this.renderAction,
@@ -219,6 +261,23 @@ export default class Announcement extends Component {
 
     return (
       <React.Fragment>
+        {/* <Permission service={['iam-service.organization.update']}> */}
+        {
+          record.status === 'WAITING' && (
+            <Tooltip
+              title={<FormattedMessage id="modify" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="mode_edit"
+                shape="circle"
+                onClick={() => this.handleOpen('modify', record)}
+              />
+            </Tooltip>
+          )
+        }
+        {/* </Permission> */}
         <Tooltip
           title={<FormattedMessage id="announcement.detail" />}
           placement="bottom"
@@ -227,10 +286,9 @@ export default class Announcement extends Component {
             shape="circle"
             icon="find_in_page"
             size="small"
-            onClick={() => this.showDetail(record)}
+            onClick={() => this.handleOpen('detail', record)}
           />
         </Tooltip>
-
         <Permission
           service={deleteService}
           type={this.announcementType.type}
@@ -253,39 +311,81 @@ export default class Announcement extends Component {
   };
 
   renderSidebarOkText() {
-    const { AnnouncementStore: { currentRecord } } = this.props;
-    if (currentRecord) {
-      return <FormattedMessage id="close" />;
-    } else {
-      return <FormattedMessage id="save" />;
+    const { AnnouncementStore: { selectType } } = this.props;
+    let text;
+    switch (selectType) {
+      case 'create':
+        text = 'create';
+        break;
+      case 'modify':
+        text = 'save';
+        break;
+      case 'detail':
+        text = 'close';
+        break;
+      default:
+        break;
     }
+    return <FormattedMessage id={`${text}`} />;
+  }
+
+  disabledDate(current) {
+    return current < moment().subtract(1, 'days');
   }
 
   renderForm() {
     const {
-      AnnouncementStore: { editorContent }, AnnouncementStore,
+      AnnouncementStore: { editorContent, selectType, currentRecord }, AnnouncementStore, intl,
       form: { getFieldDecorator },
     } = this.props;
+    const isModify = selectType === 'modify';
     return (
-      <Content
-        className="c7n-iam-announcement-siderbar-content"
-      >
+      <div className="c7n-iam-announcement-siderbar-content">
         <Form>
-          <span className="send-time">发送时间：</span>
-          <FormItem {...formItemLayout} className="inline">
-            {getFieldDecorator('date', {
+          <FormItem {...formItemLayout}>
+            {getFieldDecorator('sendDate', {
               rules: [{
-                validator: this.validateDatePicker,
+                required: true,
+                message: '请输入发送时间',
               }],
+              initialValue: isModify ? moment(currentRecord.sendDate) : undefined,
             })(
               <DatePicker
-                style={{ width: '180px' }}
+                label={<FormattedMessage id="announcement.send.date" />}
+                style={{ width: inputWidth }}
                 format="YYYY-MM-DD HH:mm:ss"
+                disabledDate={this.disabledDate}
                 showTime
                 getCalendarContainer={that => that}
               />,
             )
-            }
+              }
+          </FormItem>
+          <FormItem {...formItemLayout}>
+            {getFieldDecorator('sendNotices', {
+              rules: [],
+              initialValue: isModify ? currentRecord.sendNotices : true,
+            })(
+              <RadioGroup
+                label={<FormattedMessage id="announcement.send.letter" />}
+                className="radioGroup"
+              >
+                <Radio value>{intl.formatMessage({ id: 'yes' })}</Radio>
+                <Radio value={false}>{intl.formatMessage({ id: 'no' })}</Radio>
+              </RadioGroup>,
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout}>
+            {getFieldDecorator('title', {
+              rules: [{
+                required: true,
+                whitespace: true,
+                message: intl.formatMessage({ id: 'announcement.title.required' }),
+              }],
+              initialValue: isModify ? currentRecord.title : undefined,
+            })(
+              <Input autoComplete="off" style={{ width: inputWidth }} label={<FormattedMessage id="announcement.title" />} />,
+            )}
           </FormItem>
         </Form>
         <p className="content-text">公告内容：</p>
@@ -298,26 +398,25 @@ export default class Announcement extends Component {
             AnnouncementStore.setEditorContent(value);
           }}
         />
-      </Content>
+      </div>
     );
   }
 
-  renderDetail({ content, status, sendTime }) {
+  renderDetail({ content, status, sendDate }) {
     const { intl } = this.props;
     return (
       <div className="c7n-iam-announcement-detail">
-
         <div><span>状态：</span>
           <div className="inline">
             <StatusTag
               style={{ fontSize: 14, color: 'rgba(0,0,0,0.65)' }}
               mode="icon"
-              name={intl.formatMessage({ id: `announcement.${status.toLowerCase()}` })}
+              name={intl.formatMessage({ id: status ? `announcement.${status.toLowerCase()}` : 'announcement.completed' })}
               colorCode={iconType[status]}
             />
           </div>
         </div>
-        <div><span>发送时间：</span><span className="send-time">{sendTime}</span></div>
+        <div><span>发送时间：</span><span className="send-time">{sendDate}</span></div>
         <div><span>公告内容：</span></div>
         <div className="c7n-iam-announcement-detail-wrapper">
           <div
@@ -332,22 +431,21 @@ export default class Announcement extends Component {
   render() {
     const { intl, AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord, submitting } } = this.props;
     const { intlPrefix } = this.announcementType;
+    const { AnnouncementStore: { selectType } } = this.props;
     const { createService } = this.getPermission();
     return (
       <Page
         service={[
-          'asgard-service.system-notification.pagingQuerySiteNotification',
-          'asgard-service.system-notification.createNotificationOnSite',
-          'asgard-service.system-notification.deleteSiteNotification',
-          'asgard-service.system-notification.pagingQueryOrgNotificaton',
-          'asgard-service.system-notification.createNotificationOnOrg',
-          'asgard-service.system-notification.deleteOrgNotification',
+          'notify-service.system-announcement.pagingQuery',
+          'notify-service.system-announcement.create',
+          'notify-service.system-announcement.update',
+          'notify-service.system-announcement.delete',
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
           <Permission service={createService}>
             <Button
-              onClick={this.showCreate}
+              onClick={() => this.handleOpen('create')}
               icon="playlist_add"
             >
               <FormattedMessage id="announcement.add" />
@@ -373,20 +471,22 @@ export default class Announcement extends Component {
             pagination={pagination}
             filters={params}
             onChange={this.handleTableChange}
-            // rowKey={({ code, namespace }) => `${namespace}-${code}`}
+            rowKey="id"
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
           <Sidebar
-            title={<FormattedMessage id={`${intlPrefix}.sidebar.title${currentRecord ? '.detail' : ''}`} />}
+            title={<FormattedMessage id={`${intlPrefix}.sidebar.title.${selectType}`} />}
             onOk={this.handleOk}
             okText={this.renderSidebarOkText()}
             cancelText={<FormattedMessage id="cancel" />}
-            okCancel={!currentRecord}
+            // okCancel={selectType === 'detail'}
             onCancel={this.handleCancel}
             confirmLoading={submitting}
             visible={sidebarVisible}
           >
-            { currentRecord ? this.renderDetail(currentRecord) : this.renderForm() }
+            {(selectType === 'create' || selectType === 'modify') && this.renderForm()}
+            {selectType === 'detail' && this.renderDetail(currentRecord)}
+
           </Sidebar>
         </Content>
       </Page>

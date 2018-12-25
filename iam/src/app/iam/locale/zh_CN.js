@@ -1214,10 +1214,12 @@ const zh_CN = {
   'global.announcement.header.title': '系统公告',
   'global.announcement.title': '平台"{name}"的系统公告',
   'global.announcement.description': '您可以在此编辑系统公告，并且指定时间发送到全局。',
+  'global.announcement.table.title': '公告标题',
   'global.announcement.content': '公告内容',
   'global.announcement.send-time': '发送时间',
-  'global.announcement.sidebar.title': '添加公告',
+  'global.announcement.sidebar.title.create': '添加公告',
   'global.announcement.sidebar.title.detail': '查看公告',
+  'global.announcement.sidebar.title.modify': '修改公告',
   'global.announcement.link': `${docServer}/user-guide/system-configuration/message/system-notice/`,
 
   // 组织层
@@ -1398,15 +1400,6 @@ const zh_CN = {
   'organization.user.download.failed.detail': '点击下载失败详情',
   'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
 
-  // 系统公告
-  'organization.announcement.header.title': '系统公告',
-  'organization.announcement.title': '组织"{name}"的系统公告',
-  'organization.announcement.description': '你可以在此编辑系统公告，并且指定时间发送到组织成员。',
-  'organization.announcement.content': '公告内容',
-  'organization.announcement.send-time': '发送时间',
-  'organization.announcement.sidebar.title': '添加公告',
-  'organization.announcement.sidebar.title.detail': '查看公告',
-
   // 项目层
   // 项目信息
   'project.info.disable.title': '停用项目',
@@ -1573,6 +1566,10 @@ const zh_CN = {
   'announcement.content.required': '公告内容不可为空',
   'announcement.delete.title': '删除公告',
   'announcement.delete.content': '确定要删除此系统公告？',
+  'announcement.send.date': '发送时间',
+  'announcement.title': '公告标题',
+  'announcement.title.required': '请输入公告标题',
+  'announcement.send.letter': '是否发送站内信',
 
   // Upload
   'download.template': '下载',

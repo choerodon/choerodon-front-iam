@@ -196,9 +196,10 @@
         Routes: /iam/announcement
         sort: 6
         permission:
-        - 'asgard-service.system-notification.pagingQuerySiteNotification'
-        - 'asgard-service.system-notification.createNotificationOnSite'
-        - 'asgard-service.system-notification.deleteSiteNotification'
+        - 'notify-service.system-announcement.pagingQuery'
+        - 'notify-service.system-announcement.create'
+        - 'notify-service.system-announcement.update'
+        - 'notify-service.system-announcement.delete'
 
 # 任务调度
 "task-dispatch":

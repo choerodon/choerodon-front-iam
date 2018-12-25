@@ -1,3 +1,5 @@
+@import "../../../components/style/mixin/template";
+
 .c7n-iam-announcement {
   &-detail {
     .send-time {
@@ -17,6 +19,8 @@
     }
     &-content {
       width: 559px;
+
+      @include template;
     }
     > div {
       margin-bottom: 14px;
@@ -36,19 +40,25 @@
     white-space: nowrap;
     overflow: hidden;
   }
-  &-siderbar-content {
-    .inline {
-      display: inline-block;
-    }
-    .send-time {
-      vertical-align: sub;
-      margin-right: 70px;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 20px;
-    }
+    &-siderbar-content {
+      .radioGroup {
+        > label:first-child {
+          margin-right: 60px;
+        }
+      }
+
+    //.inline {
+    //  display: inline-block;
+    //}
+    //.send-time {
+    //  vertical-align: sub;
+    //  margin-right: 70px;
+    //  font-size: 14px;
+    //  color: rgba(0, 0, 0, 0.65);
+    //  line-height: 20px;
+    //}
     .content-text {
-      font-size: 14px;
+      //font-size: 14px;
       color: rgba(0, 0, 0, 0.65);
       line-height: 20px;
     }

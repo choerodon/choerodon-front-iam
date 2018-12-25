@@ -1,45 +1,11 @@
+@import "../../components/style/mixin/template";
+
 .c7n-iam-dashboard-announcement {
   &-detail {
     &-content {
       max-width: 800px;
-      h1 {
-        display: block;
-        font-size: 2em;
-        margin-block-start: 0.67em;
-        margin-block-end: 0.67em;
-        margin-inline-start: 0;
-        margin-inline-end: 0;
-        font-weight: bold;
-      }
-      p {
-        display: block;
-        margin-block-start: 1em;
-        margin-block-end: 1em;
-        margin-inline-start: 0;
-        margin-inline-end: 0;
-      }
-      ul, menu, dir {
-        display: block;
-        list-style-type: disc;
-        margin-block-start: 1em;
-        margin-block-end: 1em;
-        margin-inline-start: 0;
-        margin-inline-end: 0;
-        padding-inline-start: 40px;
-      }
-      h2 {
-        display: block;
-        font-size: 1.5em;
-        margin-block-start: 0.83em;
-        margin-block-end: 0.83em;
-        margin-inline-start: 0;
-        margin-inline-end: 0;
-        font-weight: bold;
-      }
-      li {
-        display: list-item;
-        text-align: -webkit-match-parent;
-      }
+
+      @include template;
     }
   }
   &-empty {

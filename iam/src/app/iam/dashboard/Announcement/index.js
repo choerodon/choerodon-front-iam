@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Modal, Timeline, Button } from 'choerodon-ui';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
+import { DashBoardNavBar } from 'choerodon-front-boot';
 import AnnouncementInfoStore from '../../stores/user/announcement-info';
 import './index.scss';
 
@@ -53,6 +54,10 @@ export default class Announcement extends Component {
             dangerouslySetInnerHTML={{ __html: `${content}` }}
           />
         </Modal>
+        <DashBoardNavBar>
+          {/* /#/iam/user-msg?type=site&msgType=${type} */}
+          <Link to="/iam/user-msg?type=site&msgType=announcement">转至系统公告</Link>
+        </DashBoardNavBar>
       </div>
     );
   }

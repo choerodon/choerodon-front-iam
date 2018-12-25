@@ -61,6 +61,7 @@ export default class UserMsg extends Component {
     this.loadUserInfo();
     const matchId = this.props.location.search.match(/msgId=(\d+)/g);
     const matchType = this.props.location.search.match(/(msgType=)(.+)/g); // 火狐浏览器不兼容js正则表达式的环视，只能改成这样了
+    window.console.log(matchType);
     if (matchType) {
       UserMsgStore.setCurrentType(matchType[0].substring(8));
     }
@@ -235,6 +236,8 @@ export default class UserMsg extends Component {
     const { intl } = this.props;
     const pagination = UserMsgStore.getPagination;
     const userMsg = UserMsgStore.getUserMsg;
+    const currentType = UserMsgStore.getCurrentType;
+    const isAnnounceMent = currentType === 'announcement';
     return (
       <Page
         service={[
@@ -247,9 +250,10 @@ export default class UserMsg extends Component {
           title={<FormattedMessage id="user.usermsg.header.title" />}
         >
           <Button
-            icon="check_box"
+            icon="playlist_add_check"
             onClick={this.selectAllMsg}
             style={{ width: '93px' }}
+            disabled={isAnnounceMent}
           >
             <FormattedMessage id={UserMsgStore.getUserMsg.length > 0 && UserMsgStore.isAllSelected ? 'selectnone' : 'selectall'} />
           </Button>
@@ -258,7 +262,7 @@ export default class UserMsg extends Component {
           >
             <Button
               icon="all_read"
-              disabled={UserMsgStore.getSelectMsg.size === 0}
+              disabled={UserMsgStore.getSelectMsg.size === 0 || isAnnounceMent}
               onClick={this.handleBatchRead}
             >
               <FormattedMessage id={`${intlPrefix}.markreadall`} />
@@ -269,7 +273,7 @@ export default class UserMsg extends Component {
           >
             <Button
               icon="delete"
-              disabled={UserMsgStore.getSelectMsg.size === 0}
+              disabled={UserMsgStore.getSelectMsg.size === 0 || isAnnounceMent}
               onClick={this.handleDelete}
             >
               <FormattedMessage id={'remove'} />
@@ -283,10 +287,10 @@ export default class UserMsg extends Component {
           </Button>
         </Header>
         <Content>
-          <Tabs defaultActiveKey="msg" onChange={this.handleTabsChange} activeKey={UserMsgStore.getCurrentType} animated={false} className="c7n-iam-user-msg-tab-container">
-            {[{ key: 'msg', value: '消息' }, { key: 'notice', value: '通知' }].map(panelItem => (
+          <Tabs defaultActiveKey="msg" onChange={this.handleTabsChange} activeKey={currentType} animated={false} className="c7n-iam-user-msg-tab-container">
+            {[{ key: 'msg', value: '消息' }, { key: 'notice', value: '通知' }, { key: 'announcement', value: '公告' }].map(panelItem => (
               <TabPane tab={panelItem.value} key={panelItem.key} className="c7n-iam-user-msg-tab">
-                <div className="c7n-iam-user-msg-btns">
+                <div className={classnames('c7n-iam-user-msg-btns', { 'c7n-iam-user-msg-btns-hidden': currentType === 'announcement' })}>
                   <Button
                     className={this.getUserMsgClass('unRead')}
                     onClick={() => { this.showUserMsg(false); }}

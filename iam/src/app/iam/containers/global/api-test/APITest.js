@@ -642,7 +642,14 @@ ${body}`;
         <div className="c7n-url-container">
           <div style={{ marginBottom: '30px' }}>
             <span className={classnames('method', `c7n-iam-apitest-content-right-container-title-methodTag-${method}`)}>{method}</span>
-            <input type="text" value={this.state.requestUrl} readOnly />
+            <Tooltip
+              title={this.state.requestUrl}
+              placement="top"
+              overlayStyle={{ wordBreak: 'break-all' }}
+              arrowPointAtCenter
+            >
+              <input type="text" value={this.state.requestUrl} readOnly />
+            </Tooltip>
             {!this.state.isSending ? (
               <Button
                 funcType="raised"

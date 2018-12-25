@@ -1,3 +1,5 @@
+@import "../../../components/style/mixin/template";
+
 .c7n-iam-user-msg {
   &-tab-container {
     overflow: visible;
@@ -32,6 +34,9 @@
     }
     &-panel {
       // display: flex;
+      .ant-collapse-content {
+        @include template;
+      }
     }
     .ant-collapse-header {
       line-height: 24px;
@@ -127,6 +132,10 @@
     }
     button.active {
       background: rgba(140, 158, 255, 0.2);
+    }
+
+    &-hidden {
+      display: none;
     }
   }
 

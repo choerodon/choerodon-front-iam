@@ -12,6 +12,8 @@ const PAGELOADSIZE = 10;
 class UserMsgStore {
   @observable userMsg = [];
 
+  @observable announceMsg = [];
+
   @observable userInfo = {};
 
   @observable expandCardId = 0;
@@ -73,7 +75,8 @@ class UserMsgStore {
   };
 
   @action expandAllMsg() {
-    this.expandMsg = new Set([...this.expandMsg, ...this.getUserMsg.map(action(v => v.id))]);
+    const msg = this.currentType === 'announcement' ? this.getAnnounceMsg.map(action(v => v.id)) : this.getUserMsg.map(action(v => v.id));
+    this.expandMsg = new Set([...this.expandMsg, ...msg]);
   }
 
   @action selectAllMsg() {
@@ -176,6 +179,16 @@ class UserMsgStore {
   }
 
   @computed
+  get getAnnounceMsg() {
+    return this.announceMsg;
+  }
+
+  @action
+  setAnnounceMsg(data) {
+    this.announceMsg = data;
+  }
+
+  @computed
   get getUserInfo() {
     return this.userInfo;
   }
@@ -250,6 +263,14 @@ class UserMsgStore {
     })}`);
   }
 
+  @action loadAnnouncement(pagination = this.pagination, filters, sort, params = this.params) {
+    return axios.get(`notify/v1/system_notice/all?${queryString.stringify({
+      page: pagination.current - 1,
+      size: pagination.pageSize,
+      status: 'COMPLETED',
+    })}`);
+  }
+
   /**
    *
    * @param pagination 分页
@@ -265,30 +286,47 @@ class UserMsgStore {
   @action
   loadData(pagination = this.pagination, filters = this.filters, { columnKey = 'id', order = 'descend' }, params = this.params, showAll, isWebSocket, msgId, type = this.currentType) {
     if (isWebSocket) this.setLoadingMore(true); else this.setLoading(true);
-    this.load(pagination, filters, { columnKey, order }, params, showAll, type).then(action((data) => {
-      this.setUserMsg(data.content ? data.content : data);
-      // 当显示的是未读消息的时候，加载完成后自动展开全部消息
-      this.showAll = showAll;
-      if (!showAll) this.expandAllMsg();
-      this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
-      if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
-      if (msgId) {
-        this.setExpandCardId(msgId);
-        this.readMsg([msgId]);
-      }
-      this.pagination = {
-        ...pagination,
-        total: data.totalElements,
-        pageSize: this.pagination.pageSize,
-        onChange: this.pagination.onChange,
-        onShowSizeChange: this.pagination.onShowSizeChange,
-      };
-      this.setLoading(false);
-    }))
-      .catch(action((error) => {
+    if (type !== 'announcement') {
+      this.load(pagination, filters, { columnKey, order }, params, showAll, type).then(action((data) => {
+        this.setUserMsg(data.content ? data.content : data);
+        // 当显示的是未读消息的时候，加载完成后自动展开全部消息
+        this.showAll = showAll;
+        if (!showAll) this.expandAllMsg();
+        this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
         if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
-        Choerodon.prompt(error.response.statusText);
+        if (msgId) {
+          this.setExpandCardId(msgId);
+          this.readMsg([msgId]);
+        }
+        this.pagination = {
+          ...pagination,
+          total: data.totalElements,
+          pageSize: this.pagination.pageSize,
+          onChange: this.pagination.onChange,
+          onShowSizeChange: this.pagination.onShowSizeChange,
+        };
+        this.setLoading(false);
+      }))
+        .catch(action((error) => {
+          if (isWebSocket) this.setLoadingMore(false); else this.setLoading(false);
+          Choerodon.prompt(error.response.statusText);
+        }));
+    } else {
+      this.loadAnnouncement(pagination = this.pagination, filters, { columnKey, order }, params).then(action((data) => {
+        this.setAnnounceMsg(data.content);
+        this.showAll = true;
+        this.expandAllMsg();
+        this.pagination.totalPages = data.content ? data.totalPages : data.length / PAGELOADSIZE + 1;
+        this.pagination = {
+          ...pagination,
+          total: data.totalElements,
+          pageSize: this.pagination.pageSize,
+          onChange: this.pagination.onChange,
+          onShowSizeChange: this.pagination.onShowSizeChange,
+        };
+        this.setLoading(false);
       }));
+    }
   }
 }
 

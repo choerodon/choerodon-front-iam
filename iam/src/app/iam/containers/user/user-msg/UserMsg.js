@@ -61,7 +61,6 @@ export default class UserMsg extends Component {
     this.loadUserInfo();
     const matchId = this.props.location.search.match(/msgId=(\d+)/g);
     const matchType = this.props.location.search.match(/(msgType=)(.+)/g); // 火狐浏览器不兼容js正则表达式的环视，只能改成这样了
-    window.console.log(matchType);
     if (matchType) {
       UserMsgStore.setCurrentType(matchType[0].substring(8));
     }
@@ -113,6 +112,19 @@ export default class UserMsg extends Component {
       <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
     </div>
   );
+
+  renderAnnoucenmentTitle = (title, id, sendDate, avatar) => (
+    <div className="c7n-iam-user-msg-collapse-title">
+      {avatar}
+      <span style={{ color: '#000' }}>{title}</span>
+      <Tooltip
+        title={sendDate}
+        placement="top"
+      >
+        <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendDate).getTime() / 1000)}</span>
+      </Tooltip>
+    </div>
+  )
 
   handleBatchRead = () => {
     if (UserMsgStore.getSelectMsg.size > 0) {
@@ -181,69 +193,110 @@ export default class UserMsg extends Component {
   };
 
   renderUserMsgCard(item) {
-    const { id, title, read, sendTime, content, sendByUser } = item;
     const { AppState } = this.props;
+    const currentType = UserMsgStore.getCurrentType;
+    const isAnnouncement = currentType === 'announcement';
     const innerStyle = {
-      userSelect: 'none', verticalAlign: 'top', marginRight: '8px', marginLeft: '12px', fontSize: '16px', color: 'rgba(0,0,0,0.65)',
+      userSelect: 'none', verticalAlign: 'top', marginRight: '8px', marginLeft: isAnnouncement ? '0' : '12px', fontSize: '16px', color: 'rgba(0,0,0,0.65)',
     };
-    let avatar;
-    if (sendByUser !== null) {
-      const { imageUrl, loginName, realName } = sendByUser;
-      avatar = (
-        <Tooltip title={`${loginName} ${realName}`}>
-          <Avatar size="small" src={imageUrl} style={innerStyle}>
-            {realName[0].toUpperCase()}
-          </Avatar>
-        </Tooltip>
+
+    const systemAvatar = (
+      <Tooltip title={AppState.siteInfo.systemName || 'Choerodon'}>
+        <Avatar size="small" src={AppState.siteInfo.favicon || './favicon.ico'} style={innerStyle}>
+          {(AppState.siteInfo.systemName && AppState.siteInfo.systemName[0]) || 'Choerodon'}
+        </Avatar>
+      </Tooltip>
+    );
+
+    let innerHTML;
+
+    if (!isAnnouncement) {
+      const { id, title, read, sendTime, content, sendByUser } = item;
+      let avatar;
+      if (sendByUser !== null) {
+        const { imageUrl, loginName, realName } = sendByUser;
+        avatar = (
+          <Tooltip title={`${loginName} ${realName}`}>
+            <Avatar size="small" src={imageUrl} style={innerStyle}>
+              {realName[0].toUpperCase()}
+            </Avatar>
+          </Tooltip>
+        );
+      } else {
+        avatar = systemAvatar;
+      }
+      innerHTML = (
+        <List.Item>
+          <Collapse
+            onChange={() => this.handleCollapseChange(item)}
+            className="c7n-iam-user-msg-collapse"
+            activeKey={UserMsgStore.getExpandMsg.has(id) ? [id.toString()] : []}
+            style={UserMsgStore.getExpandMsg.has(id) ? null : { backgroundColor: '#fff' }}
+          >
+            <Panel header={this.renderMsgTitle(title, id, read, sendTime, UserMsgStore.getSelectMsg.has(id), avatar)} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
+              {<div>
+                <div style={{ width: 'calc(100% - 72px)', margin: '0 36px', display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: `${content}` }} />
+              </div> }
+            </Panel>
+          </Collapse>
+
+        </List.Item>
       );
     } else {
-      avatar = (
-        <Tooltip title={AppState.siteInfo.systemName || 'Choerodon'}>
-          <Avatar size="small" src={AppState.siteInfo.favicon || './favicon.ico'} style={innerStyle}>
-            {(AppState.siteInfo.systemName && AppState.siteInfo.systemName[0]) || 'Choerodon'}
-          </Avatar>
-        </Tooltip>
+      const { id, title, sendDate, content } = item;
+      innerHTML = (
+        <List.Item>
+          <Collapse
+            onChange={() => this.handleCollapseChange(item)}
+            className="c7n-iam-user-msg-collapse"
+            activeKey={UserMsgStore.getExpandMsg.has(id) ? [id.toString()] : []}
+            style={UserMsgStore.getExpandMsg.has(id) ? null : { backgroundColor: '#fff' }}
+          >
+            <Panel header={this.renderAnnoucenmentTitle(title, id, sendDate, systemAvatar)} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
+              {<div>
+                <div style={{ width: 'calc(100% - 72px)', margin: '0 36px', display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: `${content}` }} />
+              </div> }
+            </Panel>
+          </Collapse>
+
+        </List.Item>
       );
     }
-    const innerHTML = (
-      <List.Item>
-        <Collapse
-          onChange={() => this.handleCollapseChange(item)}
-          className="c7n-iam-user-msg-collapse"
-          activeKey={UserMsgStore.getExpandMsg.has(id) ? [id.toString()] : []}
-          style={UserMsgStore.getExpandMsg.has(id) ? null : { backgroundColor: '#fff' }}
-        >
-          <Panel header={this.renderMsgTitle(title, id, read, sendTime, UserMsgStore.getSelectMsg.has(id), avatar)} key={id.toString()} className="c7n-iam-user-msg-collapse-panel">
-            {<div>
-              <div style={{ width: 'calc(100% - 72px)', margin: '0 36px', display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: `${content}` }} />
-            </div> }
-          </Panel>
-        </Collapse>
-
-      </List.Item>
-    );
     return innerHTML;
   }
 
-  renderEmpty = type => (
-    <div>
-      <div className="c7n-iam-user-msg-empty-icon" />
-      <div className="c7n-iam-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} />{type}</div>
-    </div>
-  );
+
+  renderEmpty = (type) => {
+    const currentType = UserMsgStore.getCurrentType;
+    const isAnnounceMent = currentType === 'announcement';
+    return isAnnounceMent ? (
+      <div>
+        <div className="c7n-iam-user-msg-empty-icon" />
+        <div className="c7n-iam-user-msg-empty-icon-text"><FormattedMessage id="user.usermsg.allempty" />公告</div>
+      </div>
+    ) : (
+      <div>
+        <div className="c7n-iam-user-msg-empty-icon" />
+        <div className="c7n-iam-user-msg-empty-icon-text"><FormattedMessage id={this.state.showAll ? 'user.usermsg.allempty' : 'user.usermsg.empty'} />{type}</div>
+      </div>
+    );
+  };
 
   render() {
     const { intl } = this.props;
     const pagination = UserMsgStore.getPagination;
     const userMsg = UserMsgStore.getUserMsg;
+    const announceMsg = UserMsgStore.getAnnounceMsg;
     const currentType = UserMsgStore.getCurrentType;
     const isAnnounceMent = currentType === 'announcement';
+    const currentMsg = isAnnounceMent ? announceMsg : userMsg;
     return (
       <Page
         service={[
           'notify-service.site-msg-record.pagingQuery',
           'notify-service.site-msg-record.batchDeleted',
           'notify-service.site-msg-record.batchRead',
+          'notify-service.system-announcement.pagingQuery',
         ]}
       >
         <Header
@@ -303,11 +356,12 @@ export default class UserMsg extends Component {
                   ><FormattedMessage id="user.usermsg.all" /></Button>
                 </div>
                 <List
+                  style={{ width: isAnnounceMent ? '100%' : 'calc(100% - 113px)' }}
                   className="c7n-iam-user-msg-list"
                   loading={UserMsgStore.getLoading}
                   itemLayout="horizontal"
-                  pagination={userMsg.length > 0 ? pagination : false}
-                  dataSource={userMsg}
+                  pagination={currentMsg.length > 0 ? pagination : false}
+                  dataSource={isAnnounceMent ? announceMsg : userMsg}
                   renderItem={item => (this.renderUserMsgCard(item))}
                   split={false}
                   empty={this.renderEmpty(panelItem.value)}

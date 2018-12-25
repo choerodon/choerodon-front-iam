@@ -22,23 +22,35 @@ export default class Announcement extends Component {
 
   render() {
     const { visible, title, content, announcementData } = AnnouncementInfoStore;
+    let containerStyle = {
+      display: 'block',
+    };
+
+    if (announcementData.length !== 0) {
+      containerStyle = {
+        display: 'flex',
+        justifyContent: 'center',
+      };
+    }
     return (
-      <div className="c7n-iam-dashboard-announcement">
+      <div className="c7n-iam-dashboard-announcement" style={containerStyle}>
         {announcementData.length === 0 ? (
           <React.Fragment>
             <div className="c7n-iam-dashboard-announcement-empty" />
             <div className="c7n-iam-dashboard-announcement-empty-text">暂无公告</div>
           </React.Fragment>
         ) : (
-          <Timeline className="c7n-iam-dashboard-announcement-timeline">
-            {announcementData.map(data => (
-              <Item className="item">
-                <div className="time"><p>{data.sendDate.split(' ')[0]}</p><p>{data.sendDate.split(' ')[1]}</p></div>
-                <div className="title"><a onClick={() => AnnouncementInfoStore.showDetail(data)}>{data.title}</a></div>
-              </Item>
-            ))}
-            <Item>null</Item>
-          </Timeline>
+          <React.Fragment>
+            <Timeline className="c7n-iam-dashboard-announcement-timeline">
+              {announcementData.map(data => (
+                <Item className="item">
+                  <div className="time"><p>{data.sendDate.split(' ')[0]}</p><p>{data.sendDate.split(' ')[1]}</p></div>
+                  <div className="title"><a onClick={() => AnnouncementInfoStore.showDetail(data)}>{data.title}</a></div>
+                </Item>
+              ))}
+              <Item>null</Item>
+            </Timeline>
+          </React.Fragment>
         )}
         <Modal
           visible={visible}
@@ -55,8 +67,7 @@ export default class Announcement extends Component {
           />
         </Modal>
         <DashBoardNavBar>
-          {/* /#/iam/user-msg?type=site&msgType=${type} */}
-          <Link to="/iam/user-msg?type=site&msgType=announcement">转至系统公告</Link>
+          <Link to="/iam/user-msg?type=site&msgType=announcement">转至所有公告</Link>
         </DashBoardNavBar>
       </div>
     );

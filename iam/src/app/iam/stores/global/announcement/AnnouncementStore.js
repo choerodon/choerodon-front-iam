@@ -18,7 +18,7 @@ class AnnouncementStore {
   };
   @observable params = [];
   @observable filters = {};
-  @observable sort = {};
+  @observable sort = { columnKey: 'id', order: 'descend' };
   @observable announcementType = null;
   @observable selectType = 'create';
 

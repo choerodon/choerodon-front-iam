@@ -63,12 +63,13 @@
       }
     }
   }
+
   &-list .ant-list-item {
     padding: 0;
     margin-top: 16px;
   }
   &-list {
-    width: calc(100% - 113px);
+    //width: calc(100% - 113px);
     .ant-spin-spinning {
       opacity: 1;
       display: inline-block;

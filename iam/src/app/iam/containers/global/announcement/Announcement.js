@@ -8,6 +8,7 @@ import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import './Announcement.scss';
 import StatusTag from '../../../components/statusTag';
 import Editor from '../../../components/editor';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 // 匹配html界面为空白的正则。
 const patternHTMLEmpty = /^(((<[^>]+>)*\s*)|&nbsp;|\s)*$/g;
@@ -67,21 +68,6 @@ export default class Announcement extends Component {
     AnnouncementStore.setAnnouncementType(this.announcementType);
     AnnouncementStore.loadData();
   };
-
-  getPermission() {
-    const { AppState } = this.props;
-    const { type } = AppState.currentMenuType;
-    let createService = ['asgard-service.system-notification.createNotificationOnSite'];
-    let deleteService = ['asgard-service.system-notification.deleteSiteNotification'];
-    if (type === 'organization') {
-      createService = ['asgard-service.system-notification.createNotificationOnOrg'];
-      deleteService = ['asgard-service.system-notification.deleteOrgNotification'];
-    }
-    return {
-      createService,
-      deleteService,
-    };
-  }
 
   handleTableChange = (pagination, filters, sort, params) => {
     this.fetchData(pagination, filters, sort, params);
@@ -179,32 +165,8 @@ export default class Announcement extends Component {
     AnnouncementStore.showSideBar();
   }
 
-  // renderSidebarContent = () => {
-  //   const { AnnouncementStore, form } = this.props;
-  //   const { selectType } = AnnouncementStore;
-  //   if (selectType === 'crea')
-  // }
-
-  // showCreate = () => {
-  //   const { AnnouncementStore, form } = this.props;
-  //   AnnouncementStore.setCurrentRecord(false);
-  //   AnnouncementStore.setEditorContent(null);
-  //   form.resetFields();
-  //   AnnouncementStore.showSideBar();
-  // };
-  //
-  // handleModify = (record) => {
-  //   this.props.AnnouncementStore.showSideBar();
-  //   this.props.AnnouncementStore.setCurrentRecord(record);
-  // }
-  //
-  // showDetail(record) {
-  //   this.props.AnnouncementStore.showSideBar();
-  //   this.props.AnnouncementStore.setCurrentRecord(record);
-  // }
-
   fetchData(pagination, filters, sort, params) {
-    this.props.AnnouncementStore.loadData(pagination, filters, sort, params);
+    this.props.AnnouncementStore.loadData(pagination, filters, { columnKey: 'id', order: 'descend' }, params);
   }
 
   getTableColumns() {
@@ -217,12 +179,18 @@ export default class Announcement extends Component {
         key: 'title',
         filters: [],
         filteredValue: filters.title || [],
+        width: '10%',
+        render: text => (
+          <MouseOverWrapper text={text} width={0.1}>
+            {text}
+          </MouseOverWrapper>
+        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.content`} />,
         dataIndex: 'content',
         key: 'content',
-        width: '35%',
+        width: '15%',
         filters: [],
         filteredValue: filters.content || [],
         className: 'nowarp',
@@ -256,59 +224,51 @@ export default class Announcement extends Component {
     ];
   }
 
-  renderAction = (text, record) => {
-    const { deleteService } = this.getPermission();
-
-    return (
-      <React.Fragment>
-        {/* <Permission service={['iam-service.organization.update']}> */}
-        {
+  renderAction = (text, record) => (
+    <React.Fragment>
+      {
           record.status === 'WAITING' && (
-            <Tooltip
-              title={<FormattedMessage id="modify" />}
-              placement="bottom"
-            >
-              <Button
-                size="small"
-                icon="mode_edit"
-                shape="circle"
-                onClick={() => this.handleOpen('modify', record)}
-              />
-            </Tooltip>
+            <Permission service={['notify-service.system-announcement.update']}>
+              <Tooltip
+                title={<FormattedMessage id="modify" />}
+                placement="bottom"
+              >
+                <Button
+                  size="small"
+                  icon="mode_edit"
+                  shape="circle"
+                  onClick={() => this.handleOpen('modify', record)}
+                />
+              </Tooltip>
+            </Permission>
           )
         }
-        {/* </Permission> */}
+      <Tooltip
+        title={<FormattedMessage id="announcement.detail" />}
+        placement="bottom"
+      >
+        <Button
+          shape="circle"
+          icon="find_in_page"
+          size="small"
+          onClick={() => this.handleOpen('detail', record)}
+        />
+      </Tooltip>
+      <Permission service={['notify-service.system-announcement.delete']}>
         <Tooltip
-          title={<FormattedMessage id="announcement.detail" />}
+          title={<FormattedMessage id="delete" />}
           placement="bottom"
         >
           <Button
-            shape="circle"
-            icon="find_in_page"
             size="small"
-            onClick={() => this.handleOpen('detail', record)}
+            icon="delete_forever"
+            shape="circle"
+            onClick={() => this.handleDelete(record)}
           />
         </Tooltip>
-        <Permission
-          service={deleteService}
-          type={this.announcementType.type}
-          organizationId={this.announcementType.orgId}
-        >
-          <Tooltip
-            title={<FormattedMessage id="delete" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="delete_forever"
-              shape="circle"
-              onClick={() => this.handleDelete(record)}
-            />
-          </Tooltip>
-        </Permission>
-      </React.Fragment>
-    );
-  };
+      </Permission>
+    </React.Fragment>
+  );
 
   renderSidebarOkText() {
     const { AnnouncementStore: { selectType } } = this.props;
@@ -351,6 +311,7 @@ export default class Announcement extends Component {
               initialValue: isModify ? moment(currentRecord.sendDate) : undefined,
             })(
               <DatePicker
+                className="c7n-iam-announcement-siderbar-content-datepicker"
                 label={<FormattedMessage id="announcement.send.date" />}
                 style={{ width: inputWidth }}
                 format="YYYY-MM-DD HH:mm:ss"
@@ -432,7 +393,6 @@ export default class Announcement extends Component {
     const { intl, AnnouncementStore: { announcementData, loading, pagination, params, sidebarVisible, currentRecord, submitting } } = this.props;
     const { intlPrefix } = this.announcementType;
     const { AnnouncementStore: { selectType } } = this.props;
-    const { createService } = this.getPermission();
     return (
       <Page
         service={[
@@ -443,7 +403,7 @@ export default class Announcement extends Component {
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
-          <Permission service={createService}>
+          <Permission service={['notify-service.system-announcement.create']}>
             <Button
               onClick={() => this.handleOpen('create')}
               icon="playlist_add"
@@ -479,7 +439,7 @@ export default class Announcement extends Component {
             onOk={this.handleOk}
             okText={this.renderSidebarOkText()}
             cancelText={<FormattedMessage id="cancel" />}
-            // okCancel={selectType === 'detail'}
+            okCancel={selectType !== 'detail'}
             onCancel={this.handleCancel}
             confirmLoading={submitting}
             visible={sidebarVisible}

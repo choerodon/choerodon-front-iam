@@ -36,6 +36,11 @@ const zh_CN = {
   'dashboard.myorganization.code': '组织编码',
   'dashboard.myorganization.redirect': '转至所有组织信息',
 
+  // FailedSaga
+  'dashboard.failedsaga.seven': '近7天',
+  'dashboard.failedsaga.fifteen': '近15天',
+  'dashboard.failedsaga.thirty': '近30天',
+
 };
 /* eslint-disable-next-line */
 export default zh_CN;

@@ -14,9 +14,15 @@ class OrganizationInfoStore {
     total: 0,
   };
   @observable params = [];
+  @observable showSize = 10;
 
   refresh(id) {
     this.loadData(id, { current: 1, pageSize: 10 }, []);
+  }
+
+  @action
+  setShowSize(size) {
+    this.showSize = size;
   }
 
   @action
@@ -34,7 +40,7 @@ class OrganizationInfoStore {
     this.loading = true;
     return axios.get(`/iam/v1/users/self/organizations/paging_query?${queryString.stringify({
       page: 0,
-      size: 5,
+      size: 20,
       enabled: true,
     })}`).then(action((result) => {
       const { failed, content } = result;

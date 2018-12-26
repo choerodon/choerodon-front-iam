@@ -19,10 +19,23 @@ export default class MyProject extends Component {
     this.loadData();
   }
 
+  componentDidMount() {
+    this.setShowSize();
+  }
+
   componentWillReceiveProps(nextProps) {
     const nextOrgId = this.getOrgId(nextProps);
     if (nextOrgId !== this.orgId) {
       this.loadData(nextOrgId);
+    }
+    this.setShowSize();
+  }
+
+  setShowSize() {
+    const { showSize } = ProjectInfoStore;
+    const newSize = parseInt((this.tableRef.parentElement.clientHeight - 51) / 33 - 1, 10);
+    if (newSize !== showSize) {
+      ProjectInfoStore.setShowSize(newSize);
     }
   }
 
@@ -58,14 +71,14 @@ export default class MyProject extends Component {
   }
 
   render() {
-    const { myProjectData, loading } = ProjectInfoStore;
+    const { myProjectData, loading, showSize } = ProjectInfoStore;
     return (
-      <div className="c7n-iam-dashboard-my-project">
+      <div className="c7n-iam-dashboard-my-project" ref={(e) => { this.tableRef = e; }}>
         <section>
           <Table
             loading={loading}
             columns={this.getTableColumns()}
-            dataSource={myProjectData.slice()}
+            dataSource={myProjectData.slice().slice(0, showSize > 0 ? showSize : 1)}
             filterBar={false}
             pagination={false}
             rowKey="code"

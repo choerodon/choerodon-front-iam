@@ -21,6 +21,22 @@ export default class MyOrganization extends Component {
     OrganizationInfoStore.loadMyOrganizations();
   };
 
+  componentDidMount() {
+    this.setShowSize();
+  }
+
+  componentWillReceiveProps() {
+    this.setShowSize();
+  }
+
+  setShowSize() {
+    const { showSize } = OrganizationInfoStore;
+    const newSize = parseInt((this.tableRef.parentElement.clientHeight - 51) / 33 - 1, 10);
+    if (newSize !== showSize) {
+      OrganizationInfoStore.setShowSize(newSize);
+    }
+  }
+
   handleRowClick({ id, name }) {
     const { history } = this.props;
     history.push(`/?type=organization&id=${id}&name=${encodeURIComponent(name)}`);
@@ -43,14 +59,14 @@ export default class MyOrganization extends Component {
   }
 
   render() {
-    const { myOrganizationData, loading } = OrganizationInfoStore;
+    const { myOrganizationData, loading, showSize } = OrganizationInfoStore;
     return (
-      <div className="c7n-iam-dashboard-my-organization">
+      <div className="c7n-iam-dashboard-my-organization" ref={(e) => { this.tableRef = e; }}>
         <section>
           <Table
             loading={loading}
             columns={this.getTableColumns()}
-            dataSource={myOrganizationData.slice()}
+            dataSource={myOrganizationData.slice().slice(0, showSize > 0 ? showSize : 1)}
             filterBar={false}
             pagination={false}
             rowKey="code"

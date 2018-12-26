@@ -33,7 +33,7 @@ export default class MyProject extends Component {
 
   setShowSize() {
     const { showSize } = ProjectInfoStore;
-    const newSize = parseInt((this.tableRef.parentElement.clientHeight - 51) / 33 - 1, 10);
+    const newSize = parseInt((this.tableRef.parentElement.clientHeight - 51) / (100 / 3) - 1, 10);
     if (newSize !== showSize) {
       ProjectInfoStore.setShowSize(newSize);
     }

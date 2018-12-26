@@ -33,7 +33,7 @@ class AnnouncementStore {
   }
 
   refresh() {
-    this.loadData({ current: 1, pageSize: 10, total: 0 }, {}, {}, []);
+    this.loadData({ current: 1, pageSize: 10, total: 0 }, {}, { columnKey: 'id', order: 'descend' }, []);
   }
 
   @action

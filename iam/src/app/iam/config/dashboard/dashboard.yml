@@ -60,3 +60,13 @@ dashboard:
       positionY: 0
       width: 4
       height: 4
+  - code: "AddedUsers"
+    icon: group_add
+    title: "新增用户"
+    description: "您可以在此了解平台今日新增用户与总用户数"
+    level: site
+    position:
+      positionX: 5
+      positionY: 0
+      width: 3
+      height: 4

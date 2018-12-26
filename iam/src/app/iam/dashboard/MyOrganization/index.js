@@ -31,7 +31,7 @@ export default class MyOrganization extends Component {
 
   setShowSize() {
     const { showSize } = OrganizationInfoStore;
-    const newSize = parseInt((this.tableRef.parentElement.clientHeight - 51) / 33 - 1, 10);
+    const newSize = parseInt((this.tableRef.parentElement.clientHeight - 51) / (100 / 3) - 1, 10);
     if (newSize !== showSize) {
       OrganizationInfoStore.setShowSize(newSize);
     }

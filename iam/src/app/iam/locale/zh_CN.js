@@ -627,6 +627,8 @@ const zh_CN = {
   project: '项目',
   organization: '组织',
 
+  'dashboard.failedsaga.seven': '近7天',
+
   // 组织管理
   'global.organization.header.title': '组织管理',
   'global.organization.create': '创建组织',

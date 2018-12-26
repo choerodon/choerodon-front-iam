@@ -55,6 +55,7 @@ dashboard:
     title: "事务失败情况"
     description: "您可以在此了解事务实例最近30天的执行失败情况"
     level: site
+    sort: 9
     position:
       positionX: 4
       positionY: 0
@@ -65,8 +66,9 @@ dashboard:
     title: "新增用户"
     description: "您可以在此了解平台今日新增用户与总用户数"
     level: site
+    sort: 10
     position:
       positionX: 5
       positionY: 0
       width: 3
-      height: 4
+      height: 2

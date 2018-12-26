@@ -50,3 +50,23 @@ dashboard:
     description: "我的组织"
     level: site
     sort: 8
+  - code: "FailedSaga"
+    icon: task_schedule
+    title: "事务失败情况"
+    description: "您可以在此了解事务实例最近30天的执行失败情况"
+    level: site
+    position:
+      positionX: 4
+      positionY: 0
+      width: 4
+      height: 4
+  - code: "AddedUsers"
+    icon: group_add
+    title: "新增用户"
+    description: "您可以在此了解平台今日新增用户与总用户数"
+    level: site
+    position:
+      positionX: 5
+      positionY: 0
+      width: 3
+      height: 4

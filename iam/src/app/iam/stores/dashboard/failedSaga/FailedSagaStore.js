@@ -8,6 +8,12 @@ class FailedSagaStore {
   @observable loading = true;
   @observable startTime = moment().subtract(6, 'days');
   @observable endTime = moment();
+  @observable showSize = 220;
+
+  @action
+  setShowSize(size) {
+    this.showSize = size;
+  }
 
   @action setChartData(data) {
     this.data = data;

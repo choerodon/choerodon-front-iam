@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { DashBoardNavBar, DashBoardToolBar } from 'choerodon-front-boot';
 import { Link, withRouter } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
@@ -7,14 +6,13 @@ import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
 import FailedSagaStore from '../../stores/dashboard/failedSaga';
-import TimePicker from './TimePicker';
 
 const intlPrefix = 'dashboard.failedsaga';
 
 @withRouter
 @inject('AppState')
 @observer
-export default class FailedSaga extends Component {
+export default class OnlineUsers extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -161,16 +159,6 @@ export default class FailedSaga extends Component {
     const { dateType } = this.state;
     return (
       <React.Fragment>
-        <DashBoardToolBar>
-          <TimePicker
-            startTime={FailedSagaStore.getStartTime}
-            endTime={FailedSagaStore.getEndTime}
-            func={this.loadChart}
-            type={dateType}
-            onChange={this.handleDateChoose}
-            store={FailedSagaStore}
-          />
-        </DashBoardToolBar>
         <Spin spinning={FailedSagaStore.loading}>
           <div id="c7n-iam-dashboard-failedsaga-chart" ref={(e) => { this.chartRef = e; }} style={{ height: `${FailedSagaStore.showSize}px` }}>
             <ReactEcharts
@@ -180,9 +168,6 @@ export default class FailedSaga extends Component {
 
           </div>
         </Spin>
-        <DashBoardNavBar>
-          <Link to="/iam/saga-instance">转至事务实例</Link>
-        </DashBoardNavBar>
       </React.Fragment>
     );
   }

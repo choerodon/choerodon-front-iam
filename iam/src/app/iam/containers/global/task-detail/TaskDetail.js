@@ -517,11 +517,22 @@ export default class TaskDetail extends Component {
       title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
       dataIndex: 'name',
       key: 'name',
+      width: '50%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.4}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
       dataIndex: 'value',
       key: 'value',
-      render: text => `${text}`,
+      width: '50%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.4}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }];
 
     const logColumns = [{

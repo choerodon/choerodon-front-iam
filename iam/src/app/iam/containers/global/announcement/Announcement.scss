@@ -16,6 +16,9 @@
       background: #f8f8f8;
       border-radius: 4px;
       padding: 20px;
+      img {
+        max-width: 100%;
+      }
     }
     &-content {
       width: 559px;

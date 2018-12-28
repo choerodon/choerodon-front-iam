@@ -43,21 +43,21 @@ export default class PermissionInfo extends Component {
     const iconType = { site: 'dvr', project: 'project', organization: 'domain' };
     return [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
-      width: '25%',
+      width: '20%',
       dataIndex: 'name',
       key: 'name',
-      className: 'c7n-permission-info-code',
+      className: 'c7n-permission-info-name',
       render: (text, record) => (
         <StatusTag iconType={iconType[record.level]} name={text} mode="icon" />
       ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
-      width: '20%',
+      width: '10%',
       dataIndex: 'code',
       key: 'code',
-      className: 'c7n-permission-info-description',
+      className: 'c7n-permission-info-code',
       render: text => (
-        <MouseOverWrapper text={text} width={0.15}>
+        <MouseOverWrapper text={text} width={0.08}>
           {text}
         </MouseOverWrapper>
       ),
@@ -66,7 +66,7 @@ export default class PermissionInfo extends Component {
       width: '5%',
       dataIndex: 'level',
       key: 'level',
-      className: 'c7n-permission-info-description',
+      className: 'c7n-permission-info-level',
       render: text => (
         <MouseOverWrapper text={text} width={0.04}>
           <FormattedMessage id={text} />
@@ -74,7 +74,7 @@ export default class PermissionInfo extends Component {
       ),
     }, {
       title: <FormattedMessage id="role" />,
-      width: '30%',
+      width: '45%',
       dataIndex: 'roles',
       key: 'roles',
       className: 'c7n-permission-info-description',

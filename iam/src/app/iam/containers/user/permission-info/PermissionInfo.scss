@@ -8,16 +8,32 @@
   }
 
   &-table {
-    table{
-      table-layout:fixed;
+    table {
+      table-layout: fixed;
     }
   }
 
   &-description {
-    text-overflow: ellipsis;
-    white-space: nowrap;
     max-width: 40%;
     width: 40%;
-    overflow: hidden;
+    line-height: 2;
+    .role-wrapper {
+      display: inline-block;
+      border-radius: 10px;
+      padding: 0 12px;
+      margin-right: 8px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 12px;
+      background: rgba(0, 0, 0, .08);
+      &-disabled {
+        background: rgba(0, 0, 0, 0.04);
+        color: rgba(0, 0, 0, 0.36);
+      }
+
+      &-enabled {
+        background: rgba(0, 0, 0, .08);
+      }
+    }
   }
 }

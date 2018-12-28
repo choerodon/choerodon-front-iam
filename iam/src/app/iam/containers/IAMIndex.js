@@ -54,6 +54,7 @@ const tokenManager = asyncRouter(() => import('./user/token-manager'));
 const receiveSetting = asyncRouter(() => import('./user/receive-setting'));
 const userInfo = asyncRouter(() => import('./user/user-info'));
 const userMsg = asyncRouter(() => import('./user/user-msg'));
+const permissionInfo = asyncRouter(() => import('./user/permission-info'));
 
 
 @inject('AppState')
@@ -104,6 +105,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/receive-setting`} component={receiveSetting} />
           <Route path={`${match.url}/user-info`} component={userInfo} />
           <Route path={`${match.url}/user-msg`} component={userMsg} />
+          <Route path={`${match.url}/permission-info`} component={permissionInfo} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

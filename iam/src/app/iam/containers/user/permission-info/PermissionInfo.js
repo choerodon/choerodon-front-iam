@@ -1,86 +1,118 @@
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { Content } from 'choerodon-front-boot';
-import { Table } from 'choerodon-ui';
+import classnames from 'classnames';
+import { Content, Header, Page } from 'choerodon-front-boot';
+import { Table, Button, Tooltip } from 'choerodon-ui';
 import './PermissionInfo.scss';
+import StatusTag from '../../../components/statusTag';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'user.permissioninfo';
 
 @injectIntl
+@inject('AppState', 'PermissionInfoStore')
 @observer
 export default class PermissionInfo extends Component {
   handlePageChange = (pagination, filters, sort, params) => {
-    const { store } = this.props;
-    store.loadData(pagination, params);
+    this.props.PermissionInfoStore.loadData(pagination, params);
+  };
+
+  handleRefresh = () => {
+    this.loadData();
+  };
+
+  loadData = () => {
+    this.props.PermissionInfoStore.setRole(this.props.AppState.getUserInfo);
+    this.props.PermissionInfoStore.loadData();
+  };
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  renderRoleColumn = (text) => {
+    const roles = text.split('\n');
+    return roles.map((value) => {
+      const item = <span className={'role-wrapper'} key={value}>{value}</span>;
+      return item;
+    });
   };
 
   getTableColumns() {
+    const iconType = { site: 'dvr', project: 'project', organization: 'domain' };
     return [{
-      title: <FormattedMessage id={`${intlPrefix}.table.permission`} />,
-      width: '50%',
+      title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
+      width: '25%',
+      dataIndex: 'name',
+      key: 'name',
+      className: 'c7n-permission-info-code',
+      render: (text, record) => (
+        <StatusTag iconType={iconType[record.level]} name={text} mode="icon" />
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
+      width: '20%',
       dataIndex: 'code',
       key: 'code',
-      className: 'c7n-permission-info-code',
+      className: 'c7n-permission-info-description',
       render: text => (
-        <MouseOverWrapper text={text} width={0.45}>
+        <MouseOverWrapper text={text} width={0.15}>
           {text}
         </MouseOverWrapper>
       ),
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.table.description`} />,
-      width: '50%',
-      dataIndex: 'description',
-      key: 'description',
+      title: <FormattedMessage id="level" />,
+      width: '5%',
+      dataIndex: 'level',
+      key: 'level',
       className: 'c7n-permission-info-description',
       render: text => (
-        <MouseOverWrapper text={text} width={0.45}>
-          {text}
+        <MouseOverWrapper text={text} width={0.04}>
+          <FormattedMessage id={text} />
         </MouseOverWrapper>
       ),
+    }, {
+      title: <FormattedMessage id="role" />,
+      width: '30%',
+      dataIndex: 'roles',
+      key: 'roles',
+      className: 'c7n-permission-info-description',
+      render: this.renderRoleColumn,
     }];
   }
 
   render() {
-    const {
-      intl,
-      store: {
-        loading, params, pagination, permissionData,
-        pagination: { total }, role: { name, projectName, organizationName },
-      },
-      type,
-    } = this.props;
-    const description = intl.formatMessage({ id: `${type}.permission.description` }, {
-      proName: projectName,
-      orgName: organizationName,
-      roleName: name,
-    });
-    const link = intl.formatMessage({ id: `${type}.link` });
+    const { intl, PermissionInfoStore: { pagination, params }, PermissionInfoStore } = this.props;
     return (
-      <Content
-        className="sidebar-content"
-        code={intlPrefix}
-        values={{
-          roleName: name,
-          description,
-          link,
-        }}
+      <Page
+        service={[
+          'iam-service.user.pagingQueryRole',
+        ]}
       >
-        <p style={{ fontSize: 18, marginBottom: 8 }}>{total}个已分配权限</p>
-        <Table
-          loading={loading}
-          columns={this.getTableColumns()}
-          pagination={pagination}
-          filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
-          dataSource={permissionData}
-          filters={params}
-          rowKey="code"
-          onChange={this.handlePageChange}
-          fixed
-          className="c7n-permission-info-table"
-        />
-      </Content>
+        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
+          <Button
+            onClick={this.handleRefresh}
+            icon="refresh"
+          >
+            <FormattedMessage id="refresh" />
+          </Button>
+        </Header>
+        <Content code={intlPrefix}>
+          <Table
+            loading={PermissionInfoStore.getLoading}
+            columns={this.getTableColumns()}
+            pagination={pagination}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+            dataSource={PermissionInfoStore.getDataSource}
+            filters={params}
+            rowKey="id"
+            onChange={this.handlePageChange}
+            fixed
+            className="c7n-permission-info-table"
+          />
+        </Content>
+      </Page>
     );
   }
 }

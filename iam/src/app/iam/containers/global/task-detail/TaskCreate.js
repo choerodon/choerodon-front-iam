@@ -138,7 +138,7 @@ export default class TaskCreate extends Component {
         break;
     }
     return backPath;
-  }
+  };
 
   /**
    * 返回列表页
@@ -146,7 +146,7 @@ export default class TaskCreate extends Component {
   goBack = () => {
     const backPath = this.getBackPath();
     this.props.history.push(backPath);
-  }
+  };
 
   /**
    * 获取步骤条状态
@@ -195,7 +195,7 @@ export default class TaskCreate extends Component {
     } else {
       return startTime.format().split('T')[0] > endTime.format().split('T')[0];
     }
-  }
+  };
 
   disabledEndDate = (endTime) => {
     const startTime = this.state.startTime;
@@ -203,7 +203,7 @@ export default class TaskCreate extends Component {
       return false;
     }
     return endTime.valueOf() <= startTime.valueOf();
-  }
+  };
 
   range = (start, end) => {
     const result = [];
@@ -211,7 +211,7 @@ export default class TaskCreate extends Component {
       result.push(i);
     }
     return result;
-  }
+  };
 
   @action
   disabledDateStartTime = (date) => {
@@ -234,21 +234,21 @@ export default class TaskCreate extends Component {
         };
       }
     }
-  }
+  };
 
   @action
   clearStartTimes = (status) => {
     if (!status) {
       this.endTimes = null;
     }
-  }
+  };
 
   @action
   clearEndTimes = (status) => {
     if (!status) {
       this.startTimes = null;
     }
-  }
+  };
 
   @action
   disabledDateEndTime = (date) => {
@@ -271,15 +271,15 @@ export default class TaskCreate extends Component {
         };
       }
     }
-  }
+  };
 
   onStartChange = (value) => {
     this.onChange('startTime', value);
-  }
+  };
 
   onEndChange = (value) => {
     this.onChange('endTime', value);
-  }
+  };
 
   onChange = (field, value) => {
     const { setFieldsValue } = this.props.form;
@@ -288,7 +288,7 @@ export default class TaskCreate extends Component {
     }, () => {
       setFieldsValue({ [field]: this.state[field] });
     });
-  }
+  };
   /* 时间选择器处理 -- end */
 
 
@@ -337,7 +337,7 @@ export default class TaskCreate extends Component {
         }
       });
     }
-  }
+  };
 
   checkCronExpression = (rule, value, callback) => {
     const { intl } = this.props;
@@ -349,7 +349,7 @@ export default class TaskCreate extends Component {
         callback();
       }
     });
-  }
+  };
 
   /**
    * cron表达式popover提示内容
@@ -389,7 +389,7 @@ export default class TaskCreate extends Component {
       );
     }
     return content;
-  }
+  };
 
 
   /**
@@ -426,7 +426,7 @@ export default class TaskCreate extends Component {
     }).catch((error) => {
       Choerodon.handleResponseError(error);
     });
-  }
+  };
 
   /**
    * 获取对应服务名的类名
@@ -450,7 +450,7 @@ export default class TaskCreate extends Component {
         });
       }
     });
-  }
+  };
 
   /**
    * 获取参数列表
@@ -481,7 +481,7 @@ export default class TaskCreate extends Component {
         paramsLoading: false,
       });
     }
-  }
+  };
 
   /**
    * 返回上一步
@@ -726,7 +726,7 @@ export default class TaskCreate extends Component {
       value = text === null ? undefined : text;
     }
     return value;
-  }
+  };
 
   /**
    * 渲染第二步
@@ -946,7 +946,7 @@ export default class TaskCreate extends Component {
         </Form>
       </div>
     );
-  }
+  };
 
   /**
    * 获取当前层级名称
@@ -969,7 +969,7 @@ export default class TaskCreate extends Component {
         break;
     }
     return level;
-  }
+  };
 
   /**
    * 渲染第三步
@@ -1066,7 +1066,7 @@ export default class TaskCreate extends Component {
         </div>
       </div>
     );
-  }
+  };
 
 
   /**
@@ -1084,7 +1084,7 @@ export default class TaskCreate extends Component {
       showSelectedRowKeys,
       showSelected,
     });
-  }
+  };
 
 
   /**
@@ -1104,7 +1104,7 @@ export default class TaskCreate extends Component {
     this.setState({
       informArr: checkedValue,
     });
-  }
+  };
 
   /**
    * 开启指定用户模态框
@@ -1125,7 +1125,7 @@ export default class TaskCreate extends Component {
     }, () => {
       this.loadUsers();
     });
-  }
+  };
 
   /**
    * 加载指定用户数据
@@ -1187,7 +1187,7 @@ export default class TaskCreate extends Component {
       createSelectedRowKeys: showSelectedRowKeys,
       isShowModal: false,
     });
-  }
+  };
 
 
   /**
@@ -1252,7 +1252,7 @@ export default class TaskCreate extends Component {
         filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
       />
     );
-  }
+  };
 
 
   /**
@@ -1402,7 +1402,7 @@ export default class TaskCreate extends Component {
         </div>
       </div>
     );
-  }
+  };
 
   handleSubmit = (step, e) => {
     e.preventDefault();
@@ -1489,9 +1489,13 @@ export default class TaskCreate extends Component {
             submitLoading: false,
           });
         }
+      } else {
+        this.setState({
+          submitLoading: false,
+        });
       }
     });
-  }
+  };
 
   render() {
     const { current } = this.state;

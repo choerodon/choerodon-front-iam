@@ -57,7 +57,7 @@ dashboard:
     level: site
     sort: 9
     position:
-      positionX: 4
+      positionX: 0
       positionY: 0
       width: 4
       height: 4
@@ -68,9 +68,9 @@ dashboard:
     level: site
     sort: 10
     position:
-      positionX: 5
+      positionX: 4
       positionY: 0
-      width: 3
+      width: 4
       height: 2
   - code: "OnlineUsers"
     icon: record_voice_over
@@ -79,7 +79,7 @@ dashboard:
     level: site
     sort: 11
     position:
-      positionX: 6
+      positionX: 8
       positionY: 0
       width: 4
       height: 4
@@ -90,7 +90,7 @@ dashboard:
     level: site
     sort: 12
     position:
-      positionX: 7
+      positionX: 0
       positionY: 0
       width: 4
       height: 4

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import ReactEcharts from 'echarts-for-react';
-import moment from 'moment';
+import { WSHandler } from 'choerodon-front-boot';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
-import FailedSagaStore from '../../stores/dashboard/failedSaga';
+import './index.scss';
+
 
 const intlPrefix = 'dashboard.failedsaga';
 
@@ -16,57 +17,24 @@ export default class OnlineUsers extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dateType: 'seven',
+      loading: true,
+      info: {
+        time: [],
+        data: [],
+      },
     };
   }
 
-  componentWillMount() {
-    this.loadChart();
-  }
-
-  componentDidMount() {
-    this.setShowSize();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setShowSize();
-  }
-
-
-  componentWillUnmount() {
-    FailedSagaStore.setStartTime(moment().subtract(6, 'days'));
-    FailedSagaStore.setEndTime(moment());
-  }
-
-  setShowSize() {
-    const { showSize } = FailedSagaStore;
-    const newSize = this.chartRef.parentElement.parentElement.parentElement.clientHeight - 51 - 10;
-    if (newSize !== showSize) {
-      FailedSagaStore.setShowSize(newSize);
-    }
-  }
-
-
-  loadChart = () => {
-    FailedSagaStore.setLoading(true);
-    const startDate = FailedSagaStore.getStartTime.format().split('T')[0];
-    const endDate = FailedSagaStore.getEndTime.format().split('T')[0];
-    FailedSagaStore.loadData(startDate, endDate);
-  }
-
-  handleDateChoose = (type) => {
-    this.setState({ dateType: type });
-  };
 
   getOption() {
-    const chartData = FailedSagaStore.getChartData;
+    const { info } = this.state;
     return {
-      color: ['#F44336'],
       tooltip: {
         trigger: 'axis',
         confine: true,
+        formatter: '{b}:00<br/>在线人数: {c}人',
+        backgroundColor: '#FFFFFF',
         borderWidth: 1,
-        backgroundColor: '#fff',
         borderColor: '#DDDDDD',
         extraCssText: 'box-shadow: 0 2px 4px 0 rgba(0,0,0,0.20)',
         textStyle: {
@@ -74,101 +42,103 @@ export default class OnlineUsers extends Component {
           color: '#000000',
         },
       },
+      legend: {
+        show: false,
+      },
+
       grid: {
-        top: '30px',
-        left: '3%',
-        right: '4%',
-        bottom: '0px',
+        left: '-10',
+        bottom: '3%',
+        height: '60%',
+        width: '100%',
         containLabel: true,
       },
       xAxis: [
         {
           type: 'category',
-          data: chartData ? chartData.date : [],
-          axisLine: {
-            lineStyle: {
-              color: '#eee',
-              type: 'solid',
-              width: 2,
-            },
-            onZero: true,
-          },
-          axisLabel: {
-            margin: 11, // X轴文字和坐标线之间的间距
-            textStyle: {
-              color: 'rgba(0, 0, 0, 0.65)',
-              fontSize: 12,
-            },
-            formatter(value) {
-              const month = value.split('-')[1];
-              const day = value.split('-')[2];
-              return `${month}/${day}`;
-            },
-          },
-          axisTick: {
-            alignWithLabel: true,
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: ['#eee'],
-              width: 1,
-              type: 'solid',
-            },
-          },
+          show: false,
+          boundaryGap: false,
+          data: info ? info.time : [],
         },
       ],
       yAxis: [
         {
           type: 'value',
-          minInterval: 1,
-          name: '次数',
-          nameLocation: 'end',
-          nameTextStyle: {
-            color: '#000',
-          },
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#eee',
-            },
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: ['#eee'],
-            },
-          },
-          axisLabel: {
-            color: 'rgba(0,0,0,0.65)',
-          },
+          show: false,
         },
       ],
       series: [
         {
-          name: '失败次数',
-          type: 'bar',
-          barWidth: '60%',
-          data: chartData ? chartData.data : [],
+          name: '在线人数',
+          type: 'line',
+          areaStyle: {
+            color: 'rgba(82,102,212,0.80)',
+          },
+          smooth: true,
+          symbolSize: 0,
+          data: info ? info.data : [],
+          lineStyle: {
+            width: 0,
+          },
         },
       ],
     };
   }
 
-  render() {
-    const { dateType } = this.state;
-    return (
-      <React.Fragment>
-        <Spin spinning={FailedSagaStore.loading}>
-          <div id="c7n-iam-dashboard-failedsaga-chart" ref={(e) => { this.chartRef = e; }} style={{ height: `${FailedSagaStore.showSize}px` }}>
+  handleMessage = (data) => {
+    this.setState({
+      info: {
+        time: data.time,
+        data: data.data,
+      },
+    });
+    // const { currentOnliners } = this.state;
+    // if (data.currentOnliners !== currentOnliners) {
+    //   this.setState({
+    //     currentOnliners: data.currentOnliners,
+    //   });
+    // }
+  }
+
+  getContent = (data) => {
+    let content;
+    if (data) {
+      content = (
+        <React.Fragment>
+          <div className="c7n-iam-dashboard-onlineuser-main">
+            <div className="c7n-iam-dashboard-onlineuser-main-current">
+              <span>{data ? data.CurrentOnliners : 0}</span><span>人</span></div>
             <ReactEcharts
-              style={{ height: '100%' }}
+              style={{ height: '250px', width: '100%' }}
               option={this.getOption()}
             />
-
           </div>
-        </Spin>
-      </React.Fragment>
+          <div className="c7n-iam-dashboard-onlineuser-bottom">
+            日总访问量: {data ? data.numberOfVisitorsToday : 0}
+          </div>
+        </React.Fragment>
+      );
+    } else {
+      content = <Spin spinning />;
+    }
+    return content;
+  }
+
+  render() {
+    const { loading } = this.state;
+    return (
+      <WSHandler
+        messageKey="choerodon:msg:online-info"
+        onMessage={this.handleMessage}
+      >
+        {
+          data => (
+            <div className="c7n-iam-dashboard-onlineuser">
+              {this.getContent(data)}
+            </div>
+          )
+        }
+      </WSHandler>
     );
   }
 }

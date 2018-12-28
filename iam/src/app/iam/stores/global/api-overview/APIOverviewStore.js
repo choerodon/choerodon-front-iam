@@ -140,9 +140,9 @@ class APIOverviewStore {
       if (res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        const { details, services } = res;
-        if (details.length && services.length) {
-          const handleDetails = details.map(item => ({ ...item, sortIndex: services.indexOf(item.service) }));
+        const { details, service } = res;
+        if (details.length && service.length) {
+          const handleDetails = details.map(item => ({ ...item, sortIndex: service.indexOf(item.service) }));
           const finalDetails = _.orderBy(handleDetails, ['sortIndex'], ['asc']);
           res.details = finalDetails;
         }
@@ -167,9 +167,9 @@ class APIOverviewStore {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          if (data.apis.length) {
-            const arr = data.apis.map(item => `${item.split(':')[1]}: ${item.split(':')[0]}`);
-            data.apis = arr;
+          if (data.api.length) {
+            const arr = data.api.map(item => `${item.split(':')[1]}: ${item.split(':')[0]}`);
+            data.api = arr;
           }
 
           this.setThirdChartData(data);

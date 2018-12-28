@@ -328,14 +328,14 @@ export default class APIOverview extends Component {
         type: 'plain',
         orient: 'vertical', // 图例纵向排列
         icon: 'circle',
-        data: secChartData ? secChartData.services : [],
+        data: secChartData ? secChartData.service : [],
       },
       grid: {
         left: '3%',
         top: 110,
-        containLabel: true,
         width: '65%',
         height: '55%',
+        containLabel: true,
       },
       xAxis: [
         {
@@ -421,13 +421,13 @@ export default class APIOverview extends Component {
         data: item.data,
         smooth: 0.2,
       }));
-      if (copyThirdChartData.apis.length) {
+      if (copyThirdChartData.api.length) {
         let selectedApis = [];
-        copyThirdChartData.apis.map((item) => { handledApis[item] = false; });
-        if (copyThirdChartData.apis.length > 10) {
-          selectedApis = copyThirdChartData.apis.splice(0, 10);
+        copyThirdChartData.api.map((item) => { handledApis[item] = false; });
+        if (copyThirdChartData.api.length > 10) {
+          selectedApis = copyThirdChartData.api.splice(0, 10);
         } else {
-          selectedApis = copyThirdChartData.apis;
+          selectedApis = copyThirdChartData.api;
         }
         for (let item of selectedApis) {
           handledApis[item] = true;
@@ -476,7 +476,7 @@ export default class APIOverview extends Component {
         right: 8,
         icon: 'circle',
         height: '70%',
-        data: thirdChartData ? thirdChartData.apis : [],
+        data: thirdChartData ? thirdChartData.api : [],
         selected: handledApis,
         formatter(name) {
           let strFirstPart;

@@ -1471,7 +1471,7 @@ const zh_CN = {
   'user.proinfo.project.redirect': '跳转至项目"{name}"',
 
   // 权限信息
-  'user.permissioninfo.header.title': '角色权限',
+  'user.permissioninfo.header.title': '权限信息',
   'user.permissioninfo.table.name': '名称',
   'user.permissioninfo.table.code': '编码',
 

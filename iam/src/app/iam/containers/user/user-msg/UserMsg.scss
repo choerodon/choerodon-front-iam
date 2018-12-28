@@ -35,6 +35,10 @@
     &-panel {
       // display: flex;
       .ant-collapse-content {
+        img {
+          max-width: 100%;
+        }
+
         @include template;
       }
     }

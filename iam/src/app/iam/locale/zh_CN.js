@@ -499,9 +499,8 @@ const pageDetail = {
   'user.proinfo.permission.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',
 
   // 权限信息
-  'user.permissioninfo.title': '查看角色"{roleName}"的权限',
-  'user.permissioninfo.description': '{description}',
-  'user.permissioninfo.link': '{link}',
+  'user.permissioninfo.title': '个人的权限信息',
+  'user.permissioninfo.description': '您可以在此查看自己在平台、组织、项目的角色权限信息。',
 
   // 接收设置
   'user.receive-setting.title': '站内信和邮件接收设置',
@@ -620,6 +619,7 @@ const zh_CN = {
   custom: '自定义',
   email: '邮件',
   pm: '站内信',
+  role: '角色',
 
   // type
   global: '全局',
@@ -1472,8 +1472,8 @@ const zh_CN = {
 
   // 权限信息
   'user.permissioninfo.header.title': '角色权限',
-  'user.permissioninfo.table.permission': '权限',
-  'user.permissioninfo.table.description': '描述',
+  'user.permissioninfo.table.name': '名称',
+  'user.permissioninfo.table.code': '编码',
 
   // 消息通知
   'user.usermsg.header.title': '消息通知',

@@ -15,6 +15,16 @@ class PermissionInfoStore {
   @observable params = [];
   @observable role = {};
 
+  @computed
+  get getLoading() {
+    return this.loading;
+  }
+
+  @computed
+  get getDataSource() {
+    return this.permissionData;
+  }
+
   @action
   setRole(role) {
     this.role = role;
@@ -25,7 +35,7 @@ class PermissionInfoStore {
     const { id } = this.role;
     this.loading = true;
     this.params = params;
-    return axios.get(`/iam/v1/roles/${id}/permissions?${queryString.stringify({
+    return axios.get(`/iam/v1/users/${id}/roles?${queryString.stringify({
       page: pagination.current - 1,
       size: pagination.pageSize,
       params: params.join(','),

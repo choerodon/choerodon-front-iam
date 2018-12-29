@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
-import { Content, Header, Page, Permission } from 'choerodon-front-boot';
+import { Content, Header, Page } from 'choerodon-front-boot';
 import { Table, Button, Tooltip } from 'choerodon-ui';
 import './PermissionInfo.scss';
 import StatusTag from '../../../components/statusTag';
@@ -102,10 +102,6 @@ export default class PermissionInfo extends Component {
       className: 'c7n-permission-info-action',
       align: 'right',
       render: (text, record) => {
-        console.log(record);
-        const a = this.props.HeaderStore;
-        console.log(a);
-        debugger
         const { name, level } = record;
         return (
           <Tooltip
@@ -126,14 +122,16 @@ export default class PermissionInfo extends Component {
   }
 
   render() {
-    const { intl, PermissionInfoStore: { pagination, params }, PermissionInfoStore } = this.props;
+    const { intl, PermissionInfoStore: { pagination, params }, PermissionInfoStore, AppState: { getUserInfo: { realName } } } = this.props;
     return (
       <Page
         service={[
           'iam-service.user.pagingQueryRole',
         ]}
       >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
+        <Header
+          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
+        >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
@@ -141,7 +139,7 @@ export default class PermissionInfo extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code={intlPrefix}>
+        <Content code={intlPrefix} values={{ name: realName }}>
           <Table
             loading={PermissionInfoStore.getLoading}
             columns={this.getTableColumns()}

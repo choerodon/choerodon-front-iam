@@ -499,7 +499,7 @@ const pageDetail = {
   'user.proinfo.permission.description': '您可以在此查看您在项目"{proName}"下"{roleName}"的权限。',
 
   // 权限信息
-  'user.permissioninfo.title': '个人的权限信息',
+  'user.permissioninfo.title': '用户"{name}"的权限信息',
   'user.permissioninfo.description': '您可以在此查看自己在平台、组织、项目的角色权限信息。',
 
   // 接收设置

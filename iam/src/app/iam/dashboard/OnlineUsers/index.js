@@ -50,7 +50,7 @@ export default class OnlineUsers extends Component {
       grid: {
         left: '-10',
         bottom: '0px',
-        height: '100%',
+        height: '80%',
         width: '100%',
         containLabel: true,
       },
@@ -66,6 +66,7 @@ export default class OnlineUsers extends Component {
         {
           type: 'value',
           show: false,
+          minInterval: 1,
         },
       ],
       series: [
@@ -93,12 +94,6 @@ export default class OnlineUsers extends Component {
         data: data.data,
       },
     });
-    // const { currentOnliners } = this.state;
-    // if (data.currentOnliners !== currentOnliners) {
-    //   this.setState({
-    //     currentOnliners: data.currentOnliners,
-    //   });
-    // }
   }
 
   getContent = (data) => {

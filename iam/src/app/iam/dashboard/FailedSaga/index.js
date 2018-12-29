@@ -27,29 +27,11 @@ export default class FailedSaga extends Component {
   componentWillMount() {
     this.loadChart();
   }
-  //
-  // componentDidMount() {
-  //   this.setShowSize();
-  // }
 
-  // componentWillReceiveProps(nextProps) {
-  //   this.setShowSize();
-  // }
-  //
-  //
-  // componentWillUnmount() {
-  //   FailedSagaStore.setStartTime(moment().subtract(6, 'days'));
-  //   FailedSagaStore.setEndTime(moment());
-  // }
-  //
-  // setShowSize() {
-  //   const { showSize } = FailedSagaStore;
-  //   const newSize = this.chartRef.parentElement.clientHeight - 51 - 10;
-  //   if (newSize !== showSize) {
-  //     FailedSagaStore.setShowSize(newSize);
-  //   }
-  // }
-
+  componentWillUnmount() {
+    FailedSagaStore.setStartTime(moment().subtract(6, 'days'));
+    FailedSagaStore.setEndTime(moment());
+  }
 
   loadChart = () => {
     FailedSagaStore.setLoading(true);

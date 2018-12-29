@@ -40,6 +40,13 @@ const zh_CN = {
   'dashboard.failedsaga.seven': '近7天',
   'dashboard.failedsaga.fifteen': '近15天',
   'dashboard.failedsaga.thirty': '近30天',
+  'dashboard.failedsaga.redirect': '转至事务实例',
+  'dashboard.failedsaga.times': '次数',
+  'dashboard.failedsaga.failed.times': '失败次数',
+
+  // OnlineUsers
+  'dashboard.onlineusers.count': '在线人数',
+  'dashboard.onlineusers.persons': '人',
 
 };
 /* eslint-disable-next-line */

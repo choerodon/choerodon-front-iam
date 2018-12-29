@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import ReactEcharts from 'echarts-for-react';
 import { WSHandler } from 'choerodon-front-boot';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
 import './index.scss';
 
-
-const intlPrefix = 'dashboard.failedsaga';
+const intlPrefix = 'dashboard.onlineusers';
 
 @withRouter
+@injectIntl
 @inject('AppState')
 @observer
 export default class OnlineUsers extends Component {
@@ -28,11 +28,12 @@ export default class OnlineUsers extends Component {
 
   getOption() {
     const { info } = this.state;
+    const { intl: { formatMessage } } = this.props;
     return {
       tooltip: {
         trigger: 'axis',
         confine: true,
-        formatter: '{b}:00<br/>在线人数: {c}人',
+        formatter: `{b}:00<br/>${formatMessage({ id: 'dashboard.onlineusers.count' })}: {c}${formatMessage({ id: 'dashboard.onlineusers.persons' })}`,
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
         borderColor: '#DDDDDD',
@@ -48,8 +49,8 @@ export default class OnlineUsers extends Component {
 
       grid: {
         left: '-10',
-        bottom: '3%',
-        height: '60%',
+        bottom: '0px',
+        height: '100%',
         width: '100%',
         containLabel: true,
       },
@@ -69,7 +70,7 @@ export default class OnlineUsers extends Component {
       ],
       series: [
         {
-          name: '在线人数',
+          name: formatMessage({ id: 'dashboard.onlineusers.count' }),
           type: 'line',
           areaStyle: {
             color: 'rgba(82,102,212,0.80)',
@@ -107,9 +108,10 @@ export default class OnlineUsers extends Component {
         <React.Fragment>
           <div className="c7n-iam-dashboard-onlineuser-main">
             <div className="c7n-iam-dashboard-onlineuser-main-current">
-              <span>{data ? data.CurrentOnliners : 0}</span><span>人</span></div>
+              <span>{data ? data.CurrentOnliners : 0}</span><span>人</span>
+            </div>
             <ReactEcharts
-              style={{ height: '250px', width: '100%' }}
+              style={{ height: '60%', width: '100%' }}
               option={this.getOption()}
             />
           </div>
@@ -133,7 +135,7 @@ export default class OnlineUsers extends Component {
       >
         {
           data => (
-            <div className="c7n-iam-dashboard-onlineuser">
+            <div className="c7n-iam-dashboard-onlineuser" ref={(e) => { this.chartRef = e; }}>
               {this.getContent(data)}
             </div>
           )

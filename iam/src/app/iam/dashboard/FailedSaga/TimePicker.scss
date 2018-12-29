@@ -1,4 +1,4 @@
-.c7n-iam-apioverview-date-wrap {
+.c7n-iam-dashboard-failedsaga-date-wrap {
   display: flex;
 
   .c7n-report-time-btn {
@@ -7,14 +7,17 @@
     .ant-btn {
       padding: 0 8px;
     }
+
+    button {
+      height: 25px;
+      line-height: 25px;
+    }
   }
 
   .c7n-iam-apioverview-time-pick {
-    //display: inline-block;
     height: 32px;
     width: 214px;
     line-height: 32px;
-    //background: rgba(0, 0, 0, .04);
     border-radius: 0 2px 2px 0;
 
     .ant-calendar-picker-input {

@@ -8,7 +8,6 @@ import moment from 'moment';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
 import OrganizationStatisticsStore from '../../stores/dashboard/organizationStatistics';
 import './index.scss';
-import FailedSagaStore from '../../stores/dashboard/failedSaga';
 
 const ButtonGroup = Button.Group;
 
@@ -16,38 +15,13 @@ const ButtonGroup = Button.Group;
 @inject('AppState')
 @observer
 export default class OrganizationStatistics extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      chartSize: '300',
-    };
-  }
-
   componentWillMount() {
     this.loadChart();
   }
 
-  componentDidMount() {
-    this.setShowSize();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setShowSize();
-  }
-  //
   componentWillUnmount() {
     OrganizationStatisticsStore.setChartData({});
     OrganizationStatisticsStore.setCurrentOrg(null);
-  }
-
-  setShowSize() {
-    const { chartSize } = this.state;
-    const newSize = this.chartRef.parentElement.parentElement.parentElement.parentElement.clientHeight - 13;
-    if (newSize !== chartSize) {
-      this.setState({
-        chartSize: newSize,
-      });
-    }
   }
 
 
@@ -66,12 +40,7 @@ export default class OrganizationStatistics extends Component {
 
   renderOrgs = () => {
     const orgs = OrganizationStatisticsStore.getOrganizations;
-    let handleOrgs = orgs;
-    if (orgs && orgs.length > 9) {
-      handleOrgs = orgs.slice(0, 9);
-    }
-
-    const btns = handleOrgs.map(({ name, id }) => (
+    const btns = orgs.map(({ name, id }) => (
       <Button type="primary" key={id} value={id} onClick={this.setOrgId.bind(this, id)} style={{ backgroundColor: OrganizationStatisticsStore.getCurrentOrg === id ? 'rgba(140,158,255,0.16' : '' }}>{name}</Button>
     ));
 
@@ -112,7 +81,7 @@ export default class OrganizationStatistics extends Component {
       series: [
         {
           type: 'pie',
-          center: ['50%', '35%'],
+          center: ['50%', '33%'],
           radius: ['40%', '60%'],
           avoidLabelOverlap: false,
           label: {
@@ -138,22 +107,23 @@ export default class OrganizationStatistics extends Component {
   }
 
   render() {
-    const { chartSize } = this.state;
     return (
-      <Spin spinning={OrganizationStatisticsStore.loading}>
-        <div className="c7n-iam-orgstatistics">
-          <ButtonGroup className="c7n-iam-orgstatistics-btns">
-            {this.renderOrgs()}
-          </ButtonGroup>
-          <div className="c7n-iam-orgstatistics-chart" ref={(e) => { this.chartRef = e; }} style={{ height: `${chartSize}px` }}>
-            <ReactEcharts
-              style={{ height: '100%' }}
-              option={this.getOption()}
-              notMerge
-            />
+      <div className="c7n-iam-orgstatistics-wrapper">
+        <Spin spinning={OrganizationStatisticsStore.loading}>
+          <div className="c7n-iam-orgstatistics">
+            <ButtonGroup className="c7n-iam-orgstatistics-btns">
+              {this.renderOrgs()}
+            </ButtonGroup>
+            <div className="c7n-iam-orgstatistics-chart">
+              <ReactEcharts
+                style={{ height: '100%' }}
+                option={this.getOption()}
+                notMerge
+              />
+            </div>
           </div>
-        </div>
-      </Spin>
+        </Spin>
+      </div>
     );
   }
 }

@@ -14,16 +14,13 @@
   }
 
   &-main {
-    position: relative;
-    //height: calc(80% - 67px);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    //align-self: center;
+    height: calc(80% - 67px);
+
     &-current {
-      position: absolute;
-      top: 20%;
       span:first-child {
         font-size: 36px;
         color: rgba(0, 0, 0, 0.87);

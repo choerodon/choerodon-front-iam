@@ -507,10 +507,16 @@
         sort: 2
         permission:
           - 'iam-service.user.selfUpdatePassword'
+    - "permission-info":
+        icon: project
+        Routes: /iam/permission-info
+        sort: 3
+        permission:
+        - 'iam-service.user.pagingQueryRole'
     - "token-manager":
         icon: authority
         Routes: /iam/token-manager
-        sort: 3
+        sort: 4
         permission:
           - 'iam-service.access-token.list'
           - 'iam-service.access-token.delete'
@@ -547,9 +553,3 @@
           - 'notify-service.receive-setting.queryByUserId'
           - 'notify-service.receive-setting.updateByUserId'
           - 'notify-service.receive-setting.update'
-    - "permission-info":
-        icon: project
-        Routes: /iam/permission-info
-        sort: 8
-        permission:
-          - 'iam-service.user.pagingQueryRole'

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
-import { Content, Header, Page } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { Table, Button, Tooltip } from 'choerodon-ui';
 import './PermissionInfo.scss';
 import StatusTag from '../../../components/statusTag';
@@ -11,7 +12,7 @@ import MouseOverWrapper from '../../../components/mouseOverWrapper';
 const intlPrefix = 'user.permissioninfo';
 
 @injectIntl
-@inject('AppState', 'PermissionInfoStore')
+@inject('AppState', 'PermissionInfoStore', 'HeaderStore')
 @observer
 export default class PermissionInfo extends Component {
   handlePageChange = (pagination, filters, sort, params) => {
@@ -33,11 +34,24 @@ export default class PermissionInfo extends Component {
 
   renderRoleColumn = (text) => {
     const roles = text.split('\n');
-    return roles.map((value) => {
-      const item = <span className={'role-wrapper'} key={value}>{value}</span>;
+    return roles.map((value, index) => {
+      const item = <span className={'role-wrapper'} key={index}>{value}</span>;
       return item;
     });
   };
+
+  getRedirectURL({ id, name, level }) {
+    switch (level) {
+      case 'site':
+        return { pathname: '/' };
+      case 'organization':
+        return `/?type=${level}&id=${id}&name=${encodeURIComponent(name)}`;
+      case 'project':
+        return `/?type=${level}&id=${id}&name=${encodeURIComponent(name.split('/')[1])}`;
+      default:
+        return { pathname: '/', query: {} };
+    }
+  }
 
   getTableColumns() {
     const iconType = { site: 'dvr', project: 'project', organization: 'domain' };
@@ -48,7 +62,9 @@ export default class PermissionInfo extends Component {
       key: 'name',
       className: 'c7n-permission-info-name',
       render: (text, record) => (
-        <StatusTag iconType={iconType[record.level]} name={text} mode="icon" />
+        <Link to={this.getRedirectURL(record)}>
+          <StatusTag iconType={iconType[record.level]} name={text} mode="icon" />
+        </Link>
       ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
@@ -74,11 +90,38 @@ export default class PermissionInfo extends Component {
       ),
     }, {
       title: <FormattedMessage id="role" />,
-      width: '45%',
+      width: '42%',
       dataIndex: 'roles',
       key: 'roles',
       className: 'c7n-permission-info-description',
       render: this.renderRoleColumn,
+    }, {
+      title: '',
+      width: '5%',
+      key: 'action',
+      className: 'c7n-permission-info-action',
+      align: 'right',
+      render: (text, record) => {
+        console.log(record);
+        const a = this.props.HeaderStore;
+        console.log(a);
+        debugger
+        const { name, level } = record;
+        return (
+          <Tooltip
+            title={<FormattedMessage id={`${intlPrefix}.${level}.redirect`} values={{ name }} />}
+            placement="bottomRight"
+          >
+            <Link to={this.getRedirectURL(record)}>
+              <Button
+                shape="circle"
+                icon="exit_to_app"
+                size="small"
+              />
+            </Link>
+          </Tooltip>
+        );
+      },
     }];
   }
 

@@ -1474,6 +1474,10 @@ const zh_CN = {
   'user.permissioninfo.header.title': '权限信息',
   'user.permissioninfo.table.name': '名称',
   'user.permissioninfo.table.code': '编码',
+  'user.permissioninfo.site.redirect': '跳转至平台主页',
+  'user.permissioninfo.organization.redirect': '跳转至组织"{name}"',
+  'user.permissioninfo.project.redirect': '跳转至项目"{name}"',
+
 
   // 消息通知
   'user.usermsg.header.title': '消息通知',

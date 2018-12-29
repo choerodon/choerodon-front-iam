@@ -21,7 +21,7 @@ class AnnouncementInfoStore {
 
   @action
   loadData() {
-    return axios.get('notify/v1/system_notice/all?status=COMPLETED').then(action(
+    return axios.get('notify/v1/system_notice/completed?size=30').then(action(
       (data) => {
         if (!data.failed) {
           this.announcementData = data.content;

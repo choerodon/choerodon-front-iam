@@ -15,6 +15,11 @@
     color: #000;
     > span {
       vertical-align: middle;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: calc(100% - 24px);
+      display: inline-block;
+      overflow: hidden;
     }
     i {
       padding-right: 6px;

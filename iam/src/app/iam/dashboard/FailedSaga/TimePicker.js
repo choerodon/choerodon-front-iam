@@ -11,7 +11,7 @@ const { RangePicker } = DatePicker;
 const ButtonGroup = Button.Group;
 
 function TimePicker(props) {
-  const { startTime, endTime, store, func, type, onChange, unlimit, showDatePicker, sort } = props;
+  const { store, func, type, onChange } = props;
   const handleClick = (val) => {
       store.setEndTime(moment());
       switch (val) {
@@ -38,7 +38,7 @@ function TimePicker(props) {
   };
 
   return (
-    <div className="c7n-iam-apioverview-date-wrap">
+    <div className="c7n-iam-dashboard-failedsaga-date-wrap">
       <div className="c7n-report-time-btn">
         <ButtonGroup>
           <Button

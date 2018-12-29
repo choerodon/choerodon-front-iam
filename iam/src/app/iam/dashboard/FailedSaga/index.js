@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { DashBoardNavBar, DashBoardToolBar } from 'choerodon-front-boot';
 import { Link, withRouter } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { inject, observer } from 'mobx-react';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
 import FailedSagaStore from '../../stores/dashboard/failedSaga';
 import TimePicker from './TimePicker';
+import './index.scss';
 
 const intlPrefix = 'dashboard.failedsaga';
 
 @withRouter
+@injectIntl
 @inject('AppState')
 @observer
 export default class FailedSaga extends Component {
@@ -25,28 +27,28 @@ export default class FailedSaga extends Component {
   componentWillMount() {
     this.loadChart();
   }
+  //
+  // componentDidMount() {
+  //   this.setShowSize();
+  // }
 
-  componentDidMount() {
-    this.setShowSize();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setShowSize();
-  }
-
-
-  componentWillUnmount() {
-    FailedSagaStore.setStartTime(moment().subtract(6, 'days'));
-    FailedSagaStore.setEndTime(moment());
-  }
-
-  setShowSize() {
-    const { showSize } = FailedSagaStore;
-    const newSize = this.chartRef.parentElement.parentElement.parentElement.clientHeight - 51 - 10;
-    if (newSize !== showSize) {
-      FailedSagaStore.setShowSize(newSize);
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   this.setShowSize();
+  // }
+  //
+  //
+  // componentWillUnmount() {
+  //   FailedSagaStore.setStartTime(moment().subtract(6, 'days'));
+  //   FailedSagaStore.setEndTime(moment());
+  // }
+  //
+  // setShowSize() {
+  //   const { showSize } = FailedSagaStore;
+  //   const newSize = this.chartRef.parentElement.clientHeight - 51 - 10;
+  //   if (newSize !== showSize) {
+  //     FailedSagaStore.setShowSize(newSize);
+  //   }
+  // }
 
 
   loadChart = () => {
@@ -62,6 +64,7 @@ export default class FailedSaga extends Component {
 
   getOption() {
     const chartData = FailedSagaStore.getChartData;
+    const { intl } = this.props;
     return {
       color: ['#F44336'],
       tooltip: {
@@ -77,7 +80,7 @@ export default class FailedSaga extends Component {
         },
       },
       grid: {
-        top: '30px',
+        // top: '30px',
         left: '3%',
         right: '4%',
         bottom: '0px',
@@ -124,7 +127,7 @@ export default class FailedSaga extends Component {
         {
           type: 'value',
           minInterval: 1,
-          name: '次数',
+          name: intl.formatMessage({ id: `${intlPrefix}.times` }),
           nameLocation: 'end',
           nameTextStyle: {
             color: '#000',
@@ -148,7 +151,7 @@ export default class FailedSaga extends Component {
       ],
       series: [
         {
-          name: '失败次数',
+          name: intl.formatMessage({ id: `${intlPrefix}.failed.times` }),
           type: 'bar',
           barWidth: '60%',
           data: chartData ? chartData.data : [],
@@ -160,7 +163,7 @@ export default class FailedSaga extends Component {
   render() {
     const { dateType } = this.state;
     return (
-      <React.Fragment>
+      <div className="c7n-iam-dashboard-failedsaga">
         <DashBoardToolBar>
           <TimePicker
             startTime={FailedSagaStore.getStartTime}
@@ -172,18 +175,17 @@ export default class FailedSaga extends Component {
           />
         </DashBoardToolBar>
         <Spin spinning={FailedSagaStore.loading}>
-          <div id="c7n-iam-dashboard-failedsaga-chart" ref={(e) => { this.chartRef = e; }} style={{ height: `${FailedSagaStore.showSize}px` }}>
+          <div className="c7n-iam-dashboard-failedsaga-chart">
             <ReactEcharts
               style={{ height: '100%' }}
               option={this.getOption()}
             />
-
           </div>
         </Spin>
         <DashBoardNavBar>
-          <Link to="/iam/saga-instance">转至事务实例</Link>
+          <Link to="/iam/saga-instance"><FormattedMessage id={`${intlPrefix}.redirect`} /></Link>
         </DashBoardNavBar>
-      </React.Fragment>
+      </div>
     );
   }
 }

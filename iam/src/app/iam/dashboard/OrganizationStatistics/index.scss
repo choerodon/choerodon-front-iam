@@ -1,11 +1,15 @@
 .c7n-iam-orgstatistics {
   padding: 0 30px;
+  height: 100%;
   display: flex;
   justify-content: space-between;
 
   &-btns {
     display: inline-block;
     width: 34%;
+    height: 80%;
+    padding: 10px 0;
+    overflow: hidden;
 
     button {
       text-align: left;
@@ -29,22 +33,31 @@
   &-chart {
     display: inline-block;
     width: 66%;
+    height: 80%;
+  }
+
+  &-type {
+    margin-bottom: 2px;
+  }
+
+  &-pro {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  &-tooltip {
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 5px;
+    width: 10px;
+    height: 10px;
   }
 }
 
-.c7n-iam-orgstatistics-type {
-  margin-bottom: 2px;
-}
+.c7n-iam-orgstatistics-wrapper {
+  height: 100%;
 
-.c7n-iam-orgstatistics-pro {
-  font-size: 13px;
-  color: rgba(0, 0, 0, 0.65);
-}
-
-.c7n-iam-orgstatistics-tooltip {
-  display: inline-block;
-  border-radius: 50%;
-  margin-right: 5px;
-  width: 10px;
-  height: 10px;
+  .ant-spin-nested-loading {
+    height: 100%;
+  }
 }

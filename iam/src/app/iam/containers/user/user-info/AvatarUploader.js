@@ -56,7 +56,6 @@ export default class AvatarUploader extends Component {
     const data = new FormData();
     data.append('file', file);
     this.setState({ submitting: true });
-    debugger;
     axios.post(`/iam/v1/users/${id}/save_photo?${qs}`, data)
       .then((res) => {
         if (res.failed) {

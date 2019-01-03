@@ -6,7 +6,7 @@ import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import UserInfoStore from '../../../stores/user/user-info/UserInfoStore';
 import AvatarUploader from './AvatarUploader';
 import './Userinfo.scss';
-import TextEditToggle from '../../../components/textEditToggle/TextEditToggle';
+import TextEditToggle from './textEditToggle';
 import PhoneWrapper from './phoneWrapper';
 
 const { Text, Edit } = TextEditToggle;

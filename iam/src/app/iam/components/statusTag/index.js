@@ -1,3 +1,3 @@
-import StatusTag from './statusTag';
+import StatusTag from './StatusTag';
 
 export default StatusTag;

@@ -1,8 +1,13 @@
+/**
+ * 裁剪头像上传
+ */
+
 import React, { Component } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { inject } from 'mobx-react';
 import { Button, Icon, Modal, Upload } from 'choerodon-ui';
 import { axios } from 'choerodon-front-boot';
+import PropTypes from 'prop-types';
 import querystring from 'query-string';
 import './AvatarUploader.scss';
 
@@ -28,6 +33,13 @@ function rotateFlag(rotate) {
 @inject('AppState')
 @injectIntl
 export default class AvatarUploader extends Component {
+  static propTypes = {
+    visible: PropTypes.bool.isRequired, // 上传图片模态框的显示状态
+    intlPrefix: PropTypes.string, // 多语言的前缀
+    onVisibleChange: PropTypes.func, // 模态框关闭时的回调
+    onUploadOk: PropTypes.func, // 成功上传时的回调
+  };
+
   state = {
     submitting: false,
     img: null,
@@ -54,7 +66,6 @@ export default class AvatarUploader extends Component {
     const data = new FormData();
     data.append('file', file);
     this.setState({ submitting: true });
-    debugger;
     axios.post(`/file/v1/cut_image?${qs}`, data)
       .then((res) => {
         if (res.failed) {

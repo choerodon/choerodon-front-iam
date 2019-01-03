@@ -1250,6 +1250,15 @@ const zh_CN = {
   'organization.project.header.title': '项目管理',
   'organization.project.type.empty': '无项目类型',
   'organization.project.empty': '无',
+  'organization.project.avatar.edit.dragger.text': '点击或将图片拖到此区域上传图片',
+  'organization.project.avatar.edit.dragger.hint': '图片支持{access}格式，且不能大于{size}',
+  'organization.project.avatar.edit.title': '上传项目头像',
+  'organization.project.avatar.edit.text': '上传头像',
+  'organization.project.avatar.edit.hint': '您可以在此裁剪、旋转图片，然后点击"保存" 完成头像的修改',
+  'organization.project.avatar.edit.button': '重新上传',
+  'organization.project.avatar.edit.preview': '头像预览',
+  'organization.project.avatar.edit.file.size.limit': '图标大小不能大于{size}',
+  'organization.project.avatar.success': '头像上传成功，请点击保存。',
 
   // 客户端
   'organization.client.header.title': '客户端',

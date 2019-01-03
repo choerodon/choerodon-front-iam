@@ -1,3 +1,3 @@
-import EasyImg from './easyImg';
+import EasyImg from './EasyImg';
 
 export default EasyImg;

@@ -1,14 +1,16 @@
 
 import React, { Component } from 'react';
-import { Button, Form, Input, Modal, Table, Tooltip, Select } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip, Select, Icon } from 'choerodon-ui';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import classnames from 'classnames';
 import './Project.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 import { handleFiltersParams } from '../../../common/util';
+import AvatarUploader from '../../../components/avatarUploader';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -31,7 +33,9 @@ export default class Project extends Component {
       page: 0,
       id: '',
       open: false,
-      projectDatas: [],
+      projectDatas: {
+        name: null,
+      },
       visible: false,
       visibleCreate: false,
       checkName: false,
@@ -50,6 +54,8 @@ export default class Project extends Component {
         order: null,
       },
       submitting: false,
+      isShowAvatar: false,
+      imgUrl: null,
     };
     this.editFocusInput = React.createRef();
     this.createFocusInput = React.createRef();
@@ -144,9 +150,10 @@ export default class Project extends Component {
     this.setState({
       errorMeg: '',
       successMeg: '',
-      sidebar: true,
-      projectDatas: data,
+      projectDatas: data || { name: null },
       operation,
+      imgUrl: operation === 'edit' ? data.imageUrl : null,
+      sidebar: true,
     });
     if (operation === 'edit') {
       setTimeout(() => {
@@ -168,7 +175,7 @@ export default class Project extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { AppState, ProjectStore } = this.props;
-    const { projectDatas } = this.state;
+    const { projectDatas, imgUrl } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const id = this.state.id;
@@ -182,6 +189,7 @@ export default class Project extends Component {
             name: name.trim(),
             organizationId,
             type: type === 'no' || undefined ? null : type,
+            imageUrl: imgUrl || null,
           };
 
           this.setState({ submitting: true });
@@ -210,6 +218,7 @@ export default class Project extends Component {
       const { validateFields } = this.props.form;
       validateFields((err, { name, type }, modify) => {
         if (!err) {
+          if (projectDatas.imageUrl !== imgUrl) modify = true;
           if (!modify) {
             Choerodon.prompt(this.props.intl.formatMessage({ id: 'modify.success' }));
             this.handleTabClose();
@@ -218,6 +227,7 @@ export default class Project extends Component {
           data = {
             name: name.trim(),
             type: type === 'no' || undefined ? null : type,
+            imageUrl: imgUrl || null,
           };
           this.setState({ submitting: true, buttonClicked: true });
           ProjectStore.updateProject(organizationId,
@@ -422,10 +432,64 @@ export default class Project extends Component {
               </Select>,
             )}
           </FormItem>
+          <div>
+            <span style={{ color: 'rgba(0,0,0,.6)' }}>项目头像</span>
+            {this.getAvatar()}
+          </div>
         </Form>
       </Content>
     );
   }
+
+  getAvatar() {
+    const { isShowAvatar, imgUrl, projectDatas } = this.state;
+    return (
+      <div className="c7n-iam-project-avatar">
+        <div
+          className="c7n-iam-project-avatar-wrap"
+          style={{
+            backgroundColor: projectDatas.name ? ' #c5cbe8' : '#ccc',
+            backgroundImage: imgUrl ? `url(${Choerodon.fileServer(imgUrl)})` : '',
+          }}
+        >
+          {!imgUrl && projectDatas && projectDatas.name && projectDatas.name.charAt(0)}
+          <Button className={classnames('c7n-iam-project-avatar-button', { 'c7n-iam-project-avatar-button-create': !projectDatas.name, 'c7n-iam-project-avatar-button-edit': projectDatas.name })} onClick={this.openAvatarUploader}>
+            <div className="c7n-iam-project-avatar-button-icon">
+              <Icon type="photo_camera" />
+            </div>
+          </Button>
+          <AvatarUploader visible={isShowAvatar} intlPrefix="organization.project.avatar.edit" onVisibleChange={this.closeAvatarUploader} onUploadOk={this.handleUploadOk} />
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * 打开上传图片模态框
+   */
+  openAvatarUploader = () => {
+    this.setState({
+      isShowAvatar: true,
+    });
+  }
+
+  /**
+   * 关闭上传图片模态框
+   * @param visible 模态框是否可见
+   */
+  closeAvatarUploader = (visible) => {
+    this.setState({
+      isShowAvatar: visible,
+    });
+  }
+
+  handleUploadOk = (res) => {
+    this.setState({
+      imgUrl: res,
+      isShowAvatar: false,
+    });
+  }
+
 
   render() {
     const { ProjectStore, AppState, intl } = this.props;

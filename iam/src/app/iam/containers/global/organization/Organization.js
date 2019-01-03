@@ -139,9 +139,6 @@ export default class Organization extends Component {
 
   handleCancelFun = () => {
     const { OrganizationStore } = this.props;
-    this.setState({
-      imgUrl: null,
-    });
     OrganizationStore.hideSideBar();
   };
 
@@ -436,24 +433,27 @@ export default class Organization extends Component {
           }}
         >
           {!imgUrl && data.name && data.name.charAt(0)}
-          <Button className={classnames('c7n-iam-organization-avatar-button', { 'c7n-iam-organization-avatar-button-create': !data.name, 'c7n-iam-organization-avatar-button-edit': data.name })} onClick={this.openAvatorUploader}>
+          <Button className={classnames('c7n-iam-organization-avatar-button', { 'c7n-iam-organization-avatar-button-create': !data.name, 'c7n-iam-organization-avatar-button-edit': data.name })} onClick={this.openAvatarUploader}>
             <div className="c7n-iam-organization-avatar-button-icon">
               <Icon type="photo_camera" />
             </div>
           </Button>
-          <AvatarUploader visible={isShowAvatar} intlPrefix="global.organization.avatar.edit" onVisibleChange={this.handleVisibleChange} onUploadOk={this.handleUploadOk} />
+          <AvatarUploader visible={isShowAvatar} intlPrefix="global.organization.avatar.edit" onVisibleChange={this.closeAvatarUploader} onUploadOk={this.handleUploadOk} />
         </div>
       </div>
     );
   }
 
-  openAvatorUploader = () => {
+  /**
+   * 打开上传图片模态框
+   */
+  openAvatarUploader = () => {
     this.setState({
       isShowAvatar: true,
     });
   }
 
-  handleVisibleChange = (visible) => {
+  closeAvatarUploader = (visible) => {
     this.setState({
       isShowAvatar: visible,
     });

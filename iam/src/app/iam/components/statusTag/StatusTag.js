@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Icon } from 'choerodon-ui';
 import PropTypes from 'prop-types';
-import './statusTag.scss';
+import './StatusTag.scss';
 
 const Color = {
   RUNNING: '#4d90fe',

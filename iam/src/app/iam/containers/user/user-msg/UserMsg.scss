@@ -54,14 +54,14 @@
         font-size: 14px;
         line-height: 24px;
       }
-      > span:nth-child(3) {
+      > span:nth-child(3):not(.c7n-iam-user-msg-unread) {
         width: 120px;
       }
       > i {
         font-size: 18px;
         line-height: 24px;
         position: absolute;
-        right: 227px;
+        right: 264px;
         float: right;
         vertical-align: text-bottom;
       }

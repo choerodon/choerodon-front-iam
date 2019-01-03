@@ -4,7 +4,7 @@ import { inject } from 'mobx-react';
 import { Button, Icon, Modal, Upload } from 'choerodon-ui';
 import { axios } from 'choerodon-front-boot';
 import querystring from 'query-string';
-import UserInfoStore from '../../../stores/user/user-info/UserInfoStore';
+import './AvatarUploader.scss';
 
 const Dragger = Upload.Dragger;
 const { round } = Math;
@@ -12,8 +12,7 @@ const editorWidth = 540;
 const editorHeight = 300;
 const defaultRectSize = 200;
 const minRectSize = 80;
-const intlPrefix = 'user.userinfo.avatar.edit';
-const prefixClas = 'user-info-avatar-edit';
+const prefixClas = 'c7n-iam-avatar-edit';
 const limitSize = 1024;
 let relativeX = 0;
 let relativeY = 0;
@@ -40,7 +39,6 @@ export default class AvatarUploader extends Component {
   };
 
   handleOk = () => {
-    const { id, intl, AppState } = this.props;
     const { x, y, size, rotate, file, imageStyle: { width, height }, img: { naturalWidth, naturalHeight } } = this.state;
     const flag = rotateFlag(rotate);
     const scale = naturalWidth / width;
@@ -57,19 +55,14 @@ export default class AvatarUploader extends Component {
     data.append('file', file);
     this.setState({ submitting: true });
     debugger;
-    axios.post(`/iam/v1/users/${id}/save_photo?${qs}`, data)
+    axios.post(`/file/v1/cut_image?${qs}`, data)
       .then((res) => {
         if (res.failed) {
           Choerodon.prompt(res.message);
+          this.setState({ submitting: false });
         } else {
-          AppState.loadUserInfo().then((info) => {
-            UserInfoStore.setUserInfo(info);
-            Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));
-            this.close();
-            AppState.setUserInfo(info);
-          });
+          this.uploadOk(res);
         }
-        this.setState({ submitting: false });
       })
       .catch((error) => {
         Choerodon.handleResponseError(error);
@@ -82,6 +75,15 @@ export default class AvatarUploader extends Component {
       img: null,
     });
     this.props.onVisibleChange(false);
+  }
+
+  uploadOk(res) {
+    this.setState({
+      img: null,
+      submitting: false,
+    }, () => {
+      this.props.onUploadOk(res);
+    });
   }
 
   handleCancel = () => {
@@ -263,6 +265,7 @@ export default class AvatarUploader extends Component {
 
   renderEditor(props) {
     const { img, imageStyle, file, size, x, y, rotate } = this.state;
+    const { intlPrefix } = this.props;
     const { src } = img;
     const { left, top } = imageStyle;
     const style = {
@@ -322,7 +325,7 @@ export default class AvatarUploader extends Component {
   }
 
   getUploadProps() {
-    const { intl, id } = this.props;
+    const { intl, id, intlPrefix } = this.props;
     return {
       multiple: false,
       name: 'file',
@@ -358,17 +361,18 @@ export default class AvatarUploader extends Component {
 
   renderContainer() {
     const { img } = this.state;
+    const { intlPrefix } = this.props;
     const props = this.getUploadProps();
     return img ? (
       this.renderEditor(props)
     ) :
       (
-        <Dragger className="user-info-avatar-dragger" {...props}>
+        <Dragger className="c7n-iam-avatar-dragger" {...props}>
           <Icon type="inbox" />
-          <h3 className="user-info-avatar-dragger-text">
+          <h3 className="c7n-iam-avatar-dragger-text">
             <FormattedMessage id={`${intlPrefix}.dragger.text`} />
           </h3>
-          <h4 className="user-info-avatar-dragger-hint">
+          <h4 className="c7n-iam-avatar-dragger-hint">
             <FormattedMessage id={`${intlPrefix}.dragger.hint`} values={{ size: `${limitSize / 1024}M`, access: 'PNG、JPG、JPEG' }} />
           </h4>
         </Dragger>
@@ -376,7 +380,7 @@ export default class AvatarUploader extends Component {
   }
 
   render() {
-    const { visible } = this.props;
+    const { visible, intlPrefix } = this.props;
     const { img, submitting } = this.state;
     const modalFooter = [
       <Button disabled={submitting} key="cancel" onClick={this.handleCancel}>
@@ -389,7 +393,7 @@ export default class AvatarUploader extends Component {
     return (
       <Modal
         title={<FormattedMessage id={`${intlPrefix}.title`} />}
-        className="user-info-avatar-modal"
+        className="avatar-modal"
         visible={visible}
         width={980}
         closable={false}

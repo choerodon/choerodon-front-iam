@@ -84,6 +84,8 @@ export default class APITest extends Component {
     APITestStore.setIsShowResult(null);
     APITestStore.setExpandedKeys([]);
     APITestStore.setUserInfo(null);
+    APITestStore.setCurrentNode(null);
+    APITestStore.setEventKey(null);
   }
 
   getInitState() {

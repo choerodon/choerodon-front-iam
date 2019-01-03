@@ -5,7 +5,6 @@ import moment from 'moment';
 @store('OrganizationStatisticsStore')
 class OrganizationStatisticsStore {
   @observable loading = true;
-  // @observable showSize = 220;
   @observable organizations = [];
   @observable currentorg = null;
   @observable chartData = {};
@@ -13,11 +12,6 @@ class OrganizationStatisticsStore {
   @action setLoading(flag) {
     this.loading = flag;
   }
-
-  // @action
-  // setShowSize(size) {
-  //   this.showSize = size;
-  // }
 
   @action setChartData(data) {
     this.chartData = data;
@@ -43,7 +37,7 @@ class OrganizationStatisticsStore {
     return this.currentorg;
   }
 
-  @action loadOrganizations = () => axios.get('/iam/v1/organizations/all')
+  @action loadOrganizations = () => axios.get('/iam/v1/organizations/all?size=500')
     .then(action((data) => {
       this.organizations = data;
       if (data.length) {

@@ -641,6 +641,7 @@ const zh_CN = {
   'global.organization.owner.user.name': '组织所有者用户名',
   'global.organization.phone': '手机号码',
   'global.organization.mailbox': '邮箱',
+  'global.organization.avatar': '组织头像',
   'global.organization.status.enabled': '启用状态',
   'global.organization.modify': '修改组织',
   'global.organization.modify.title': '对组织"{name}"进行修改',
@@ -657,6 +658,15 @@ const zh_CN = {
   'global.organization.detail.title': '查看组织"{name}"的组织信息',
   'global.organization.detail.description': '您可以在此查看组织和组织管理员的基本信息。',
   'global.organization.owner': '组织所有者',
+  'global.organization.avatar.edit.dragger.text': '点击或将图片拖到此区域上传图片',
+  'global.organization.avatar.edit.dragger.hint': '图片支持{access}格式，且不能大于{size}',
+  'global.organization.avatar.edit.title': '上传组织头像',
+  'global.organization.avatar.edit.text': '上传头像',
+  'global.organization.avatar.edit.hint': '您可以在此裁剪、旋转图片，然后点击"保存" 完成头像的修改',
+  'global.organization.avatar.edit.button': '重新上传',
+  'global.organization.avatar.edit.preview': '头像预览',
+  'global.organization.avatar.edit.file.size.limit': '图标大小不能大于{size}',
+  'global.organization.avatar.success': '头像上传成功，请点击保存。',
 
   //  菜单配置
   'global.menusetting.header.title': '菜单配置',

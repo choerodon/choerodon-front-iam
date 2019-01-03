@@ -264,10 +264,9 @@ class UserMsgStore {
   }
 
   @action loadAnnouncement(pagination = this.pagination, filters, sort, params = this.params) {
-    return axios.get(`notify/v1/system_notice/all?${queryString.stringify({
+    return axios.get(`/notify/v1/system_notice/completed?${queryString.stringify({
       page: pagination.current - 1,
       size: pagination.pageSize,
-      status: 'COMPLETED',
     })}`);
   }
 

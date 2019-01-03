@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { runInAction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Input, Modal, Table, Tooltip, Row, Col, Select } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip, Row, Col, Select, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classnames from 'classnames';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import StatusTag from '../../../components/statusTag';
 import './Organization.scss';
+import AvatarUploader from '../../../components/avatarUploader';
 
 const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
@@ -41,6 +42,8 @@ export default class Organization extends Component {
     this.creatOrgFocusInput = React.createRef();
     this.state = {
       selectLoading: true,
+      isShowAvatar: false,
+      imgUrl: null,
     };
   }
 
@@ -66,7 +69,11 @@ export default class Organization extends Component {
   createOrg = () => {
     const { form, OrganizationStore } = this.props;
     form.resetFields();
+    this.setState({
+      imgUrl: null,
+    });
     runInAction(() => {
+      OrganizationStore.setEditData({});
       OrganizationStore.show = 'create';
       OrganizationStore.showSideBar();
     });
@@ -78,6 +85,9 @@ export default class Organization extends Component {
   handleEdit = (data) => {
     const { form, OrganizationStore } = this.props;
     form.resetFields();
+    this.setState({
+      imgUrl: data.imageUrl,
+    });
     runInAction(() => {
       OrganizationStore.show = 'edit';
       OrganizationStore.setEditData(data);
@@ -113,8 +123,9 @@ export default class Organization extends Component {
         });
         const { loginName, realName, id } = AppState.getUserInfo;
         if (values.userId === `${loginName}${realName}`) values.userId = false;
+        if (OrganizationStore.editData.imageUrl !== this.state.imgUrl) modify = true;
         if (!err) {
-          OrganizationStore.createOrUpdateOrg(values, modify, HeaderStore)
+          OrganizationStore.createOrUpdateOrg(values, modify, this.state.imgUrl, HeaderStore)
             .then((message) => {
               OrganizationStore.hideSideBar();
               Choerodon.prompt(intl.formatMessage({ id: message }));
@@ -128,6 +139,9 @@ export default class Organization extends Component {
 
   handleCancelFun = () => {
     const { OrganizationStore } = this.props;
+    this.setState({
+      imgUrl: null,
+    });
     OrganizationStore.hideSideBar();
   };
 
@@ -254,6 +268,12 @@ export default class Organization extends Component {
     }, {
       key: formatMessage({ id: `${intlPrefix}.mailbox` }),
       value: partDetail.ownerEmail,
+    }, {
+      key: formatMessage({ id: `${intlPrefix}.avatar` }),
+      value: {
+        imgUrl: editData.imageUrl,
+        name: editData.name.charAt(0),
+      },
     }];
     return (
       <Content
@@ -263,9 +283,25 @@ export default class Organization extends Component {
       >
         {
           infoList.map(({ key, value }) =>
-            <Row key={key} className={classnames('c7n-organization-detail-row', { 'c7n-organization-detail-row': value === null })}>
+            <Row key={key} className={classnames('c7n-organization-detail-row', { 'c7n-organization-detail-row-hide': value === null })}>
               <Col span={3}>{key}:</Col>
-              <Col span={21}>{value}</Col>
+              {
+                key === formatMessage({ id: `${intlPrefix}.avatar` }) ? (
+                  <div className="c7n-iam-organization-avatar">
+                    <div
+                      className="c7n-iam-organization-avatar-wrap"
+                      style={{
+                        backgroundColor: '#c5cbe8',
+                        backgroundImage: value.imgUrl ? `url(${Choerodon.fileServer(value.imgUrl)})` : '',
+                      }}
+                    >
+                      {!value.imgUrl && value.name}
+                    </div>
+                  </div>
+                ) : (
+                  <Col span={21}>{value}</Col>
+                )
+              }
             </Row>,
           )
         }
@@ -379,10 +415,57 @@ export default class Organization extends Component {
               </FormItem>
             )
           }
+          <div>
+            <span style={{ color: 'rgba(0,0,0,.6)' }}>组织头像</span>
+            {this.getAvatar(editData)}
+          </div>
         </Form>
       </Content>
     );
   }
+
+  getAvatar(data = {}) {
+    const { isShowAvatar, imgUrl } = this.state;
+    return (
+      <div className="c7n-iam-organization-avatar">
+        <div
+          className="c7n-iam-organization-avatar-wrap"
+          style={{
+            backgroundColor: data.name ? ' #c5cbe8' : '#ccc',
+            backgroundImage: imgUrl ? `url(${Choerodon.fileServer(imgUrl)})` : '',
+          }}
+        >
+          {!imgUrl && data.name && data.name.charAt(0)}
+          <Button className={classnames('c7n-iam-organization-avatar-button', { 'c7n-iam-organization-avatar-button-create': !data.name, 'c7n-iam-organization-avatar-button-edit': data.name })} onClick={this.openAvatorUploader}>
+            <div className="c7n-iam-organization-avatar-button-icon">
+              <Icon type="photo_camera" />
+            </div>
+          </Button>
+          <AvatarUploader visible={isShowAvatar} intlPrefix="global.organization.avatar.edit" onVisibleChange={this.handleVisibleChange} onUploadOk={this.handleUploadOk} />
+        </div>
+      </div>
+    );
+  }
+
+  openAvatorUploader = () => {
+    this.setState({
+      isShowAvatar: true,
+    });
+  }
+
+  handleVisibleChange = (visible) => {
+    this.setState({
+      isShowAvatar: visible,
+    });
+  };
+
+  handleUploadOk = (res) => {
+    this.setState({
+      imgUrl: res,
+      isShowAvatar: false,
+    });
+  }
+
 
   handlePageChange = (pagination, filters, sorter, params) => {
     this.loadOrganizations(pagination, filters, sorter, params);
@@ -524,6 +607,7 @@ export default class Organization extends Component {
         <Content
           code="global.organization"
           values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
+          className="c7n-iam-organization"
         >
           <Table
             columns={this.getTableColumns()}
@@ -544,7 +628,7 @@ export default class Organization extends Component {
             okText={this.renderSidebarOkText()}
             cancelText={<FormattedMessage id="cancel" />}
             confirmLoading={submitting}
-            className={classnames({ 'c7n-iam-organization-sidebar': show === 'create' })}
+            className={classnames('c7n-iam-organization-sidebar', { 'c7n-iam-organization-sidebar-create': show === 'create' })}
           >
             {show !== 'detail' ? this.renderSidebarContent() : this.renderSidebarDetail()}
           </Sidebar>

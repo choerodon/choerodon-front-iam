@@ -73,12 +73,13 @@ export default class ApiTree extends Component {
   loadDetail = (selectedKeys, {
     selected, selectedNodes, node, event,
   } = {}) => {
+    const { getDetail } = this.props;
     const eventKey = APITestStore.getEventKey;
     if (eventKey !== node.props.eventKey) {
       APITestStore.setEventKey(node.props.eventKey);
       if (selectedNodes[0].props.method) {
         APITestStore.setCurrentNode(selectedNodes);
-        this.props.getDetail(selectedNodes);
+        getDetail(selectedNodes);
       } else {
         APITestStore.setDetailFlag('empty');
         APITestStore.setCurrentNode(null);
@@ -167,12 +168,12 @@ export default class ApiTree extends Component {
           </TreeNode>
         );
       }
-      return <TreeNode {...item} title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div>{title}</div></Tooltip>} dataRef={item} icon={icon} className={classnames({ [apiWrapper]: item.method })} />;
+      return <TreeNode {...item} title={<Tooltip title={item.description || title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div>{title}</div></Tooltip>} dataRef={item} icon={icon} className={classnames({ [apiWrapper]: item.method })} />;
     });
   }
 
   render() {
-    const { onClose, intl } = this.props;
+    const { onClose, intl, getDetail } = this.props;
     const { autoExpandParent } = this.state;
     return (
       <div className="c7n-iam-apitest-tree-content">

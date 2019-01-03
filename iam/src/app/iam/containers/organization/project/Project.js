@@ -433,7 +433,7 @@ export default class Project extends Component {
             )}
           </FormItem>
           <div>
-            <span style={{ color: 'rgba(0,0,0,.6)' }}>项目头像</span>
+            <span style={{ color: 'rgba(0,0,0,.6)' }}>{intl.formatMessage({ id: `${intlPrefix}.avatar` })}</span>
             {this.getAvatar()}
           </div>
         </Form>

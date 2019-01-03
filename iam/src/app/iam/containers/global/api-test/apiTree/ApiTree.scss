@@ -199,6 +199,12 @@
         padding: 32px 0 !important;
       }
     }
+
+    .ant-tooltip {
+      .ant-tooltip-inner > span {
+        font-weight: 500;
+      }
+    }
     //.c7n-iam-apitest-api-wrapper {
     //  cursor: pointer;
     //  margin-bottom: 10px;

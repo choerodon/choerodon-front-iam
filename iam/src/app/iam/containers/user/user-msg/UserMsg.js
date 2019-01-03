@@ -296,7 +296,7 @@ export default class UserMsg extends Component {
           'notify-service.site-msg-record.pagingQuery',
           'notify-service.site-msg-record.batchDeleted',
           'notify-service.site-msg-record.batchRead',
-          'notify-service.system-announcement.pagingQuery',
+          'notify-service.system-announcement.pagingQueryCompleted',
         ]}
       >
         <Header

@@ -152,7 +152,7 @@ export default class ApiTree extends Component {
         </span>
       ) : <span>{item.title}</span>;
       if (item.method) {
-        icon = <div className={classnames('c7n-iam-apitest-tree-methodTag', `c7n-iam-apitest-tree-methodTag-${item.method}`)}><div>{item.method}</div></div>;
+        icon = <div className={classnames(`c7n-iam-apitest-tree-${item.key}`, 'c7n-iam-apitest-tree-methodTag', `c7n-iam-apitest-tree-methodTag-${item.method}`)}><div>{item.method}</div></div>;
       }
 
       if (item.children) {
@@ -160,15 +160,16 @@ export default class ApiTree extends Component {
           <Icon
             style={{ color: '#3F51B5' }}
             type={expandedKeys.includes(item.key) ? 'folder_open2' : 'folder_open'}
+            className={`c7n-iam-apitest-tree-${item.key}`}
           />
         );
         return (
-          <TreeNode title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div className="ant-tree-title-ellipsis">{title}</div></Tooltip>} key={item.key} dataRef={item} icon={icon2}>
+          <TreeNode title={<Tooltip title={title} getPopupContainer={() => document.getElementsByClassName(`c7n-iam-apitest-tree-${item.key}`)[0]}><div className="ant-tree-title-ellipsis">{title}</div></Tooltip>} key={item.key} dataRef={item} icon={icon2}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode {...item} title={<Tooltip title={item.description || title} getPopupContainer={() => document.getElementsByClassName('c7n-iam-apitest-tree-content')[0]}><div>{title}</div></Tooltip>} dataRef={item} icon={icon} className={classnames({ [apiWrapper]: item.method })} />;
+      return <TreeNode {...item} title={<Tooltip title={item.description || title} getPopupContainer={() => document.getElementsByClassName(`c7n-iam-apitest-tree-${item.key}`)[0].parentNode.parentNode}><div>{title}</div></Tooltip>} dataRef={item} icon={icon} className={classnames({ [apiWrapper]: item.method })} />;
     });
   }
 

@@ -413,7 +413,7 @@ export default class Organization extends Component {
             )
           }
           <div>
-            <span style={{ color: 'rgba(0,0,0,.6)' }}>组织头像</span>
+            <span style={{ color: 'rgba(0,0,0,.6)' }}>{intl.formatMessage({ id: `${intlPrefix}.avatar` })}</span>
             {this.getAvatar(editData)}
           </div>
         </Form>

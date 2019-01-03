@@ -30,7 +30,8 @@ export default class OrganizationStatistics extends Component {
     OrganizationStatisticsStore.loadOrganizations();
   }
 
-  setOrgId(id) {
+  setOrgId(id, e) {
+    window.console.log(e);
     if (id !== OrganizationStatisticsStore.getCurrentOrg) {
       OrganizationStatisticsStore.setLoading(true);
       OrganizationStatisticsStore.setCurrentOrg(id);
@@ -41,7 +42,7 @@ export default class OrganizationStatistics extends Component {
   renderOrgs = () => {
     const orgs = OrganizationStatisticsStore.getOrganizations;
     const btns = orgs.map(({ name, id }) => (
-      <Button type="primary" key={id} value={id} onClick={this.setOrgId.bind(this, id)} style={{ backgroundColor: OrganizationStatisticsStore.getCurrentOrg === id ? 'rgba(140,158,255,0.16' : '' }}>{name}</Button>
+      <Button key={id} value={id} onClick={this.setOrgId.bind(this, id)} style={{ backgroundColor: OrganizationStatisticsStore.getCurrentOrg === id ? 'rgba(140,158,255,0.16' : '', color: OrganizationStatisticsStore.getCurrentOrg === id ? '#3f51b5' : '#000' }}>{name}</Button>
     ));
 
     return btns;
@@ -73,8 +74,8 @@ export default class OrganizationStatistics extends Component {
       },
       legend: {
         icon: 'circle',
-        itemHeight: 11,
-        bottom: 0,
+        itemHeight: 8,
+        bottom: '2%',
         width: '250px',
         data: chartData ? chartData.legend : [],
       },
@@ -82,7 +83,7 @@ export default class OrganizationStatistics extends Component {
         {
           type: 'pie',
           center: ['50%', '33%'],
-          radius: ['40%', '60%'],
+          radius: ['30%', '50%'],
           avoidLabelOverlap: false,
           label: {
             normal: {

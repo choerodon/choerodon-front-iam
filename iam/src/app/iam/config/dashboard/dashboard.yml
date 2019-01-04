@@ -55,7 +55,7 @@ dashboard:
     position:
       positionX: 0
       positionY: 0
-      width: 3
+      width: 4
       height: 3
   - code: "MyProject"
     icon: project_list

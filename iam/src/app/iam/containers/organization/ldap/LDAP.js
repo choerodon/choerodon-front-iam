@@ -232,6 +232,7 @@ export default class LDAP extends Component {
   /* 表单提交 */
   handleSubmit = (e) => {
     e.preventDefault();
+    const { AppState } = this.props;
     this.setState({
       showServer: true,
       showUser: true,
@@ -250,6 +251,9 @@ export default class LDAP extends Component {
         if (!ladp.port) {
           ladp.port = ladp.useSSL ? 636 : 389;
         }
+        ladp.name = AppState.currentMenuType.name;
+        ladp.organizationId = AppState.currentMenuType.organizationId;
+        ladp.enabled = LDAPStore.getLDAPData.enabled;
         this.setState({
           saving: true,
         });
@@ -414,6 +418,19 @@ export default class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
+            {getFieldDecorator('sagaBatchSize', {
+              rules: [{
+                pattern: /^[1-9]\d*$/,
+                message: intl.formatMessage({ id: `${intlPrefix}.saga-batch-size.msg` }),
+              }],
+              initialValue: ldapData.sagaBatchSize ? ldapData.sagaBatchSize : '500',
+            })(
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.saga-batch-size` })} style={{ width: inputWidth }} autoComplete="off" />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
             {getFieldDecorator('port', {
               rules: [{
                 pattern: /^[1-9]\d*$/,
@@ -522,6 +539,19 @@ export default class LDAP extends Component {
               initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.phone` })} style={{ width: inputWidth }} autoComplete="off" />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('customFilter', {
+              rules: [{
+                pattern: /^\(.*\)$/,
+                message: intl.formatMessage({ id: `${intlPrefix}.custom-filter.msg` }),
+              }],
+              initialValue: ldapData.customFilter ? ldapData.customFilter : undefined,
+            })(
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.custom-filter` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
         </div>

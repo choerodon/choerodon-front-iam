@@ -71,6 +71,7 @@ class UserMsgStore {
   @action paginationChange = (current, pageSize) => {
     this.pagination.current = current;
     this.pagination.pageSize = pageSize;
+    document.getElementsByClassName('page-content')[0].scrollTop = 0;
     this.loadData(this.pagination, {}, {}, {}, this.showAll, false);
   };
 

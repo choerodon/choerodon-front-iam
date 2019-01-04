@@ -421,6 +421,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('sagaBatchSize', {
               rules: [{
                 pattern: /^[1-9]\d*$/,
+                required: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.saga-batch-size.msg` }),
               }],
               initialValue: ldapData.sagaBatchSize ? ldapData.sagaBatchSize : '500',

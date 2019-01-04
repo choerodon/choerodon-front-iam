@@ -483,6 +483,7 @@ export default class SagaInstance extends Component {
             okCancel={false}
             className="c7n-saga-instance-sidebar"
             visible={this.state.visible}
+            destroyOnClose
           >
             <Content
               className="sidebar-content"

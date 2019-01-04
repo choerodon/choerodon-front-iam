@@ -638,6 +638,7 @@ export default class MenuSetting extends Component {
   saveMenu = () => {
     const { intl } = this.props;
     const { type, menuGroup, prevMenuGroup } = this.state;
+    const newPrevMenuGroup = prevMenuGroup;
     if (JSON.stringify(prevMenuGroup) !== JSON.stringify(menuGroup)) {
       this.setState({ submitting: true });
       axios.post(`/iam/v1/menus/tree?level=${type}`, JSON.stringify(adjustSort(menuGroup[type])))
@@ -652,8 +653,10 @@ export default class MenuSetting extends Component {
             }));
             saved = true;
             menuGroup[type] = normalizeMenus(menus);
+            newPrevMenuGroup[type] = JSON.parse(JSON.stringify(menuGroup))[type];
             this.setState({
               menuGroup,
+              prevMenuGroup: newPrevMenuGroup,
               tempDirs: [],
             });
           }

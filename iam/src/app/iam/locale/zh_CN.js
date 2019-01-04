@@ -404,8 +404,7 @@ const pageDetail = {
   'organization.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
   'organization.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
 
-
-  // 项目设置
+  // 项目信息
   'project.info.title': '对项目"{name}"进行项目设置',
   'project.info.description': '您可以在此修改项目名称、停用项目。',
   'project.info.link': `${docServer}/user-guide/system-configuration/project/pro_info/`,
@@ -1433,6 +1432,7 @@ const zh_CN = {
   'project.info.type': '项目类型',
   'project.info.type.empty': '无项目类型',
   'project.info.empty': '无',
+  'project.info.avatar': '项目头像',
 
   // 个人中心
   // 个人信息

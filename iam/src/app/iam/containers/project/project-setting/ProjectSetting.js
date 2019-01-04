@@ -1,13 +1,15 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Input, Modal, Select } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Select, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
+import classnames from 'classnames';
 import './ProjectSetting.scss';
 import ProjectSettingStore from '../../../stores/project/project-setting/ProjectSettingStore';
 import '../../../common/ConfirmModal.scss';
+import AvatarUploader from '../../../components/avatarUploader';
 
 const { HeaderStore } = stores;
 const FormItem = Form.Item;
@@ -25,6 +27,7 @@ export default class ProjectSetting extends Component {
   state = {
     stopping: false,
     submitting: false,
+    isShowAvatar: false,
   };
 
   componentDidMount() {
@@ -32,10 +35,16 @@ export default class ProjectSetting extends Component {
     this.loadProjectTypes();
   }
 
+  componentWillUnmount() {
+    ProjectSettingStore.setProjectInfo({});
+    ProjectSettingStore.setImageUrl(null);
+  }
+
   loadProject = () => {
     const { AppState } = this.props;
     const id = AppState.currentMenuType.id;
     ProjectSettingStore.axiosGetProjectInfo(id).then((data) => {
+      ProjectSettingStore.setImageUrl(data.imageUrl);
       ProjectSettingStore.setProjectInfo(data);
     }).catch(Choerodon.handleResponseError);
   }
@@ -58,6 +67,7 @@ export default class ProjectSetting extends Component {
     const { form, location, history } = this.props;
     form.validateFields((err, value, modify) => {
       if (!err) {
+        if (ProjectSettingStore.getProjectInfo.imageUrl !== ProjectSettingStore.getImageUrl) modify = true;
         if (!modify) {
           Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
           return;
@@ -68,6 +78,7 @@ export default class ProjectSetting extends Component {
           organizationId,
           objectVersionNumber,
           ...value,
+          imageUrl: ProjectSettingStore.getImageUrl,
         };
         body.type = body.type === 'no' || undefined ? null : value.type;
         this.setState({ submitting: true });
@@ -75,6 +86,7 @@ export default class ProjectSetting extends Component {
           .then((data) => {
             this.setState({ submitting: false });
             Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
+            ProjectSettingStore.setImageUrl(data.imageUrl);
             ProjectSettingStore.setProjectInfo(data);
             HeaderStore.updateProject(data);
             history.replace(`${location.pathname}?type=project&id=${id}&name=${encodeURIComponent(data.name)}&organizationId=${organizationId}`);
@@ -126,8 +138,62 @@ export default class ProjectSetting extends Component {
 
   cancelValue = () => {
     const { resetFields } = this.props.form;
-    resetFields('name');
+    const { imageUrl } = ProjectSettingStore.getProjectInfo;
+    ProjectSettingStore.setImageUrl(imageUrl);
+    resetFields();
   };
+
+  getAvatar() {
+    const { isShowAvatar } = this.state;
+    const { name } = ProjectSettingStore.getProjectInfo;
+    const imageUrl = ProjectSettingStore.getImageUrl;
+    return (
+      <div className="c7n-iam-projectsetting-avatar">
+        <div
+          className="c7n-iam-projectsetting-avatar-wrap"
+          style={{
+            backgroundColor: '#c5cbe8',
+            backgroundImage: imageUrl ? `url(${Choerodon.fileServer(imageUrl)})` : '',
+          }}
+        >
+          {!imageUrl && name && name.charAt(0)}
+          <Button className={classnames('c7n-iam-projectsetting-avatar-button', 'c7n-iam-projectsetting-avatar-button-edit')} onClick={this.openAvatarUploader}>
+            <div className="c7n-iam-projectsetting-avatar-button-icon">
+              <Icon type="photo_camera" />
+            </div>
+          </Button>
+          <AvatarUploader visible={isShowAvatar} intlPrefix="organization.project.avatar.edit" onVisibleChange={this.closeAvatarUploader} onUploadOk={this.handleUploadOk} />
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * 打开上传图片模态框
+   */
+  openAvatarUploader = () => {
+    this.setState({
+      isShowAvatar: true,
+    });
+  }
+
+  /**
+   * 关闭上传图片模态框
+   * @param visible 模态框是否可见
+   */
+  closeAvatarUploader = (visible) => {
+    this.setState({
+      isShowAvatar: visible,
+    });
+  }
+
+  handleUploadOk = (res) => {
+    ProjectSettingStore.setImageUrl(res);
+    this.setState({
+      // imgUrl: res,
+      isShowAvatar: false,
+    });
+  }
 
   render() {
     const { submitting } = this.state;
@@ -161,7 +227,7 @@ export default class ProjectSetting extends Component {
           code={enabled ? intlPrefix : `${intlPrefix}.disabled`}
           values={{ name: enabled ? name : code }}
         >
-          <div className="proSettingStyle">
+          <div className="c7n-iam-projectsetting">
             <Form onSubmit={this.handleSave.bind(this)}>
               <FormItem>
                 {getFieldDecorator('name', {
@@ -204,6 +270,10 @@ export default class ProjectSetting extends Component {
                   </Select>,
                 )}
               </FormItem>
+              <div>
+                <span style={{ color: 'rgba(0,0,0,.6)' }}>{intl.formatMessage({ id: `${intlPrefix}.avatar` })}</span>
+                {this.getAvatar()}
+              </div>
               <div className="divider" />
               <Permission service={['iam-service.project.update']}>
                 <div className="btnGroup">

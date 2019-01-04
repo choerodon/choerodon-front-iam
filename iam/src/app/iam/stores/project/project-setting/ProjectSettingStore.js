@@ -5,6 +5,15 @@ import { axios, store } from 'choerodon-front-boot';
 class ProjectSettingStore {
   @observable projectInfo = {};
   @observable projectTypes = [];
+  @observable imageUrl = null;
+
+  @action setImageUrl(data) {
+    this.imageUrl = data;
+  }
+
+  @computed get getImageUrl() {
+    return this.imageUrl;
+  }
   
   @action setProjectInfo(data) {
     this.projectInfo = data;

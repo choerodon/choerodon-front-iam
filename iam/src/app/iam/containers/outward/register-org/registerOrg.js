@@ -9,6 +9,7 @@ import _ from 'lodash';
 import RegsiterOrgStore from '../../../stores/noLevel/register-org';
 
 const { Step } = Steps;
+const { Option } = Select;
 const FormItem = Form.Item;
 const intlPrefix = 'register.organization';
 const inputWidth = '512px';
@@ -37,6 +38,7 @@ export default class registerOrg extends Component {
       organizationName: null,
       organizationCode: null,
       address: null,
+      scale: null,
       loginName: null,
       realName: null,
       email: null,
@@ -265,7 +267,7 @@ export default class registerOrg extends Component {
   handleRenderFirstStep = () => {
     const { intl } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { organizationCode, organizationName, address, submitLoading } = this.state;
+    const { organizationCode, organizationName, address, submitLoading, scale } = this.state;
     return (
       <Form className="c7n-registerorg-content" onSubmit={this.handleSubmit.bind(this, 1)}>
         <FormItem
@@ -332,6 +334,29 @@ export default class registerOrg extends Component {
                 autoComplete="off"
                 style={{ width: inputWidth }}
               />,
+            )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          {
+            getFieldDecorator('scale', {
+              rules: [{
+                required: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.scale.required` }),
+              }],
+              initialValue: scale,
+            })(
+              <Select
+                style={{ width: '300px' }}
+                label={<FormattedMessage id={`${intlPrefix}.scale`} />}
+                getPopupContainer={() => document.getElementsByClassName('c7n-registerorg-container')[0]}
+              >
+                <Option key="small" value={0}>{intl.formatMessage({ id: `${intlPrefix}.scale.small` })}</Option>
+                <Option key="middle" value={1}>{intl.formatMessage({ id: `${intlPrefix}.scale.middle` })}</Option>
+                <Option key="large" value={2}>{intl.formatMessage({ id: `${intlPrefix}.scale.large` })}</Option>
+              </Select>,
+
             )}
         </FormItem>
         <Button
@@ -636,7 +661,8 @@ export default class registerOrg extends Component {
         <FormattedMessage id={`${intlPrefix}.congratulations`} />
       </div>
       <div className="c7n-registerorg-content-fourth-msg">
-        <FormattedMessage id={`${intlPrefix}.register.success`} values={{ name: this.state.organizationName }} />
+        {/* <FormattedMessage id={`${intlPrefix}.register.success`} values={{ name: this.state.organizationName }} /> */}
+        <FormattedMessage id={`${intlPrefix}.hint`} />
       </div>
       <Button
         type="primary"

@@ -31,7 +31,6 @@ export default class OrganizationStatistics extends Component {
   }
 
   setOrgId(id, e) {
-    window.console.log(e);
     if (id !== OrganizationStatisticsStore.getCurrentOrg) {
       OrganizationStatisticsStore.setLoading(true);
       OrganizationStatisticsStore.setCurrentOrg(id);

@@ -1342,6 +1342,10 @@ const zh_CN = {
   'organization.ldap.address.require.msg': 'LDAP的服务地址为空，请先填写LDAP信息',
   'organization.ldap.abort.title': '确认终止',
   'organization.ldap.abort.content': '您的同步似乎已经超出正常同步的时间，确定要强制终止同步吗？终止之后您可以重新同步。',
+  'organization.ldap.saga-batch-size.msg': '请输入大于1的整数',
+  'organization.ldap.saga-batch-size': '同步用户saga每次发送用户的数量',
+  'organization.ldap.custom-filter.msg': '请输入正确的自定义筛选用户条件',
+  'organization.ldap.custom-filter': '自定义筛选用户条件',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',

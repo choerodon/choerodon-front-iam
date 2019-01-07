@@ -96,7 +96,6 @@ export default class APITest extends Component {
       isSending: false,
       urlPathValues: {},
       bData: {},
-      queryArr: {},
       query: '',
       taArr: {},
       loadFile: null,
@@ -126,6 +125,10 @@ export default class APITest extends Component {
     APITestStore.setDetailFlag('loading');
     this.setState({
       isSending: false,
+      urlPathValues: {},
+      bData: {},
+      query: '',
+      taArr: {},
     });
     const { version, operationId, refController, servicePrefix } = node[0].props;
     const queryObj = {
@@ -584,7 +587,7 @@ ${body}`;
         } else if (text === 'array') {
           return 'Array[string]';
         } else if (!text) {
-          if (record.schema && record.schema.type) {
+          if (record.schema && record.schema.type && !record.body) {
             return record.schema.type;
           } else {
             let normalBody;

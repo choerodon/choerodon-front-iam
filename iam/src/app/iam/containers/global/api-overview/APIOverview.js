@@ -10,7 +10,7 @@ import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import './APIOverview.scss';
 import APIOverviewStore from '../../../stores/global/api-overview';
-import TimePicker from './TimePicker';
+import TimePicker from '../../../components/timePicker';
 
 const { Option } = Select;
 const intlPrefix = 'global.apioverview';
@@ -47,6 +47,9 @@ export default class APIOverview extends Component {
     this.initTime();
     APIOverviewStore.setCurrentService({});
     APIOverviewStore.setService([]);
+    APIOverviewStore.setFirstChartData(null);
+    APIOverviewStore.setSecChartData(null);
+    APIOverviewStore.setThirdChartData(null);
   }
 
   getInitState() {
@@ -88,15 +91,6 @@ export default class APIOverview extends Component {
     APIOverviewStore.setThirdEndDate(null);
   }
 
-
-  handleDateChoose = (type) => {
-    this.setState({ dateType: type });
-  };
-
-  handleThirdDateChoose = (type) => {
-    this.setState({ thirdDateType: type });
-  }
-
   loadFirstChart = () => {
     APIOverviewStore.setFirstLoading(true);
     APIOverviewStore.loadFirstChart();
@@ -134,7 +128,6 @@ export default class APIOverview extends Component {
   )
 
   getSecChart = () => {
-    const { dateType } = this.state;
     return (
       <div className="c7n-iam-api-overview-top-container-sec-container">
         <Spin spinning={APIOverviewStore.secLoading}>
@@ -143,11 +136,9 @@ export default class APIOverview extends Component {
               showDatePicker={false}
               startTime={APIOverviewStore.getSecStartTime}
               endTime={APIOverviewStore.getSecEndTime}
+              handleSetStartTime={(startTime) => APIOverviewStore.setSecStartTime(startTime)}
+              handleSetEndTime={(endTime) => APIOverviewStore.setSecEndTime(endTime)}
               func={this.loadSecChart}
-              type={dateType}
-              onChange={this.handleDateChoose}
-              store={APIOverviewStore}
-              sort={2}
             />
           </div>
           <ReactEcharts
@@ -161,11 +152,10 @@ export default class APIOverview extends Component {
   }
 
   getThirdChart = () => {
-    const { thirdDateType } = this.state;
     const { intl } = this.props;
     return (
       <div className="c7n-iam-api-overview-third-container">
-        <Spin spinning={APIOverviewStore.thirdLoaidng}>
+        <Spin spinning={APIOverviewStore.thirdLoading}>
           <div className="c7n-iam-api-overview-third-container-timewrapper">
             <Select
               style={{ width: '175px', marginRight: '34px' }}
@@ -181,10 +171,10 @@ export default class APIOverview extends Component {
               startTime={APIOverviewStore.getThirdStartDate}
               endTime={APIOverviewStore.getThirdEndDate}
               func={this.loadThirdChart}
-              type={thirdDateType}
-              onChange={this.handleThirdDateChoose}
-              store={APIOverviewStore}
-              sort={3}
+              handleSetStartTime={(startTime) => APIOverviewStore.setThirdStartTime(startTime)}
+              handleSetEndTime={(endTime) => APIOverviewStore.setThirdEndTime(endTime)}
+              handleSetStartDate={(startTime) => APIOverviewStore.setThirdStartDate(startTime)}
+              handleSetEndDate={(endTime) => APIOverviewStore.setThirdEndDate(endTime)}
             />
           </div>
           <ReactEcharts

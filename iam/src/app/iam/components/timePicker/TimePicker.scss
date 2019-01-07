@@ -1,7 +1,7 @@
-.c7n-iam-apioverview-date-wrap {
+.c7n-iam-chart-date-wrap {
   display: flex;
 
-  .c7n-report-time-btn {
+  &-btn {
     display: inline-block;
     margin-right: 10px;
     .ant-btn {
@@ -9,7 +9,7 @@
     }
   }
 
-  .c7n-iam-apioverview-time-pick {
+  .c7n-iam-chart-date-time-pick {
     //display: inline-block;
     height: 32px;
     width: 214px;

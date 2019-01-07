@@ -521,6 +521,11 @@ const pageDetail = {
   'editor.dragger.text': '点击或将图片拖到此区域上传图片',
   'editor.dragger.hint': '图片支持{access}格式，且不能大于{size}',
   'editor.file.size.limit': '图片大小不能大于{size}',
+
+  // 图表时间选择器
+  'time.seven.days': '近7天',
+  'time.fifteen.days': '近15天',
+  'time.thirty.days': '近30天',
 };
 
 /* eslint-disable-next-line */
@@ -1012,9 +1017,6 @@ const zh_CN = {
   'global.apioverview.api.total.count': '各服务API总数',
   'global.apioverview.api.used.count': '各服务API调用总数',
   'global.apioverview.api.single.count': '单个API调用总数',
-  'global.apioverview.seven': '近7天',
-  'global.apioverview.fifteen': '近15天',
-  'global.apioverview.thirty': '近30天',
   'global.apioverview.date': '日期',
   'global.apioverview.used.totalcount': '调用总次数',
   'global.apioverview.belong': '所属微服务',

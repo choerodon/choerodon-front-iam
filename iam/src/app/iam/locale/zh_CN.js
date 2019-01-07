@@ -544,6 +544,7 @@ const zh_CN = {
   uploading: '导入中',
   loading: '加载中',
   queue: '队列中',
+  wait_to_be_pulled: '等待被拉取',
 
   day: '天',
   hour: '小时',
@@ -839,7 +840,10 @@ const zh_CN = {
   'taskdetail.cron.trigger': 'Cron任务',
   'taskdetail.empty': '无',
   'taskdetail.number.pattern': '请输入数字',
-
+  'taskdetail.execute-strategy': '执行策略',
+  'taskdetail.stop': '阻塞',
+  'taskdetail.serial': '串行',
+  'taskdetail.parallel': '并行',
 
   // 执行记录
   'execution.header.title': '执行记录',

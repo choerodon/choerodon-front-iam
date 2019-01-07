@@ -24,3 +24,6 @@ sh.sh
 pythonsql.py
 ./dashboard.yml
 ./config.yml
+
+#本地配置
+config.default.js

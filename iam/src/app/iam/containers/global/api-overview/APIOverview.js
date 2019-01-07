@@ -14,6 +14,7 @@ import TimePicker from './TimePicker';
 
 const { Option } = Select;
 const intlPrefix = 'global.apioverview';
+const colorArr = ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5']; // 默认取色
 
 @withRouter
 @injectIntl
@@ -187,7 +188,8 @@ export default class APIOverview extends Component {
             />
           </div>
           <ReactEcharts
-            style={{ width: '98%', height: 400 }}
+            className="c7n-iam-api-overview-third-chart"
+            style={{ width: '100%', height: 400 }}
             option={this.getThirdChartOption()}
             notMerge
           />
@@ -276,7 +278,7 @@ export default class APIOverview extends Component {
           data: handledFirstChartData || {},
         },
       ],
-      color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
+      color: colorArr,
     };
   }
 
@@ -403,7 +405,7 @@ export default class APIOverview extends Component {
         },
       ],
       series: handleSeriesData,
-      color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
+      color: colorArr,
     };
   }
 
@@ -422,13 +424,8 @@ export default class APIOverview extends Component {
         smooth: 0.2,
       }));
       if (copyThirdChartData.api.length) {
-        let selectedApis = [];
         copyThirdChartData.api.map((item) => { handledApis[item] = false; });
-        if (copyThirdChartData.api.length > 10) {
-          selectedApis = copyThirdChartData.api.splice(0, 10);
-        } else {
-          selectedApis = copyThirdChartData.api;
-        }
+        const selectedApis = copyThirdChartData.api.splice(0, 10);
         for (let item of selectedApis) {
           handledApis[item] = true;
         }
@@ -473,34 +470,43 @@ export default class APIOverview extends Component {
         orient: 'vertical', // 图例纵向排列
         itemHeight: 11,
         top: 80,
-        right: 8,
+        left: '72%',
+        // right: 5,
         icon: 'circle',
         height: '70%',
         data: thirdChartData ? thirdChartData.api : [],
         selected: handledApis,
         formatter(name) {
-          let strFirstPart;
-          let strSecPart;
-          let strThirdPart;
-          let result;
-          const length = name.length / 48;
-          const perLength = 48;
-          if (length > 1 && length <= 2) {
-            strFirstPart = name.substring(0, perLength);
-            strSecPart = name.substring(perLength);
-            result = `${strFirstPart}
-${strSecPart}`;
-          } else if (length > 2) {
-            strFirstPart = name.substring(0, perLength);
-            strSecPart = name.substring(perLength, perLength * 2);
-            strThirdPart = name.substring(perLength * 2);
-            result = `${strFirstPart}
-${strSecPart}
-${strThirdPart}`;
-          } else {
-            result = name;
+          const showLength = 44; // 截取长度
+          if (name.length > showLength) {
+            name = name.substring(0, showLength) + '...';
           }
-          return result;
+          return name;
+//           let strFirstPart;
+//           let strSecPart;
+//           let strThirdPart;
+//           let result;
+//           const length = name.length / 48;
+//           const perLength = 48;
+//           if (length > 1 && length <= 2) {
+//             strFirstPart = name.substring(0, perLength);
+//             strSecPart = name.substring(perLength);
+//             result = `${strFirstPart}
+// ${strSecPart}`;
+//           } else if (length > 2) {
+//             strFirstPart = name.substring(0, perLength);
+//             strSecPart = name.substring(perLength, perLength * 2);
+//             strThirdPart = name.substring(perLength * 2);
+//             result = `${strFirstPart}
+// ${strSecPart}
+// ${strThirdPart}`;
+//           } else {
+//             result = name;
+//           }
+//           return result;
+        },
+        tooltip: {
+          show: true,
         },
       },
       grid: {
@@ -576,7 +582,7 @@ ${strThirdPart}`;
         },
       ],
       series: handledData,
-      color: ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83FC', '#B5D7FD', '#00BFA5'],
+      color: colorArr,
     };
   }
 

@@ -158,6 +158,9 @@
 
       &-select {
         margin-top: 13px;
+        .ant-select-selection__placeholder {
+          color: rgba(0, 0, 0, 0.6);
+        }
       }
     }
 
@@ -178,6 +181,7 @@
     }
 
     &-step1-container {
+      width: 532px;
       &-simpletask-time-container {
         display: inline-block;
         margin-right: 60px;

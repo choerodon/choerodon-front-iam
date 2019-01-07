@@ -595,6 +595,8 @@ export default class TaskCreate extends Component {
           </FormItem>
           <FormItem
             {...formItemLayout}
+            className={`${contentPrefix}-inline-formitem`}
+            style={{ width: 248 }}
           >
             {getFieldDecorator('triggerType', {
               rules: [],
@@ -608,6 +610,25 @@ export default class TaskCreate extends Component {
                 <Radio value={'simple-trigger'}><FormattedMessage id={`${intlPrefix}.easy.task`} /></Radio>
                 <Radio value={'cron-trigger'}><FormattedMessage id={`${intlPrefix}.cron.task`} /></Radio>
               </RadioGroup>,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            className={`${contentPrefix}-inline-formitem ${contentPrefix}-inline-formitem-select`}
+          >
+            {getFieldDecorator('executeStrategy', {
+              rules: [],
+              initialValue: firstStepValues ? firstStepValues.executeStrategy : null,
+            })(
+              <Select
+                style={{ width: 248 }}
+                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                placeholder={intl.formatMessage({ id: `${intlPrefix}.execute-strategy` })}
+              >
+                <Option value="STOP" key="STOP">{intl.formatMessage({ id: `${intlPrefix}.stop` })}</Option>
+                <Option value="SERIAL" key="SERIAL">{intl.formatMessage({ id: `${intlPrefix}.serial` })}</Option>
+                <Option value="PARALLEL" key="PARALLEL">{intl.formatMessage({ id: `${intlPrefix}.parallel` })}</Option>
+              </Select>,
             )}
           </FormItem>
           <div style={{ display: triggerType === 'simple-trigger' ? 'block' : 'none' }}>
@@ -1308,6 +1329,9 @@ export default class TaskCreate extends Component {
       key: formatMessage({ id: `${intlPrefix}.repeat.time` }),
       value: firstStepValues.simpleRepeatCount || null,
     }, {
+      key: formatMessage({ id: `${intlPrefix}.execute-strategy` }),
+      value: formatMessage({ id: `${intlPrefix}.${firstStepValues.executeStrategy.toLowerCase()}` }) || '阻塞',
+    }, {
       key: formatMessage({ id: `${intlPrefix}.service.name` }),
       value: serviceName,
     }, {
@@ -1445,7 +1469,7 @@ export default class TaskCreate extends Component {
             submitLoading: false,
           });
         } else {
-          const { informArr, showSelectedRowKeys, methodId, params, firstStepValues: { startTime, endTime, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
+          const { informArr, showSelectedRowKeys, methodId, params, firstStepValues: { executeStrategy, startTime, endTime, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
           const flag = triggerType === 'simple-trigger';
           const body = {
             ...this.state.firstStepValues,
@@ -1455,6 +1479,7 @@ export default class TaskCreate extends Component {
             simpleRepeatInterval: flag ? Number(simpleRepeatInterval) : null,
             simpleRepeatIntervalUnit: flag ? simpleRepeatIntervalUnit : null,
             simpleRepeatCount: flag ? Number(simpleRepeatCount) : null,
+            executeStrategy,
             params,
             methodId,
             notifyUser: {

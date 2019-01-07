@@ -187,8 +187,14 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id={`${intlPrefix}.status`} />,
         key: 'status',
         dataIndex: 'status',
-        width: '100px',
-        render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
+        width: '130px',
+        render: status => (
+          <StatusTag
+            mode="icon"
+            name={intl.formatMessage({ id: status.toLowerCase() })}
+            colorCode={status === 'WAIT_TO_BE_PULLED' ? 'QUEUE' : status}
+          />
+        ),
         filters: [{
           value: 'RUNNING',
           text: '运行中',
@@ -199,8 +205,8 @@ export default class SagaInstance extends Component {
           value: 'COMPLETED' || 'NON_CONSUMER',
           text: '完成',
         }, {
-          value: 'QUEUE',
-          text: '队列中',
+          value: 'WAIT_TO_BE_PULLED',
+          text: '等待被拉取',
         }],
         filteredValue: filters.status || [],
       },

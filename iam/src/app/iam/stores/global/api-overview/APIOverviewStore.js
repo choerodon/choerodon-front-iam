@@ -12,7 +12,7 @@ class APIOverviewStore {
   @observable thirdChartData = null;
   @observable firstLoading = true;
   @observable secLoading = true;
-  @observable thirdLoaidng = true;
+  @observable thirdLoading = true;
   @observable secStartTime = moment().subtract(6, 'days');
   @observable secEndTime = moment();
   @observable thirdStartTime = moment().subtract(6, 'days');
@@ -102,7 +102,7 @@ class APIOverviewStore {
   }
 
   @action setThirdLoading(flag) {
-    this.thirdLoaidng = flag;
+    this.thirdLoading = flag;
   }
 
   @action setService(service) {

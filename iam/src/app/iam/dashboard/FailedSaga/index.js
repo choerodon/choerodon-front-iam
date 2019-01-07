@@ -7,7 +7,7 @@ import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { Button, Icon, Select, Spin } from 'choerodon-ui';
 import FailedSagaStore from '../../stores/dashboard/failedSaga';
-import TimePicker from './TimePicker';
+import TimePicker from '../../components/timePicker';
 import './index.scss';
 
 const intlPrefix = 'dashboard.failedsaga';
@@ -143,7 +143,6 @@ export default class FailedSaga extends Component {
   }
 
   render() {
-    const { dateType } = this.state;
     return (
       <div className="c7n-iam-dashboard-failedsaga">
         <DashBoardToolBar>
@@ -151,9 +150,8 @@ export default class FailedSaga extends Component {
             startTime={FailedSagaStore.getStartTime}
             endTime={FailedSagaStore.getEndTime}
             func={this.loadChart}
-            type={dateType}
-            onChange={this.handleDateChoose}
-            store={FailedSagaStore}
+            handleSetStartTime={startTime => FailedSagaStore.setStartTime(startTime)}
+            handleSetEndTime={endTime => FailedSagaStore.setEndTime(endTime)}
           />
         </DashBoardToolBar>
         <Spin spinning={FailedSagaStore.loading}>

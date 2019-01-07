@@ -47,6 +47,7 @@ const zh_CN = {
   // OnlineUsers
   'dashboard.onlineusers.count': '在线人数',
   'dashboard.onlineusers.persons': '人',
+  'time.seven.days': '近7天',
 
 };
 /* eslint-disable-next-line */

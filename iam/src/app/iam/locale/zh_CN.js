@@ -1350,6 +1350,7 @@ const zh_CN = {
   'organization.ldap.saga-batch-size': '同步用户saga每次发送用户的数量',
   'organization.ldap.custom-filter.msg': '请输入正确的自定义筛选用户条件',
   'organization.ldap.custom-filter': '自定义筛选用户条件',
+  'organization.ldap.custom-filter.tip': '额外的过滤条件用于同步用户，允许为空，表达式必须以\'(\'开始，以\')\'结束，语法参考ldap search syntax。',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',

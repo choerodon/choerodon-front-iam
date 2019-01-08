@@ -22,13 +22,13 @@ export default class InstanceExpandRow extends Component {
   }
 
   getCircle() {
-    const { completed, failed, running, queue } = this.state.detail;
+    const { completed, failed, running, waitToBePulled } = this.state.detail;
     const { intl, expand } = this.props;
-    const sum = completed + failed + running + queue;
+    const sum = completed + failed + running + waitToBePulled;
     const { status } = this.props.record;
-    const completedCorrect = sum > 0 ? ((completed + running + queue) / sum) * (Math.PI * 2 * 30) : 0;
-    const runningCorrect = sum > 0 ? ((running + queue) / sum) * (Math.PI * 2 * 30) : 0;
-    const queueCorrect = sum > 0 ? ((queue) / sum) * (Math.PI * 2 * 30) : 0;
+    const completedCorrect = sum > 0 ? ((completed + running + waitToBePulled) / sum) * (Math.PI * 2 * 30) : 0;
+    const runningCorrect = sum > 0 ? ((running + waitToBePulled) / sum) * (Math.PI * 2 * 30) : 0;
+    const waitToBePulledCorrect = sum > 0 ? ((waitToBePulled) / sum) * (Math.PI * 2 * 30) : 0;
     return (<svg width="80" height="80" onClick={expand}>
       <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-error" />{`失败任务：${failed}`}</div>}>
         <circle
@@ -60,14 +60,14 @@ export default class InstanceExpandRow extends Component {
           strokeDasharray={`${runningCorrect}, 10000`}
         />
       </Popover>
-      <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-queue" />{`等待中任务：${queue}`}</div>}>
+      <Popover placement="left" content={<div><div className="c7n-saga-spot c7n-saga-spot-queue" />{`等待被拉取：${waitToBePulled}`}</div>}>
         <circle
           cx="40"
           cy="40"
           r="30"
-          stroke={queue > 0 ? '#ffb100' : '#f3f3f3'}
+          stroke={waitToBePulled > 0 ? '#ffb100' : '#f3f3f3'}
           className="c7n-saga-circle-queue"
-          strokeDasharray={`${queueCorrect}, 10000`}
+          strokeDasharray={`${waitToBePulledCorrect}, 10000`}
         />
       </Popover>
       <text x="50%" y="39.5" className="c7n-saga-circle-num">{`${sum - failed}/${sum}`}</text>

@@ -240,7 +240,18 @@ export default class SagaImg extends Component {
         Choerodon.prompt(formatMessage({ id: `${intlPrefix}.task.unlock.success` }));
       }
     });
-  }
+  };
+
+  handleAbort = () => {
+    const { task: { id } } = this.state;
+    SagaInstanceStore.abort(id).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.reload();
+      }
+    });
+  };
 
   handleRetry = () => {
     const { task: { id }, intervals } = this.state;
@@ -407,6 +418,11 @@ export default class SagaImg extends Component {
             <span onClick={this.handleRetry}>
               <Icon type="sync" />
               {formatMessage({ id: `${intlPrefix}.task.retry` })}
+            </span>)}
+          {status === 'RUNNING' && (
+            <span onClick={this.handleAbort} style={{ color: '#f44336' }}>
+              <Icon type="power_settings_new" />
+              {formatMessage({ id: `${intlPrefix}.task.abort` })}
             </span>)}
         </div>
         <div className="c7n-saga-task-detail">

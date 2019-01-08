@@ -57,14 +57,22 @@ class SagaInstanceStore {
    * @returns {IDBRequest | Promise<void>}
    */
   retry(id) {
-    return axios.put(`/asgard/v1/sagas/tasks/instances/${id}/retry`);
+    return axios.put(`${this.sagaInstanceType.apiGetway}tasks/instances/${id}/retry`);
   }
 
   /**
    * 解锁
    */
   unLock(id) {
-    return axios.put(`/asgard/v1/sagas/tasks/instances/${id}/unlock`);
+    return axios.put(`${this.sagaInstanceType.apiGetway}tasks/instances/${id}/unlock`);
+  }
+
+  /**
+   * 强制失败
+   * @param id
+   */
+  abort(id) {
+    return axios.put(`${this.sagaInstanceType.apiGetway}tasks/instances/${id}/failed`);
   }
 
   /**

@@ -1164,6 +1164,7 @@ const zh_CN = {
   'global.saga.task.plannedstarttime': '计划执行时间',
   'global.saga.task.actualstarttime': '实际开始时间',
   'global.saga.task.actualendtime': '实际完成时间',
+  'global.saga.task.abort': '强制失败',
 
   // 事务实例
   'global.saga-instance.header.title': '事务实例',

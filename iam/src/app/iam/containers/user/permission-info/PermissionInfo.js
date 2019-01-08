@@ -55,17 +55,37 @@ export default class PermissionInfo extends Component {
 
   getTableColumns() {
     const iconType = { site: 'dvr', project: 'project', organization: 'domain' };
+    const siteInfo = this.props.AppState.getSiteInfo;
     return [{
       title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
       width: '20%',
       dataIndex: 'name',
       key: 'name',
       className: 'c7n-permission-info-name',
-      render: (text, record) => (
-        <Link to={this.getRedirectURL(record)}>
-          <StatusTag iconType={iconType[record.level]} name={text} mode="icon" />
-        </Link>
-      ),
+      render: (text, record) => {
+        let result;
+        if (record.level !== 'site') {
+          result = (
+            <Link to={this.getRedirectURL(record)}>
+              <div className="c7n-permission-info-name-avatar">
+                {
+                  record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+                  <React.Fragment>{text && text.split('')[0]}</React.Fragment>
+                }
+              </div>
+              <span>{text}</span>
+            </Link>
+          );
+        } else {
+          result = (
+            <Link to={this.getRedirectURL(record)} className="site-icon">
+              <div className="c7n-permission-info-name-avatar-default" style={siteInfo.favicon ? { backgroundImage: `url(${siteInfo.favicon})` } : {}} />
+              <span>{text}</span>
+            </Link>
+          );
+        }
+        return result;
+      },
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
       width: '10%',

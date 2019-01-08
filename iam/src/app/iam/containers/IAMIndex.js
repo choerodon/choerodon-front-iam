@@ -27,6 +27,7 @@ const rootUser = asyncRouter(() => import('./global/root-user'));
 const route = asyncRouter(() => import('./global/route'));
 const saga = asyncRouter(() => import('./global/saga'));
 const sagaInstance = asyncRouter(() => import('./global/saga-instance'));
+const siteStatistics = asyncRouter(() => import('./global/site-statistics'));
 // const smsTemplate = asyncRouter(() => import('./global/sms-template'));
 // const smsSetting = asyncRouter(() => import('./global/sms-setting'));
 const dashboardSetting = asyncRouter(() => import('./global/dashboard-setting'));
@@ -106,6 +107,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/user-info`} component={userInfo} />
           <Route path={`${match.url}/user-msg`} component={userMsg} />
           <Route path={`${match.url}/permission-info`} component={permissionInfo} />
+          <Route path={`${match.url}/site-statistics`} component={siteStatistics} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

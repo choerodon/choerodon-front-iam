@@ -8,6 +8,7 @@
 "iam.member-role-global": "平台角色分配"
 "iam.root-user": "Root用户设置"
 "iam.dashboard-management": "仪表盘配置"
+"iam.site-statistics": "平台统计"
 
 "microservice": "微服务管理"
 "microservice.micro": "微服务"

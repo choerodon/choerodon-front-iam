@@ -85,6 +85,12 @@
           - 'iam-service.dashboard.list'
           - 'iam-service.dashboard.query'
           - 'iam-service.dashboard.update'
+    - "site-statistics":
+        icon: timeline
+        Routes: /iam/site-statistics
+        sort: 9
+        permission:
+        - 'manager-service.statistic.queryMenuClick'
 
 # 微服务管理
 "microservice":

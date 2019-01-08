@@ -1022,6 +1022,11 @@ const zh_CN = {
   'global.apioverview.belong': '所属微服务',
   'global.apioverview.belong.empty': '无服务',
 
+  // 平台统计
+  'global.site-statistics.header.title': '平台统计',
+  'global.site-statistics.menu.count': '菜单点击统计',
+  'global.site-statistics.belong': '所属层级',
+
   // 发送设置
   'sendsetting.header.title': '发送设置',
   'sendsetting.modify': '修改发送设置',

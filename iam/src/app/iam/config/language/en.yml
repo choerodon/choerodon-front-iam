@@ -8,6 +8,7 @@
 "iam.member-role-global": "Role Assignment"
 "iam.root-user": "Root User Setting"
 "iam.dashboard-management": "Dashboard Setting"
+"iam.site-statistics": "Site Statistics"
 
 "microservice": "Microservice"
 "microservice.micro": "Microservice"

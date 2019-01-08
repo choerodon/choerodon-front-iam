@@ -31,8 +31,7 @@ The basic module has 3 levels, which have the following functions:
     * User Info
     * Change Password
     * Token Manager
-    * Project Info
-    * Organization Info
+    * Permission Info
     * User Message
     * Receive Setting
     * Organization Management
@@ -60,6 +59,7 @@ The basic module has 3 levels, which have the following functions:
     * Mailbox Setting
     * Message Record at global level
     * Platform Announcement
+    * Site Statistics
     
    
 ## Development build

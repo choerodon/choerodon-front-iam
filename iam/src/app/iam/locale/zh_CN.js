@@ -50,7 +50,7 @@ const pageDetail = {
   'global.memberrole.modify.client.description': '您可以在此增删改此客户端在平台层的角色。',
   'global.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/platform/role-assignment/`,
 
-  'global.memberrole.upload.description': '您可以在此将文件中的角色信息导入到平台中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
+  'global.memberrole.upload.description': '您可以在此将文件中的角色信息导入到平台中去。注：您必须使用上传模板，请在角色分配界面，点击“下载模板”下载模板。',
   'global.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   // 角色管理
@@ -273,7 +273,7 @@ const pageDetail = {
   'organization.memberrole.modify.client.link': `${docServer}/user-guide/system-configuration/tenant/role-assignment/`,
 
   'organization.memberrole.upload.title': '在组织"{name}"中导入角色',
-  'organization.memberrole.upload.description': '您可以在此将文件中的角色信息导入到组织中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
+  'organization.memberrole.upload.description': '您可以在此将文件中的角色信息导入到组织中去。注：您必须使用上传模板，请在角色分配界面，点击“下载模板”下载模板。',
   'organization.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   // 组织事务实例
@@ -326,7 +326,7 @@ const pageDetail = {
   'organization.user.modify.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'organization.user.upload.title': '在组织"{name}"中导入用户',
-  'organization.user.upload.description': '您可以在此将文件中的信息导入到组织中去。注：您必须使用用户上传模板，请在用户管理界面，点击“下载”下载模板。',
+  'organization.user.upload.description': '您可以在此将文件中的信息导入到组织中去。注：您必须使用用户上传模板，请在用户管理界面，点击“下载模板”下载模板。',
   'organization.user.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   // 发送设置
@@ -1424,7 +1424,7 @@ const zh_CN = {
   'organization.user.repassword': '确认密码',
   'organization.user.repassword.require.msg': '请确认密码',
   'organization.user.timezone': '时区',
-  'organization.user.download.template': '下载',
+  'organization.user.download.template': '下载模板',
   'organization.user.upload.file': '上传',
   'organization.user.upload': '导入用户',
   'organization.user.upload.lasttime': '上次导入完成时间',
@@ -1549,7 +1549,7 @@ const zh_CN = {
   'organization.memberrole.header.title': '组织角色分配',
   'project.memberrole.header.title': '项目角色分配',
   'project.memberrole.upload.title': '在项目"{name}"中导入角色',
-  'project.memberrole.upload.description': '您可以在此将文件中的角色信息导入到项目中去。注：您必须使用上传模板，请在角色分配界面，点击“下载”下载模板。',
+  'project.memberrole.upload.description': '您可以在此将文件中的角色信息导入到项目中去。注：您必须使用上传模板，请在角色分配界面，点击“下载模板”下载模板。',
   'project.memberrole.upload.link': `${docServer}/user-guide/system-configuration/tenant/user/`,
 
   'memberrole.member': '成员',
@@ -1615,7 +1615,7 @@ const zh_CN = {
   'announcement.send.letter': '是否发送站内信',
 
   // Upload
-  'download.template': '下载',
+  'download.template': '下载模板',
   'upload.file': '上传',
   'upload.lasttime': '上次导入完成时间',
   'upload.norecord': '当前没有导入用户记录',

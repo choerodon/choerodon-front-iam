@@ -319,10 +319,10 @@ export default class SagaImg extends Component {
           value: '失败',
         };
         break;
-      case 'QUEUE':
+      case 'WAIT_TO_BE_PULLED':
         obj = {
           key: 'queue',
-          value: '等待中',
+          value: '等待被拉取',
         };
         break;
       case 'COMPLETED':

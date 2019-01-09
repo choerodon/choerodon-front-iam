@@ -419,7 +419,7 @@ export default class SagaImg extends Component {
               <Icon type="sync" />
               {formatMessage({ id: `${intlPrefix}.task.retry` })}
             </span>)}
-          {status === 'RUNNING' && (
+          {(status === 'RUNNING' || status === 'WAIT_TO_BE_PULLED') && (
             <span onClick={this.handleAbort} style={{ color: '#f44336' }}>
               <Icon type="power_settings_new" />
               {formatMessage({ id: `${intlPrefix}.task.abort` })}

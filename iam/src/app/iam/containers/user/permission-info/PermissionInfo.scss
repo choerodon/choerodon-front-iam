@@ -1,21 +1,16 @@
 .c7n-permission-info {
   &-name {
     vertical-align: text-top;
-    position: relative;
+    //position: relative;
 
     a {
-      display: inline-flex;
+      //display: block;
       width: 100%;
       color: #000;
     }
 
-    .site-icon {
-      position: absolute;
-      top: 8px;
-      left: 15px;
-    }
-
     &-avatar {
+      float: left;
       width: 18px;
       height: 18px;
       background: rgb(197, 203, 232);
@@ -31,6 +26,7 @@
       text-transform: uppercase;
 
       &-default {
+        float: left;
         width: 18px;
         height: 18px;
         border-radius: 50%;

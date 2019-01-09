@@ -78,7 +78,7 @@ export default class PermissionInfo extends Component {
           );
         } else {
           result = (
-            <Link to={this.getRedirectURL(record)} className="site-icon">
+            <Link to={this.getRedirectURL(record)}>
               <div className="c7n-permission-info-name-avatar-default" style={siteInfo.favicon ? { backgroundImage: `url(${siteInfo.favicon})` } : {}} />
               <span>{text}</span>
             </Link>

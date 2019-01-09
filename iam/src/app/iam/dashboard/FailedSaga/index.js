@@ -62,10 +62,10 @@ export default class FailedSaga extends Component {
         },
       },
       grid: {
-        // top: '30px',
+        top: '10px',
         left: '3%',
         right: '4%',
-        bottom: '0px',
+        bottom: '5px',
         containLabel: true,
       },
       xAxis: [

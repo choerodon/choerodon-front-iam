@@ -20,6 +20,7 @@ const colorArr = ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83F
 @observer
 export default class SiteStatistics extends Component {
   componentDidMount() {
+    SiteStatisticsStore.setCurrentLevel('site');
     this.handleRefresh();
   }
 
@@ -28,7 +29,7 @@ export default class SiteStatistics extends Component {
     SiteStatisticsStore.setLoading(true);
     const startDate = SiteStatisticsStore.startTime.format().split('T')[0];
     const endDate = SiteStatisticsStore.endTime.format().split('T')[0];
-    SiteStatisticsStore.loadChart(startDate, endDate, 'site');
+    SiteStatisticsStore.loadChart(startDate, endDate, SiteStatisticsStore.getCurrentLevel);
   };
 
   initTime = () => {

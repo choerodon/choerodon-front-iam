@@ -46,11 +46,6 @@ export default class ProjectInfo extends Component {
             {myRoles.length ? myRoles.map(({ name: roleName }) => roleName).join(', ') : intl.formatMessage({ id: 'dashboard.empty' })}
           </dd>
         </dl>
-        <DashBoardNavBar>
-          <Link to={`/iam/project-setting?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`}>
-            <FormattedMessage id={`${intlPrefix}.redirect`} />
-          </Link>
-        </DashBoardNavBar>
       </div>
     );
   }

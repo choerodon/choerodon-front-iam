@@ -52,7 +52,10 @@ export default class Organization extends Component {
   }
 
   componentWillUnmount() {
+    const { OrganizationStore } = this.props;
     clearTimeout(timer);
+    OrganizationStore.setFilters();
+    OrganizationStore.setParams();
   }
 
   handleRefresh = () => {

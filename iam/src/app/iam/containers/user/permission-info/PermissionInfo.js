@@ -40,14 +40,14 @@ export default class PermissionInfo extends Component {
     });
   };
 
-  getRedirectURL({ id, name, level }) {
+  getRedirectURL({ id, name, level, projName }) {
     switch (level) {
       case 'site':
         return { pathname: '/' };
       case 'organization':
         return `/?type=${level}&id=${id}&name=${encodeURIComponent(name)}`;
       case 'project':
-        return `/?type=${level}&id=${id}&name=${encodeURIComponent(name.split('/')[1])}`;
+        return `/?type=${level}&id=${id}&name=${encodeURIComponent(projName)}`;
       default:
         return { pathname: '/', query: {} };
     }
@@ -70,7 +70,7 @@ export default class PermissionInfo extends Component {
               <div className="c7n-permission-info-name-avatar">
                 {
                   record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
-                  <React.Fragment>{text && text.split('')[0]}</React.Fragment>
+                  <React.Fragment>{record.projName ? record.projName.split('')[0] : text.split('')[0]}</React.Fragment>
                 }
               </div>
               <span>{text}</span>

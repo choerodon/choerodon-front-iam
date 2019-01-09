@@ -28,6 +28,16 @@ class OrganizationStore {
   @observable usersData = [];
 
   @action
+  setFilters() {
+    this.filters = {};
+  }
+
+  @action
+  setParams() {
+    this.params = [];
+  }
+
+  @action
   setPartDetail(data) {
     this.partDetail = data;
   }

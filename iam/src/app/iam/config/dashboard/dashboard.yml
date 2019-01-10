@@ -20,8 +20,8 @@ dashboard:
     level: site
     sort: 3
     position:
-      positionX: 8
-      positionY: 4
+      positionX: 4
+      positionY: 0
       width: 4
       height: 4
   - code: "UserInfo"
@@ -31,8 +31,8 @@ dashboard:
     level: site
     sort: 4
     position:
-      positionX: 4
-      positionY: 4
+      positionX: 0
+      positionY: 0
       width: 4
       height: 4
   - code: "ProjectInfo"
@@ -89,33 +89,30 @@ dashboard:
     title: "新增用户"
     description: "您可以在此了解平台今日新增用户与总用户数"
     level: site
-    needRoles: true
     sort: 10
     roles: ['role/site/default/administrator']
     needRoles: true
     position:
-      positionX: 0
-      positionY: 0
+      positionX: 4
+      positionY: 4
       width: 4
       height: 4
   - code: "OnlineUsers"
     icon: record_voice_over
     title: "在线用户"
-    needRoles: true
     description: "您可以实时了解此刻用户访问情况、当天不同时段用户访问情况以及当天的用户总访问量"
     level: site
     sort: 11
     roles: ['role/site/default/administrator']
     needRoles: true
     position:
-      positionX: 4
-      positionY: 0
+      positionX: 8
+      positionY: 4
       width: 4
       height: 4
   - code: "OrganizationStatistics"
     icon: domain
     title: "组织统计"
-    needRoles: true
     description: "您可以在此了解平台组织统计的情况"
     level: site
     sort: 12

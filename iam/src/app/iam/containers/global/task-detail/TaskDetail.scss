@@ -123,6 +123,20 @@
 }
 
 .c7n-iam-create-task {
+  &-tip-select {
+    position: relative;
+    .c7n-iam-select-tip {
+      right: 291px;
+    }
+    .ant-select-arrow {
+      position: absolute !important;
+      right: 20px;
+      bottom: 0;
+      margin: 0;
+      transition: opacity .15s ease;
+      cursor: pointer;
+    }
+  }
   &-container {
     background: #fff;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);

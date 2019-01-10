@@ -846,6 +846,11 @@ const zh_CN = {
   'taskdetail.empty': '无',
   'taskdetail.number.pattern': '请输入数字',
   'taskdetail.execute-strategy': '执行策略',
+  'taskdetail.execute-strategy.tips': '超时策略：\n' +
+    '阻塞： 下次触发时间若上次触发任务未完成，则暂停定时任务，任务不再被执行\n' +
+    '串行： 下次触发时间若上次触发任务未完成，两次任务可按照触发时间依次被执行\n' +
+    '并行： 下次触发时间若上次触发任务未完成，两次任务可以同时被执行',
+  'taskdetail.execute-strategy.required': '请选择执行策略',
   'taskdetail.stop': '阻塞',
   'taskdetail.serial': '串行',
   'taskdetail.parallel': '并行',

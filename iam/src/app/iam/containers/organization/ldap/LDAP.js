@@ -335,6 +335,7 @@ export default class LDAP extends Component {
       loginname: intl.formatMessage({ id: `${intlPrefix}.loginname.tip` }),
       username: intl.formatMessage({ id: `${intlPrefix}.username.tip` }),
       customFilter: intl.formatMessage({ id: `${intlPrefix}.custom-filter.tip` }),
+      objectclass: intl.formatMessage({ id: `${intlPrefix}.objectclass.tip` }),
     };
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
       <div className="serverContainer">
@@ -494,7 +495,7 @@ export default class LDAP extends Component {
               }],
               initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
             })(
-              <Input label={intl.formatMessage({ id: `${intlPrefix}.objectclass` })} style={{ width: inputWidth }} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.objectclass` })} suffix={this.getSuffix(tips.objectclass)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem

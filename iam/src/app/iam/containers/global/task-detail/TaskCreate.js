@@ -11,6 +11,7 @@ import _ from 'lodash';
 import TaskDetailStore from '../../../stores/global/task-detail';
 import './TaskDetail.scss';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import Tips from '../../../components/tips';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -612,25 +613,6 @@ export default class TaskCreate extends Component {
               </RadioGroup>,
             )}
           </FormItem>
-          <FormItem
-            {...formItemLayout}
-            className={`${contentPrefix}-inline-formitem ${contentPrefix}-inline-formitem-select`}
-          >
-            {getFieldDecorator('executeStrategy', {
-              rules: [],
-              initialValue: firstStepValues ? firstStepValues.executeStrategy : null,
-            })(
-              <Select
-                style={{ width: 248 }}
-                getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
-                placeholder={intl.formatMessage({ id: `${intlPrefix}.execute-strategy` })}
-              >
-                <Option value="STOP" key="STOP">{intl.formatMessage({ id: `${intlPrefix}.stop` })}</Option>
-                <Option value="SERIAL" key="SERIAL">{intl.formatMessage({ id: `${intlPrefix}.serial` })}</Option>
-                <Option value="PARALLEL" key="PARALLEL">{intl.formatMessage({ id: `${intlPrefix}.parallel` })}</Option>
-              </Select>,
-            )}
-          </FormItem>
           <div style={{ display: triggerType === 'simple-trigger' ? 'block' : 'none' }}>
             <div className={`${stepPrefix}-simpletask-time-container`}>
               <FormItem
@@ -722,6 +704,31 @@ export default class TaskCreate extends Component {
                 type="find_in_page"
               />
             </Popover>
+          </div>
+          <div className="c7n-iam-create-task-tip-select">
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('executeStrategy', {
+                rules: [{
+                  required: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.execute-strategy.required` }),
+                }],
+                initialValue: firstStepValues ? firstStepValues.executeStrategy : null,
+              })(
+                <Select
+                  style={{ width: 242 }}
+                  getPopupContainer={() => document.getElementsByClassName('page-content')[0]}
+                  label={intl.formatMessage({ id: `${intlPrefix}.execute-strategy` })}
+                  dropdownMatchSelectWidth
+                >
+                  <Option value="STOP" key="STOP">{intl.formatMessage({ id: `${intlPrefix}.stop` })}</Option>
+                  <Option value="SERIAL" key="SERIAL">{intl.formatMessage({ id: `${intlPrefix}.serial` })}</Option>
+                  <Option value="PARALLEL" key="PARALLEL">{intl.formatMessage({ id: `${intlPrefix}.parallel` })}</Option>
+                </Select>,
+              )}
+            </FormItem>
+            <Tips type="form" data={`${intlPrefix}.execute-strategy.tips`} />
           </div>
           <Button
             type="primary"

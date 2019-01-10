@@ -506,6 +506,9 @@ export default class TaskDetail extends Component {
       key: formatMessage({ id: `${intlPrefix}.service.name` }),
       value: info.serviceName,
     }, {
+      key: formatMessage({ id: `${intlPrefix}.execute-strategy` }),
+      value: info.executeStrategy && formatMessage({ id: `${intlPrefix}.${info.executeStrategy.toLowerCase()}` }),
+    }, {
       key: formatMessage({ id: `${intlPrefix}.task.class.name` }),
       value: info.methodDescription,
     }, {

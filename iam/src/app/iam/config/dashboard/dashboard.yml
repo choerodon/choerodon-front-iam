@@ -92,6 +92,7 @@ dashboard:
     needRoles: true
     sort: 10
     roles: ['role/site/default/administrator']
+    needRoles: true
     position:
       positionX: 0
       positionY: 0
@@ -105,6 +106,7 @@ dashboard:
     level: site
     sort: 11
     roles: ['role/site/default/administrator']
+    needRoles: true
     position:
       positionX: 4
       positionY: 0
@@ -118,6 +120,7 @@ dashboard:
     level: site
     sort: 12
     roles: ['role/site/default/administrator']
+    needRoles: true
     position:
       positionX: 8
       positionY: 0

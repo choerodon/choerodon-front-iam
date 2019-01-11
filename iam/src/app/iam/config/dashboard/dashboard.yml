@@ -80,7 +80,7 @@ dashboard:
     sort: 9
     roles: ['role/site/default/administrator', 'role/site/default/developer']
     position:
-      positionX: 0
+      positionX: 8
       positionY: 4
       width: 4
       height: 4
@@ -106,7 +106,7 @@ dashboard:
     roles: ['role/site/default/administrator']
     needRoles: true
     position:
-      positionX: 8
+      positionX: 0
       positionY: 4
       width: 4
       height: 4

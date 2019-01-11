@@ -31,7 +31,7 @@ export default class TokenManager extends Component {
     const { intl } = this.props;
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
-      title: intl.formatMessage({ id: `${intlPrefix}.removpattern.msge.title` }),
+      title: intl.formatMessage({ id: `${intlPrefix}.remove.title` }),
       content: intl.formatMessage({ id: `${intlPrefix}.remove.content` }, { name: record.accesstoken }),
       onOk: () => TokenManagerStore.deleteTokenById(record.tokenId, Choerodon.getAccessToken().split(' ')[1]).then(({ failed, message }) => {
         if (failed) {

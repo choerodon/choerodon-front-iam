@@ -1330,6 +1330,7 @@ const zh_CN = {
   'organization.ldap.admin.password': '管理员密码',
   'organization.ldap.user.setting': '用户属性设置',
   'organization.ldap.objectclass': '用户对象类',
+  'organization.ldap.objectclass.tip': '支持多个objectclass，使用逗号分隔',
   'organization.ldap.objectclass.require.msg': '请输入用户对象类',
   'organization.ldap.loginname': '登录名属性',
   'organization.ldap.loginname.require.msg': '请输入登录名属性',

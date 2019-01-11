@@ -19,12 +19,7 @@ export default class OrganizationStatistics extends Component {
     this.loadChart();
   }
 
-  componentWillUnmount() {
-    OrganizationStatisticsStore.setChartData({});
-    OrganizationStatisticsStore.setCurrentOrg(null);
-  }
-
-
+  
   loadChart = () => {
     OrganizationStatisticsStore.setLoading(true);
     OrganizationStatisticsStore.loadOrganizations();

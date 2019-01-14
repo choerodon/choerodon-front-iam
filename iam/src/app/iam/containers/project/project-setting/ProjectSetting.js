@@ -238,7 +238,14 @@ export default class ProjectSetting extends Component {
                   }],
                   initialValue: name,
                 })(
-                  <Input autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.name`} />} disabled={!enabled} style={{ width: 512 }} />,
+                  <Input
+                    style={{ width: 512 }}
+                    autoComplete="off"
+                    label={<FormattedMessage id={`${intlPrefix}.name`} />}
+                    disabled={!enabled}
+                    maxLength={32}
+                    showLengthInfo={false}
+                  />,
                 )}
               </FormItem>
               <FormItem>

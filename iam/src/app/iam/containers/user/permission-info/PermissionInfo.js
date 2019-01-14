@@ -6,7 +6,6 @@ import classnames from 'classnames';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import { Table, Button, Tooltip } from 'choerodon-ui';
 import './PermissionInfo.scss';
-import StatusTag from '../../../components/statusTag';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 
 const intlPrefix = 'user.permissioninfo';
@@ -62,30 +61,26 @@ export default class PermissionInfo extends Component {
       dataIndex: 'name',
       key: 'name',
       className: 'c7n-permission-info-name',
-      render: (text, record) => {
-        let result;
-        if (record.level !== 'site') {
-          result = (
-            <Link to={this.getRedirectURL(record)}>
-              <div className="c7n-permission-info-name-avatar">
-                {
-                  record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
-                  <React.Fragment>{record.projName ? record.projName.split('')[0] : text.split('')[0]}</React.Fragment>
-                }
-              </div>
-              <span>{text}</span>
-            </Link>
-          );
-        } else {
-          result = (
-            <Link to={this.getRedirectURL(record)}>
-              <div className="c7n-permission-info-name-avatar-default" style={siteInfo.favicon ? { backgroundImage: `url(${siteInfo.favicon})` } : {}} />
-              <span>{text}</span>
-            </Link>
-          );
-        }
-        return result;
-      },
+      render: (text, record) =>
+        (
+          <Link to={this.getRedirectURL(record)}>
+            {
+                record.level !== 'site' ? (
+                  <div className="c7n-permission-info-name-avatar">
+                    {
+                      record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+                      <React.Fragment>{record.projName ? record.projName.split('')[0] : text.split('')[0]}</React.Fragment>
+                    }
+                  </div>
+                ) : (
+                  <div className="c7n-permission-info-name-avatar-default" style={siteInfo.favicon ? { backgroundImage: `url(${siteInfo.favicon})` } : {}} />
+                )
+              }
+            <MouseOverWrapper width={0.18} text={text}>
+              {text}
+            </MouseOverWrapper>
+          </Link>
+        ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
       width: '10%',

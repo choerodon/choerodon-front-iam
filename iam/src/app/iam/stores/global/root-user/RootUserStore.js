@@ -6,6 +6,7 @@ import querystring from 'query-string';
 class RootUserStore {
   @observable loading = true;
   @observable rootUserData = [];
+  @observable usersData = []; // 全平台启用用户数据
 
   @action
   setRootUserData(data) {
@@ -26,6 +27,15 @@ class RootUserStore {
   get getLoading() {
     return this.loading;
   }
+
+  @action setUsersData(data) {
+    this.usersData = data;
+  }
+
+  @computed get getUsersData() {
+    return this.usersData;
+  }
+
 
   loadRootUserData(
     { current, pageSize },
@@ -65,6 +75,8 @@ class RootUserStore {
   deleteRootUser(id) {
     return axios.delete(`/iam/v1/users/admin/${id}`);
   }
+
+  loadUsers = (queryObj = { sort: 'id' }) => axios.get(`/iam/v1/all/users?${querystring.stringify(queryObj)}`);
 }
 
 const rootUserStore = new RootUserStore();

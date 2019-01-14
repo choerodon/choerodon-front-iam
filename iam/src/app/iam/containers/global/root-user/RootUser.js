@@ -1,17 +1,30 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Form, Modal, Table, Tooltip } from 'choerodon-ui';
+import { Button, Form, Modal, Table, Tooltip, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { handleFiltersParams } from '../../../common/util';
 import RootUserStore from '../../../stores/global/root-user/RootUserStore';
-import MemberLabel from '../../../components/memberLabel/MemberLabel';
 import StatusTag from '../../../components/statusTag';
 import '../../../common/ConfirmModal.scss';
+import './RootUser.scss';
 
+let timer;
 const { Sidebar } = Modal;
 const intlPrefix = 'global.rootuser';
+const FormItem = Form.Item;
+const Option = Select.Option;
+const FormItemNumLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
+  },
+};
 
 @Form.create({})
 @withRouter
@@ -36,6 +49,7 @@ export default class RootUser extends Component {
       params: [],
       onlyRootUser: false,
       submitting: false,
+      selectLoading: true,
     };
   }
   componentWillMount() {
@@ -144,29 +158,73 @@ export default class RootUser extends Component {
     const { intl } = this.props;
     const { validateFields } = this.props.form;
     e.preventDefault();
-    validateFields((err, values) => {
+    validateFields((err, { member }) => {
       if (!err) {
-        const memberNames = values.member;
         this.setState({
           submitting: true,
         });
-        RootUserStore.searchMemberIds(memberNames).then((data) => {
-          if (data) {
-            const memberIds = data.map(info => info.id);
-            RootUserStore.addRootUser(memberIds).then(({ failed, message }) => {
-              if (failed) {
-                Choerodon.prompt(message);
-              } else {
-                Choerodon.prompt(intl.formatMessage({ id: 'add.success' }));
-                this.closeSidebar();
-                this.reload();
-              }
-            });
+        RootUserStore.addRootUser(member).then(({ failed, message }) => {
+          if (failed) {
+            Choerodon.prompt(message);
+          } else {
+            Choerodon.prompt(intl.formatMessage({ id: 'add.success' }));
+            this.closeSidebar();
+            this.reload();
           }
         });
       }
     });
   };
+
+  getUserOption = () => {
+    const usersData = RootUserStore.getUsersData;
+    return usersData && usersData.length > 0 ? (
+      usersData.map(({ id, imageUrl, loginName, realName }) => (
+        <Option key={id} value={id} label={`${loginName}${realName}`}>
+          <div className="c7n-iam-rootuser-user-option">
+            <div className="c7n-iam-rootuser-user-option-avatar">
+              {
+                imageUrl ? <img src={imageUrl} alt="userAvatar" style={{ width: '100%' }} /> :
+                <span className="c7n-iam-rootuser-user-option-avatar-noavatar">{realName && realName.split('')[0]}</span>
+              }
+            </div>
+            <span>{loginName}{realName}</span>
+          </div>
+        </Option>
+      ))
+    ) : null;
+  }
+
+  handleSelectFilter = (value) => {
+    this.setState({
+      selectLoading: true,
+    });
+    const queryObj = {
+      param: value,
+      sort: 'id',
+    };
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    if (value) {
+      timer = setTimeout(() => (this.loadUsers(queryObj)), 300);
+    } else {
+      return this.loadUsers(queryObj);
+    }
+  }
+
+  // 加载全平台用户信息
+  loadUsers = (queryObj) => {
+    RootUserStore.loadUsers(queryObj).then((data) => {
+      RootUserStore.setUsersData(data.content.slice());
+      this.setState({
+        selectLoading: false,
+      });
+    });
+  }
+
 
   renderTable() {
     const { AppState, intl } = this.props;
@@ -180,8 +238,6 @@ export default class RootUser extends Component {
         dataIndex: 'loginName',
         filters: [],
         filteredValue: filters.loginName || [],
-        sorter: true,
-        sortOrder: columnKey === 'loginName' && order,
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.realname`} />,
@@ -264,8 +320,9 @@ export default class RootUser extends Component {
     );
   }
   render() {
-    const { AppState, form } = this.props;
+    const { AppState, form, intl } = this.props;
     const { type } = AppState.currentMenuType;
+    const { getFieldDecorator } = form;
     return (
       <Page
         className="root-user-setting"
@@ -317,9 +374,36 @@ export default class RootUser extends Component {
               code={`${intlPrefix}.add`}
               values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
             >
-              <Form layout="vertical">
-                <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`} />} style={{ marginTop: '-15px' }} form={form} />
-              </Form>
+              {/* <Form layout="vertical"> */}
+              {/* <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`} />} style={{ marginTop: '-15px' }} form={form} /> */}
+              {/* </Form> */}
+              <FormItem
+                {...FormItemNumLayout}
+              >
+                {getFieldDecorator('member', {
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage({ id: `${intlPrefix}.require.msg` }),
+                  }],
+                  initialValue: [],
+                })(
+                  <Select
+                    label={<FormattedMessage id={`${intlPrefix}.user`} />}
+                    optionLabelProp="label"
+                    allowClear
+                    style={{ width: 512 }}
+                    mode="multiple"
+                    optionFilterProp="children"
+                    filterOption={false}
+                    filter
+                    onFilterChange={this.handleSelectFilter}
+                    notFoundContent={intl.formatMessage({ id: `${intlPrefix}.notfound.msg` })}
+                    loading={this.state.selectLoading}
+                  >
+                    {this.getUserOption()}
+                  </Select>,
+                )}
+              </FormItem>
             </Content>
           </Sidebar>
         </Content>

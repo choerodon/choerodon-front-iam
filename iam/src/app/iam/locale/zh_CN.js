@@ -730,6 +730,8 @@ const zh_CN = {
   'global.rootuser.remove.disable.tooltip': '平台至少需要一个Root用户。要移除当前的Root用户，请先添加另一个Root用户',
   'global.rootuser.add': '添加Root用户',
   'global.rootuser.user': '用户',
+  'global.rootuser.require.msg': '必须至少选择一个用户',
+  'global.rootuser.notfound.msg': '没有符合条件的结果',
 
   // 角色管理
   'global.role.create.byselect.level': '请选择相同层级的角色!',

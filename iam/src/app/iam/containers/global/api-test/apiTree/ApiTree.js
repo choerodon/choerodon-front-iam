@@ -27,6 +27,7 @@ export default class ApiTree extends Component {
     expandedKeys: [],
     autoExpandParent: false,
     eventKey: null, // 当前点击节点的key
+    selectedKeys: [],
   }
 
 
@@ -64,28 +65,67 @@ export default class ApiTree extends Component {
   };
 
   // 展开或关闭树节点
-  onExpand = (expandedKeys) => {
-    APITestStore.setExpandedKeys(expandedKeys);
-    this.setState({ expandedKeys, autoExpandParent: false });
+  onExpand = (newExpandedKeys) => {
+    this.setState({
+      expandedKeys: newExpandedKeys,
+      autoExpandParent: false,
+    });
+    // APITestStore.setExpandedKeys(expandedKeys);
+    // const { expandedKeys } = this.state;
+    // let newKey;
+    // if (expanded) {
+    //   // newKey = expandedKeys.filter(el => el !== newExpandedKeys[0]);
+    //   this.setState({
+    //     expandedKeys: newExpandedKeys,
+    //     autoExpandParent: false,
+    //   });
+    // } else {
+    //   window.console.log('test');
+    // }
+    // this.setState({ expandedKeys, autoExpandParent: false });
   }
 
 
-  loadDetail = (selectedKeys, {
-    selected, selectedNodes, node, event,
-  } = {}) => {
-    const { getDetail } = this.props;
-    const eventKey = APITestStore.getEventKey;
-    if (eventKey !== node.props.eventKey) {
-      APITestStore.setEventKey(node.props.eventKey);
-      if (selectedNodes[0].props.method) {
-        APITestStore.setCurrentNode(selectedNodes);
-        getDetail(selectedNodes);
+  onSelect = (selectedKey, info) => {
+    if (info.selectedNodes[0].props.children && !info.selectedNodes[0].props.children.length) {
+      return;
+    }
+
+    if (!info.selectedNodes[0].props.children) {
+      const { getDetail } = this.props;
+      APITestStore.setCurrentNode(info.selectedNodes);
+      getDetail(info.selectedNodes);
+    } else {
+      const { expandedKeys } = this.state;
+      const index = expandedKeys.indexOf(selectedKey[0]);
+      let newExpandedKey;
+      if (index === -1) {
+        newExpandedKey = expandedKeys;
+        newExpandedKey.push(selectedKey[0]);
       } else {
+        newExpandedKey = expandedKeys.filter(el => el !== selectedKey[0]);
+      }
+      this.setState({
+        expandedKeys: newExpandedKey,
+      }, () => {
         APITestStore.setDetailFlag('empty');
         APITestStore.setCurrentNode(null);
-      }
+      });
     }
   }
+  // const { getDetail } = this.props;
+  // const eventKey = APITestStore.getEventKey;
+  // if (eventKey !== node.props.eventKey) {
+  //   APITestStore.setEventKey(node.props.eventKey);
+  //   if (selectedNodes[0].props.method) {
+  //     APITestStore.setCurrentNode(selectedNodes);
+  //     getDetail(selectedNodes);
+  //   } else {
+  //     APITestStore.setDetailFlag('empty');
+  //     APITestStore.setCurrentNode(null);
+  //   }
+  // }
+  // }
 
   getParentKey = (key, tree) => {
     let parentKey;
@@ -195,8 +235,9 @@ export default class ApiTree extends Component {
         <div className="c7n-iam-apitest-tree-main">
           <Tree
             expandedKeys={this.state.expandedKeys}
+            selectedKeys={this.state.selectedKeys}
             showIcon
-            onSelect={this.loadDetail}
+            onSelect={this.onSelect}
             onExpand={this.onExpand}
             autoExpandParent={autoExpandParent}
           >

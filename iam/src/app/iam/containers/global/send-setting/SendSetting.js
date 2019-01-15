@@ -151,6 +151,23 @@ export default class SendSetting extends Component {
         });
       }
     });
+  };
+
+  handleDelete = (record) => {
+    const { intl } = this.props;
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
+      onOk: () => SendSettingStore.deleteSettingById(record.id).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
+          this.handleRefresh();
+        }
+      }),
+    });
   }
 
   handleSubmit = (e) => {
@@ -229,10 +246,11 @@ export default class SendSetting extends Component {
     const { AppState } = this.props;
     const { type } = AppState.currentMenuType;
     let modifyService = ['notify-service.send-setting-site.update'];
+    const deleteService = ['notify-service.send-setting-site.delSendSetting'];
     if (type === 'organization') {
       modifyService = ['notify-service.send-setting-org.update'];
     }
-    return modifyService;
+    return { modifyService, deleteService };
   }
 
 
@@ -421,7 +439,7 @@ export default class SendSetting extends Component {
 
   render() {
     const { intl, AppState } = this.props;
-    const modifyService = this.getPermission();
+    const { modifyService, deleteService } = this.getPermission();
     const { sort: { columnKey, order }, filters, params, pagination, loading, visible, submitting } = this.state;
     const columns = [{
       title: <FormattedMessage id="sendsetting.trigger.type" />,
@@ -449,11 +467,11 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="sendsetting.description" />,
       dataIndex: 'description',
       key: 'description',
-      width: '35%',
+      width: '25%',
       filters: [],
       filteredValue: filters.description || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.3}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),
@@ -461,7 +479,7 @@ export default class SendSetting extends Component {
       title: <FormattedMessage id="level" />,
       dataIndex: 'level',
       key: 'level',
-      width: '8%',
+      width: '5%',
       filters: [{
         text: intl.formatMessage({ id: 'site' }),
         value: 'site',
@@ -474,7 +492,7 @@ export default class SendSetting extends Component {
       }],
       filteredValue: filters.level || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.1}>
+        <MouseOverWrapper text={text} width={0.05}>
           <FormattedMessage id={text} />
         </MouseOverWrapper>
       ),
@@ -500,23 +518,38 @@ export default class SendSetting extends Component {
       ),
     }, {
       title: '',
-      width: '100px',
+      width: 150,
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        <Permission service={modifyService}>
-          <Tooltip
-            title={<FormattedMessage id="modify" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="mode_edit"
-              shape="circle"
-              onClick={this.handleModify.bind(this, record)}
-            />
-          </Tooltip>
-        </Permission>
+        <React.Fragment>
+          <Permission service={modifyService}>
+            <Tooltip
+              title={<FormattedMessage id="modify" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="mode_edit"
+                shape="circle"
+                onClick={this.handleModify.bind(this, record)}
+              />
+            </Tooltip>
+          </Permission>
+          <Permission service={deleteService}>
+            <Tooltip
+              title={<FormattedMessage id="delete" />}
+              placement="bottom"
+            >
+              <Button
+                size="small"
+                icon="delete_forever"
+                shape="circle"
+                onClick={() => this.handleDelete(record)}
+              />
+            </Tooltip>
+          </Permission>
+        </React.Fragment>
       ),
     }];
     return (
@@ -530,6 +563,7 @@ export default class SendSetting extends Component {
           'notify-service.send-setting-org.update',
           'notify-service.email-template-site.listNames',
           'notify-service.email-template-org.listNames',
+          'notify-service.send-setting-site.delSendSetting',
         ]}
       >
         <Header title={<FormattedMessage id="sendsetting.header.title" />}>

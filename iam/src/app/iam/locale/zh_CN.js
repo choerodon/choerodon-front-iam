@@ -168,6 +168,8 @@ const pageDetail = {
   'global.sendsetting.modify.title': '对触发类型"{name}"的发送设置进行修改',
   'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
   'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/message/send-config/`,
+  'global.sendsetting.delete.title': '删除触发类型',
+  'global.sendsetting.delete.content': '确定要删除触发类型为"{name}"的记录吗？',
 
   // 消息记录
   'global.msgrecord.title': '平台"{name}"的邮件发送记录',
@@ -874,6 +876,8 @@ const zh_CN = {
   'executable.program.params.description': '参数描述',
   'executable.program.params.type': '参数类型',
   'executable.program.params.default': '默认值',
+  'executable.program.delete.title': '删除可执行程序',
+  'executable.program.delete.content': '确定要删除编码为"{name}"的可执行程序吗？',
 
   // 微服务管理
   'global.microservice.header.title': '微服务',

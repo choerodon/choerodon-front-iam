@@ -52,7 +52,9 @@ class ExecutableProgramStore {
   loadProgramDetail = (recordId, type, id) => {
     const path = type === 'site' ? '' : `/${type}s/${id}`;
     return axios.get(`/asgard/v1/schedules${path}/methods/${recordId}`);
-  }
+  };
+
+  deleteExecutableProgramById = id => axios.delete(`/asgard/v1/schedules/methods/${id}`);
 }
 
 const executableProgramStore = new ExecutableProgramStore();

@@ -162,7 +162,24 @@ export default class ExecutableProgram extends Component {
         });
       }
     });
-  }
+  };
+
+  handleDelete = (record) => {
+    const { intl } = this.props;
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.code }),
+      onOk: () => ExecutableProgramStore.deleteExecutableProgramById(record.id).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'delete.success' }));
+          this.handleRefresh();
+        }
+      }),
+    });
+  };
 
   // 关闭侧边栏
   handleOk = () => {
@@ -228,23 +245,35 @@ export default class ExecutableProgram extends Component {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'code',
       key: 'code',
+      width: '20%',
       filters: [],
       filteredValue: filters.code || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.belong.service`} />,
       dataIndex: 'service',
       key: 'service',
+      width: '10%',
       filters: [],
       filteredValue: filters.service || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'method',
       key: 'method',
-      width: '30%',
+      width: '20%',
       filters: [],
       filteredValue: filters.method || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.3}>
+        <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
       ),
@@ -252,32 +281,53 @@ export default class ExecutableProgram extends Component {
       title: <FormattedMessage id="description" />,
       dataIndex: 'description',
       key: 'description',
+      width: '25%',
       filters: [],
       filteredValue: filters.description || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {text}
+        </MouseOverWrapper>
+      ),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.online.instance.count`} />,
+      width: 65,
       dataIndex: 'onlineInstanceNum',
       key: 'onlineInstanceNum',
     }, {
       title: '',
-      width: 56,
+      width: 60,
       key: 'action',
       align: 'right',
       render: (text, record) => (
-        <Permission
-          service={[
-            'asgard-service.schedule-method-site.getParams',
-            'asgard-service.schedule-method-org.getParams',
-            'asgard-service.schedule-method-project.getParams',
-          ]}
-        >
-          <Button
-            shape="circle"
-            icon="find_in_page"
-            size="small"
-            onClick={this.openSidebar.bind(this, record)}
-          />
-        </Permission>
+        <React.Fragment>
+          <Permission
+            service={[
+              'asgard-service.schedule-method-site.getParams',
+              'asgard-service.schedule-method-org.getParams',
+              'asgard-service.schedule-method-project.getParams',
+            ]}
+          >
+            <Button
+              shape="circle"
+              icon="find_in_page"
+              size="small"
+              onClick={this.openSidebar.bind(this, record)}
+            />
+          </Permission>
+          <Permission
+            service={[
+              'asgard-service.schedule-method-site.delete',
+            ]}
+          >
+            <Button
+              shape="circle"
+              icon="delete_forever"
+              size="small"
+              onClick={() => this.handleDelete(record)}
+            />
+          </Permission>
+        </React.Fragment>
       ),
     }];
     return (
@@ -289,6 +339,7 @@ export default class ExecutableProgram extends Component {
           'asgard-service.schedule-method-site.getParams',
           'asgard-service.schedule-method-org.getParams',
           'asgard-service.schedule-method-project.getParams',
+          'asgard-service.schedule-method-site.delete',
         ]}
       >
         <Header

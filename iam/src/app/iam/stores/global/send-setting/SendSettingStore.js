@@ -84,7 +84,7 @@ class SendSettingStore {
   loadCurrentRecord = (id, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
     return axios.get(`/notify/v1/notices/send_settings/${id}${path}`);
-  }
+  };
 
   loadTemplate = (appType, orgId, businessType) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
@@ -106,12 +106,14 @@ class SendSettingStore {
         this.setPmTemplate(data);
       }
     });
-  }
+  };
 
   modifySetting = (id, body, appType, orgId) => {
     const path = appType === 'site' ? '' : `/organizations/${orgId}`;
     return axios.put(`notify/v1/notices/send_settings/${id}${path}`, JSON.stringify(body));
-  }
+  };
+
+  deleteSettingById = id => axios.delete(`notify/v1/notices/send_settings/${id}`);
 }
 
 const sendSettingStore = new SendSettingStore();

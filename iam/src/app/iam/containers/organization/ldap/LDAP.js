@@ -259,7 +259,7 @@ export default class LDAP extends Component {
         });
         LDAPStore.updateLDAP(this.state.organizationId, LDAPStore.getLDAPData.id, ladp)
           .then((data) => {
-            if (data) {
+            if (!data.failed) {
               LDAPStore.setLDAPData(data);
               Choerodon.prompt(intl.formatMessage({ id: 'save.success' }));
               this.setState({
@@ -281,7 +281,10 @@ export default class LDAP extends Component {
                   });
               }
             } else {
-              Choerodon.prompt(intl.formatMessage({ id: 'save.error' }));
+              this.setState({
+                saving: false,
+              });
+              Choerodon.prompt(data.message);
             }
           })
           .catch((error) => {
@@ -434,6 +437,20 @@ export default class LDAP extends Component {
           <FormItem
             {...formItemLayout}
           >
+            {getFieldDecorator('connectionTimeout', {
+              rules: [{
+                pattern: /^[1-9]\d*$/,
+                required: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.connection-timeout.msg` }),
+              }],
+              initialValue: ldapData.connectionTimeout ? ldapData.connectionTimeout : '10',
+            })(
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.connection-timeout` })} style={{ width: inputWidth }} autoComplete="off" suffix={intl.formatMessage({ id: 'second' })} />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
             {getFieldDecorator('port', {
               rules: [{
                 pattern: /^[1-9]\d*$/,
@@ -457,6 +474,10 @@ export default class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('account', {
+              rules: [{
+                required: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.admin.loginname.msg` }),
+              }],
               initialValue: ldapData.account ? ldapData.account : undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.admin.loginname` })} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autoComplete="off" />,
@@ -466,6 +487,10 @@ export default class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('password', {
+              rules: [{
+                required: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.admin.password.msg` }),
+              }],
               initialValue: ldapData.password ? ldapData.password : undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.admin.password` })} type="password" style={{ width: inputWidth }} autoComplete="off" />,

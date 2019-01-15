@@ -1,10 +1,8 @@
 .c7n-permission-info {
   &-name {
     vertical-align: text-top;
-    //position: relative;
 
     a {
-      //display: block;
       width: 100%;
       color: #000;
     }
@@ -71,6 +69,7 @@
       line-height: 20px;
       font-size: 12px;
       background: rgba(0, 0, 0, .08);
+
       &-disabled {
         background: rgba(0, 0, 0, 0.04);
         color: rgba(0, 0, 0, 0.36);

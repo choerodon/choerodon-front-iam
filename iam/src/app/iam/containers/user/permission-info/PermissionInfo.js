@@ -31,31 +31,20 @@ export default class PermissionInfo extends Component {
     this.loadData();
   }
 
-  // TODO 后端修改接口后用这段代码
-  // renderRoleColumn = (text) => {
-  //   const roles = text.split('\n');
-  //   const handledRoles = roles.map(item => ({ name: item.split(',')[0], enabled: item.split(',')[1].split('=')[1] }));
-  //   return handledRoles.map(({ name, enabled }, index) => {
-  //     let tag = <span className={classnames('role-wrapper', { 'role-wrapper-enabled': enabled === 'true', 'role-wrapper-disabled': enabled === 'false' })} key={index}>{name}</span>;
-  //     if (enabled === 'false') {
-  //       tag = (
-  //         <Tooltip title={<FormattedMessage id="memberrole.role.disabled.tip" />}>
-  //           {tag}
-  //         </Tooltip>
-  //       );
-  //     }
-  //     return tag;
-  //   });
-  // };
-
-  renderRoleColumn = (text) => {
-    const roles = text.split('\n');
-    return roles.map((value, index) => {
-      const item = <span className={'role-wrapper'} key={index}>{value}</span>;
-      return item;
-    });
-  };
-
+  renderRoleColumn = text => text.map(({ name, enabled }, index) => {
+    let item =
+      <span className={classnames('role-wrapper', { 'role-wrapper-enabled': enabled, 'role-wrapper-disabled': !enabled })} key={index}>
+        {index > 0 ? name.substring(1) : name}
+      </span>;
+    if (enabled === false) {
+      item = (
+        <Tooltip title={<FormattedMessage id={`${intlPrefix}.role.disabled.tip`} />}>
+          {item}
+        </Tooltip>
+      );
+    }
+    return item;
+  });
 
   getRedirectURL({ id, name, level, projName }) {
     switch (level) {

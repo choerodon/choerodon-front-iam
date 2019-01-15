@@ -1526,6 +1526,7 @@ const zh_CN = {
   'user.permissioninfo.site.redirect': '跳转至平台主页',
   'user.permissioninfo.organization.redirect': '跳转至组织"{name}"',
   'user.permissioninfo.project.redirect': '跳转至项目"{name}"',
+  'user.permissioninfo.role.disabled.tip': '该角色已停用',
 
 
   // 消息通知

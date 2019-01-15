@@ -330,6 +330,7 @@ export default class RootUser extends Component {
           'iam-service.user.pagingQueryAdminUsers',
           'iam-service.user.addDefaultUsers',
           'iam-service.user.deleteDefaultUser',
+          'iam-service.role-member.queryAllUsers',
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
@@ -374,9 +375,6 @@ export default class RootUser extends Component {
               code={`${intlPrefix}.add`}
               values={{ name: AppState.getSiteInfo.systemName || 'Choerodon' }}
             >
-              {/* <Form layout="vertical"> */}
-              {/* <MemberLabel label={<FormattedMessage id={`${intlPrefix}.user`} />} style={{ marginTop: '-15px' }} form={form} /> */}
-              {/* </Form> */}
               <FormItem
                 {...FormItemNumLayout}
               >

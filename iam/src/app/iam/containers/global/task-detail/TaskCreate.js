@@ -124,13 +124,18 @@ export default class TaskCreate extends Component {
 
   getBackPath = () => {
     let backPath;
+    let organizationId;
     const { type, name, id } = this.taskdetail;
+    const { currentMenuType } = this.props.AppState;
+    if (currentMenuType.type === 'project') {
+      organizationId = currentMenuType.organizationId;
+    }
     switch (type) {
       case 'organization':
         backPath = `/iam/task-detail?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
         break;
       case 'project':
-        backPath = `/iam/task-detail?type=${type}&id=${id}&name=${name}&projectId=${id}`;
+        backPath = `/iam/task-detail?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
         break;
       case 'site':
         backPath = '/iam/task-detail';

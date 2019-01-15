@@ -335,13 +335,18 @@ export default class TaskDetail extends Component {
 
   createTask() {
     const { type, id, name } = this.taskdetail;
+    const { currentMenuType } = this.props.AppState;
+    let organizationId;
+    if (currentMenuType.type === 'project') {
+      organizationId = currentMenuType.organizationId;
+    }
     let createUrl;
     switch (type) {
       case 'organization':
         createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
         break;
       case 'project':
-        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&projectId=${id}`;
+        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
         break;
       case 'site':
         createUrl = '/iam/task-detail/create';

@@ -1329,7 +1329,9 @@ const zh_CN = {
   'organization.ldap.port': '端口号',
   'organization.ldap.basedn': '基准DN',
   'organization.ldap.admin.loginname': '管理员登录名',
+  'organization.ldap.admin.loginname.msg': '管理员登录名不能为空',
   'organization.ldap.admin.password': '管理员密码',
+  'organization.ldap.admin.password.msg': '管理员密码不能为空',
   'organization.ldap.user.setting': '用户属性设置',
   'organization.ldap.objectclass': '用户对象类',
   'organization.ldap.objectclass.tip': '支持多个objectclass，使用逗号分隔',
@@ -1367,6 +1369,8 @@ const zh_CN = {
   'organization.ldap.custom-filter.msg': '请输入正确的自定义筛选用户条件',
   'organization.ldap.custom-filter': '自定义筛选用户条件',
   'organization.ldap.custom-filter.tip': '额外的过滤条件用于同步用户，允许为空，表达式必须以\'(\'开始，以\')\'结束，语法参考ldap search syntax。',
+  'organization.ldap.connection-timeout': 'ldap服务器连接超时时间',
+  'organization.ldap.connection-timeout.msg': '请输入大于1的整数',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',

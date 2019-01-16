@@ -25,7 +25,7 @@ class ExecutableProgramStore {
 
   loadData(
     { current, pageSize },
-    { code, service, method, description },
+    { code, service, method, description, level },
     { columnKey = 'id', order = 'descend' },
     params, type, id) {
     const queryObj = {
@@ -35,6 +35,7 @@ class ExecutableProgramStore {
       service,
       method,
       description,
+      level,
       params,
     };
     if (columnKey) {

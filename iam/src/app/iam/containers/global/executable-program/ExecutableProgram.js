@@ -245,11 +245,11 @@ export default class ExecutableProgram extends Component {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'code',
       key: 'code',
-      width: '20%',
+      width: '10%',
       filters: [],
       filteredValue: filters.code || [],
       render: text => (
-        <MouseOverWrapper text={text} width={0.2}>
+        <MouseOverWrapper text={text} width={0.1}>
           {text}
         </MouseOverWrapper>
       ),
@@ -277,7 +277,28 @@ export default class ExecutableProgram extends Component {
           {text}
         </MouseOverWrapper>
       ),
-    }, {
+    }, this.executableProgram.type === 'site' ? {
+      title: <FormattedMessage id="level" />,
+      dataIndex: 'level',
+      key: 'level',
+      width: '5%',
+      filters: [{
+        value: 'site',
+        text: '平台',
+      }, {
+        value: 'organization',
+        text: '组织',
+      }, {
+        value: 'project',
+        text: '项目',
+      }],
+      filteredValue: filters.level || [],
+      render: text => (
+        <MouseOverWrapper text={text} width={0.05}>
+          <FormattedMessage id={text} />
+        </MouseOverWrapper>
+      ),
+    } : { hidden: true }, {
       title: <FormattedMessage id="description" />,
       dataIndex: 'description',
       key: 'description',
@@ -315,18 +336,21 @@ export default class ExecutableProgram extends Component {
               onClick={this.openSidebar.bind(this, record)}
             />
           </Permission>
-          <Permission
-            service={[
-              'asgard-service.schedule-method-site.delete',
-            ]}
-          >
-            <Button
-              shape="circle"
-              icon="delete_forever"
-              size="small"
-              onClick={() => this.handleDelete(record)}
-            />
-          </Permission>
+          {
+            this.executableProgram.type === 'site' &&
+            <Permission
+              service={[
+                'asgard-service.schedule-method-site.delete',
+              ]}
+            >
+              <Button
+                shape="circle"
+                icon="delete_forever"
+                size="small"
+                onClick={() => this.handleDelete(record)}
+              />
+            </Permission>
+          }
         </React.Fragment>
       ),
     }];

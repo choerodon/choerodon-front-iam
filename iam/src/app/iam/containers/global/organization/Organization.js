@@ -482,10 +482,18 @@ export default class Organization extends Component {
       key: 'name',
       filters: [],
       width: '35%',
-      render: text => (
-        <MouseOverWrapper text={text} width={0.3}>
-          {text}
-        </MouseOverWrapper>
+      render: (text, record) => (
+        <React.Fragment>
+          <div className="c7n-iam-organization-name-avatar">
+            {
+              record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+              <React.Fragment>{text.split('')[0]}</React.Fragment>
+            }
+          </div>
+          <MouseOverWrapper text={text} width={0.3}>
+            {text}
+          </MouseOverWrapper>
+        </React.Fragment>
       ),
       sortOrder: columnKey === 'name' && order,
       filteredValue: filters.name || [],

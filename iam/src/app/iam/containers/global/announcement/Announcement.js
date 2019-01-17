@@ -188,13 +188,10 @@ export default class Announcement extends Component {
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.content`} />,
-        dataIndex: 'content',
-        key: 'content',
+        dataIndex: 'textContent',
+        key: 'textContent',
         width: '15%',
-        filters: [],
-        filteredValue: filters.content || [],
         className: 'nowarp',
-        render: text => text.replace(/<img(.*?)>/g, '[图片]').replace(/<[^>]*>/g, ''),
       }, {
         title: <FormattedMessage id={'status'} />,
         dataIndex: 'status',

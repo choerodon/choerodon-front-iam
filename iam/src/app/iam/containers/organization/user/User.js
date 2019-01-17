@@ -513,11 +513,11 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.loginname`} />,
         dataIndex: 'loginName',
         key: 'loginName',
-        width: '17%',
+        width: '20%',
         filters: [],
         filteredValue: filters.loginName || [],
         render: text => (
-          <MouseOverWrapper text={text} width={0.1}>
+          <MouseOverWrapper text={text} width={0.15}>
             {text}
           </MouseOverWrapper>
         ),
@@ -525,11 +525,11 @@ export default class User extends Component {
         title: <FormattedMessage id={`${intlPrefix}.realname`} />,
         key: 'realName',
         dataIndex: 'realName',
-        width: '17%',
+        width: '20%',
         filters: [],
         filteredValue: filters.realName || [],
         render: text => (
-          <MouseOverWrapper text={text} width={0.1}>
+          <MouseOverWrapper text={text} width={0.15}>
             {text}
           </MouseOverWrapper>
         ),
@@ -537,7 +537,7 @@ export default class User extends Component {
       {
         title: <FormattedMessage id={`${intlPrefix}.source`} />,
         key: 'ldap',
-        width: '17%',
+        width: '20%',
         render: (text, record) => (
           record.ldap
             ? <FormattedMessage id={`${intlPrefix}.ldap`} />
@@ -554,25 +554,25 @@ export default class User extends Component {
         ],
         filteredValue: filters.ldap || [],
       },
-      {
-        title: <FormattedMessage id={`${intlPrefix}.language`} />,
-        dataIndex: 'language',
-        key: 'language',
-        width: '17%',
-        render: (text, record) => (
-          this.changeLanguage(record.language)
-        ),
-        filters: [
-          {
-            text: '简体中文',
-            value: 'zh_CN',
-          }, {
-            text: 'English',
-            value: 'en_US',
-          },
-        ],
-        filteredValue: filters.language || [],
-      },
+      // {
+      //   title: <FormattedMessage id={`${intlPrefix}.language`} />,
+      //   dataIndex: 'language',
+      //   key: 'language',
+      //   width: '17%',
+      //   render: (text, record) => (
+      //     this.changeLanguage(record.language)
+      //   ),
+      //   filters: [
+      //     {
+      //       text: '简体中文',
+      //       value: 'zh_CN',
+      //     }, {
+      //       text: 'English',
+      //       value: 'en_US',
+      //     },
+      //   ],
+      //   filteredValue: filters.language || [],
+      // },
       {
         title: <FormattedMessage id={`${intlPrefix}.enabled`} />,
         key: 'enabled',

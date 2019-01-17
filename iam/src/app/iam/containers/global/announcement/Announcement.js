@@ -143,8 +143,8 @@ export default class Announcement extends Component {
     const { intl, AnnouncementStore } = this.props;
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
-      title: intl.formatMessage({ id: 'announcement.delete.title' }),
-      content: intl.formatMessage({ id: 'announcement.delete.content' }, { name: record.name }),
+      title: intl.formatMessage({ id: 'announcement.delete.title' }, { name: record.title }),
+      content: intl.formatMessage({ id: `announcement.delete.content${record.status === 'COMPLETED' ? '.send' : ''}` }),
       onOk: () => AnnouncementStore.deleteAnnouncementById(record.id).then(({ failed, message }) => {
         if (failed) {
           Choerodon.prompt(message);
@@ -188,13 +188,10 @@ export default class Announcement extends Component {
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.content`} />,
-        dataIndex: 'content',
-        key: 'content',
+        dataIndex: 'textContent',
+        key: 'textContent',
         width: '15%',
-        filters: [],
-        filteredValue: filters.content || [],
         className: 'nowarp',
-        render: text => text.replace(/<img(.*?)>/g, '[图片]').replace(/<[^>]*>/g, ''),
       }, {
         title: <FormattedMessage id={'status'} />,
         dataIndex: 'status',

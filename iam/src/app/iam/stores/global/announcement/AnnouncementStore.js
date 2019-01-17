@@ -3,6 +3,9 @@ import { axios, store } from 'choerodon-front-boot';
 import queryString from 'query-string';
 import { handleFiltersParams } from '../../../common/util';
 
+const imgPartten = /<img(.*?)>/g;
+const htmlTagParttrn = /<[^>]*>/g;
+
 @store('AnnouncementStore')
 class AnnouncementStore {
   @observable announcementData = [];
@@ -87,7 +90,7 @@ class AnnouncementStore {
       this.loading = false;
       return;
     }
-
+    debugger;
     return axios.get(`${this.announcementType.apiPrefix}/all?${queryString.stringify({
       page: pagination.current - 1,
       size: pagination.pageSize,
@@ -100,6 +103,11 @@ class AnnouncementStore {
       .then(action(({ failed, content, totalElements }) => {
         if (!failed) {
           this.announcementData = content;
+          this.announcementData.forEach((data) => {
+            data.textContent = data.content.replace(imgPartten, '[图片]').replace(htmlTagParttrn, '');
+          });
+          // this.announcementData.content = content.content.replace(imgPartten, '[图片]').replace(htmlTagParttrn, '');
+          debugger;
           this.pagination = {
             ...pagination,
             total: totalElements,

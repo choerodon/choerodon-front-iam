@@ -97,7 +97,7 @@ export default class OrganizationStatistics extends Component {
           data: chartData ? chartData.data : [],
         },
       ],
-      color: ['#B5CFFF', '#00BFA5', '#F7667F', '#5266D4', '#57AAF8', '#7589F2', '#FFB100'],
+      color: ['#B5CFFF', '#00BFA5', '#F7667F', '#5266D4', '#57AAF8', '#7589F2', '#FFB100', '#32C6DE', '#D3D3D3'],
     };
   }
 

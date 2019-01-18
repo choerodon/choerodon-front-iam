@@ -127,12 +127,14 @@ class DashboardSetting extends Component {
         title: <FormattedMessage id={`${intlPrefix}.namespace`} />,
         dataIndex: 'namespace',
         key: 'namespace',
-        width: '15%',
+        width: '13%',
+        filters: [],
+        filteredValue: filters.namespace || [],
       }, {
         title: <FormattedMessage id={`${intlPrefix}.code`} />,
         dataIndex: 'code',
         key: 'code',
-        width: '15%',
+        width: '13%',
         filters: [],
         filteredValue: filters.code || [],
       },
@@ -169,6 +171,14 @@ class DashboardSetting extends Component {
         render: text => (
           <FormattedMessage id={`${intlPrefix}.level.${text}`} />
         ),
+      }, {
+        title: <FormattedMessage id={`${intlPrefix}.needRoles`} />,
+        dataIndex: 'needRoles',
+        key: 'needRoles',
+        width: '9%',
+        filters: [],
+        filteredValue: filters.code || [],
+        render: needRoles => intl.formatMessage({ id: `global.dashboard-setting.needRoles.${needRoles ? 'enable' : 'disable'}` }),
       },
       {
         title: <FormattedMessage id="status" />,

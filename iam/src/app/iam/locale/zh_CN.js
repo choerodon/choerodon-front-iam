@@ -1206,6 +1206,9 @@ const zh_CN = {
   'global.dashboard-setting.level.project': '项目层',
   'global.dashboard-setting.card.title': '卡片标题',
   'global.dashboard-setting.card.title.required': '请输入卡片标题',
+  'global.dashboard-setting.needRoles': '角色控制',
+  'global.dashboard-setting.needRoles.enable': '开启',
+  'global.dashboard-setting.needRoles.disable': '关闭',
 
   // 系统设置
   'global.system-setting.header': '系统设置',

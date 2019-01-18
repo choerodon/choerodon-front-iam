@@ -92,7 +92,9 @@ export default class UserInfo extends Component {
   submitForm = (user) => {
     const { AppState, intl } = this.props;
     UserInfoStore.updateUserInfo(user).then((data) => {
-      if (data) {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
         this.props.form.resetFields();
         UserInfoStore.setUserInfo(data);
         Choerodon.prompt(intl.formatMessage({ id: 'modify.success' }));

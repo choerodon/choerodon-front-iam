@@ -110,6 +110,7 @@ class DashboardSettingStore {
       code: filters.code,
       level: filters.level,
       enable: filters.enabled,
+      namespace: filters.namespace,
       params: params.join(','),
       sort: sorter.join(','),
     })}`)

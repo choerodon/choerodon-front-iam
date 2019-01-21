@@ -176,8 +176,16 @@ class DashboardSetting extends Component {
         dataIndex: 'needRoles',
         key: 'needRoles',
         width: '9%',
-        filters: [],
-        filteredValue: filters.code || [],
+        filters: [
+          {
+            text: intl.formatMessage({ id: 'global.dashboard-setting.needRoles.enable' }),
+            value: true,
+          }, {
+            text: intl.formatMessage({ id: 'global.dashboard-setting.needRoles.disable' }),
+            value: false,
+          },
+        ],
+        filteredValue: filters.needRoles || [],
         render: needRoles => intl.formatMessage({ id: `global.dashboard-setting.needRoles.${needRoles ? 'enable' : 'disable'}` }),
       },
       {

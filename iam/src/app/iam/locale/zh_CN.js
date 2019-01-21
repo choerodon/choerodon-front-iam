@@ -633,6 +633,7 @@ const zh_CN = {
   site: '平台',
   project: '项目',
   organization: '组织',
+  user: '个人中心',
 
   'dashboard.failedsaga.seven': '近7天',
 
@@ -1634,6 +1635,8 @@ const zh_CN = {
   'announcement.title': '公告标题',
   'announcement.title.required': '请输入公告标题',
   'announcement.send.letter': '是否发送站内信',
+  'announcement.send.is-sticky': '是否显示在顶部',
+  'announcement.end-date': '结束显示时间',
 
   // Upload
   'download.template': '下载模板',

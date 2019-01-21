@@ -111,6 +111,7 @@ class DashboardSettingStore {
       level: filters.level,
       enable: filters.enabled,
       namespace: filters.namespace,
+      needRoles: filters.needRoles,
       params: params.join(','),
       sort: sorter.join(','),
     })}`)

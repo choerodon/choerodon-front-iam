@@ -43,7 +43,7 @@ export default class Announcement extends Component {
           <React.Fragment>
             <Timeline className="c7n-iam-dashboard-announcement-timeline">
               {announcementData.map(data => (
-                <Item className="item">
+                <Item className="item" key={`${data.id}`}>
                   <div className="time"><p>{data.sendDate.split(' ')[0]}</p><p>{data.sendDate.split(' ')[1]}</p></div>
                   <div className="title"><a onClick={() => AnnouncementInfoStore.showDetail(data)}>{data.title}</a></div>
                 </Item>

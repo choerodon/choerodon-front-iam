@@ -88,6 +88,7 @@ export default class Announcement extends Component {
                 ...values,
                 content: editorContent,
                 sendDate: values.sendDate.format('YYYY-MM-DD HH:mm:ss'),
+                endDate: values.endDate.format('YYYY-MM-DD HH:mm:ss'),
               }).then((data) => {
                 AnnouncementStore.setSubmitting(false);
                 if (!data.failed) {
@@ -296,7 +297,7 @@ export default class Announcement extends Component {
   renderForm() {
     const {
       AnnouncementStore: { editorContent, selectType, currentRecord }, AnnouncementStore, intl,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const isModify = selectType === 'modify';
     return (
@@ -337,6 +338,42 @@ export default class Announcement extends Component {
             )}
           </FormItem>
           <FormItem {...formItemLayout}>
+            {getFieldDecorator('sticky', {
+              rules: [],
+              initialValue: isModify ? currentRecord.sticky || false : false,
+            })(
+              <RadioGroup
+                label={<FormattedMessage id="announcement.send.is-sticky" />}
+                className="radioGroup"
+              >
+                <Radio value>{intl.formatMessage({ id: 'yes' })}</Radio>
+                <Radio value={false}>{intl.formatMessage({ id: 'no' })}</Radio>
+              </RadioGroup>,
+            )}
+          </FormItem>
+          {
+            getFieldValue('sticky') ? <FormItem {...formItemLayout}>
+              {getFieldDecorator('endDate', {
+                rules: [{
+                  required: true,
+                  message: '请输入结束显示时间',
+                }],
+                initialValue: isModify && currentRecord.endDate ? moment(currentRecord.endDate) : undefined,
+              })(
+                <DatePicker
+                  className="c7n-iam-announcement-siderbar-content-datepicker"
+                  label={<FormattedMessage id="announcement.end-date" />}
+                  style={{ width: inputWidth }}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  disabledDate={this.disabledDate}
+                  showTime
+                  getCalendarContainer={that => that}
+                />,
+              )
+              }
+            </FormItem> : null
+          }
+          <FormItem {...formItemLayout}>
             {getFieldDecorator('title', {
               rules: [{
                 required: true,
@@ -363,11 +400,11 @@ export default class Announcement extends Component {
     );
   }
 
-  renderDetail({ content, status, sendDate }) {
+  renderDetail({ content, status, sendDate, endDate, sticky }) {
     const { intl } = this.props;
     return (
       <div className="c7n-iam-announcement-detail">
-        <div><span>状态：</span>
+        <div><span>{intl.formatMessage({ id: 'status' })}：</span>
           <div className="inline">
             <StatusTag
               style={{ fontSize: 14, color: 'rgba(0,0,0,0.65)' }}
@@ -377,8 +414,10 @@ export default class Announcement extends Component {
             />
           </div>
         </div>
-        <div><span>发送时间：</span><span className="send-time">{sendDate}</span></div>
-        <div><span>公告内容：</span></div>
+        <div><span>{intl.formatMessage({ id: 'announcement.send.date' })}：</span><span className="send-time">{sendDate}</span></div>
+        <div><span>{intl.formatMessage({ id: 'announcement.send.is-sticky' })}：</span><span className="send-time">{intl.formatMessage({ id: sticky ? 'yes' : 'no' })}</span></div>
+        {sticky ? <div><span>{intl.formatMessage({ id: 'announcement.end-date' })}：</span><span className="send-time">{endDate}</span></div> : null}
+        <div><span>{intl.formatMessage({ id: 'global.announcement.content' })}：</span></div>
         <div className="c7n-iam-announcement-detail-wrapper">
           <div
             className="c7n-iam-announcement-detail-content"

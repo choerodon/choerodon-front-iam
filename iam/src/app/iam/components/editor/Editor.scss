@@ -1,5 +1,9 @@
+@import "../../common/style/mixin/template";
+
 .c7n-iam-react-quill-editor {
   position: relative;
+
+  @include template;
 
   /* default header */
   .ql-snow .ql-picker.ql-header .ql-picker-label::before,

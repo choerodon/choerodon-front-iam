@@ -90,7 +90,6 @@ class AnnouncementStore {
       this.loading = false;
       return;
     }
-    debugger;
     return axios.get(`${this.announcementType.apiPrefix}/all?${queryString.stringify({
       page: pagination.current - 1,
       size: pagination.pageSize,
@@ -107,7 +106,6 @@ class AnnouncementStore {
             data.textContent = data.content.replace(imgPartten, '[图片]').replace(htmlTagParttrn, '');
           });
           // this.announcementData.content = content.content.replace(imgPartten, '[图片]').replace(htmlTagParttrn, '');
-          debugger;
           this.pagination = {
             ...pagination,
             total: totalElements,

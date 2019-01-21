@@ -86,7 +86,7 @@ export default class SiteStatistics extends Component {
 
   getOptionList() {
     const { intl } = this.props;
-    const level = ['site', 'project', 'organization'];
+    const level = ['site', 'project', 'organization', 'user'];
     return (
       level.map((name, index) => (
         <Option key={index} value={name}>{intl.formatMessage({ id: name })}</Option>

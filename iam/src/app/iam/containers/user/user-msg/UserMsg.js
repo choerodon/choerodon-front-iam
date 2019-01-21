@@ -153,6 +153,11 @@ export default class UserMsg extends Component {
 
   handleTabsChange = (key) => {
     UserMsgStore.setCurrentType(key);
+    if (/&msgType=.+/g.test(window.location.hash)) {
+      window.location.hash = window.location.hash.replace(/&msgType=.+/g, `&msgType=${key}`);
+    } else {
+      window.location.hash = `${window.location.hash}&msgType=${key}`;
+    }
     this.refresh();
   };
 

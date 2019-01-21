@@ -159,6 +159,9 @@ export default class Announcement extends Component {
   handleOpen = (selectType, record = {}) => {
     const { AnnouncementStore, form } = this.props;
     form.resetFields();
+    if (this.editor) {
+      this.editor.initEditor();
+    }
     AnnouncementStore.setEditorContent(selectType === 'create' ? null : record.content);
     AnnouncementStore.setCurrentRecord(record);
     AnnouncementStore.setSelectType(selectType);

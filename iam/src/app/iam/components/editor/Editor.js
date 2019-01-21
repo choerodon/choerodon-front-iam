@@ -128,6 +128,18 @@ export default class Editor extends Component {
     }
   }
 
+  initEditor = () => {
+    const { isShowHtmlContainer } = this.state;
+    if (isShowHtmlContainer) {
+      this.setState({
+        isShowHtmlContainer: false,
+      });
+    }
+    if (this.state.htmlString) {
+      this.props.onChange(this.state.htmlString);
+    }
+  }
+
   // 返回可视化编辑
   backEdit = () => {
     this.setState({
@@ -140,6 +152,8 @@ export default class Editor extends Component {
   handleChangedHTML = (e) => {
     this.setState({
       htmlString: e.target.value,
+    }, () => {
+      this.props.onChange(this.state.htmlString);
     });
   }
 

@@ -110,7 +110,7 @@ export default class TokenManager extends Component {
       width: '20%',
       render: text => (
         <MouseOverWrapper text={text} width={0.2}>
-          {text}
+          <a className="c7n-iam-token-manager-url" onClick={() => window.open(text)}>{text}</a>
         </MouseOverWrapper>
       ),
     }, {

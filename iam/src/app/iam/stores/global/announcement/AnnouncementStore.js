@@ -9,7 +9,7 @@ const htmlTagParttrn = /<[^>]*>/g;
 function htmlDecode(str) {
   let s = '';
   if (str.length === 0) return '';
-  s = str.replace(/&gt;/g, '&');
+  s = str.replace(/&amp;/g, '&');
   s = s.replace(/&lt;/g, '<');
   s = s.replace(/&gt;/g, '>');
   s = s.replace(/&nbsp;/g, ' ');

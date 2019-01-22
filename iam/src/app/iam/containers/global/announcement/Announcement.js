@@ -88,7 +88,7 @@ export default class Announcement extends Component {
                 ...values,
                 content: editorContent,
                 sendDate: values.sendDate.format('YYYY-MM-DD HH:mm:ss'),
-                endDate: values.endDate.format('YYYY-MM-DD HH:mm:ss'),
+                endDate: values.endDate && values.endDate.format('YYYY-MM-DD HH:mm:ss'),
               }).then((data) => {
                 AnnouncementStore.setSubmitting(false);
                 if (!data.failed) {

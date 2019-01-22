@@ -1563,6 +1563,8 @@ const zh_CN = {
   'user.token-manager.expiration-time': '失效时间',
   'user.token-manager.remove.title': '移除access-token',
   'user.token-manager.remove.content': '确定要移除{name}吗？移除后您将无法获取该token的授权信息。',
+  'user.token-manager.remove.batch.title': '批量移除access-token',
+  'user.token-manager.remove.batch.content': '确定要移除选中的 {name} 个token吗？移除后您将无法获取token的授权信息。',
 
   // 角色分配
   'global.memberrole.header.title': '平台角色分配',

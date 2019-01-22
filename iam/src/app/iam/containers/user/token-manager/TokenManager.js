@@ -18,6 +18,11 @@ timeago.register('zh_CN', require('./locale/zh_CN'));
 @injectIntl
 @observer
 export default class TokenManager extends Component {
+  onSelectChange = (selectedRowKeys) => {
+    const { TokenManagerStore } = this.props;
+    TokenManagerStore.setSelectedRowKeys(selectedRowKeys);
+  };
+
   componentWillMount() {
     this.loadInitData();
   }
@@ -37,6 +42,25 @@ export default class TokenManager extends Component {
         if (failed) {
           Choerodon.prompt(message);
         } else {
+          Choerodon.prompt(intl.formatMessage({ id: 'remove.success' }));
+          this.refresh();
+        }
+      }),
+    });
+  };
+
+  handleBatchDelete = () => {
+    const { TokenManagerStore: { selectedRowKeys }, TokenManagerStore } = this.props;
+    const { intl } = this.props;
+    Modal.confirm({
+      className: 'c7n-iam-confirm-modal',
+      title: intl.formatMessage({ id: `${intlPrefix}.remove.batch.title` }),
+      content: intl.formatMessage({ id: `${intlPrefix}.remove.batch.content` }, { name: selectedRowKeys.length }),
+      onOk: () => TokenManagerStore.batchDelete(selectedRowKeys, Choerodon.getAccessToken().split(' ')[1]).then(({ failed, message }) => {
+        if (failed) {
+          Choerodon.prompt(message);
+        } else {
+          TokenManagerStore.setSelectedRowKeys([]);
           Choerodon.prompt(intl.formatMessage({ id: 'remove.success' }));
           this.refresh();
         }
@@ -171,7 +195,13 @@ export default class TokenManager extends Component {
   };
 
   render() {
-    const { TokenManagerStore: { loading, tokenData, params }, intl } = this.props;
+    const { TokenManagerStore: { loading, tokenData, params, selectedRowKeys, pagination }, intl } = this.props;
+
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+      getCheckboxProps: record => ({ disabled: record.accesstoken === Choerodon.getAccessToken().split(' ')[1] }),
+    };
 
     return (
       <Page
@@ -184,17 +214,22 @@ export default class TokenManager extends Component {
           <Button onClick={this.refresh} icon="refresh">
             <FormattedMessage id="refresh" />
           </Button>
+          <Button onClick={this.handleBatchDelete} icon="delete_forever" disabled={selectedRowKeys.length === 0}>
+            <FormattedMessage id="delete.all" />
+          </Button>
         </Header>
         <Content
           className="c7n-iam-token-manager"
           code={intlPrefix}
         >
           <Table
+            rowSelection={rowSelection}
             loading={loading}
-            filters={params}
+            filters={params.slice()}
             columns={this.getColumns()}
-            dataSource={tokenData}
-            rowKey="accesstoken"
+            dataSource={tokenData.slice()}
+            pagination={pagination}
+            rowKey="tokenId"
             fixed
             onChange={this.handlePageChange}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

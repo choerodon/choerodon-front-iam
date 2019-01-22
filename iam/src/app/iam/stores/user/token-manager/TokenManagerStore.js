@@ -17,12 +17,24 @@ class TokenManagerStore {
     expire: [],
   };
 
+  @observable selectedRowKeys = [];
+
+  @action
+  setSelectedRowKeys(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys;
+  }
+
+
   refresh(token) {
     this.loadData(token, { current: 1, pageSize: 10 }, []);
   }
 
   deleteTokenById(tokenId, token) {
     return axios.delete(`/iam/v1/token?tokenId=${tokenId}&currentToken=${token}`);
+  }
+
+  batchDelete(arrTokenIds, token) {
+    return axios.delete(`/iam/v1/token/batch?currentToken=${token}`, { data: arrTokenIds });
   }
 
   @action
@@ -34,7 +46,6 @@ class TokenManagerStore {
       page: pagination.current - 1,
       size: pagination.pageSize,
       params: params.join(','),
-      expire: filters.expire[0],
     })}`)
       .then(action(({ failed, content, totalElements }) => {
         if (!failed) {

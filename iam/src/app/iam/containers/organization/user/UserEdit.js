@@ -120,12 +120,11 @@ export default class UserEdit extends Component {
     if (!edit || username !== this.state.userInfo.loginName) {
       if (/\s/.test(username)) {
         callback(intl.formatMessage({ id: `${intlPrefix}.name.space.msg` }));
-        return;
       }
       if (username && this.checkUsernameAndPwd()) {
         callback(intl.formatMessage({ id: `${intlPrefix}.name.samepwd.msg` }));
-        return;
       }
+
       const id = AppState.currentMenuType.id;
       CreateUserStore.checkUsername(id, username).then(({ failed }) => {
         if (failed) {
@@ -219,6 +218,7 @@ export default class UserEdit extends Component {
           CreateUserStore.updateUser(organizationId, id, {
             ...data,
             objectVersionNumber,
+            loginName: null,
           }).then(({ failed, message }) => {
             if (failed) {
               Choerodon.prompt(message);
@@ -266,18 +266,19 @@ export default class UserEdit extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('loginName', {
-              rules: [
+              rules: !edit ? [
                 {
                   required: true,
                   whitespace: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
                 }, {
-                  pattern: /^[0-9a-zA-Z]+$/,
+                  /* eslint-disable-next-line */
+                  pattern: /^(?!\-)[a-zA-Z0-9\_\-\.]+(?<!\.git|\.atom|\.)$/,
                   message: intl.formatMessage({ id: `${intlPrefix}.loginname.pattern.msg` }),
                 }, {
                   validator: this.checkUsername,
                 },
-              ],
+              ] : [],
               validateTrigger: 'onBlur',
               initialValue: userInfo.loginName,
               validateFirst: true,

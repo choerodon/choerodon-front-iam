@@ -96,12 +96,12 @@ export default class SiteStatistics extends Component {
     <Table
       columns={this.getTableColumns()}
       dataSource={SiteStatisticsStore.getTableData.slice()}
+      rowKey="code"
       fixed
     />
   );
 
   getTableColumns() {
-    const { intl } = this.props;
     return [
       {
         title: <FormattedMessage id={`${intlPrefix}.table.name`} />,

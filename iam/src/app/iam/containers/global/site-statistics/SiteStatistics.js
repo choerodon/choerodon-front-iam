@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
-import { Button, Icon, Select, Spin } from 'choerodon-ui';
+import { Button, Table, Select, Spin } from 'choerodon-ui';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import './SiteStatistics.scss';
@@ -16,7 +16,7 @@ const colorArr = ['#FDB34E', '#5266D4', '#FD717C', '#53B9FC', '#F44336', '#6B83F
 
 @withRouter
 @injectIntl
-@inject('AppState')
+@inject('AppState', 'MenuStore')
 @observer
 export default class SiteStatistics extends Component {
   componentDidMount() {
@@ -29,7 +29,11 @@ export default class SiteStatistics extends Component {
     SiteStatisticsStore.setLoading(true);
     const startDate = SiteStatisticsStore.startTime.format().split('T')[0];
     const endDate = SiteStatisticsStore.endTime.format().split('T')[0];
-    SiteStatisticsStore.loadChart(startDate, endDate, SiteStatisticsStore.getCurrentLevel);
+    SiteStatisticsStore.loadChart(startDate, endDate, SiteStatisticsStore.getCurrentLevel).then(() => {
+      this.props.MenuStore.loadMenuData({ type: SiteStatisticsStore.getCurrentLevel }).then((data) => {
+        SiteStatisticsStore.appendTableData(data);
+      });
+    });
   };
 
   initTime = () => {
@@ -44,7 +48,11 @@ export default class SiteStatistics extends Component {
     const currentLevel = SiteStatisticsStore.getCurrentLevel;
     const startDate = SiteStatisticsStore.getStartTime.format().split('T')[0];
     const endDate = SiteStatisticsStore.getEndTime.format().split('T')[0];
-    SiteStatisticsStore.loadChart(startDate, endDate, currentLevel);
+    SiteStatisticsStore.loadChart(startDate, endDate, currentLevel).then(() => {
+      this.props.MenuStore.loadMenuData({ type: SiteStatisticsStore.getCurrentLevel }).then((data) => {
+        SiteStatisticsStore.appendTableData(data);
+      });
+    });
   };
 
   getChart = () => {
@@ -82,6 +90,42 @@ export default class SiteStatistics extends Component {
         </Spin>
       </div>
     );
+  };
+
+  getTable = () => (
+    <Table
+      columns={this.getTableColumns()}
+      dataSource={SiteStatisticsStore.getTableData.slice()}
+      fixed
+    />
+  );
+
+  getTableColumns() {
+    const { intl } = this.props;
+    return [
+      {
+        title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
+        dataIndex: 'name',
+        key: 'name',
+        width: '40%',
+        filters: [],
+        onFilter: (value, record) => record.name.toString().indexOf(value) === 0,
+      },
+      {
+        title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
+        dataIndex: 'code',
+        key: 'code',
+        width: '40%',
+      },
+      {
+        title: <FormattedMessage id={`${intlPrefix}.table.click-sum`} />,
+        dataIndex: 'sum',
+        key: 'sum',
+        width: '20%',
+        defaultSortOrder: 'descend',
+        sorter: (a, b) => a.sum - b.sum,
+      },
+    ];
   }
 
   getOptionList() {
@@ -96,6 +140,9 @@ export default class SiteStatistics extends Component {
 
   handleChange(level) {
     SiteStatisticsStore.setCurrentLevel(level);
+    this.props.MenuStore.loadMenuData({ type: level }).then((data) => {
+      SiteStatisticsStore.appendTableData(data);
+    });
     this.loadChart();
   }
 
@@ -255,6 +302,17 @@ export default class SiteStatistics extends Component {
     };
   }
 
+  clickDownload = () => {
+    let str = '菜单名称,菜单编码,菜单点击总数';
+    SiteStatisticsStore.tableData.forEach((v) => {
+      str += `\n${v.name},${v.code},${v.sum}`;
+    });
+    str = encodeURIComponent(str);
+    const aLink = document.getElementById('download');
+    aLink.href = `data:text/csv;charset=utf-8,\ufeff${str}`;
+    aLink.click();
+  };
+
 
   render() {
     return (
@@ -272,9 +330,17 @@ export default class SiteStatistics extends Component {
           >
             <FormattedMessage id="refresh" />
           </Button>
+          <Button
+            onClick={this.clickDownload}
+            icon="get_app"
+          >
+            导出表格csv文件
+          </Button>
+          <a id="download" download="site-statistics.csv" href="#" />
         </Header>
         <Content>
           {this.getChart()}
+          {this.getTable()}
         </Content>
       </Page>
     );

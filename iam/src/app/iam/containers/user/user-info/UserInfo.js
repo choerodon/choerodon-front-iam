@@ -91,6 +91,7 @@ export default class UserInfo extends Component {
 
   submitForm = (user) => {
     const { AppState, intl } = this.props;
+    user.loginName = null;
     UserInfoStore.updateUserInfo(user).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);

@@ -2,9 +2,6 @@ import { action, computed, observable, toJS } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
 import moment from 'moment';
 import querystring from 'query-string';
-import _ from 'lodash';
-
-const { MenuStore } = stores;
 
 class DataSorter {
   static GetNumSorter = (orderBy, direction) => (item1, item2) => {
@@ -44,13 +41,11 @@ class SiteStatisticsStore {
   }
 
   @action setTableData(data) {
-    this.tableData = data.details.map(v => ({
+    this.tableData = (data.details ? data.details.map(v => ({
       code: v.menu.split(':')[0],
       name: v.menu.split(':')[1],
       sum: v.data.reduce((prev, cur) => prev + cur, 0),
-    }));
-    const a = MenuStore;
-    debugger;
+    })) : this.tableData);
     this.tableData = this.tableData.sort(DataSorter.GetNumSorter('sum', 'desc'));
   }
 

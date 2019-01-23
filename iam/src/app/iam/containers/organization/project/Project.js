@@ -398,6 +398,10 @@ export default class Project extends Component {
                 required: true,
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
+              }, {
+                /* eslint-disable-next-line */
+                pattern: /^[-—\.\w\s\u4e00-\u9fa5]{1,32}$/,
+                message: intl.formatMessage({ id: `${intlPrefix}.name.pattern.msg` }),
               }],
               initialValue: operation === 'create' ? undefined : projectDatas.name,
             })(

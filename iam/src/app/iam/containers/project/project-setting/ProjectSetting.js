@@ -235,6 +235,10 @@ export default class ProjectSetting extends Component {
                     required: true,
                     whitespace: true,
                     message: intl.formatMessage({ id: `${intlPrefix}.namerequiredmsg` }),
+                  }, {
+                    /* eslint-disable-next-line */
+                    pattern: /^[-—\.\w\s\u4e00-\u9fa5]{1,32}$/,
+                    message: intl.formatMessage({ id: `${intlPrefix}.name.pattern.msg` }),
                   }],
                   initialValue: name,
                 })(

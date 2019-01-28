@@ -309,8 +309,14 @@ export default class SiteStatistics extends Component {
     });
     str = encodeURIComponent(str);
     const aLink = document.getElementById('download');
+    aLink.download = this.getDownloadName();
     aLink.href = `data:text/csv;charset=utf-8,\ufeff${str}`;
     aLink.click();
+  };
+
+  getDownloadName = () => {
+    const momentTime = moment(new Date().getTime());
+    return `平台菜单统计-${momentTime.format('YYYYMMDDHHmm')}`;
   };
 
 

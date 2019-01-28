@@ -1438,7 +1438,7 @@ const zh_CN = {
   'organization.user.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
   'organization.user.addinfo.pattern.msg': '请输入json格式的数据',
   'organization.user.loginname.require.msg': '请输入登录名',
-  'organization.user.loginname.pattern.msg': '登录名只能由字母、数字、"-"、"_"、"."组成，且不能以“-”开头，不能以"."、 “.git"或者“.atom”结尾',
+  'organization.user.loginname.pattern.msg': '登录名只能由字母、数字、"-"、"_"、"."组成，且不能以“-”开头，不能以"."、 ".git"或者".atom"结尾',
   'organization.user.realname.require.msg': '请输入用户名',
   'organization.user.email.require.msg': '请输入邮箱',
   'organization.user.email.pattern.msg': '请输入正确的邮箱',

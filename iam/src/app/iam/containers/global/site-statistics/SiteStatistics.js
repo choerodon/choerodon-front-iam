@@ -107,7 +107,7 @@ export default class SiteStatistics extends Component {
         title: <FormattedMessage id={`${intlPrefix}.table.name`} />,
         dataIndex: 'name',
         key: 'name',
-        width: '40%',
+        width: '20%',
         filters: [],
         onFilter: (value, record) => record.name.toString().indexOf(value) === 0,
       },
@@ -115,7 +115,7 @@ export default class SiteStatistics extends Component {
         title: <FormattedMessage id={`${intlPrefix}.table.code`} />,
         dataIndex: 'code',
         key: 'code',
-        width: '40%',
+        width: '50%',
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.table.click-sum`} />,

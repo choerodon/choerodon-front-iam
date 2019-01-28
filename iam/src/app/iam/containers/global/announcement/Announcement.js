@@ -294,6 +294,15 @@ export default class Announcement extends Component {
     return current < moment().subtract(1, 'days');
   }
 
+  disabledShowDate = (current) => {
+    const endDate = moment(this.props.form.getFieldValue('sendDate'));
+    if (endDate) {
+      return current < endDate.add(1, 'days');
+    } else {
+      return current < moment().subtract(1, 'days');
+    }
+  };
+
   renderForm() {
     const {
       AnnouncementStore: { editorContent, selectType, currentRecord }, AnnouncementStore, intl,
@@ -365,7 +374,7 @@ export default class Announcement extends Component {
                   label={<FormattedMessage id="announcement.end-date" />}
                   style={{ width: inputWidth }}
                   format="YYYY-MM-DD HH:mm:ss"
-                  disabledDate={this.disabledDate}
+                  disabledDate={this.disabledShowDate}
                   showTime
                   getCalendarContainer={that => that}
                 />,

@@ -1215,7 +1215,7 @@ const zh_CN = {
   'global.dashboard-setting.needRoles.disable': '关闭',
 
   // 系统设置
-  'global.system-setting.header': '系统设置',
+  'global.system-setting.header': '系统配置',
   'global.system-setting.title': '对平台的自定义设置',
   'global.system-setting.description': '设置平台的名称、logo、系统默认密码和默认语言，以便于提高您的企业辨识度，个性化定制您的平台',
   'global.system-setting.file.size.limit': '图标大小不能大于{size}',
@@ -1324,6 +1324,7 @@ const zh_CN = {
   'organization.ldap.disable.content': '确定要停用LDAP吗？停用LDAP后，之前所同步的用户将无法登录平台，且无法使用测试连接和同步用户功能。',
   'organization.ldap.connect': '测试连接',
   'organization.ldap.syncuser': '同步用户',
+  'organization.ldap.syncuser.history': '同步记录',
   'organization.ldap.hostname.tip': '运行 LDAP 的服务器主机名。例如：ldap://example.com',
   'organization.ldap.ssl.tip': '是否使用SSL会对端口号有影响',
   'organization.ldap.basedn.tip': 'LDAP目录树的最顶部的根，从根节点搜索用户。例如：cn=users,dc=example,dc=com',

@@ -314,6 +314,13 @@ const pageDetail = {
   'organization.ldap.sync.description': '您可以在此将LDAP服务器中的用户信息同步到平台中。',
   'organization.ldap.sync.link': `${docServer}/user-guide/system-configuration/tenant/ldap/`,
 
+  'organization.ldap.record.title': '组织"{name}"的LDAP同步记录',
+  'organization.ldap.record.description': '您可以在此将查看组织同步LDAP用户的历史记录。包括同步时间、成功或失败人数、失败详情。',
+  'organization.ldap.record.link': `${docServer}/user-guide/system-configuration/tenant/ldap/`,
+
+  'organization.ldap.record.detail.title': 'LDAP同步失败详情',
+  'organization.ldap.record.detail.description': 'LDAP历史同步记录的详情。在这里您可以看到具体同步失败的LDAP用户和同步失败的原因。',
+
   // 用户管理
   'organization.user.title': '组织"{name}"的用户管理',
   'organization.user.description': '用户是平台的使用者。您可以在组织下创建用户，则用户属于这个组织。',
@@ -1384,6 +1391,18 @@ const zh_CN = {
   'organization.ldap.custom-filter.tip': '额外的过滤条件用于同步用户，允许为空，表达式必须以\'(\'开始，以\')\'结束，语法参考ldap search syntax。',
   'organization.ldap.connection-timeout': 'ldap服务器连接超时时间',
   'organization.ldap.connection-timeout.msg': '请输入大于1的整数',
+  'organization.ldap.record.header.title': '同步记录',
+  'organization.ldap.record.sync.time': '同步时间',
+  'organization.ldap.record.success.count': '成功人数',
+  'organization.ldap.record.failed.count': '失败人数',
+  'organization.ldap.record.spend': '耗时',
+  'organization.ldap.record.detail': '查看失败详情',
+  'organization.ldap.record.failed.header.title': '失败详情',
+  'organization.ldap.record.failed.uuid': 'UUID',
+  'organization.ldap.record.failed.loginname': '登录名',
+  'organization.ldap.record.failed.realname': '用户名',
+  'organization.ldap.record.failed.email': '邮箱',
+  'organization.ldap.record.failed.reason': '失败原因',
 
   // 密码策略
   'organization.pwdpolicy.header.title': '密码策略',
@@ -1439,7 +1458,7 @@ const zh_CN = {
   'organization.user.email.used.msg': '该邮箱已被使用，请输入其他邮箱',
   'organization.user.addinfo.pattern.msg': '请输入json格式的数据',
   'organization.user.loginname.require.msg': '请输入登录名',
-  'organization.user.loginname.pattern.msg': '登录名只能由字母、数字、"-"、"_"、"."组成，且不能以“-”开头，不能以"."、 ".git"或者".atom"结尾',
+  'organization.user.loginname.pattern.msg': '登录名只能由字母、数字、"-"、"_"、"."组成，且不能以"-"开头，不能以"."、 ".git"或者".atom"结尾',
   'organization.user.realname.require.msg': '请输入用户名',
   'organization.user.email.require.msg': '请输入邮箱',
   'organization.user.email.pattern.msg': '请输入正确的邮箱',

@@ -4,6 +4,7 @@
 
 import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import querystring from 'query-string';
 
 @store('LDAPStore')
 class LDAPStore {
@@ -15,6 +16,8 @@ class LDAPStore {
   @observable isShowResult = false;
   @observable confirmLoading = false;
   @observable isSyncLoading = false;
+  @observable syncRecord = []; // 同步记录
+  @observable detailRecord = []; // 失败记录
 
   @action setIsLoading(flag) {
     this.isLoading = flag;
@@ -82,6 +85,70 @@ class LDAPStore {
 
   @action cleanData() {
     this.ldapData = {};
+  }
+
+  @action setSyncRecord(data) {
+    this.syncRecord = data;
+  }
+
+  @computed get getSyncRecord() {
+    return this.syncRecord;
+  }
+
+  @action setDetailRecord(data) {
+    this.detailRecord = data;
+  }
+
+  @computed get getDetailRecord() {
+    return this.detailRecord;
+  }
+
+  // 加载同步记录
+  loadSyncRecord(
+    { current, pageSize },
+    { columnKey = 'id', order = 'descend' },
+    organizationId, id) {
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+    };
+
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/iam/v1/organizations/${organizationId}/ldaps/${id}/history?${querystring.stringify(queryObj)}`);
+  }
+
+  // 加载失败详情
+  loadDetail(
+    { current, pageSize },
+    { uuid, loginName, realName, email },
+    { columnKey = 'id', order = 'descend' },
+    params, id) {
+    const queryObj = {
+      page: current - 1,
+      size: pageSize,
+      uuid,
+      loginName,
+      realName,
+      email,
+      params,
+    };
+
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
+    return axios.get(`/iam/v1/ldap_histories/${id}/error_users?${querystring.stringify(queryObj)}`);
   }
 
   loadLDAP = (organizationId) => {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import { observable, action, configure } from 'mobx';
 import moment from 'moment';
 import { Button, Table, Modal, Tooltip, Form, DatePicker, Input, Radio } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -9,6 +10,8 @@ import './Announcement.scss';
 import StatusTag from '../../../components/statusTag';
 import Editor from '../../../components/editor';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
+
+configure({ enforceActions: false });
 
 // 匹配html界面为空白的正则。
 const patternHTMLEmpty = /^(((<[^>]+>)*\s*)|&nbsp;|\s)*$/g;
@@ -58,6 +61,15 @@ class AnnouncementType {
 @inject('AppState')
 @observer
 export default class Announcement extends Component {
+  state = this.getInitState();
+
+  getInitState() {
+    return {
+      sendDate: null,
+      endDate: null,
+    };
+  }
+
   componentWillMount() {
     this.initAnnouncement();
   }
@@ -138,6 +150,7 @@ export default class Announcement extends Component {
 
   handleCancel = () => {
     this.props.AnnouncementStore.hideSideBar();
+    this.setState(this.getInitState());
   };
 
   handleDelete = (record) => {
@@ -302,6 +315,112 @@ export default class Announcement extends Component {
       return current < moment().subtract(1, 'days');
     }
   };
+  /* 时间选择器处理 -- start */
+  disabledStartDate = (sendDate) => {
+    const endDate = this.state.endDate;
+    if (!sendDate || !endDate) {
+      return false;
+    }
+    if (endDate.format().split('T')[1] === '00:00:00+08:00') {
+      return sendDate.format().split('T')[0] >= endDate.format().split('T')[0];
+    } else {
+      return sendDate.format().split('T')[0] > endDate.format().split('T')[0];
+    }
+  };
+
+  disabledEndDate = (endDate) => {
+    const sendDate = this.state.sendDate;
+    if (!endDate || !sendDate) {
+      return false;
+    }
+    return endDate.valueOf() <= sendDate.valueOf();
+  };
+
+  range = (start, end) => {
+    const result = [];
+    for (let i = start; i < end; i += 1) {
+      result.push(i);
+    }
+    return result;
+  };
+
+  @action
+  disabledDateStartTime = (date) => {
+    this.sendDates = date;
+    if (date && this.endDates && this.endDates.day() === date.day()) {
+      if (this.endDates.hour() === date.hour() && this.endDates.minute() === date.minute()) {
+        return {
+          disabledHours: () => this.range(this.endDates.hour() + 1, 24),
+          disabledMinutes: () => this.range(this.endDates.minute() + 1, 60),
+          disabledSeconds: () => this.range(this.endDates.second(), 60),
+        };
+      } else if (this.endDates.hour() === date.hour()) {
+        return {
+          disabledHours: () => this.range(this.endDates.hour() + 1, 24),
+          disabledMinutes: () => this.range(this.endDates.minute() + 1, 60),
+        };
+      } else {
+        return {
+          disabledHours: () => this.range(this.endDates.hour() + 1, 24),
+        };
+      }
+    }
+  };
+
+  @action
+  clearStartTimes = (status) => {
+    if (!status) {
+      this.endDates = null;
+    }
+  };
+
+  @action
+  clearEndTimes = (status) => {
+    if (!status) {
+      this.sendDates = null;
+    }
+  };
+
+  @action
+  disabledDateEndTime = (date) => {
+    this.endDates = date;
+    if (date && this.sendDates && this.sendDates.day() === date.day()) {
+      if (this.sendDates.hour() === date.hour() && this.sendDates.minute() === date.minute()) {
+        return {
+          disabledHours: () => this.range(0, this.sendDates.hour()),
+          disabledMinutes: () => this.range(0, this.sendDates.minute()),
+          disabledSeconds: () => this.range(0, this.sendDates.second() + 1),
+        };
+      } else if (this.sendDates.hour() === date.hour()) {
+        return {
+          disabledHours: () => this.range(0, this.sendDates.hour()),
+          disabledMinutes: () => this.range(0, this.sendDates.minute()),
+        };
+      } else {
+        return {
+          disabledHours: () => this.range(0, this.sendDates.hour()),
+        };
+      }
+    }
+  };
+
+  onStartChange = (value) => {
+    this.onChange('sendDate', value);
+  };
+
+  onEndChange = (value) => {
+    this.onChange('endDate', value);
+  };
+
+  onChange = (field, value) => {
+    const { setFieldsValue } = this.props.form;
+    this.setState({
+      [field]: value,
+    }, () => {
+      setFieldsValue({ [field]: this.state[field] });
+    });
+  };
+  /* 时间选择器处理 -- end */
 
   renderForm() {
     const {
@@ -325,9 +444,12 @@ export default class Announcement extends Component {
                 label={<FormattedMessage id="announcement.send.date" />}
                 style={{ width: inputWidth }}
                 format="YYYY-MM-DD HH:mm:ss"
-                disabledDate={this.disabledDate}
-                showTime
+                disabledDate={this.disabledStartDate}
+                disabledTime={this.disabledDateStartTime}
+                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                 getCalendarContainer={that => that}
+                onChange={this.onStartChange}
+                onOpenChange={this.clearStartTimes}
               />,
             )
               }
@@ -374,9 +496,12 @@ export default class Announcement extends Component {
                   label={<FormattedMessage id="announcement.end-date" />}
                   style={{ width: inputWidth }}
                   format="YYYY-MM-DD HH:mm:ss"
-                  disabledDate={this.disabledShowDate}
-                  showTime
+                  disabledDate={this.disabledEndDate}
+                  disabledTime={this.disabledDateEndTime}
+                  showTime={{ defaultValue: moment() }}
                   getCalendarContainer={that => that}
+                  onChange={this.onEndChange}
+                  onOpenChange={this.clearEndTimes}
                 />,
               )
               }

@@ -146,6 +146,13 @@ export default class TestConnect extends Component {
                 <FormattedMessage id={`${intlPrefix}.email`} />
                 <span>{ldapData.emailField}</span>
               </li>
+              <li
+                style={{ display: ldapData.uuidField ? 'inline' : 'none' }}
+                className={ldapData.uuidField === testData.uuidField ? 'toRed' : ''}
+              >
+                <FormattedMessage id={`${intlPrefix}.uuid`} />
+                <span>{ldapData.uuidField}</span>
+              </li>
             </ul>
           </div>
         </div>

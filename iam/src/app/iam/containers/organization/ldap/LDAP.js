@@ -254,6 +254,8 @@ export default class LDAP extends Component {
           ...values,
           id: original.id,
           objectVersionNumber: original.objectVersionNumber,
+          realNameField: values.realNameField || null,
+          phoneField: values.phoneField || null,
         };
         ladp.useSSL = ldapStatus;
         if (!ladp.port) {
@@ -347,6 +349,7 @@ export default class LDAP extends Component {
       username: intl.formatMessage({ id: `${intlPrefix}.username.tip` }),
       customFilter: intl.formatMessage({ id: `${intlPrefix}.custom-filter.tip` }),
       objectclass: intl.formatMessage({ id: `${intlPrefix}.objectclass.tip` }),
+      uuid: intl.formatMessage({ id: `${intlPrefix}.uuid.tip` }),
     };
     const mainContent = LDAPStore.getIsLoading ? <LoadingBar /> : (<div>
       <div className="serverContainer">
@@ -407,7 +410,7 @@ export default class LDAP extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.serveraddress.require.msg` }),
               }],
-              initialValue: ldapData.serverAddress ? ldapData.serverAddress : undefined,
+              initialValue: ldapData.serverAddress || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.serveraddress` })} style={{ width: inputWidth }} suffix={this.getSuffix(tips.hostname)} autoComplete="off" />,
             )}
@@ -437,7 +440,7 @@ export default class LDAP extends Component {
                 required: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.saga-batch-size.msg` }),
               }],
-              initialValue: ldapData.sagaBatchSize ? ldapData.sagaBatchSize : '500',
+              initialValue: ldapData.sagaBatchSize || '500',
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.saga-batch-size` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -451,7 +454,7 @@ export default class LDAP extends Component {
                 required: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.connection-timeout.msg` }),
               }],
-              initialValue: ldapData.connectionTimeout ? ldapData.connectionTimeout : '10',
+              initialValue: ldapData.connectionTimeout || '10',
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.connection-timeout` })} style={{ width: inputWidth }} autoComplete="off" suffix={intl.formatMessage({ id: 'second' })} />,
             )}
@@ -473,7 +476,7 @@ export default class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('baseDn', {
-              initialValue: ldapData.baseDn ? ldapData.baseDn : undefined,
+              initialValue: ldapData.baseDn || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.basedn` })} suffix={this.getSuffix(tips.basedn)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -486,7 +489,7 @@ export default class LDAP extends Component {
                 required: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.admin.loginname.msg` }),
               }],
-              initialValue: ldapData.account ? ldapData.account : undefined,
+              initialValue: ldapData.account || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.admin.loginname` })} suffix={this.getSuffix(tips.loginname)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -499,7 +502,7 @@ export default class LDAP extends Component {
                 required: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.admin.password.msg` }),
               }],
-              initialValue: ldapData.password ? ldapData.password : undefined,
+              initialValue: ldapData.password || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.admin.password` })} type="password" style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -526,7 +529,7 @@ export default class LDAP extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.objectclass.require.msg` }),
               }],
-              initialValue: ldapData.objectClass ? ldapData.objectClass : undefined,
+              initialValue: ldapData.objectClass || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.objectclass` })} suffix={this.getSuffix(tips.objectclass)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -540,7 +543,7 @@ export default class LDAP extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
               }],
-              initialValue: ldapData.loginNameField ? ldapData.loginNameField : undefined,
+              initialValue: ldapData.loginNameField || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.loginname` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -554,7 +557,7 @@ export default class LDAP extends Component {
                 whitespace: true,
                 message: intl.formatMessage({ id: `${intlPrefix}.email.require.msg` }),
               }],
-              initialValue: ldapData.emailField ? ldapData.emailField : undefined,
+              initialValue: ldapData.emailField || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.email` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
@@ -563,7 +566,7 @@ export default class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('realNameField', {
-              initialValue: ldapData.realNameField ? ldapData.realNameField : undefined,
+              initialValue: ldapData.realNameField || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.realname` })} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autoComplete="off" />,
             )}
@@ -572,9 +575,23 @@ export default class LDAP extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('phoneField', {
-              initialValue: ldapData.phoneField ? ldapData.phoneField : undefined,
+              initialValue: ldapData.phoneField || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.phone` })} style={{ width: inputWidth }} autoComplete="off" />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('uuidField', {
+              rules: [{
+                required: true,
+                whitespace: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.uuid.required.msg` }),
+              }],
+              initialValue: ldapData.uuidField || undefined,
+            })(
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.uuid` })} suffix={this.getSuffix(tips.uuid)} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem
@@ -585,7 +602,7 @@ export default class LDAP extends Component {
                 pattern: /^\(.*\)$/,
                 message: intl.formatMessage({ id: `${intlPrefix}.custom-filter.msg` }),
               }],
-              initialValue: ldapData.customFilter ? ldapData.customFilter : undefined,
+              initialValue: ldapData.customFilter || undefined,
             })(
               <Input label={intl.formatMessage({ id: `${intlPrefix}.custom-filter` })} suffix={this.getSuffix(tips.customFilter)} style={{ width: inputWidth }} autoComplete="off" />,
             )}

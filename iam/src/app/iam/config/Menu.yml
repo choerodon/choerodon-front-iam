@@ -112,6 +112,7 @@
         icon: settings_input_composite
         Routes: /iam/configuration
         sort: 3
+        delete: true
         permission:
           - 'manager-service.config.query'
           - 'manager-service.config.create'
@@ -320,9 +321,13 @@
           - 'iam-service.ldap.create'
           - 'iam-service.ldap.query'
           - 'iam-service.ldap.queryByOrgId'
+          - 'iam-service.ldap.disableLdap'
+          - 'iam-service.ldap.enableLdap'
           - 'iam-service.ldap.syncUsers'
           - 'iam-service.ldap.testConnect'
           - 'iam-service.ldap.update'
+          - 'iam-service.ldap.pagingQueryHistories'
+          - 'iam-service.ldap.pagingQueryErrorUsers'
     - "password-policy":
         icon: password
         Routes: /iam/password-policy

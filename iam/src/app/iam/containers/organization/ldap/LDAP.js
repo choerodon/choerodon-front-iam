@@ -146,6 +146,14 @@ export default class LDAP extends Component {
     this.loadLDAP();
   };
 
+  redirectSyncRecord = () => {
+    const { AppState, LDAPStore } = this.props;
+    const ldapData = LDAPStore.getLDAPData;
+    const menu = AppState.currentMenuType;
+    const { type, id, name } = menu;
+    this.props.history.push(`/iam/ldap/sync-record/${ldapData.id}?type=${type}&id=${id}&name=${name}&organizationId=${id}`);
+  }
+
   /* 开启侧边栏 */
   openSidebar(status) {
     const { LDAPStore } = this.props;
@@ -613,10 +621,14 @@ export default class LDAP extends Component {
     return (
       <Page
         service={[
+          'iam-service.ldap.create',
+          'iam-service.ldap.queryByOrgId',
           'iam-service.ldap.disableLdap',
           'iam-service.ldap.enableLdap',
-          'iam-service.ldap.latestHistory',
-          'iam-service.ldap.delete',
+          'iam-service.ldap.syncUsers',
+          'iam-service.ldap.testConnect',
+          'iam-service.ldap.update',
+          'iam-service.ldap.pagingQueryHistories',
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
@@ -626,20 +638,38 @@ export default class LDAP extends Component {
           >
             <FormattedMessage id={ldapData && ldapData.enabled ? 'disable' : 'enable'} />
           </Button>
-          <Button
-            icon="low_priority"
-            onClick={this.openSidebar.bind(this, 'connect')}
-            disabled={!(ldapData && ldapData.enabled)}
+          <Permission
+            service={['iam-service.ldap.testConnect']}
           >
-            <FormattedMessage id={`${intlPrefix}.connect`} />
-          </Button>
-          <Button
-            icon="sync"
-            onClick={this.openSidebar.bind(this, 'sync')}
-            disabled={!(ldapData && ldapData.enabled)}
+            <Button
+              icon="low_priority"
+              onClick={this.openSidebar.bind(this, 'connect')}
+              disabled={!(ldapData && ldapData.enabled)}
+            >
+              <FormattedMessage id={`${intlPrefix}.connect`} />
+            </Button>
+          </Permission>
+          <Permission
+            service={['iam-service.ldap.syncUsers']}
           >
-            <FormattedMessage id={`${intlPrefix}.syncuser`} />
-          </Button>
+            <Button
+              icon="sync"
+              onClick={this.openSidebar.bind(this, 'sync')}
+              disabled={!(ldapData && ldapData.enabled)}
+            >
+              <FormattedMessage id={`${intlPrefix}.syncuser`} />
+            </Button>
+          </Permission>
+          <Permission
+            service={['iam-service.ldap.pagingQueryHistories']}
+          >
+            <Button
+              icon="sync"
+              onClick={this.redirectSyncRecord}
+            >
+              <FormattedMessage id={`${intlPrefix}.record.header.title`} />
+            </Button>
+          </Permission>
           <Button
             onClick={this.reload}
             icon="refresh"

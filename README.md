@@ -46,7 +46,6 @@ The basic module has 3 levels, which have the following functions:
     * API Overview
     * Microservice
     * Instance Management
-    * Config Management
     * Route Management
     * Saga Instance at global level
     * Saga Define

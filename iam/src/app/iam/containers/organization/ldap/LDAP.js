@@ -670,7 +670,7 @@ export default class LDAP extends Component {
             service={['iam-service.ldap.syncUsers']}
           >
             <Button
-              icon="sync"
+              icon="sync_user"
               onClick={this.openSidebar.bind(this, 'sync')}
               disabled={!(ldapData && ldapData.enabled)}
             >
@@ -681,7 +681,7 @@ export default class LDAP extends Component {
             service={['iam-service.ldap.pagingQueryHistories']}
           >
             <Button
-              icon="sync"
+              icon="sync_records"
               onClick={this.redirectSyncRecord}
             >
               <FormattedMessage id={`${intlPrefix}.record.header.title`} />

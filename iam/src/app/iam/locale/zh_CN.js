@@ -257,6 +257,8 @@ const pageDetail = {
   'organization.project.modify.description': '您可以在此修改项目名称。',
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
+  'organization.project.redirect': '跳转至项目"{name}"的主页',
+
   // 组织角色分配
   'organization.memberrole.title': '向成员分配组织"{name}"的角色',
   'organization.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',

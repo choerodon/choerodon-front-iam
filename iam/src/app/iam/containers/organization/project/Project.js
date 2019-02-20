@@ -494,6 +494,10 @@ export default class Project extends Component {
     });
   }
 
+  goToProject = (record) => {
+    window.location = `#/?type=project&id=${record.id}&name=${record.name}&organizationId=${record.organizationId}`;
+  }
+
 
   render() {
     const { ProjectStore, AppState, intl } = this.props;
@@ -516,7 +520,7 @@ export default class Project extends Component {
       filteredValue: filters.name || [],
       width: '25%',
       render: (text, record) => (
-        <React.Fragment>
+        <div className="c7n-iam-project-name-link" onClick={() => this.goToProject(record)}>
           <div className="c7n-iam-project-name-avatar">
             {
             record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
@@ -526,7 +530,7 @@ export default class Project extends Component {
           <MouseOverWrapper text={text} width={0.2}>
             {text}
           </MouseOverWrapper>
-        </React.Fragment>
+        </div>
       ),
     }, {
       title: <FormattedMessage id="code" />,
@@ -563,7 +567,7 @@ export default class Project extends Component {
     }, {
       title: '',
       key: 'action',
-      width: '100px',
+      width: '120px',
       align: 'right',
       render: (text, record) => (
         <div>
@@ -597,6 +601,17 @@ export default class Project extends Component {
               />
             </Tooltip>
           </Permission>
+          <Tooltip
+            title={<FormattedMessage id={`${intlPrefix}.redirect`} values={{ name: record.name }} />}
+            placement="bottomRight"
+          >
+            <Button
+              shape="circle"
+              icon="exit_to_app"
+              size="small"
+              onClick={() => this.goToProject(record)}
+            />
+          </Tooltip>
         </div>
       ),
     }];

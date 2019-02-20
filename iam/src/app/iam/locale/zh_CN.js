@@ -259,6 +259,8 @@ const pageDetail = {
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
   'organization.project.redirect': '跳转至项目"{name}"的主页',
+  'organization.project.redirect.disable': '此项目已禁用',
+  'organization.project.redirect.no-permission': '您在此项目下无权限',
 
   // 组织角色分配
   'organization.memberrole.title': '向成员分配组织"{name}"的角色',

@@ -271,6 +271,7 @@ export default class Project extends Component {
         });
         HeaderStore.setProData(org[0]);
         HeaderStore.setProData(org[1]);
+        this.forceUpdate();
       });
     }).catch((error) => {
       Choerodon.prompt(intl.formatMessage({ id: 'operation.error' }));
@@ -495,8 +496,22 @@ export default class Project extends Component {
   }
 
   goToProject = (record) => {
-    window.location = `#/?type=project&id=${record.id}&name=${record.name}&organizationId=${record.organizationId}`;
-  }
+    if (this.canGotoProject(record)) {
+      window.location = `#/?type=project&id=${record.id}&name=${record.name}&organizationId=${record.organizationId}`;
+    }
+  };
+
+  canGotoProject = record => HeaderStore.proData.some(v => v.id === record.id);
+
+  getGotoTips = (record) => {
+    if (this.canGotoProject(record)) {
+      return (<FormattedMessage id={`${intlPrefix}.redirect`} values={{ name: record.name }} />);
+    } else if (!record.enabled) {
+      return (<FormattedMessage id={`${intlPrefix}.redirect.disable`} />);
+    } else {
+      return (<FormattedMessage id={`${intlPrefix}.redirect.no-permission`} />);
+    }
+  };
 
 
   render() {
@@ -602,13 +617,14 @@ export default class Project extends Component {
             </Tooltip>
           </Permission>
           <Tooltip
-            title={<FormattedMessage id={`${intlPrefix}.redirect`} values={{ name: record.name }} />}
+            title={this.getGotoTips(record)}
             placement="bottomRight"
           >
             <Button
               shape="circle"
               icon="exit_to_app"
               size="small"
+              disabled={!this.canGotoProject(record)}
               onClick={() => this.goToProject(record)}
             />
           </Tooltip>

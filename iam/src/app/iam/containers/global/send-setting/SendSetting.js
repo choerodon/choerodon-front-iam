@@ -158,7 +158,7 @@ export default class SendSetting extends Component {
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
-      content: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.name }),
+      content: intl.formatMessage({ id: `${intlPrefix}.delete.content${(!record.pmTemplateCode && !record.emailTemplateCode && !record.smsTemplateCode) ? '' : '.has-template'}` }, { name: record.name }),
       onOk: () => SendSettingStore.deleteSettingById(record.id).then(({ failed, message }) => {
         if (failed) {
           Choerodon.prompt(message);

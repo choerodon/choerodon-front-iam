@@ -169,6 +169,7 @@ const pageDetail = {
   'global.sendsetting.modify.description': '规定使用哪个邮箱模板、短信模板发送触发此事件后发送的消息。选择是否为即时消息、发送失败后是否可以手动点击发送记录的重发按钮重发。',
   'global.sendsetting.modify.link': `${docServer}/user-guide/system-configuration/message/send-config/`,
   'global.sendsetting.delete.title': '删除触发类型',
+  'global.sendsetting.delete.content.has-template': '该触发类型下已有邮件模板或者站内信模板，确定要删除"{name}"触发类型？删除触发类型不会删除该类型下的模板。',
   'global.sendsetting.delete.content': '确定要删除触发类型为"{name}"的记录吗？',
 
   // 消息记录

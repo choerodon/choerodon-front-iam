@@ -66,6 +66,7 @@ export default class LDAP extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
+        LDAPStore.setIsConfirmLoading(!data.syncEndTime);
         LDAPStore.setSyncData(data);
       }
     });
@@ -709,7 +710,8 @@ export default class LDAP extends Component {
             cancelText={<FormattedMessage id={showWhich === 'sync' ? 'return' : 'cancel'} />}
             onOk={e => this.TestLdap.handleSubmit(e)}
             onCancel={this.closeSidebar}
-            confirmLoading={showWhich === 'sync' ? false : LDAPStore.confirmLoading}
+            confirmLoading={LDAPStore.confirmLoading}
+            alwaysCanCancel
           >
             {this.renderSidebarContent()}
           </Sidebar>

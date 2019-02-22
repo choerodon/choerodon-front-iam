@@ -49,6 +49,7 @@ export default class TestConnect extends Component {
         window.clearInterval(timer);
         LDAPStore.setSyncData(data);
         LDAPStore.setIsSyncLoading(false);
+        LDAPStore.setIsConfirmLoading(!data.syncEndTime);
       }
     });
   }
@@ -301,6 +302,7 @@ export default class TestConnect extends Component {
           LDAPStore.setIsConfirmLoading(false);
         });
     } else if (showWhich === 'sync') {
+      LDAPStore.setIsConfirmLoading(true);
       LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
         if (data.failed) {
           Choerodon.prompt(data.message);

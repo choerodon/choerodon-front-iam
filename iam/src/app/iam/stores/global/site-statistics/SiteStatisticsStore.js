@@ -26,6 +26,7 @@ class SiteStatisticsStore {
   @observable startDate = null;
   @observable endDate = null;
   @observable loading = false;
+  allTableDate = [];
   set = new Set();
 
   @action setStartDate(data) {
@@ -139,6 +140,43 @@ class SiteStatisticsStore {
         this.setLoading(false);
         Choerodon.handleResponseError(error);
       });
+  };
+
+  tableDataFormatter = (data) => {
+    const tableData = (data.details ? data.details.map(v => ({
+      code: v.menu.split(':')[0],
+      name: v.menu.split(':')[1],
+      sum: v.data.reduce((prev, cur) => prev + cur, 0),
+    })) : this.tableData);
+    return tableData.sort(DataSorter.GetNumSorter('sum', 'desc'));
+  };
+
+  getTableDate = (level) => {
+    const queryObj = {
+      begin_date: this.startTime.format().split('T')[0],
+      end_date: this.endTime.format().split('T')[0],
+      level,
+    };
+    return axios.get(`/manager/v1/statistic/menu_click?${querystring.stringify(queryObj)}`).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        data = this.tableDataFormatter(data).map(values => ({ ...values, level }));
+        this.allTableDate = this.allTableDate.concat(data);
+      }
+    });
+  };
+
+  /**
+   * 获取所有层级的表数据
+   */
+  async getAllTableDate() {
+    this.allTableDate = [];
+    await this.getTableDate('site');
+    await this.getTableDate('organization');
+    await this.getTableDate('project');
+    await this.getTableDate('user');
+    return this.allTableDate;
   }
 }
 

@@ -303,15 +303,18 @@ export default class SiteStatistics extends Component {
   }
 
   clickDownload = () => {
-    let str = '菜单名称,菜单编码,菜单点击总数';
-    SiteStatisticsStore.tableData.forEach((v) => {
-      str += `\n${v.name},${v.code},${v.sum}`;
+    const { intl } = this.props;
+    let str = `时间范围：${SiteStatisticsStore.startTime.format().split('T')[0].replace('-', '.')} -- ${SiteStatisticsStore.endTime.format().split('T')[0].replace('-', '.')}\n菜单名称,菜单编码,菜单点击总数,层级`;
+    SiteStatisticsStore.getAllTableDate().then((data) => {
+      data.forEach((v) => {
+        str += `\n${v.name},${v.code},${v.sum},${intl.formatMessage({ id: v.level })}`;
+      });
+      str = encodeURIComponent(str);
+      const aLink = document.getElementById('download');
+      aLink.download = this.getDownloadName();
+      aLink.href = `data:text/csv;charset=utf-8,\ufeff${str}`;
+      aLink.click();
     });
-    str = encodeURIComponent(str);
-    const aLink = document.getElementById('download');
-    aLink.download = this.getDownloadName();
-    aLink.href = `data:text/csv;charset=utf-8,\ufeff${str}`;
-    aLink.click();
   };
 
   getDownloadName = () => {

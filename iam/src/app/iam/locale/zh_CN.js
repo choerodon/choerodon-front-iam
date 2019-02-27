@@ -1490,6 +1490,18 @@ const zh_CN = {
   'organization.user.download.failed.detail': '点击下载失败详情',
   'organization.user.download.failed.error': '失败详情文件丢失，无法下载',
 
+  // 组织信息
+  'organization.info.header.title': '组织信息',
+  'organization.info.title': '对组织"{name}"进行组织设置',
+  'organization.info.description': '您可以在此修改组织名称等。',
+  'organization.info.name': '组织名称',
+  'organization.info.code': '组织编码',
+  'organization.info.avatar': '组织图标',
+  'organization.info.address': '组织所在地',
+  'organization.info.owner': '组织所有者',
+  'organization.info.namerequiredmsg': '请输入组织名称',
+  'organization.info.name.pattern.msg': '组织名称只能由汉字、字母、数字、"_"、"."、"-"、"——"和空格组成',
+
   // 项目层
   // 项目信息
   'project.info.disable.title': '停用项目',

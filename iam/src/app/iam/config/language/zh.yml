@@ -48,6 +48,7 @@
 "rentsetting.mail-template-organization": "邮件模板"
 "rentsetting.announcement-organization": "系统公告"
 "rentsetting.saga-instance-organization": "组织事务实例"
+"rentsetting.organization-setting": "组织信息"
 
 "msg-center-organization": "消息中心"
 "msg-center-organization.send-setting-organization": "发送设置"

@@ -48,6 +48,7 @@
 "rentsetting.mail-template-organization": "Mail Template"
 "rentsetting.announcement-organization": "Announcement"
 "rentsetting.saga-instance-organization": "Saga Instance"
+"rentsetting.organization-setting": "Organization Info"
 
 "msg-center-organization": "Message Center"
 "msg-center-organization.send-setting-organization": "Send Setting"

@@ -366,6 +366,12 @@
         - 'asgard-service.saga-instance-org.statistics'
         - 'asgard-service.saga-instance-org.query'
         - 'asgard-service.saga-instance-org.queryDetails'
+    - "organization-setting":
+        icon: settings_applications
+        Routes: /iam/organization-setting
+        sort: 10
+        permission:
+          - 'iam-service.organization.queryOrgLevel'
 
 # 组织层消息中心
 "msg-center-organization":

@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
-import { Button, Form, Input, Modal, Table, Tooltip, Select, Icon } from 'choerodon-ui';
+import { Button, Form, Input, Modal, Table, Tooltip, Select, Icon, Radio, Checkbox, DatePicker } from 'choerodon-ui';
+import moment from 'moment';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -18,7 +19,18 @@ const ORGANIZATION_TYPE = 'organization';
 const PROJECT_TYPE = 'project';
 const { Sidebar } = Modal;
 const Option = Select.Option;
+const RadioGroup = Radio.Group;
 const intlPrefix = 'organization.project';
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
 
 @Form.create({})
 @withRouter
@@ -40,7 +52,6 @@ export default class Project extends Component {
       visibleCreate: false,
       checkName: false,
       buttonClicked: false,
-      state: {},
       filters: {
         params: [],
       },
@@ -145,7 +156,7 @@ export default class Project extends Component {
   };
 
   handleopenTab = (data, operation) => {
-    const { form } = this.props;
+    const { form, ProjectStore } = this.props;
     form.resetFields();
     this.setState({
       errorMeg: '',
@@ -159,10 +170,19 @@ export default class Project extends Component {
       setTimeout(() => {
         this.editFocusInput.input.focus();
       }, 10);
-    } else {
+    } else if (operation === 'create') {
       setTimeout(() => {
         this.createFocusInput.input.focus();
       }, 10);
+    } else {
+      ProjectStore.getProjectsByGroupId(data.id).then((groupData) => {
+        if (groupData.failed) {
+          Choerodon.prompt(groupData.message);
+        } else {
+          ProjectStore.setCurrentGroup(data.id);
+          ProjectStore.setGroupProjects(groupData);
+        }
+      });
     }
   };
 
@@ -178,16 +198,16 @@ export default class Project extends Component {
     const { projectDatas, imgUrl } = this.state;
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
-    const id = this.state.id;
     let data;
     if (this.state.operation === 'create') {
       const { validateFields } = this.props.form;
-      validateFields((err, { code, name, type }) => {
+      validateFields((err, { code, name, type, group }) => {
         if (!err) {
           data = {
             code,
             name: name.trim(),
             organizationId,
+            group,
             type: type === 'no' || undefined ? null : type,
             imageUrl: imgUrl || null,
           };
@@ -214,7 +234,7 @@ export default class Project extends Component {
             });
         }
       });
-    } else {
+    } else if (this.state.operation === 'edit') {
       const { validateFields } = this.props.form;
       validateFields((err, { name, type }, modify) => {
         if (!err) {
@@ -247,6 +267,22 @@ export default class Project extends Component {
             }
           }).catch((error) => {
             Choerodon.handleResponseError(error);
+          });
+        }
+      });
+    } else {
+      const { validateFields } = this.props.form;
+      validateFields((err, rawData) => {
+        if (!err) {
+          this.setState({ submitting: true, buttonClicked: true });
+          ProjectStore.saveProjectGroup(rawData).then((savedData) => {
+            if (savedData.failed) {
+              Choerodon.prompt(savedData.message);
+              this.setState({ submitting: false, buttonClicked: false, sidebar: false });
+            } else {
+              Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
+              this.setState({ submitting: false, buttonClicked: false, sidebar: false });
+            }
           });
         }
       });
@@ -306,10 +342,10 @@ export default class Project extends Component {
 
 
   renderSideTitle() {
-    if (this.state.operation === 'create') {
-      return <FormattedMessage id={`${intlPrefix}.create`} />;
-    } else {
-      return <FormattedMessage id={`${intlPrefix}.modify`} />;
+    switch (this.state.operation) {
+      case 'create': return <FormattedMessage id={`${intlPrefix}.create`} />;
+      case 'edit': return <FormattedMessage id={`${intlPrefix}.modify`} />;
+      default: return <FormattedMessage id={`${intlPrefix}.config-sub-project`} />;
     }
   }
 
@@ -333,9 +369,124 @@ export default class Project extends Component {
           },
         };
       default:
-        return {};
+        return {
+          code: `${intlPrefix}.config-sub-project`,
+          values: {
+            name: this.state.projectDatas.code,
+          },
+        };
     }
   }
+
+  getOption = (current) => {
+    const { roleData = [], roleIds } = this.state;
+    const { ProjectStore: { projectData } } = this.props;
+    return projectData.reduce((options, { id, name, enabled, code, group }) => {
+      if (projectData.indexOf(id) === -1 || id === current) {
+        if (enabled === false || group) {
+          options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
+        } else {
+          options.push(
+            <Option value={id} key={id} title={name}>
+              <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
+                <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
+              </Tooltip>
+            </Option>,
+          );
+        }
+      }
+      return options;
+    }, []);
+  };
+
+  getAddGroupProjectContent = (operation) => {
+    const { intl, ProjectStore: { groupProjects }, form } = this.props;
+    const { getFieldDecorator } = form;
+    if (operation !== 'add') return;
+    const formItems = groupProjects.map(({ projectId, startDate, endDate, enabled }, index) => {
+      const key = projectId === undefined ? `project-index-${index}` : String(projectId);
+      return (
+        <React.Fragment>
+          <FormItem
+            {...formItemLayout}
+            key={key}
+            className="c7n-iam-project-inline-formitem"
+          >
+            {getFieldDecorator(`${index}`, {
+              initialValue: projectId,
+            })(
+              <Select
+                className="member-role-select"
+                style={{ width: 200, marginTop: -2 }}
+                label={<FormattedMessage id="organization.project.name" />}
+                filterOption={(input, option) => {
+                  const childNode = option.props.children;
+                  if (childNode && React.isValidElement(childNode)) {
+                    return childNode.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                  }
+                  return false;
+                }}
+                filter
+              >
+                {this.getOption(projectId)}
+              </Select>,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            className="c7n-iam-project-inline-formitem"
+          >
+            {getFieldDecorator(`startTime-${index}`, {
+              initialValue: startDate && moment(startDate),
+            })(
+              <DatePicker
+                label={<FormattedMessage id={`${intlPrefix}.start.time`} />}
+                style={{ width: 200 }}
+                format="YYYY-MM-DD"
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            className="c7n-iam-project-inline-formitem"
+          >
+            {getFieldDecorator(`endTime-${index}`, {
+              initialValue: endDate && moment(endDate),
+            })(
+              <DatePicker
+                label={<FormattedMessage id={`${intlPrefix}.end.time`} />}
+                style={{ width: 200 }}
+                format="YYYY-MM-DD"
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            className="c7n-iam-project-inline-formitem c7n-iam-project-inline-formitem-checkbox"
+          >
+            {getFieldDecorator(`enabled-${index}`, {
+              initialValue: enabled,
+            })(
+              <Checkbox defaultChecked={enabled}>是否启用</Checkbox>,
+            )}
+          </FormItem>
+          <Button
+            size="small"
+            icon="delete"
+            shape="circle"
+            onClick={() => this.removeProjectFromGroup(index)}
+            // disabled={roleIds.length === 1 && selectType === 'create'}
+            className="c7n-iam-project-inline-formitem-button"
+          />
+        </React.Fragment>
+      );
+    });
+    return formItems;
+  };
+
+  removeProjectFromGroup = (index) => {
+    this.props.ProjectStore.removeProjectFromGroup(index);
+  };
 
   renderSidebarContent() {
     const { intl, ProjectStore, form } = this.props;
@@ -344,24 +495,29 @@ export default class Project extends Component {
     const types = ProjectStore.getProjectTypes;
     const inputWidth = 512;
     const contentInfo = this.getSidebarContentInfo(operation);
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-    };
+
 
     return (
       <Content
         {...contentInfo}
         className="sidebar-content"
       >
-        <Form layout="vertical" className="rightForm">
-          {operation === 'create' ? (<FormItem
+        <Form layout="vertical" className="rightForm" style={{ width: 800 }}>
+          {operation === 'create' && operation !== 'add' && (
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('group', {
+                initialValue: false,
+              })(
+                <RadioGroup label={<FormattedMessage id={`${intlPrefix}.type.group`} />} className="c7n-iam-project-radiogroup">
+                  <Radio value={false}>{intl.formatMessage({ id: `${intlPrefix}.normal-project` })}</Radio>
+                  <Radio value>{intl.formatMessage({ id: `${intlPrefix}.group-project` })}</Radio>
+                </RadioGroup>,
+              )}
+            </FormItem>
+          )}
+          {operation === 'create' && operation !== 'add' && (<FormItem
             {...formItemLayout}
           >
             {getFieldDecorator('code', {
@@ -390,57 +546,64 @@ export default class Project extends Component {
                 showLengthInfo={false}
               />,
             )}
-          </FormItem>) : null}
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('name', {
-              rules: [{
-                required: true,
-                whitespace: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
-              }, {
-                /* eslint-disable-next-line */
-                pattern: /^[-—\.\w\s\u4e00-\u9fa5]{1,32}$/,
-                message: intl.formatMessage({ id: `${intlPrefix}.name.pattern.msg` }),
-              }],
-              initialValue: operation === 'create' ? undefined : projectDatas.name,
-            })(
-              <Input
-                autoComplete="off"
-                label={<FormattedMessage id={`${intlPrefix}.name`} />}
-                style={{ width: inputWidth }}
-                ref={(e) => { this.editFocusInput = e; }}
-                maxLength={32}
-                showLengthInfo={false}
-              />,
-            )}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('type', {
-              initialValue: operation === 'create' ? undefined : projectDatas.type ? projectDatas.type : undefined,
-            })(
-              <Select
-                style={{ width: '300px' }}
-                label={<FormattedMessage id={`${intlPrefix}.type`} />}
-                getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                filter
-              >
-                {
-                  types && types.length ? [<Option key="no" value="no">{intl.formatMessage({ id: `${intlPrefix}.empty` })}</Option>].concat(
-                    types.map(({ name, code }) => (
-                      <Option key={code} value={code}>{name}</Option>
-                    )),
-                  ) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.type.empty` })}</Option>
-                }
-              </Select>,
-            )}
-          </FormItem>
-          <div>
-            <span style={{ color: 'rgba(0,0,0,.6)' }}>{intl.formatMessage({ id: `${intlPrefix}.avatar` })}</span>
-            {this.getAvatar()}
-          </div>
+          </FormItem>)}
+          {operation !== 'add' && (
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('name', {
+                rules: [{
+                  required: true,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: `${intlPrefix}.name.require.msg` }),
+                }, {
+                  /* eslint-disable-next-line */
+                  pattern: /^[-—\.\w\s\u4e00-\u9fa5]{1,32}$/,
+                  message: intl.formatMessage({ id: `${intlPrefix}.name.pattern.msg` }),
+                }],
+                initialValue: operation === 'create' ? undefined : projectDatas.name,
+              })(
+                <Input
+                  autoComplete="off"
+                  label={<FormattedMessage id={`${intlPrefix}.name`} />}
+                  style={{ width: inputWidth }}
+                  ref={(e) => { this.editFocusInput = e; }}
+                  maxLength={32}
+                  showLengthInfo={false}
+                />,
+              )}
+            </FormItem>
+          )}
+          {operation !== 'add' && (
+            <FormItem>
+              {getFieldDecorator('type', {
+                initialValue: operation === 'create' ? undefined : projectDatas.type ? projectDatas.type : undefined,
+              })(
+                <Select
+                  style={{ width: '300px' }}
+                  label={<FormattedMessage id={`${intlPrefix}.type`} />}
+                  getPopupContainer={() => document.getElementsByClassName('sidebar-content')[0].parentNode}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filter
+                >
+                  {
+                    types && types.length ? [<Option key="no" value="no">{intl.formatMessage({ id: `${intlPrefix}.empty` })}</Option>].concat(
+                      types.map(({ name, code }) => (
+                        <Option key={code} value={code}>{name}</Option>
+                      )),
+                    ) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.type.empty` })}</Option>
+                  }
+                </Select>,
+              )}
+            </FormItem>
+          )}
+          {operation !== 'add' && (
+            <div>
+              <span style={{ color: 'rgba(0,0,0,.6)' }}>{intl.formatMessage({ id: `${intlPrefix}.avatar` })}</span>
+              {this.getAvatar()}
+            </div>
+          )}
+          {this.getAddGroupProjectContent(operation)}
         </Form>
       </Content>
     );
@@ -513,6 +676,17 @@ export default class Project extends Component {
     }
   };
 
+  getAddOtherBtn = () => (
+    <Button type="primary" className="add-other-project" icon="add" onClick={this.addProjectList}>
+      <FormattedMessage id="organization.project.add.project" />
+    </Button>
+  );
+
+  addProjectList = () => {
+    const { ProjectStore, AppState, intl } = this.props;
+    ProjectStore.addNewProjectToGroup();
+  };
+
 
   render() {
     const { ProjectStore, AppState, intl } = this.props;
@@ -538,9 +712,9 @@ export default class Project extends Component {
         <div className="c7n-iam-project-name-link" onClick={() => this.goToProject(record)}>
           <div className="c7n-iam-project-name-avatar">
             {
-            record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
-            <React.Fragment>{text.split('')[0]}</React.Fragment>
-          }
+              record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+              <React.Fragment>{text.split('')[0]}</React.Fragment>
+            }
           </div>
           <MouseOverWrapper text={text} width={0.2}>
             {text}
@@ -553,7 +727,7 @@ export default class Project extends Component {
       filters: [],
       filteredValue: filters.code || [],
       key: 'code',
-      width: '25%',
+      width: '20%',
       render: text => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
@@ -563,7 +737,7 @@ export default class Project extends Component {
       title: <FormattedMessage id={`${intlPrefix}.type`} />,
       dataIndex: 'typeName',
       key: 'typeName',
-      width: '25%',
+      width: '20%',
       filters: filtersType,
       filteredValue: filters.typeName || [],
     }, {
@@ -579,6 +753,14 @@ export default class Project extends Component {
       filteredValue: filters.enabled || [],
       key: 'enabled',
       render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.type.group`} />,
+      dataIndex: 'group',
+      key: 'group',
+      width: '15%',
+      render: isGroup => (<StatusTag mode="icon" name={intl.formatMessage({ id: isGroup ? `${intlPrefix}.group-project` : `${intlPrefix}.normal-project` })} iconType={isGroup ? 'project_program' : 'project'} />),
+      // filters: filtersType,
+      // filteredValue: filters.typeName || [],
     }, {
       title: '',
       key: 'action',
@@ -599,6 +781,19 @@ export default class Project extends Component {
               />
             </Tooltip>
           </Permission>
+          {record.group && (
+            <Tooltip
+              title={<FormattedMessage id={`${intlPrefix}.config`} />}
+              placement="bottom"
+            >
+              <Button
+                shape="circle"
+                size="small"
+                onClick={this.handleopenTab.bind(this, record, 'add')}
+                icon="predefine"
+              />
+            </Tooltip>
+          )}
           <Permission
             service={['iam-service.organization-project.disableProject', 'iam-service.organization-project.enableProject']}
             type={type}
@@ -616,18 +811,6 @@ export default class Project extends Component {
               />
             </Tooltip>
           </Permission>
-          <Tooltip
-            title={this.getGotoTips(record)}
-            placement="bottomRight"
-          >
-            <Button
-              shape="circle"
-              icon="exit_to_app"
-              size="small"
-              disabled={!this.canGotoProject(record)}
-              onClick={() => this.goToProject(record)}
-            />
-          </Tooltip>
         </div>
       ),
     }];
@@ -702,6 +885,7 @@ export default class Project extends Component {
             className="c7n-iam-project-sidebar"
           >
             {operation && this.renderSidebarContent()}
+            {operation === 'add' && this.getAddOtherBtn()}
           </Sidebar>
         </Content>
       </Page>

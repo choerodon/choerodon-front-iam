@@ -40,6 +40,10 @@
   }
 }
 
+.add-other-project {
+  margin-left: 30px;
+}
+
 .c7n-iam-project {
   &-name {
     &-avatar {
@@ -62,6 +66,23 @@
 
     &-link {
       cursor: pointer;
+    }
+  }
+
+  &-inline-formitem {
+    display: inline-block;
+    margin-left: 16px;
+    &-checkbox {
+      margin-top: 16px;
+    }
+    &-button {
+      margin-top: 12px;
+    }
+  }
+
+  &-radiogroup {
+    > label:first-child {
+      margin-right: 60px;
     }
   }
 

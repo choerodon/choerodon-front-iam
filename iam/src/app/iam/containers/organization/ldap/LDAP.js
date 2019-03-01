@@ -647,6 +647,7 @@ export default class LDAP extends Component {
           'iam-service.ldap.testConnect',
           'iam-service.ldap.update',
           'iam-service.ldap.pagingQueryHistories',
+          'iam-service.ldap.pagingQueryErrorUsers',
         ]}
       >
         <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>

@@ -258,9 +258,20 @@ const pageDetail = {
   'organization.project.modify.description': '您可以在此修改项目名称。',
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
+  'organization.project.config-sub-project': '维护子项目',
+  'organization.project.config-sub-project.title': '在项目群"{name}"中维护子项目',
+  'organization.project.config-sub-project.description': '向项目群添加、修改子项目，便于对项目群下的各个子项目进行管理。',
+
   'organization.project.redirect': '跳转至项目"{name}"的主页',
   'organization.project.redirect.disable': '此项目已禁用',
   'organization.project.redirect.no-permission': '您在此项目下无权限',
+  'organization.project.type.group': '项目类别',
+  'organization.project.normal-project': '普通项目',
+  'organization.project.group-project': '项目群',
+  'organization.project.config': '配置项目群',
+  'organization.project.start.time': '关联开始时间',
+  'organization.project.end.time': '关联结束时间',
+  'organization.project.add.project': '添加项目',
 
   // 组织角色分配
   'organization.memberrole.title': '向成员分配组织"{name}"的角色',

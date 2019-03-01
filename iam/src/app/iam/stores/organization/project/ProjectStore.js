@@ -6,6 +6,7 @@ import { action, computed, observable } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import querystring from 'query-string';
 
+const isNum = /^\d+$/;
 
 @store('ProjectStore')
 class ProjectStore {
@@ -15,10 +16,43 @@ class ProjectStore {
   @observable isLoading = true;
   @observable myRoles = [];
   @observable projectTypes = [];
+  @observable groupProjects = [];
+  @observable currentGroup = null;
 
   constructor(totalPage = 1, totalSize = 0) {
     this.totalPage = totalPage;
     this.totalSize = totalSize;
+  }
+
+  @action
+  setCurrentGroup(id) {
+    this.currentGroup = id;
+  }
+
+  @action
+  removeProjectFromGroup(index) {
+    const delId = this.groupProjects.splice(index, 1)[0].projectId;
+    if (delId) this.deleteProjectsFromGroup(delId);
+  }
+
+  @action
+  addProjectToGroup(data) {
+    this.groupProjects = [...this.projectData, data];
+  }
+
+  @action
+  setGroupProjects(data) {
+    this.groupProjects = data;
+  }
+
+  @action
+  addNewProjectToGroup() {
+    this.groupProjects = [...this.groupProjects, { projectId: null, startDate: null, endDate: null }];
+  }
+
+  @action
+  deleteProjectFromGroup(projectId) {
+    this.groupProjects = this.groupProjects.filter(data => data.projectId !== projectId);
   }
 
   @action
@@ -116,6 +150,25 @@ class ProjectStore {
   getRolesById(organizationId, userId) {
     return axios.get(`/iam/v1/projects/${organizationId}/role_members/users/${userId}`);
   }
+
+  saveProjectGroup = (data) => {
+    const copyGroupProjects = JSON.parse(JSON.stringify(this.groupProjects));
+    Object.keys(data).forEach((k) => {
+      if (data[k] && isNum.test(data[k])) {
+        copyGroupProjects[k].projectId = data[k];
+        copyGroupProjects[k].enabled = !!data[`enabled-${k}`];
+        copyGroupProjects[k].startDate = data[`startDate-${k}`] && data[`startDate-${k}`].format('YYYY-MM-DD 00:00:00');
+        copyGroupProjects[k].endDate = data[`endDate-${k}`] && data[`endDate-${k}`].format('YYYY-MM-DD 23:59:59');
+        copyGroupProjects[k].parentId = this.currentGroup;
+      }
+    });
+    debugger;
+    return axios.put('/iam/v1/project_group', copyGroupProjects.filter(value => value.projectId !== null));
+  };
+
+  getProjectsByGroupId = parentId => axios.get(`/iam/v1/project_group/${parentId}`);
+
+  deleteProjectsFromGroup = id => axios.delete(`/iam/v1/project_group/${id}`);
 
   loadProjectTypes = () => axios.get('/iam/v1/projects/types');
 

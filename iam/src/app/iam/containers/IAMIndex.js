@@ -32,6 +32,7 @@ const sendSetting = asyncRouter(() => import('./global/send-setting'));
 const taskDetail = asyncRouter(() => import('./global/task-detail'));
 const executionRecord = asyncRouter(() => import('./global/execution-record'));
 const executableProgram = asyncRouter(() => import('./global/executable-program'));
+const projectType = asyncRouter(() => import('./global/project-type'));
 
 
 // organization
@@ -106,6 +107,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/permission-info`} component={permissionInfo} />
           <Route path={`${match.url}/site-statistics`} component={siteStatistics} />
           <Route path={`${match.url}/organization-setting`} component={organizationSetting} />
+          <Route path={`${match.url}/project-type`} component={projectType} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

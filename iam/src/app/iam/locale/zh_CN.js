@@ -273,6 +273,24 @@ const pageDetail = {
   'organization.project.end.time': '关联结束时间',
   'organization.project.add.project': '添加项目',
 
+  // 项目类别
+  'global.project-type.table.name': '类别名称',
+  'global.project-type.table.code': '类别编码',
+  'global.project-type.table.description': '类别说明',
+  'global.project-type.header.title': '项目类型',
+  'global.project-type.sidebar.edit.title': '修改类别',
+  'global.project-type.title': '平台"{name}"的项目类型',
+  'global.project-type.description': '您可以在这里添加项目类型，便于项目的类别管理。',
+  'global.project-type.sidebar.create.title': '添加类别',
+  'global.project-type.edit.title': '修改项目类别',
+  'global.project-type.create.title': '在平台中添加项目类别',
+  'global.project-type.edit.description': '项目类别可以区分项目的作用，方便您管理不同的项目。',
+  'global.project-type.create.description': '项目类别可以区分项目的作用，方便您管理不同的项目。',
+  'global.project-type.name.required': '请输入类别名称',
+  'global.project-type.create': '添加类别',
+  'global.project-type.code.required': '请输入类别编码',
+  'global.project-type.code.exist.msg': '类别编码已存在',
+
   // 组织角色分配
   'organization.memberrole.title': '向成员分配组织"{name}"的角色',
   'organization.memberrole.description': '角色分配是给成员分配角色，成员分为用户和客户端两种。您可以通过给成员添加角色，赋予成员一组权限。您也可以移除或修改成员的角色。角色分配会影响到成员的访问权限。',

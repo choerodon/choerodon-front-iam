@@ -89,6 +89,15 @@
         sort: 9
         permission:
         - 'manager-service.statistic.queryMenuClick'
+    - "project-type":
+        icon: project_list
+        Routes: /iam/project-type
+        sort: 10
+        permission:
+        - 'iam-service.project-type.pagingQuery'
+        - 'iam-service.project-type.create'
+        - 'iam-service.project-type.check'
+        - 'iam-service.project-type.update'
 
 # 微服务管理
 "microservice":

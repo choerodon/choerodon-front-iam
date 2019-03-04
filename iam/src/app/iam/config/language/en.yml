@@ -9,6 +9,7 @@
 "iam.root-user": "Root User Setting"
 "iam.dashboard-management": "Dashboard Setting"
 "iam.site-statistics": "Site Statistics"
+"iam.project-type": "Project Type"
 
 "microservice": "Microservice"
 "microservice.micro": "Microservice"

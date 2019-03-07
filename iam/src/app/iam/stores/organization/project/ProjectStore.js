@@ -18,21 +18,41 @@ class ProjectStore {
   @observable projectTypes = [];
   @observable groupProjects = [];
   @observable currentGroup = null;
+  @observable optionAgileData = [];
+  @observable disabledTime = {};
+  projectRelationNeedRemove = [];
 
   constructor(totalPage = 1, totalSize = 0) {
     this.totalPage = totalPage;
     this.totalSize = totalSize;
   }
 
+
   @action
-  setCurrentGroup(id) {
-    this.currentGroup = id;
+  setDisabledTime(projectId) {
+    if (projectId) {
+      return axios.get(`/iam/v1/project_relation/${projectId}/unavailable/under/${this.currentGroup.id}`).then(action((data) => {
+        this.disabledTime[projectId] = data;
+      }));
+    }
+    return false;
+  }
+
+  @action
+  setOptionAgileData(data) {
+    debugger;
+    this.optionAgileData = data.concat(this.groupProjects.map(v => ({ ...v, name: v.projName, code: v.proCode, id: v.projectId })));
+  }
+
+  @action
+  setCurrentGroup(data) {
+    this.currentGroup = data;
   }
 
   @action
   removeProjectFromGroup(index) {
-    const delId = this.groupProjects.splice(index, 1)[0].projectId;
-    if (delId) this.deleteProjectsFromGroup(delId);
+    const delId = this.groupProjects.splice(index, 1)[0].id;
+    if (delId) this.deleteProjectFromGroup(delId);
   }
 
   @action
@@ -46,13 +66,27 @@ class ProjectStore {
   }
 
   @action
+  setGroupProjectByIndex(index, data) {
+    this.groupProjects[index] = data;
+  }
+
+  @action
   addNewProjectToGroup() {
     this.groupProjects = [...this.groupProjects, { projectId: null, startDate: null, endDate: null }];
   }
 
   @action
   deleteProjectFromGroup(projectId) {
-    this.groupProjects = this.groupProjects.filter(data => data.projectId !== projectId);
+    this.groupProjects = this.groupProjects.filter(action((data) => {
+      if (data.projectId !== projectId) {
+        // this.optionAgileData = this.optionAgileData.toJS().push({ ...data, name: data.projName, code: data.proCode, id: data.projectId });
+        return true;
+      }
+      return false;
+    }));
+
+    // 待删除的项目关系，需要等到提交表单的时候再发请求
+    this.projectRelationNeedRemove.push(projectId);
   }
 
   @action
@@ -151,6 +185,10 @@ class ProjectStore {
     return axios.get(`/iam/v1/projects/${organizationId}/role_members/users/${userId}`);
   }
 
+  getAgileProject(organizationId, projectId) {
+    return axios.get(`/iam/v1/organizations/${organizationId}/projects/${projectId}/agile`);
+  }
+
   saveProjectGroup = (data) => {
     const copyGroupProjects = JSON.parse(JSON.stringify(this.groupProjects));
     Object.keys(data).forEach((k) => {
@@ -158,17 +196,22 @@ class ProjectStore {
         copyGroupProjects[k].projectId = data[k];
         copyGroupProjects[k].enabled = !!data[`enabled-${k}`];
         copyGroupProjects[k].startDate = data[`startDate-${k}`] && data[`startDate-${k}`].format('YYYY-MM-DD 00:00:00');
-        copyGroupProjects[k].endDate = data[`endDate-${k}`] && data[`endDate-${k}`].format('YYYY-MM-DD 23:59:59');
-        copyGroupProjects[k].parentId = this.currentGroup;
+        copyGroupProjects[k].endDate = data[`endDate-${k}`] && data[`endDate-${k}`].format('YYYY-MM-DD 00:00:00');
+        copyGroupProjects[k].parentId = this.currentGroup.id;
       }
     });
     debugger;
-    return axios.put('/iam/v1/project_group', copyGroupProjects.filter(value => value.projectId !== null));
+    return axios.put('/iam/v1/project_relation', copyGroupProjects.filter(value => value.projectId !== null));
   };
 
-  getProjectsByGroupId = parentId => axios.get(`/iam/v1/project_group/${parentId}`);
+  getProjectsByGroupId = parentId => axios.get(`/iam/v1/project_relation/${parentId}`);
 
-  deleteProjectsFromGroup = id => axios.delete(`/iam/v1/project_group/${id}`);
+  axiosDeleteProjectsFromGroup = () => {
+    this.projectRelationNeedRemove.forEach((id) => {
+      axios.delete(`/iam/v1/project_relation/${id}`);
+    });
+    this.projectRelationNeedRemove = [];
+  };
 
   loadProjectTypes = () => axios.get('/iam/v1/projects/types');
 
@@ -177,6 +220,12 @@ class ProjectStore {
       this.myRoles = roles;
     }));
   };
+
+  clearProjectRelationNeedRemove = () => {
+    this.projectRelationNeedRemove = [];
+  }
+
+  checkCanEnable = id => axios.get(`/iam/v1/project_relation/check/${id}/can_be_enabled`)
 }
 
 const projectStore = new ProjectStore();

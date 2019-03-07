@@ -46,7 +46,6 @@ class ProjectTypeStore {
   @action
   updateData(values) {
     this.loading = true;
-    debugger;
     return axios.post(`/iam/v1/projects/types/${this.editData.id}`, JSON.stringify({
       ...values,
       id: this.editData.id,

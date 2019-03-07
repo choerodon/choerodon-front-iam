@@ -40,7 +40,6 @@ class ProjectStore {
 
   @action
   setOptionAgileData(data) {
-    debugger;
     this.optionAgileData = data.concat(this.groupProjects.map(v => ({ ...v, name: v.projName, code: v.proCode, id: v.projectId })));
   }
 
@@ -200,7 +199,6 @@ class ProjectStore {
         copyGroupProjects[k].parentId = this.currentGroup.id;
       }
     });
-    debugger;
     return axios.put('/iam/v1/project_relation', copyGroupProjects.filter(value => value.projectId !== null));
   };
 

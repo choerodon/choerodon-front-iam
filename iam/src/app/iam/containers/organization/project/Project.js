@@ -177,6 +177,7 @@ export default class Project extends Component {
         this.createFocusInput.input.focus();
       }, 10);
     } else {
+      form.resetFields();
       ProjectStore.getProjectsByGroupId(data.id).then((groupData) => {
         if (groupData.failed) {
           Choerodon.prompt(groupData.message);
@@ -512,13 +513,15 @@ export default class Project extends Component {
   handleCheckboxChange = (value, index) => {
     const { form, ProjectStore, ProjectStore: { groupProjects, currentGroup } } = this.props;
     if (currentGroup.category === 'ANALYTICAL') return;
-    if (form.getFieldValue(`startDate-${index}`) !== groupProjects[index].startDate
-      || form.getFieldValue(`endDate-${index}`) !== groupProjects[index].endDate
+    if (form.getFieldValue(`startDate-${index}`).format('YYYY-MM-DD 00:00:00') !== groupProjects[index].startDate
+      || form.getFieldValue(`endDate-${index}`).format('YYYY-MM-DD 00:00:00') !== groupProjects[index].endDate
     ) return;
     if (value && value.target.checked && groupProjects[index].id) {
       ProjectStore.checkCanEnable(groupProjects[index].id).then((data) => {
         const newValue = {};
         newValue[`enabled-${index}`] = false;
+        newValue[`startDate-${index}`] = null;
+        newValue[`endDate-${index}`] = null;
         if (data.result === false) {
           Choerodon.prompt(`该项目当前时间段与项目群"${data.projectName}"中的该项目有冲突`);
           form.setFieldsValue(newValue);
@@ -610,7 +613,7 @@ export default class Project extends Component {
             {getFieldDecorator(`enabled-${index}`, {
               initialValue: enabled,
             })(
-              <Checkbox onChange={value => this.handleCheckboxChange(value, index)} defaultChecked={enabled}>是否启用</Checkbox>,
+              <Checkbox onChange={value => this.handleCheckboxChange(value, index)} checked={form.getFieldValue(`enabled-${index}`)}>是否启用</Checkbox>,
             )}
           </FormItem>
           <Button

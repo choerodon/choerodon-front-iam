@@ -347,17 +347,29 @@ export default class Project extends Component {
     const { ProjectStore: { disabledTime, currentGroup }, form } = this.props;
     const projectId = form.getFieldValue(index);
     const startDate = form.getFieldValue(`startDate-${index}`);
+    // 开始时间没有选的时候
+    if (!startDate) {
+      return disabledTime[projectId] && disabledTime[projectId].some(({ start, end }) => {
+        if (end === null) {
+          end = '2199-12-31';
+        }
+        // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
+        return !(endValue.isBefore(moment(start)) || endValue.isAfter(moment(end).add(1, 'days')));
+      });
+    }
     if (startDate && endValue && endValue.isBefore(startDate)) {
       return true;
     }
+
     if (currentGroup.category === 'ANALYTICAL') return false;
-    let earlyDate = '2199-12-31';
-    disabledTime[projectId].forEach((data) => {
-      if (moment(data.start).isBefore(earlyDate)) earlyDate = moment(data.start);
-      if (moment(data.end).isBefore(earlyDate)) earlyDate = moment(data.end);
-    });
+    let earlyDate = moment('2199-12-31');
+    if (disabledTime[projectId]) {
+      disabledTime[projectId].forEach((data) => {
+        if (moment(data.start).isBefore(earlyDate) && moment(data.start).isAfter(startDate)) earlyDate = moment(data.start);
+      });
+    }
     if (!endValue) return false;
-    return !(endValue.isAfter(moment(startDate)) && endValue.isBefore(earlyDate.add(1, 'days')));
+    return !(endValue.isAfter(moment(startDate)) && endValue.isBefore(earlyDate));
   };
 
   /* 停用启用 */
@@ -571,6 +583,7 @@ export default class Project extends Component {
               <DatePicker
                 label={<FormattedMessage id={`${intlPrefix}.end.time`} />}
                 style={{ width: 200 }}
+                onOpenChange={() => this.handleDatePickerOpen(index)}
                 disabledDate={endValue => this.disabledEndDate(endValue, index)}
                 format="YYYY-MM-DD"
               />,

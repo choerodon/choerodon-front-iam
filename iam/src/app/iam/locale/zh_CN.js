@@ -270,8 +270,8 @@ const pageDetail = {
   'organization.project.program.project': '普通项目群',
   'organization.project.analytical.project': '分析型项目群',
   'organization.project.config': '配置项目群',
-  'organization.project.start.time': '关联开始时间',
-  'organization.project.end.time': '关联结束时间',
+  'organization.project.start.time': '有效开始时间',
+  'organization.project.end.time': '有效结束时间',
   'organization.project.add.project': '添加项目',
 
   // 项目类别

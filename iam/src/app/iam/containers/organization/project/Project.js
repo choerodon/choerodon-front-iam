@@ -100,7 +100,7 @@ export default class Project extends Component {
     }).catch((error) => {
       Choerodon.handleResponseError(error);
     });
-  }
+  };
 
   loadProjects = (paginationIn, sortIn, filtersIn) => {
     const {
@@ -183,6 +183,9 @@ export default class Project extends Component {
         } else {
           ProjectStore.setCurrentGroup(data);
           ProjectStore.setGroupProjects(groupData);
+          if (groupData.length === 0) {
+            ProjectStore.addNewProjectToGroup();
+          }
         }
         ProjectStore.getAgileProject(organizationId, data.id).then((optionAgileData) => {
           if (optionAgileData.failed) {
@@ -324,18 +327,29 @@ export default class Project extends Component {
     const { ProjectStore: { disabledTime, currentGroup }, form } = this.props;
     const projectId = form.getFieldValue(index);
     const endDate = form.getFieldValue(`endDate-${index}`);
-    if (endDate && startValue && startValue.isAfter(endDate)) {
-      return true;
-    }
+    if (!startValue) return false;
     if (currentGroup.category === 'ANALYTICAL') return false;
     if (!startValue) return false;
-    return disabledTime[projectId] && disabledTime[projectId].some(({ start, end }) => {
-      if (end === null) {
-        end = '2199-12-31';
-      }
-      // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
-      return !(startValue.isBefore(moment(start)) || startValue.isAfter(moment(end).add(1, 'days')));
-    });
+    // 结束时间没有选的时候
+    if (!endDate) {
+      return disabledTime[projectId] && disabledTime[projectId].some(({ start, end }) => {
+        if (end === null) {
+          end = '2199-12-31';
+        }
+        // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
+        return !(startValue.isBefore(moment(start)) || startValue.isAfter(moment(end).add(1, 'days')));
+      });
+    }
+    if (endDate && startValue && startValue.isAfter(moment(endDate).add(1, 'days'))) {
+      return true;
+    }
+    let lastDate = moment('1970-12-31');
+    if (disabledTime[projectId]) {
+      disabledTime[projectId].forEach((data) => {
+        if (data.end && moment(data.end).isAfter(lastDate) && moment(data.end).isBefore(moment(endDate))) lastDate = moment(data.end);
+      });
+    }
+    return !(startValue.isBefore(moment(endDate).add(1, 'days')) && startValue.isAfter(moment(lastDate).add(1, 'days')));
   };
 
   /**
@@ -347,6 +361,8 @@ export default class Project extends Component {
     const { ProjectStore: { disabledTime, currentGroup }, form } = this.props;
     const projectId = form.getFieldValue(index);
     const startDate = form.getFieldValue(`startDate-${index}`);
+    if (!endValue) return false;
+
     // 开始时间没有选的时候
     if (!startDate) {
       return disabledTime[projectId] && disabledTime[projectId].some(({ start, end }) => {
@@ -368,7 +384,6 @@ export default class Project extends Component {
         if (moment(data.start).isBefore(earlyDate) && moment(data.start).isAfter(startDate)) earlyDate = moment(data.start);
       });
     }
-    if (!endValue) return false;
     return !(endValue.isAfter(moment(startDate)) && endValue.isBefore(earlyDate));
   };
 
@@ -474,7 +489,6 @@ export default class Project extends Component {
 
   getOption = (current) => {
     const { ProjectStore: { optionAgileData, groupProjects }, form } = this.props;
-    debugger;
     return optionAgileData.filter(value => this.getSelectedProject().every(existProject =>
       existProject !== value.id || existProject === form.getFieldValue(current),
     )).reduce((options, { id, name, enabled, code }) => {
@@ -637,13 +651,13 @@ export default class Project extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('category', {
-                initialValue: false,
+                initialValue: 'AGILE',
               })(
-                <RadioGroup label={<FormattedMessage id={`${intlPrefix}.type.category`} />} className="c7n-iam-project-radiogroup">
+                <Select label={<FormattedMessage id={`${intlPrefix}.type.category`} />} style={{ width: 512 }}>
                   {
-                    ['AGILE', 'PROGRAM', 'ANALYTICAL'].map(value => <Radio value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Radio>)
+                    ['AGILE', 'PROGRAM', 'ANALYTICAL'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Option>)
                   }
-                </RadioGroup>,
+                </Select>,
               )}
             </FormItem>
           )}

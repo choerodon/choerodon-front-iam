@@ -334,16 +334,16 @@ export default class SiteStatistics extends Component {
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
         >
           <Button
-            onClick={this.handleRefresh}
-            icon="refresh"
-          >
-            <FormattedMessage id="refresh" />
-          </Button>
-          <Button
             onClick={this.clickDownload}
             icon="get_app"
           >
             导出表格csv文件
+          </Button>
+          <Button
+            onClick={this.handleRefresh}
+            icon="refresh"
+          >
+            <FormattedMessage id="refresh" />
           </Button>
           <a id="download" download="site-statistics.csv" href="#" />
         </Header>

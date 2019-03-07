@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { Button, Form, Input, Modal, Table, Tooltip, Select, Icon, Radio, Checkbox, DatePicker } from 'choerodon-ui';
 import moment from 'moment';
@@ -31,6 +30,7 @@ const formItemLayout = {
     sm: { span: 16 },
   },
 };
+const isNum = /^\d+$/;
 
 @Form.create({})
 @withRouter
@@ -156,7 +156,9 @@ export default class Project extends Component {
   };
 
   handleopenTab = (data, operation) => {
-    const { form, ProjectStore } = this.props;
+    const { form, ProjectStore, AppState } = this.props;
+    const menuType = AppState.currentMenuType;
+    const organizationId = menuType.id;
     form.resetFields();
     this.setState({
       errorMeg: '',
@@ -179,9 +181,16 @@ export default class Project extends Component {
         if (groupData.failed) {
           Choerodon.prompt(groupData.message);
         } else {
-          ProjectStore.setCurrentGroup(data.id);
+          ProjectStore.setCurrentGroup(data);
           ProjectStore.setGroupProjects(groupData);
         }
+        ProjectStore.getAgileProject(organizationId, data.id).then((optionAgileData) => {
+          if (optionAgileData.failed) {
+            Choerodon.prompt(optionAgileData.message);
+          } else {
+            ProjectStore.setOptionAgileData(optionAgileData);
+          }
+        });
       });
     }
   };
@@ -191,6 +200,7 @@ export default class Project extends Component {
       sidebar: false,
       submitting: false,
     });
+    this.props.ProjectStore.clearProjectRelationNeedRemove();
   };
   handleSubmit = (e) => {
     e.preventDefault();
@@ -201,13 +211,13 @@ export default class Project extends Component {
     let data;
     if (this.state.operation === 'create') {
       const { validateFields } = this.props.form;
-      validateFields((err, { code, name, type, group }) => {
+      validateFields((err, { code, name, type, category }) => {
         if (!err) {
           data = {
             code,
             name: name.trim(),
             organizationId,
-            group,
+            category,
             type: type === 'no' || undefined ? null : type,
             imageUrl: imgUrl || null,
           };
@@ -275,6 +285,7 @@ export default class Project extends Component {
       validateFields((err, rawData) => {
         if (!err) {
           this.setState({ submitting: true, buttonClicked: true });
+          ProjectStore.axiosDeleteProjectsFromGroup();
           ProjectStore.saveProjectGroup(rawData).then((savedData) => {
             if (savedData.failed) {
               Choerodon.prompt(savedData.message);
@@ -283,10 +294,82 @@ export default class Project extends Component {
               Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
               this.setState({ submitting: false, buttonClicked: false, sidebar: false });
             }
+          }).catch((error) => {
+            Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.error' }));
+            Choerodon.handleResponseError(error);
+          }).finally(() => {
+            this.setState({ submitting: false });
           });
         }
       });
     }
+  };
+
+  /**
+   * 获得所有的在前端被选择过的项目id
+   * @returns {any[]}
+   */
+  getSelectedProject = () => {
+    const fieldsValue = this.props.form.getFieldsValue();
+    return Object.keys(fieldsValue).filter(v => isNum.test(v)).map(v => fieldsValue[v]);
+  };
+
+  /**
+   * 根据index获得不同的可选时间
+   * @param startValue
+   * @param index
+   * @returns {boolean}
+   */
+  disabledStartDate = (startValue, index) => {
+    const { ProjectStore: { disabledTime, currentGroup }, form } = this.props;
+    const projectId = form.getFieldValue(index);
+    const endDate = form.getFieldValue(`endDate-${index}`);
+    if (endDate && startValue && startValue.isAfter(endDate)) {
+      return true;
+    }
+    if (currentGroup.category === 'ANALYTICAL') return false;
+    if (!startValue) return false;
+    return disabledTime[projectId] && disabledTime[projectId].some(({ start, end }) => {
+      if (end === null) {
+        end = '2199-12-31';
+      }
+      // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
+      return !(startValue.isBefore(moment(start)) || startValue.isAfter(moment(end).add(1, 'days')));
+    });
+  };
+
+  /**
+   * 根据index获得不同的可选时间
+   * @param endValue
+   * @param index
+   */
+  disabledEndDate = (endValue, index) => {
+    const { ProjectStore: { disabledTime, currentGroup }, form } = this.props;
+    const projectId = form.getFieldValue(index);
+    const startDate = form.getFieldValue(`startDate-${index}`);
+    // 开始时间没有选的时候
+    if (!startDate) {
+      return disabledTime[projectId] && disabledTime[projectId].some(({ start, end }) => {
+        if (end === null) {
+          end = '2199-12-31';
+        }
+        // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
+        return !(endValue.isBefore(moment(start)) || endValue.isAfter(moment(end).add(1, 'days')));
+      });
+    }
+    if (startDate && endValue && endValue.isBefore(startDate)) {
+      return true;
+    }
+
+    if (currentGroup.category === 'ANALYTICAL') return false;
+    let earlyDate = moment('2199-12-31');
+    if (disabledTime[projectId]) {
+      disabledTime[projectId].forEach((data) => {
+        if (moment(data.start).isBefore(earlyDate) && moment(data.start).isAfter(startDate)) earlyDate = moment(data.start);
+      });
+    }
+    if (!endValue) return false;
+    return !(endValue.isAfter(moment(startDate)) && endValue.isBefore(earlyDate));
   };
 
   /* 停用启用 */
@@ -318,6 +401,17 @@ export default class Project extends Component {
   handlePageChange(pagination, filters, sorter, params) {
     filters.params = params;
     this.loadProjects(pagination, sorter, filters);
+  }
+
+  /**
+   * 在打开日期选择器的时候请求接口，查在form中第index个项目的不可用时间范围
+   * @param index
+   */
+  async handleDatePickerOpen(index) {
+    const { ProjectStore, form } = this.props;
+    const projectId = form.getFieldValue(index);
+    await ProjectStore.setDisabledTime(projectId);
+    this.forceUpdate();
   }
 
   /**
@@ -379,34 +473,55 @@ export default class Project extends Component {
   }
 
   getOption = (current) => {
-    const { roleData = [], roleIds } = this.state;
-    const { ProjectStore: { projectData } } = this.props;
-    return projectData.reduce((options, { id, name, enabled, code, group }) => {
-      if (projectData.indexOf(id) === -1 || id === current) {
-        if (enabled === false || group) {
-          options.push(<Option style={{ display: 'none' }} disabled value={id} key={id}>{name}</Option>);
-        } else {
-          options.push(
-            <Option value={id} key={id} title={name}>
-              <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
-                <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
-              </Tooltip>
-            </Option>,
-          );
-        }
-      }
+    const { ProjectStore: { optionAgileData, groupProjects }, form } = this.props;
+    debugger;
+    return optionAgileData.filter(value => this.getSelectedProject().every(existProject =>
+      existProject !== value.id || existProject === form.getFieldValue(current),
+    )).reduce((options, { id, name, enabled, code }) => {
+      options.push(
+        <Option value={id} key={id} title={name}>
+          <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>
+            <span style={{ display: 'inline-block', width: '100%' }}>{name}</span>
+          </Tooltip>
+        </Option>,
+      );
       return options;
     }, []);
+  };
+
+
+  handleSelectProject = (projectId, index) => {
+    const { ProjectStore: { groupProjects }, ProjectStore } = this.props;
+    ProjectStore.setGroupProjectByIndex(index, { projectId, startDate: groupProjects[index].startDate, endDate: groupProjects[index].endDate, enabled: groupProjects[index].enabled });
+  }
+
+  handleCheckboxChange = (value, index) => {
+    const { form, ProjectStore, ProjectStore: { groupProjects, currentGroup } } = this.props;
+    if (currentGroup.category === 'ANALYTICAL') return;
+    if (form.getFieldValue(`startDate-${index}`) !== groupProjects[index].startDate
+      || form.getFieldValue(`endDate-${index}`) !== groupProjects[index].endDate
+    ) return;
+    if (value && value.target.checked && groupProjects[index].id) {
+      ProjectStore.checkCanEnable(groupProjects[index].id).then((data) => {
+        const newValue = {};
+        newValue[`enabled-${index}`] = false;
+        if (data.result === false) {
+          Choerodon.prompt(`该项目当前时间段与项目群"${data.projectName}"中的该项目有冲突`);
+          form.setFieldsValue(newValue);
+          form.resetFields(`enabled-${index}`);
+        }
+      });
+    }
   };
 
   getAddGroupProjectContent = (operation) => {
     const { intl, ProjectStore: { groupProjects }, form } = this.props;
     const { getFieldDecorator } = form;
     if (operation !== 'add') return;
-    const formItems = groupProjects.map(({ projectId, startDate, endDate, enabled }, index) => {
-      const key = projectId === undefined ? `project-index-${index}` : String(projectId);
+    const formItems = groupProjects.map(({ projectId, startDate, endDate, enabled, id }, index) => {
+      const key = !projectId ? `project-index-${index}` : String(projectId);
       return (
-        <React.Fragment>
+        <React.Fragment key={key}>
           <FormItem
             {...formItemLayout}
             key={key}
@@ -414,11 +529,17 @@ export default class Project extends Component {
           >
             {getFieldDecorator(`${index}`, {
               initialValue: projectId,
+              rules: [{
+                required: true,
+                message: '请选择项目',
+              }],
             })(
               <Select
                 className="member-role-select"
                 style={{ width: 200, marginTop: -2 }}
                 label={<FormattedMessage id="organization.project.name" />}
+                disabled={!!id}
+                onChange={e => this.handleSelectProject(e, index)}
                 filterOption={(input, option) => {
                   const childNode = option.props.children;
                   if (childNode && React.isValidElement(childNode)) {
@@ -428,7 +549,7 @@ export default class Project extends Component {
                 }}
                 filter
               >
-                {this.getOption(projectId)}
+                {this.getOption(index)}
               </Select>,
             )}
           </FormItem>
@@ -436,12 +557,18 @@ export default class Project extends Component {
             {...formItemLayout}
             className="c7n-iam-project-inline-formitem"
           >
-            {getFieldDecorator(`startTime-${index}`, {
+            {getFieldDecorator(`startDate-${index}`, {
               initialValue: startDate && moment(startDate),
+              rules: [{
+                required: true,
+                message: '请选择关联开始时间',
+              }],
             })(
               <DatePicker
                 label={<FormattedMessage id={`${intlPrefix}.start.time`} />}
                 style={{ width: 200 }}
+                onOpenChange={() => this.handleDatePickerOpen(index)}
+                disabledDate={startValue => this.disabledStartDate(startValue, index)}
                 format="YYYY-MM-DD"
               />,
             )}
@@ -450,12 +577,14 @@ export default class Project extends Component {
             {...formItemLayout}
             className="c7n-iam-project-inline-formitem"
           >
-            {getFieldDecorator(`endTime-${index}`, {
+            {getFieldDecorator(`endDate-${index}`, {
               initialValue: endDate && moment(endDate),
             })(
               <DatePicker
                 label={<FormattedMessage id={`${intlPrefix}.end.time`} />}
                 style={{ width: 200 }}
+                onOpenChange={() => this.handleDatePickerOpen(index)}
+                disabledDate={endValue => this.disabledEndDate(endValue, index)}
                 format="YYYY-MM-DD"
               />,
             )}
@@ -467,7 +596,7 @@ export default class Project extends Component {
             {getFieldDecorator(`enabled-${index}`, {
               initialValue: enabled,
             })(
-              <Checkbox defaultChecked={enabled}>是否启用</Checkbox>,
+              <Checkbox onChange={value => this.handleCheckboxChange(value, index)} defaultChecked={enabled}>是否启用</Checkbox>,
             )}
           </FormItem>
           <Button
@@ -486,6 +615,7 @@ export default class Project extends Component {
 
   removeProjectFromGroup = (index) => {
     this.props.ProjectStore.removeProjectFromGroup(index);
+    this.props.form.resetFields();
   };
 
   renderSidebarContent() {
@@ -495,7 +625,6 @@ export default class Project extends Component {
     const types = ProjectStore.getProjectTypes;
     const inputWidth = 512;
     const contentInfo = this.getSidebarContentInfo(operation);
-
 
     return (
       <Content
@@ -507,12 +636,13 @@ export default class Project extends Component {
             <FormItem
               {...formItemLayout}
             >
-              {getFieldDecorator('group', {
+              {getFieldDecorator('category', {
                 initialValue: false,
               })(
-                <RadioGroup label={<FormattedMessage id={`${intlPrefix}.type.group`} />} className="c7n-iam-project-radiogroup">
-                  <Radio value={false}>{intl.formatMessage({ id: `${intlPrefix}.normal-project` })}</Radio>
-                  <Radio value>{intl.formatMessage({ id: `${intlPrefix}.group-project` })}</Radio>
+                <RadioGroup label={<FormattedMessage id={`${intlPrefix}.type.category`} />} className="c7n-iam-project-radiogroup">
+                  {
+                    ['AGILE', 'PROGRAM', 'ANALYTICAL'].map(value => <Radio value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Radio>)
+                  }
                 </RadioGroup>,
               )}
             </FormItem>
@@ -737,7 +867,7 @@ export default class Project extends Component {
       title: <FormattedMessage id={`${intlPrefix}.type`} />,
       dataIndex: 'typeName',
       key: 'typeName',
-      width: '20%',
+      width: '15%',
       filters: filtersType,
       filteredValue: filters.typeName || [],
     }, {
@@ -754,11 +884,11 @@ export default class Project extends Component {
       key: 'enabled',
       render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
     }, {
-      title: <FormattedMessage id={`${intlPrefix}.type.group`} />,
-      dataIndex: 'group',
-      key: 'group',
+      title: <FormattedMessage id={`${intlPrefix}.type.category`} />,
+      dataIndex: 'category',
+      key: 'category',
       width: '15%',
-      render: isGroup => (<StatusTag mode="icon" name={intl.formatMessage({ id: isGroup ? `${intlPrefix}.group-project` : `${intlPrefix}.normal-project` })} iconType={isGroup ? 'project_program' : 'project'} />),
+      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.${category.toLowerCase()}.project` })} iconType={category === 'AGILE' ? 'project' : 'project_program'} />),
       // filters: filtersType,
       // filteredValue: filters.typeName || [],
     }, {
@@ -781,7 +911,7 @@ export default class Project extends Component {
               />
             </Tooltip>
           </Permission>
-          {record.group && (
+          {record.category !== 'AGILE' && (
             <Tooltip
               title={<FormattedMessage id={`${intlPrefix}.config`} />}
               placement="bottom"

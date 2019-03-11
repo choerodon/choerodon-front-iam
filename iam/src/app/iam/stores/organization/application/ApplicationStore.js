@@ -127,7 +127,7 @@ class ApplicationStore {
     axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications`, JSON.stringify(applicationData));
 
   updateApplication = (applicationData, id) =>
-    axios.put(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}`, JSON.stringify(applicationData));
+    axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}`, JSON.stringify(applicationData));
 
   enableApplication = id => axios.put(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/enable`);
 

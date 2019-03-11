@@ -120,9 +120,7 @@ export default class Application extends Component {
    * @param callback 回调函数
    */
   checkCode = (rule, value, callback) => {
-    const { AppState, ApplicationStore, intl } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
+    const { ApplicationStore, intl } = this.props;
     const params = { code: value };
     if (ApplicationStore.operation === 'edit') callback();
     ApplicationStore.checkApplicationCode(params)
@@ -144,11 +142,8 @@ export default class Application extends Component {
    * @param callback 回调函数
    */
   checkName = (rule, value, callback) => {
-    const { AppState, ApplicationStore, intl } = this.props;
-    const menuType = AppState.currentMenuType;
-    const organizationId = menuType.id;
+    const { ApplicationStore, intl } = this.props;
     const params = { name: value };
-    if (ApplicationStore.operation === 'edit') callback();
     ApplicationStore.checkApplicationCode(params)
       .then((mes) => {
         if (mes.failed) {
@@ -368,18 +363,6 @@ export default class Application extends Component {
     const orgId = menuType.id;
     const type = menuType.type;
     const columns = [{
-      title: <FormattedMessage id={`${intlPrefix}.application-type`} />,
-      dataIndex: 'applicationType',
-      // filters: [],
-      // filteredValue: filters.name || [],
-      key: 'applicationType',
-      width: '20%',
-      render: text => (
-        <MouseOverWrapper text={text} width={0.2}>
-          {intl.formatMessage({ id: `${intlPrefix}.type.${text}` })}
-        </MouseOverWrapper>
-      ),
-    }, {
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'name',
       key: 'name',
@@ -399,6 +382,26 @@ export default class Application extends Component {
         </MouseOverWrapper>
       ),
     }, {
+      title: <FormattedMessage id={`${intlPrefix}.category`} />,
+      dataIndex: 'applicationCategory',
+      key: 'applicationCategory',
+      // width: '25%',
+      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.category.${category.toLowerCase()}` })} iconType={category === 'application' ? '' : ''} />),
+      // filters: filtersType,
+      // filteredValue: filters.typeName || [],
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.application-type`} />,
+      dataIndex: 'applicationType',
+      // filters: [],
+      // filteredValue: filters.name || [],
+      key: 'applicationType',
+      width: '20%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {intl.formatMessage({ id: `${intlPrefix}.type.${text}` })}
+        </MouseOverWrapper>
+      ),
+    }, {
       title: <FormattedMessage id="status" />,
       dataIndex: 'enabled',
       width: '15%',
@@ -412,14 +415,6 @@ export default class Application extends Component {
       filteredValue: filters.enabled || [],
       key: 'enabled',
       render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.category`} />,
-      dataIndex: 'applicationCategory',
-      key: 'applicationCategory',
-      // width: '25%',
-      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.category.${category.toLowerCase()}` })} iconType={category === 'application' ? '' : ''} />),
-      // filters: filtersType,
-      // filteredValue: filters.typeName || [],
     }, {
       title: '',
       key: 'action',

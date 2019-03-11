@@ -44,7 +44,7 @@
   margin-left: 0;
 }
 
-.c7n-iam-project {
+.c7n-iam-application {
   &-name {
     &-avatar {
       float: left;
@@ -81,9 +81,9 @@
   }
 
   &-radiogroup {
-    > label:first-child {
-      margin-right: 60px;
-    }
+    //> label:first-child {
+    //  margin-right: 60px;
+    //}
   }
 
   &-sidebar {

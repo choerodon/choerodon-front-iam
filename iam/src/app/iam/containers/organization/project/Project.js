@@ -508,13 +508,13 @@ export default class Project extends Component {
   handleSelectProject = (projectId, index) => {
     const { ProjectStore: { groupProjects }, ProjectStore } = this.props;
     ProjectStore.setGroupProjectByIndex(index, { projectId, startDate: groupProjects[index].startDate, endDate: groupProjects[index].endDate, enabled: groupProjects[index].enabled });
-  }
+  };
 
   handleCheckboxChange = (value, index) => {
     const { form, ProjectStore, ProjectStore: { groupProjects, currentGroup } } = this.props;
     if (currentGroup.category === 'ANALYTICAL') return;
-    if (form.getFieldValue(`startDate-${index}`).format('YYYY-MM-DD 00:00:00') !== groupProjects[index].startDate
-      || form.getFieldValue(`endDate-${index}`).format('YYYY-MM-DD 00:00:00') !== groupProjects[index].endDate
+    if ((form.getFieldValue(`startDate-${index}`) && form.getFieldValue(`startDate-${index}`).format('YYYY-MM-DD 00:00:00')) !== groupProjects[index].startDate
+      || (form.getFieldValue(`endDate-${index}`) && form.getFieldValue(`endDate-${index}`).format('YYYY-MM-DD 00:00:00')) !== groupProjects[index].endDate
     ) return;
     if (value && value.target.checked && groupProjects[index].id) {
       ProjectStore.checkCanEnable(groupProjects[index].id).then((data) => {
@@ -525,6 +525,7 @@ export default class Project extends Component {
         if (data.result === false) {
           Choerodon.prompt(`该项目当前时间段与项目群"${data.projectName}"中的该项目有冲突`);
           form.setFieldsValue(newValue);
+          ProjectStore.setGroupProject({ ...groupProjects[index], enabled: !groupProjects.enabled });
           form.resetFields(`enabled-${index}`);
         }
       });

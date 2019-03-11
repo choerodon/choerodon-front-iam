@@ -61,6 +61,9 @@
 "task-dispatch-organization.execution-record-organization": "Execution Record"
 "task-dispatch-organization.task-classname-organization": "Executable Program"
 
+"app-manager-organization": "Application Manager"
+"app-manager-organization.app": "Application"
+
 "prosetting": "Project Manage"
 # project
 "prosetting.proManage": "Project Manage"

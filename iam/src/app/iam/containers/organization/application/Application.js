@@ -60,7 +60,7 @@ export default class Application extends Component {
               if (value) {
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 this.handleTabClose();
-                this.loadProjects();
+                ApplicationStore.loadData();
               }
             }).catch((error) => {
               this.handleTabClose();
@@ -70,24 +70,27 @@ export default class Application extends Component {
       });
     } else if (operation === 'edit') {
       const { validateFields } = this.props.form;
-      validateFields((err, { applicationCategory, applicationType, code, name, projectId }) => {
+      validateFields((err, validated) => {
         if (!err) {
-          data = {
-            applicationCategory,
-            applicationType,
-            code,
-            name: name.trim(),
-            projectId,
-            enabled: true,
-          };
-          ApplicationStore.setSubmitting(true);
-          ApplicationStore.updateApplication(data, editData)
+          if (this.shouldShowProjectsSelect()) {
+            data = {
+              ...editData,
+              name: validated.name.trim(),
+              projectId: validated.projectId,
+            };
+          } else {
+            data = {
+              ...editData,
+              name: validated.name.trim(),
+            };
+          }
+          ApplicationStore.updateApplication(data, editData.id)
             .then((value) => {
               ApplicationStore.setSubmitting(false);
               if (value) {
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
                 this.handleTabClose();
-                this.loadProjects();
+                ApplicationStore.loadData();
               }
             }).catch((error) => {
               this.handleTabClose();
@@ -121,6 +124,7 @@ export default class Application extends Component {
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const params = { code: value };
+    if (ApplicationStore.operation === 'edit') callback();
     ApplicationStore.checkApplicationCode(params)
       .then((mes) => {
         if (mes.failed) {
@@ -144,6 +148,7 @@ export default class Application extends Component {
     const menuType = AppState.currentMenuType;
     const organizationId = menuType.id;
     const params = { name: value };
+    if (ApplicationStore.operation === 'edit') callback();
     ApplicationStore.checkApplicationCode(params)
       .then((mes) => {
         if (mes.failed) {

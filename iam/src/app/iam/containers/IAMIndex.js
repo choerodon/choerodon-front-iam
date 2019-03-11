@@ -42,6 +42,7 @@ const passwordPolicy = asyncRouter(() => import('./organization/password-policy'
 const project = asyncRouter(() => import('./organization/project'));
 const user = asyncRouter(() => import('./organization/user'));
 const organizationSetting = asyncRouter(() => import('./organization/organization-setting'));
+const application = asyncRouter(() => import('./organization/application'));
 
 // project
 const projectSetting = asyncRouter(() => import('./project/project-setting'));
@@ -108,6 +109,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/site-statistics`} component={siteStatistics} />
           <Route path={`${match.url}/organization-setting`} component={organizationSetting} />
           <Route path={`${match.url}/project-type`} component={projectType} />
+          <Route path={`${match.url}/application`} component={application} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

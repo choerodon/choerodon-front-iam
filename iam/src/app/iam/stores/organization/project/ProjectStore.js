@@ -71,7 +71,7 @@ class ProjectStore {
 
   @action
   addNewProjectToGroup() {
-    this.groupProjects = [...this.groupProjects, { projectId: null, startDate: null, endDate: null }];
+    this.groupProjects = [...this.groupProjects, { projectId: null, startDate: null, endDate: null, enabled: true }];
   }
 
   @action

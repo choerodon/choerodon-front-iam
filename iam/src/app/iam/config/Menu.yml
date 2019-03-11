@@ -445,6 +445,23 @@
           - 'asgard-service.schedule-method-org.pagingQuery'
           - 'asgard-service.schedule-method-org.getParams'
 
+# 组织层应用
+"app-manager-organization":
+  icon: apps
+  sort: 5
+  organization:
+    - "app":
+        icon: widgets
+        Routes: /iam/application
+        sort: 1
+        permission:
+          - 'iam-service.application.pagingQuery'
+          - 'iam-service.application.create'
+          - 'iam-service.application.types'
+          - 'iam-service.application.update'
+          - 'iam-service.application.disable'
+          - 'iam-service.application.enabled'
+
 # 项目设置
 "prosetting":
   icon: IAM

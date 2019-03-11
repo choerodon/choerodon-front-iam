@@ -448,6 +448,37 @@ const pageDetail = {
   'organization.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
   'organization.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
 
+  // application 应用
+  'organization.application.header.title': '应用',
+  'organization.application.title': '组织"{name}"的应用',
+  'organization.application.description': '应用是满足用户某些需求的程序代码的集合。您可在此创建应用、停用应用、启用应用、向项目分配应用开发以及修改应用名称。',
+  // 'organization.application.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+
+  'organization.application.create': '创建应用',
+  'organization.application.sidebar.title.create': '创建应用',
+  'organization.application.create.title': '在"{name}"中创建应用',
+  'organization.application.create.description': '请在下面选择应用的类别，输入应用编码及名称，也可以选择某个应用模板，选择要开发此应用的项目，快速创建应用。',
+  'organization.application.category': '应用类别',
+  'organization.application.type': '应用分类',
+  'organization.application.category.application-group': '组合应用',
+  'organization.application.category.application': '普通应用',
+  'organization.application.type.development-application': '开发应用',
+  'organization.application.type.test-application': '测试应用',
+  'organization.application.code': '应用编码',
+  'organization.application.code.require.msg': '请输入应用编码',
+  'organization.application.name.require.msg': '请输入应用名称',
+  'organization.application.code.exist.msg': '应用编码已存在',
+  'organization.application.name.exist.msg': '应用名称已存在',
+  'organization.application.name': '应用名称',
+  'organization.application.code.format.msg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'organization.application.whitespace.msg': '应用名称不能包含空格',
+  'organization.application.assignment': '选择分配开发的项目',
+  'organization.application.application-type': '应用分类',
+  'organization.application.sidebar.title.edit': '修改应用',
+  'organization.application.edit.title': '修改应用"{name}"',
+  'organization.application.edit.description': '请在下面选择应用的类别，输入应用编码及名称，也可以选择某个应用模板，选择要开发此应用的项目，快速创建应用。',
+
+
   // 项目信息
   'project.info.title': '对项目"{name}"进行项目设置',
   'project.info.description': '您可以在此修改项目名称、停用项目。',

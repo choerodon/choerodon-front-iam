@@ -836,6 +836,16 @@ export default class Project extends Component {
   };
 
 
+  getCategoryIcon = (category) => {
+    switch (category) {
+      case 'AGILE': return 'project';
+      case 'PROGRAM': return 'project_program';
+      case 'ANALYTICAL': return 'project_program_analyze';
+      default: return 'project';
+    }
+  };
+
+
   render() {
     const { ProjectStore, AppState, intl } = this.props;
     const projectData = ProjectStore.getProjectData;
@@ -906,7 +916,7 @@ export default class Project extends Component {
       dataIndex: 'category',
       key: 'category',
       width: '15%',
-      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.${category.toLowerCase()}.project` })} iconType={category === 'AGILE' ? 'project' : 'project_program'} />),
+      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.${category.toLowerCase()}.project` })} iconType={this.getCategoryIcon(category)} />),
       // filters: filtersType,
       // filteredValue: filters.typeName || [],
     }, {

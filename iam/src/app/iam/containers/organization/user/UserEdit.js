@@ -126,9 +126,9 @@ export default class UserEdit extends Component {
       }
 
       const id = AppState.currentMenuType.id;
-      CreateUserStore.checkUsername(id, username).then(({ failed }) => {
-        if (failed) {
-          callback(intl.formatMessage({ id: `${intlPrefix}.name.exist.msg` }));
+      CreateUserStore.checkUsername(id, username).then((data) => {
+        if (data.failed) {
+          callback(data.message);
         } else {
           callback();
         }
@@ -271,10 +271,6 @@ export default class UserEdit extends Component {
                   required: true,
                   whitespace: true,
                   message: intl.formatMessage({ id: `${intlPrefix}.loginname.require.msg` }),
-                }, {
-                  /* eslint-disable-next-line */
-                  pattern: /^(?!\-)[a-zA-Z0-9\_\-\.]+(?<!\.git|\.atom|\.)$/,
-                  message: intl.formatMessage({ id: `${intlPrefix}.loginname.pattern.msg` }),
                 }, {
                   validator: this.checkUsername,
                 },

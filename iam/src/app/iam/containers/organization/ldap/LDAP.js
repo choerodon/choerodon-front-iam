@@ -66,7 +66,7 @@ export default class LDAP extends Component {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        LDAPStore.setIsConfirmLoading(!data.syncEndTime);
+        LDAPStore.setIsConfirmLoading(data && !data.syncEndTime);
         LDAPStore.setSyncData(data);
       }
     });

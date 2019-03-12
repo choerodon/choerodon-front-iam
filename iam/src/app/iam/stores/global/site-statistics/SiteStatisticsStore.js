@@ -3,6 +3,8 @@ import { axios, store, stores } from 'choerodon-front-boot';
 import moment from 'moment';
 import querystring from 'query-string';
 
+const { MenuStore } = stores;
+
 class DataSorter {
   static GetNumSorter = (orderBy, direction) => (item1, item2) => {
     switch (direction) {
@@ -167,15 +169,38 @@ class SiteStatisticsStore {
     });
   };
 
+  getMenuData = level =>
+    MenuStore.loadMenuData({ type: level }).then((data) => {
+      this.dfsAddAllMenu(data, level);
+    })
+
+  dfsAddAllMenu(data, level) {
+    data.forEach((v) => {
+      if (!this.set.has(v.code)) {
+        this.allTableDate.push({ code: v.code, name: v.name, sum: 0, level });
+        this.set.add(v.code);
+      }
+      if (v.subMenus) {
+        this.dfsAddAllMenu(v.subMenus, level);
+      }
+    });
+  }
+
   /**
    * 获取所有层级的表数据
    */
   async getAllTableDate() {
     this.allTableDate = [];
+    this.set.clear();
+
     await this.getTableDate('site');
+    await this.getMenuData('site');
     await this.getTableDate('organization');
+    await this.getMenuData('organization');
     await this.getTableDate('project');
+    await this.getMenuData('project');
     await this.getTableDate('user');
+    await this.getMenuData('user');
     return this.allTableDate;
   }
 }

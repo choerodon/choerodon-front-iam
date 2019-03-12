@@ -305,6 +305,7 @@ export default class TestConnect extends Component {
       LDAPStore.setIsConfirmLoading(true);
       LDAPStore.SyncUsers(organizationId, LDAPStore.getLDAPData.id).then((data) => {
         if (data.failed) {
+          LDAPStore.setIsConfirmLoading(false);
           Choerodon.prompt(data.message);
         } else {
           LDAPStore.setIsSyncLoading(true);

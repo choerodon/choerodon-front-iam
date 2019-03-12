@@ -120,8 +120,9 @@ export default class Application extends Component {
    * @param callback 回调函数
    */
   checkCode = (rule, value, callback) => {
-    const { ApplicationStore, intl } = this.props;
+    const { ApplicationStore, intl, ApplicationStore: { editData } } = this.props;
     const params = { code: value };
+    if (editData.code === value) callback();
     if (ApplicationStore.operation === 'edit') callback();
     ApplicationStore.checkApplicationCode(params)
       .then((mes) => {
@@ -142,8 +143,9 @@ export default class Application extends Component {
    * @param callback 回调函数
    */
   checkName = (rule, value, callback) => {
-    const { ApplicationStore, intl } = this.props;
+    const { ApplicationStore, intl, ApplicationStore: { editData } } = this.props;
     const params = { name: value };
+    if (editData.name === value) callback();
     ApplicationStore.checkApplicationCode(params)
       .then((mes) => {
         if (mes.failed) {

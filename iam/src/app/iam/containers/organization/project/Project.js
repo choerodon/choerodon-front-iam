@@ -204,6 +204,8 @@ export default class Project extends Component {
       sidebar: false,
       submitting: false,
     });
+    this.props.ProjectStore.setGroupProjects([]);
+    this.props.ProjectStore.setCurrentGroup(null);
     this.props.ProjectStore.clearProjectRelationNeedRemove();
   };
   handleSubmit = (e) => {
@@ -341,7 +343,7 @@ export default class Project extends Component {
         return !(startValue.isBefore(moment(start)) || startValue.isAfter(moment(end).add(1, 'days')));
       });
     }
-    if (endDate && startValue && startValue.isAfter(moment(endDate).add(1, 'days'))) {
+    if (endDate && startValue && startValue.isAfter(moment(endDate).add(1, 'hours'))) {
       return true;
     }
     let lastDate = moment('1970-12-31');
@@ -419,14 +421,11 @@ export default class Project extends Component {
     this.loadProjects(pagination, sorter, filters);
   }
 
-  /**
-   * 在打开日期选择器的时候请求接口，查在form中第index个项目的不可用时间范围
-   * @param index
-   */
   async handleDatePickerOpen(index) {
-    const { ProjectStore, form } = this.props;
-    const projectId = form.getFieldValue(index);
-    await ProjectStore.setDisabledTime(projectId);
+    const { form } = this.props;
+    if (form.getFieldValue(`${index}`)) {
+      form.validateFields([`${index}`], { force: true });
+    }
     this.forceUpdate();
   }
 
@@ -532,6 +531,26 @@ export default class Project extends Component {
     }
   };
 
+  validateDate = (projectId, index, callback) => {
+    const { ProjectStore: { disabledTime, groupProjects }, form, ProjectStore } = this.props;
+
+    if (groupProjects[projectId] && groupProjects[projectId].id) callback();
+    ProjectStore.setDisabledTime(projectId).then(() => {
+      if (projectId && disabledTime[projectId]) {
+        const startValue = form.getFieldValue(`startDate-${index}`);
+        const endValue = form.getFieldValue(`endDate-${index}`);
+        if (this.disabledStartDate(startValue, index) || this.disabledEndDate(endValue, index)) {
+          callback('日期冲突，请重新选择日期');
+        } else {
+          callback();
+        }
+      }
+    }).catch((err) => {
+      callback('网络错误');
+      Choerodon.handleResponseError(err);
+    });
+  };
+
   getAddGroupProjectContent = (operation) => {
     const { intl, ProjectStore: { groupProjects }, form } = this.props;
     const { getFieldDecorator } = form;
@@ -550,6 +569,8 @@ export default class Project extends Component {
               rules: [{
                 required: true,
                 message: '请选择项目',
+              }, {
+                validator: (rule, value, callback) => this.validateDate(value, index, callback),
               }],
             })(
               <Select

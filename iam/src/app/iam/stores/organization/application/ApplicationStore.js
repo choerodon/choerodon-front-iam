@@ -29,7 +29,17 @@ class ApplicationStore {
 
   refresh() {
     this.loadProject();
-    this.loadData({ current: 1, pageSize: 10 }, {}, {}, []);
+    this.loadData();
+  }
+
+  getProjectById(id) {
+    const value = this.projectData.filter(v => v.id === id);
+    return value.length > 0 ? value[0] : { name: null, imageUrl: null };
+  }
+
+  @computed
+  get getDataSource() {
+    return this.applicationData.map(v => ({ ...v, projectName: this.getProjectById(v.projectId).name, imageUrl: this.getProjectById(v.projectId).imageUrl }));
   }
 
   @action

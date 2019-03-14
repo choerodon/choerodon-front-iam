@@ -70,7 +70,7 @@ export default class InstanceExpandRow extends Component {
           strokeDasharray={`${waitToBePulledCorrect}, 10000`}
         />
       </Popover>
-      <text x="50%" y="39.5" className="c7n-saga-circle-num">{`${sum - failed}/${sum}`}</text>
+      <text x="50%" y="39.5" className="c7n-saga-circle-num">{`${completed}/${sum}`}</text>
       <text x="50%" y="54" fontSize="12" className="c7n-saga-circle-text">{intl.formatMessage({ id: status.toLowerCase() })}</text>
     </svg>);
   }

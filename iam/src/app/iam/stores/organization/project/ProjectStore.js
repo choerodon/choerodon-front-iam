@@ -3,9 +3,10 @@
  */
 
 import { action, computed, observable } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
+import { axios, store, stores } from 'choerodon-front-boot';
 import querystring from 'query-string';
 
+const { AppState } = stores;
 const isNum = /^\d+$/;
 
 @store('ProjectStore')
@@ -31,7 +32,7 @@ class ProjectStore {
   @action
   setDisabledTime(projectId) {
     if (projectId) {
-      return axios.get(`/iam/v1/project_relation/${projectId}/unavailable/under/${this.currentGroup.id}`).then(action((data) => {
+      return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations/${projectId}/unavailable/under/${this.currentGroup.id}`).then(action((data) => {
         this.disabledTime[projectId] = data;
       }));
     }
@@ -199,14 +200,14 @@ class ProjectStore {
         copyGroupProjects[k].parentId = this.currentGroup.id;
       }
     });
-    return axios.put('/iam/v1/project_relation', copyGroupProjects.filter(value => value.projectId !== null));
+    return axios.put('/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations', copyGroupProjects.filter(value => value.projectId !== null));
   };
 
-  getProjectsByGroupId = parentId => axios.get(`/iam/v1/project_relation/${parentId}`);
+  getProjectsByGroupId = parentId => axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations/${parentId}`);
 
   axiosDeleteProjectsFromGroup = () => {
     this.projectRelationNeedRemove.forEach((id) => {
-      axios.delete(`/iam/v1/project_relation/${id}`);
+      axios.delete(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations/${id}`);
     });
     this.projectRelationNeedRemove = [];
   };
@@ -223,7 +224,7 @@ class ProjectStore {
     this.projectRelationNeedRemove = [];
   }
 
-  checkCanEnable = id => axios.get(`/iam/v1/project_relation/check/${id}/can_be_enabled`)
+  checkCanEnable = id => axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations/check/${id}/can_be_enabled`)
 }
 
 const projectStore = new ProjectStore();

@@ -177,12 +177,29 @@ class ApplicationStore {
   }
 
   @action
-  loadListData(id) {
-    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/app_list`).then(action((data) => {
-      if (!data.failed) {
-        this.applicationListData = data.content;
-      }
-    }));
+  loadListData(pagination = this.listPagination, filters, sort, params = this.listParams) {
+    this.listLoading = true;
+    this.listParams = params;
+
+    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${this.editData.id}/app_list?${queryString.stringify({
+      page: pagination.current - 1,
+      size: pagination.pageSize,
+      params: params.join(','),
+    })}`)
+      .then(action(({ failed, content, totalElements }) => {
+        if (!failed) {
+          this.applicationListData = content;
+          this.listPagination = {
+            ...pagination,
+            total: totalElements,
+          };
+        }
+        this.listLoading = false;
+      }))
+      .catch(action((error) => {
+        Choerodon.handleResponseError(error);
+        this.listLoading = false;
+      }));
   }
 
   @action
@@ -195,6 +212,27 @@ class ApplicationStore {
       }
     }));
   }
+
+  // @action
+  // loadAddListData(id, pagination = this.addListPagination) {
+  //   this.addListLoading = true;
+  //   return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/enabled_app?${queryString.stringify({
+  //     page: pagination.current - 1,
+  //     size: pagination.pageSize,
+  //   })}`).then(action(({ failed, content, totalElements, message }) => {
+  //     if (!failed) {
+  //       this.addListData = content;
+  //       this.applicationData = content;
+  //       this.addListPagination = {
+  //         ...pagination,
+  //         total: totalElements,
+  //       };
+  //       this.addListLoading = false;
+  //     } else {
+  //       Choerodon.prompt(message);
+  //     }
+  //   }));
+  // }
 
 
   @action
@@ -248,6 +286,7 @@ class ApplicationStore {
         this.loading = false;
       }));
   }
+
   createApplication = applicationData =>
     axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications`, JSON.stringify(applicationData));
 

@@ -478,10 +478,6 @@ export default class Application extends Component {
   };
 
 
-  handleTreePageChange = (pagination, filters, sorter, params) => {
-    this.props.ApplicationStore.loadTreeData(pagination, filters, sorter, params);
-  };
-
   handleListPageChange = (pagination, filters, sorter, params) => {
     this.props.ApplicationStore.loadListData(pagination, filters, sorter, params);
   };
@@ -496,7 +492,6 @@ export default class Application extends Component {
       dataSource={applicationTreeData}
       rowKey={record => record.id}
       filters={listParams}
-      onChange={this.handleTreePageChange}
       loading={listLoading}
       filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
     />;
@@ -567,6 +562,10 @@ export default class Application extends Component {
     ApplicationStore.setSelectedRowKeys(selectedRowKeys);
   };
 
+  handleAddListPageChange = (id, pagination) => {
+    this.props.ApplicationStore.loadAddListData(id, pagination);
+  };
+
   renderSidebarContent = () => {
     const { ApplicationStore: { selectedRowKeys, editData, addListLoading, addListPagination, getAddListDataSource }, intl } = this.props;
     const columns = this.getAddTableColumns();
@@ -583,13 +582,13 @@ export default class Application extends Component {
         }}
       >
         <Table
-          pagination={addListPagination}
+          pagination={false}
           columns={columns}
           dataSource={getAddListDataSource}
           rowKey={record => record.id}
           // filters={listParams}
           rowSelection={rowSelection}
-          onChange={this.handleListPageChange}
+          // onChange={this.handleAddListPageChange}
           loading={addListLoading}
           filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
         />

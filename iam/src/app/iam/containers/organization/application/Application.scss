@@ -45,6 +45,10 @@
 }
 
 .c7n-iam-application {
+  .sidebar-content {
+    overflow: visible;
+    padding: 0;
+  }
   &-name {
     &-avatar {
       float: left;

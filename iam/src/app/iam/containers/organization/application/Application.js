@@ -46,8 +46,12 @@ export default class Application extends Component {
     }
   };
 
+  handlePageChange = (pagination, filters, sorter, params) => {
+    this.props.ApplicationStore.loadData(pagination, filters, sorter, params);
+  };
+
   render() {
-    const { ApplicationStore: { filters, operation, pagination, params, sidebarVisible, submitting }, AppState, intl, ApplicationStore, ApplicationStore: { applicationData } } = this.props;
+    const { ApplicationStore: { filters, pagination, params }, AppState, intl, ApplicationStore, ApplicationStore: { applicationData } } = this.props;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
     const type = menuType.type;
@@ -206,7 +210,7 @@ export default class Application extends Component {
             rowKey={record => record.id}
             filters={params}
             onChange={this.handlePageChange}
-            loading={ApplicationStore.isLoading}
+            loading={ApplicationStore.loading}
             filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
           />
         </Content>

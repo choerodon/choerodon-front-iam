@@ -5,10 +5,15 @@ import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './Application.scss';
+import { Tabs } from 'choerodon-ui';
+import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import StatusTag from '../../../components/statusTag';
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
+const TabPane = Tabs.TabPane;
 const FormItem = Form.Item;
+const { Sidebar } = Modal;
 const intlPrefix = 'organization.application';
 const formItemLayout = {
   labelCol: {
@@ -59,11 +64,9 @@ export default class Application extends Component {
               if (value) {
                 this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(orgName)}`);
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
-                this.handleTabClose();
                 ApplicationStore.loadData();
               }
             }).catch((error) => {
-              this.handleTabClose();
               Choerodon.handleResponseError(error);
             });
         }
@@ -102,10 +105,21 @@ export default class Application extends Component {
     }
   };
 
-  refresh = () => {
+  handleAddApplication = () => {
     const { ApplicationStore } = this.props;
-    ApplicationStore.refresh();
-  }
+    const { editData } = ApplicationStore;
+    ApplicationStore.showSidebar();
+    ApplicationStore.loadAddListData(editData.id);
+  };
+
+  refresh = () => {
+    const { ApplicationStore: { operation }, ApplicationStore } = this.props;
+    if (operation === 'edit') {
+      const { editData: { id } } = ApplicationStore;
+      ApplicationStore.loadTreeData(id);
+      ApplicationStore.loadListData(id);
+    }
+  };
 
   renderSideTitle() {
     switch (this.props.ApplicationStore.operation) {
@@ -161,7 +175,8 @@ export default class Application extends Component {
   };
 
   getSidebarContentInfo(operation) {
-    const { AppState, ApplicationStore } = this.props;
+    const { AppState, ApplicationStore, intl } = this.props;
+    const { editData } = ApplicationStore;
     const menuType = AppState.currentMenuType;
     const orgname = menuType.name;
     switch (operation) {
@@ -177,6 +192,7 @@ export default class Application extends Component {
           code: `${intlPrefix}.edit`,
           values: {
             name: ApplicationStore.editData && ApplicationStore.editData.name,
+            app: intl.formatMessage({ id: `${intlPrefix}.category.${editData.applicationCategory.toLowerCase()}` }),
           },
         };
       default:
@@ -195,19 +211,13 @@ export default class Application extends Component {
     return true;
   }
 
-  renderSidebarContent() {
+  renderContent() {
     const { intl, ApplicationStore, form } = this.props;
     const { getFieldDecorator } = form;
     const { operation, projectData, editData, submitting } = ApplicationStore;
     const inputWidth = 512;
-    const contentInfo = this.getSidebarContentInfo(operation);
     return (
-      <Content
-        {...contentInfo}
-      >
-        {operation === 'edit' && editData &&
-        <p>应用类别：{intl.formatMessage({ id: `${intlPrefix}.category.${editData.applicationCategory.toLowerCase()}` })}</p>
-        }
+      <React.Fragment>
         <Form layout="vertical" className="rightForm" style={{ width: 512 }}>
           {operation === 'create' && !editData &&
           <FormItem
@@ -324,16 +334,275 @@ export default class Application extends Component {
             )}
           </FormItem>}
         </Form>
-        <Button loading={submitting} onClick={this.handleSubmit} type="primary" funcType="raised"><FormattedMessage id={operation === 'create' ? 'create' : 'save'} /></Button>
-      </Content>
+      </React.Fragment>
     );
   }
 
+  getTreeTableColumns = () => {
+    const { intl } = this.props;
+    return [{
+      title: <FormattedMessage id={`${intlPrefix}.name`} />,
+      dataIndex: 'applicationName',
+      width: '20%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.11}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.code`} />,
+      dataIndex: 'applicationCode',
+      key: 'applicationCode',
+      width: '15%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.application-type`} />,
+      dataIndex: 'applicationType',
+      // filters: [],
+      // filteredValue: filters.name || [],
+      width: '20%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {intl.formatMessage({ id: `${intlPrefix}.type.${text}` })}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.project-name`} />,
+      dataIndex: 'projectName',
+      // width: '15%',
+      render: (text, record) => (
+        <div>
+          { text && <div className="c7n-iam-application-name-avatar">
+            {
+              record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+              <React.Fragment>{text.split('')[0]}</React.Fragment>
+            }
+          </div>
+          }
+
+          <MouseOverWrapper text={text} width={0.2}>
+            {text}
+          </MouseOverWrapper>
+        </div>
+      ),
+    }, {
+      title: <FormattedMessage id="status" />,
+      dataIndex: 'enabled',
+      width: '15%',
+      key: 'enabled',
+      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
+    }];
+  };
+
+  getListTableColumns = () => [{
+    title: <FormattedMessage id={`${intlPrefix}.name`} />,
+    dataIndex: 'name',
+    width: '15%',
+    render: text => (
+      <MouseOverWrapper text={text} width={0.1}>
+        {text}
+      </MouseOverWrapper>
+    ),
+  }, {
+    title: <FormattedMessage id={`${intlPrefix}.code`} />,
+    dataIndex: 'code',
+    key: 'code',
+    width: '15%',
+    render: text => (
+      <MouseOverWrapper text={text} width={0.1}>
+        {text}
+      </MouseOverWrapper>
+    ),
+  }, {
+    title: <FormattedMessage id={`${intlPrefix}.count`} />,
+    dataIndex: 'appCount',
+    width: '15%',
+  }];
+
+  getAddTableColumns = () => {
+    const { intl } = this.props;
+    return [{
+      title: <FormattedMessage id={`${intlPrefix}.name`} />,
+      dataIndex: 'name',
+      width: '20%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.15}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.code`} />,
+      dataIndex: 'code',
+      key: 'code',
+      width: '15%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.1}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.application-type`} />,
+      dataIndex: 'applicationType',
+      // filters: [],
+      // filteredValue: filters.name || [],
+      width: '20%',
+      render: text => (
+        <MouseOverWrapper text={text} width={0.2}>
+          {intl.formatMessage({ id: `${intlPrefix}.type.${text}` })}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.project-name`} />,
+      dataIndex: 'projectName',
+      // width: '15%',
+      render: (text, record) => (
+        <div>
+          { text && <div className="c7n-iam-application-name-avatar">
+            {
+              record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+              <React.Fragment>{text.split('')[0]}</React.Fragment>
+            }
+          </div>
+          }
+
+          <MouseOverWrapper text={text} width={0.2}>
+            {text}
+          </MouseOverWrapper>
+        </div>
+      ),
+    }];
+  };
+
+
+  handleTreePageChange = (pagination, filters, sorter, params) => {
+    this.props.ApplicationStore.loadTreeData(pagination, filters, sorter, params);
+  };
+
+  handleListPageChange = (pagination, filters, sorter, params) => {
+    this.props.ApplicationStore.loadListData(pagination, filters, sorter, params);
+  };
+
+  renderApplicationTreeTable = () => {
+    const columns = this.getTreeTableColumns();
+    const { ApplicationStore, intl } = this.props;
+    const { listParams, listLoading, applicationTreeData } = ApplicationStore;
+    return <Table
+      pagination={false}
+      columns={columns}
+      dataSource={applicationTreeData}
+      rowKey={record => record.id}
+      filters={listParams}
+      onChange={this.handleTreePageChange}
+      loading={listLoading}
+      filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+    />;
+  };
+
+  renderApplicationListTable = () => {
+    const columns = this.getListTableColumns();
+    const { ApplicationStore, intl } = this.props;
+    const { listPagination, listParams, listLoading, applicationListData } = ApplicationStore;
+    return <Table
+      pagination={listPagination}
+      columns={columns}
+      dataSource={applicationListData}
+      rowKey={record => record.id}
+      filters={listParams}
+      onChange={this.handleListPageChange}
+      loading={listLoading}
+      filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+    />;
+  };
+
+  renderTableTab = () => {
+    const { operation, editData } = this.props.ApplicationStore;
+    if (operation === 'edit' && editData.applicationCategory === 'combination-application') {
+      return <Tabs defaultActiveKey="1" animated={false}>
+        <TabPane tab="应用树" key="1">{this.renderApplicationTreeTable()}</TabPane>
+        <TabPane tab="应用清单" key="2">{this.renderApplicationListTable()}</TabPane>
+      </Tabs>;
+    }
+    return null;
+  };
+
+  handleSidebarClose = () => {
+    const { ApplicationStore } = this.props;
+    ApplicationStore.closeSidebar();
+  };
+
+  handleAddSubmit = () => {
+    const { ApplicationStore: { selectedRowKeys, editData }, ApplicationStore } = this.props;
+    ApplicationStore.addToCombination(editData.id, selectedRowKeys).then((data) => {
+      if (data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.refresh();
+        ApplicationStore.closeSidebar();
+        Choerodon.prompt('保存成功');
+      }
+    });
+  };
+
+  renderSidebar = () => {
+    const { ApplicationStore } = this.props;
+    const { sidebarVisible } = ApplicationStore;
+    return <Sidebar
+      title={<FormattedMessage id={`${intlPrefix}.sidebar.title`} />}
+      visible={sidebarVisible}
+      onCancel={this.handleSidebarClose}
+      onOk={this.handleAddSubmit}
+      okText={<FormattedMessage id="save" />}
+      className="c7n-iam-project-sidebar"
+    >
+      {this.renderSidebarContent()}
+    </Sidebar>;
+  };
+
+  changeSelects = (selectedRowKeys) => {
+    const { ApplicationStore } = this.props;
+    ApplicationStore.setSelectedRowKeys(selectedRowKeys);
+  };
+
+  renderSidebarContent = () => {
+    const { ApplicationStore: { selectedRowKeys, editData, addListLoading, addListPagination, getAddListDataSource }, intl } = this.props;
+    const columns = this.getAddTableColumns();
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.changeSelects,
+    };
+    return (
+      <Content
+        code={`${intlPrefix}.add`}
+        className="sidebar-content"
+        values={{
+          name: editData && editData.name,
+        }}
+      >
+        <Table
+          pagination={addListPagination}
+          columns={columns}
+          dataSource={getAddListDataSource}
+          rowKey={record => record.id}
+          // filters={listParams}
+          rowSelection={rowSelection}
+          onChange={this.handleListPageChange}
+          loading={addListLoading}
+          filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
+        />
+      </Content>
+    );
+  };
+
   render() {
-    const { AppState } = this.props;
+    const { AppState, ApplicationStore: { operation, submitting, editData } } = this.props;
     const menuType = AppState.currentMenuType;
     const orgId = menuType.id;
-
+    const contentInfo = this.getSidebarContentInfo(operation);
+    const type = menuType.type;
     return (
       <Page
         service={[
@@ -348,8 +617,32 @@ export default class Application extends Component {
         <Header
           title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
           backPath={`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(menuType.name)}&organizationId=${orgId}`}
-        />
-        {this.renderSidebarContent()}
+        >
+          {
+            editData && editData.applicationCategory === 'combination-application' &&
+            <Permission
+              service={['iam-service.application.update']}
+              type={type}
+              organizationId={orgId}
+            >
+              <Button
+                onClick={this.handleAddApplication}
+                icon="playlist_add"
+              >
+                添加应用
+              </Button>
+            </Permission>
+          }
+        </Header>
+        <Content
+          {...contentInfo}
+          className="c7n-iam-application"
+        >
+          {this.renderContent()}
+          {this.renderTableTab()}
+          <Button loading={submitting} onClick={this.handleSubmit} type="primary" funcType="raised"><FormattedMessage id={operation === 'create' ? 'create' : 'save'} /></Button>
+          {this.renderSidebar()}
+        </Content>
       </Page>
     );
   }

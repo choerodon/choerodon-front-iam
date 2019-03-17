@@ -1,7 +1,3 @@
-/**
- * Created by jinqin.ma on 2017/6/27.
- */
-
 import { action, computed, observable } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
 import queryString from 'query-string';
@@ -9,13 +5,77 @@ import { handleFiltersParams } from '../../../common/util';
 
 const { AppState } = stores;
 
+class TreeData {
+  treeDatas = [];
+  constructor(data) {
+    if (data.length > 0) {
+      this.treeDatas.push({ ...data[0], children: null });
+      if (data.length > 1) {
+        this.treeDatas[0].children = this.dfsAdd(data[0].applicationId, data);
+      }
+    }
+  }
+  dfsAdd = (rootId, data) => data.filter(v => (v.parentId === rootId)).map((v) => {
+    const children = this.dfsAdd(v.applicationId, data);
+    if (children.length > 0) {
+      return ({ ...v, children });
+    }
+    return v;
+  });
+}
+
 @store('ApplicationStore')
 class ApplicationStore {
+  /**
+   * 应用列表数据
+   * @type {Array}
+   */
   @observable applicationData = [];
+
+  /**
+   * 应用树数据
+   * @type {Array}
+   */
+  @observable applicationTreeData = [];
+
+  /**
+   * 应用清单数据
+   * @type {Array}
+   */
+  @observable applicationListData = [];
+
+  /**
+   * 组织内的项目数据
+   * @type {Array}
+   */
   @observable projectData = [];
+
+  /**
+   * 可选择的数据
+   * @type {Array}
+   */
+  @observable addListData = [];
+  @observable selectedRowKeys = [];
+  /**
+   * 创建按钮是否正在加载中
+   * @type {boolean}
+   */
   @observable loading = false;
+
+  @observable addListLoading = false;
+  @observable listLoading = false;
   @observable sidebarVisible = false;
   @observable pagination = {
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  };
+  @observable listPagination = {
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  };
+  @observable addListPagination = {
     current: 1,
     pageSize: 10,
     total: 0,
@@ -23,6 +83,7 @@ class ApplicationStore {
   @observable filters = {};
   @observable sort = {};
   @observable params = [];
+  @observable listParams = [];
   @observable editData = null;
   @observable operation;
   @observable submitting = false;
@@ -30,6 +91,24 @@ class ApplicationStore {
   refresh() {
     this.loadProject();
     this.loadData();
+  }
+
+  @action
+  initSelectedKeys() {
+    if (this.applicationTreeData.length > 0) {
+      if (this.applicationTreeData[0].children && this.applicationTreeData[0].children.length > 0) {
+        this.selectedRowKeys = this.applicationTreeData[0].children.map(v => v.applicationId);
+      } else {
+        this.selectedRowKeys = [];
+      }
+    } else {
+      this.selectedRowKeys = [];
+    }
+  }
+
+  @action
+  setSelectedRowKeys(keys) {
+    this.selectedRowKeys = keys;
   }
 
   getProjectById(id) {
@@ -40,6 +119,11 @@ class ApplicationStore {
   @computed
   get getDataSource() {
     return this.applicationData.map(v => ({ ...v, projectName: this.getProjectById(v.projectId).name, imageUrl: this.getProjectById(v.projectId).imageUrl }));
+  }
+
+  @computed
+  get getAddListDataSource() {
+    return this.addListData.map(v => ({ ...v, projectName: this.getProjectById(v.projectId).name, imageUrl: this.getProjectById(v.projectId).imageUrl }));
   }
 
   @action
@@ -77,6 +161,37 @@ class ApplicationStore {
     axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/projects?page=-1`).then(action((data) => {
       if (!data.failed) {
         this.projectData = data.content;
+      }
+    }));
+  }
+
+  @action
+  loadTreeData(id) {
+    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/descendant`).then(action((data) => {
+      if (!data.failed) {
+        const treeData = new TreeData(data);
+        this.applicationTreeData = treeData.treeDatas.map(v => ({ ...v, projectName: this.getProjectById(v.projectId).name, imageUrl: this.getProjectById(v.projectId).imageUrl }));
+        this.initSelectedKeys();
+      }
+    }));
+  }
+
+  @action
+  loadListData(id) {
+    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/app_list`).then(action((data) => {
+      if (!data.failed) {
+        this.applicationListData = data.content;
+      }
+    }));
+  }
+
+  @action
+  loadAddListData(id) {
+    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/enabled_app`).then(action((data) => {
+      if (!data.failed) {
+        this.addListData = data;
+      } else {
+        Choerodon.prompt(data.message);
       }
     }));
   }
@@ -144,6 +259,14 @@ class ApplicationStore {
   disableApplication = id => axios.put(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/disable`);
 
   checkApplicationCode = codes => axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/check`, JSON.stringify(codes));
+
+  /**
+   * 添加到组合应用中
+   * @param id {Number}
+   * @param ids {Array}
+   * @returns {Promise}
+   */
+  addToCombination = (id, ids) => axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/add_to_combination`, JSON.stringify(ids));
 }
 
 const applicationStore = new ApplicationStore();

@@ -451,13 +451,13 @@ const pageDetail = {
   // application 应用
   'organization.application.header.title': '应用',
   'organization.application.title': '组织"{name}"的应用',
-  'organization.application.description': '应用是满足用户某些需求的程序代码的集合。您可在此创建应用、停用应用、启用应用、向项目分配应用开发以及修改应用名称。',
+  'organization.application.description': '应用是够供给市场，被人们使用和消费，并能满足人们某种需求的任何东西，包括有形的物品、无形的服务、组织、观念或它们的组合。您可以在这里创建普通应用或者组合应用、维护应用信息、启停用应用。',
   // 'organization.application.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
 
   'organization.application.create': '创建应用',
   'organization.application.sidebar.title.create': '创建应用',
   'organization.application.create.title': '在"{name}"中创建应用',
-  'organization.application.create.description': '请在下面选择应用的类别，输入应用编码及名称，也可以选择某个应用模板，选择要开发此应用的项目，快速创建应用。',
+  'organization.application.create.description': '请在此输入应用的名称、编码，选择项目类型。同时您可以为应用分配开发项目，平台会为您在对应项目下创建git代码库。注意：一旦您分配了开发项目就不能再次修改开发项目，请谨慎操作。',
   'organization.application.category': '应用类别',
   'organization.application.type': '应用分类',
   'organization.application.category.combination-application': '组合应用',
@@ -476,8 +476,12 @@ const pageDetail = {
   'organization.application.assignment': '选择分配开发的项目',
   'organization.application.application-type': '应用分类',
   'organization.application.sidebar.title.edit': '修改应用',
-  'organization.application.edit.title': '修改应用"{name}"',
-  'organization.application.edit.description': '请在下面选择应用的类别，输入应用编码及名称，也可以选择某个应用模板，选择要开发此应用的项目，快速创建应用。',
+  'organization.application.edit.title': '修改{app}"{name}"',
+  'organization.application.edit.description': '您可以在此修改应用名称。如果此应用是组合应用，您可以在此查看此组合应用下子应用的信息，同时您还可以在此添加或删除此组合应用下的子应用。',
+  'organization.application.count': '数量',
+  'organization.application.add.title': '向组合应用"{name}"下添加应用',
+  'organization.application.add.description': '您可以在此修改组合应用下的子应用信息',
+  'organization.application.sidebar.title': '添加子项目',
 
 
   // 项目信息

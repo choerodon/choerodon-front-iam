@@ -200,7 +200,7 @@ class ProjectStore {
         copyGroupProjects[k].parentId = this.currentGroup.id;
       }
     });
-    return axios.put('/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations', copyGroupProjects.filter(value => value.projectId !== null));
+    return axios.put(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations`, copyGroupProjects.filter(value => value.projectId !== null));
   };
 
   getProjectsByGroupId = parentId => axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/project_relations/${parentId}`);

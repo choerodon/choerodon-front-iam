@@ -56,6 +56,7 @@ export default class MouserOverWrapper extends Component {
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
+      display: 'inline-block',
     };
     let domWidth = 0;
     if (text) {

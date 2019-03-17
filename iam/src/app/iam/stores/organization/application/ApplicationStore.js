@@ -305,7 +305,7 @@ class ApplicationStore {
    * @param ids {Array}
    * @returns {Promise}
    */
-  addToCombination = (id, ids) => axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/add_to_combination`, JSON.stringify(ids));
+  addToCombination = (id, ids) => axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/add_to_combination`, JSON.stringify([...new Set(ids)]));
 }
 
 const applicationStore = new ApplicationStore();

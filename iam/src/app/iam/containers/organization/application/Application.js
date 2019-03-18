@@ -82,7 +82,7 @@ export default class Application extends Component {
       title: <FormattedMessage id={`${intlPrefix}.category`} />,
       dataIndex: 'applicationCategory',
       // width: '25%',
-      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.category.${category.toLowerCase()}` })} iconType={category === 'application' ? '' : ''} />),
+      render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.category.${category.toLowerCase()}` })} iconType={category === 'application' ? 'application_-general' : 'grain'} />),
       // filters: filtersType,
       // filteredValue: filters.typeName || [],
     }, {

@@ -480,6 +480,7 @@ export default class MenuSetting extends Component {
               label={<FormattedMessage id={`${intlPrefix}.icon`} />}
               style={{ width: inputWidth }}
               showArrow
+              showAll
             />,
           )}
         </FormItem>

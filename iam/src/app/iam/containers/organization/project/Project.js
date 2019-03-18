@@ -533,22 +533,24 @@ export default class Project extends Component {
 
   validateDate = (projectId, index, callback) => {
     const { ProjectStore: { disabledTime, groupProjects }, form, ProjectStore } = this.props;
-
+    if (!projectId) callback();
     if (groupProjects[projectId] && groupProjects[projectId].id) callback();
-    ProjectStore.setDisabledTime(projectId).then(() => {
-      if (projectId && disabledTime[projectId]) {
-        const startValue = form.getFieldValue(`startDate-${index}`);
-        const endValue = form.getFieldValue(`endDate-${index}`);
-        if (this.disabledStartDate(startValue, index) || this.disabledEndDate(endValue, index)) {
-          callback('日期冲突，请重新选择日期');
-        } else {
-          callback();
+    if (projectId) {
+      ProjectStore.setDisabledTime(projectId).then(() => {
+        if (disabledTime[projectId]) {
+          const startValue = form.getFieldValue(`startDate-${index}`);
+          const endValue = form.getFieldValue(`endDate-${index}`);
+          if (this.disabledStartDate(startValue, index) || this.disabledEndDate(endValue, index)) {
+            callback('日期冲突，请重新选择日期');
+          } else {
+            callback();
+          }
         }
-      }
-    }).catch((err) => {
-      callback('网络错误');
-      Choerodon.handleResponseError(err);
-    });
+      }).catch((err) => {
+        callback('网络错误');
+        Choerodon.handleResponseError(err);
+      });
+    }
   };
 
   getAddGroupProjectContent = (operation) => {

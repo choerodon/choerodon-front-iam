@@ -340,7 +340,7 @@ export default class Project extends Component {
           end = '2199-12-31';
         }
         // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
-        return !(startValue.isBefore(moment(start)) || startValue.isAfter(moment(end).add(1, 'days')));
+        return !(startValue.isBefore(moment(start)) || startValue.isAfter(moment(end).add(1, 'hours')));
       });
     }
     if (endDate && startValue && startValue.isAfter(moment(endDate).add(1, 'hours'))) {
@@ -352,7 +352,7 @@ export default class Project extends Component {
         if (data.end && moment(data.end).isAfter(lastDate) && moment(data.end).isBefore(moment(endDate))) lastDate = moment(data.end);
       });
     }
-    return !(startValue.isBefore(moment(endDate).add(1, 'days')) && startValue.isAfter(moment(lastDate).add(1, 'days')));
+    return !(startValue.isBefore(moment(endDate).add(1, 'hours')) && startValue.isAfter(moment(lastDate).add(1, 'hours')));
   };
 
   /**
@@ -373,7 +373,7 @@ export default class Project extends Component {
           end = '2199-12-31';
         }
         // 若有不在可选范围之内的（开始前，结束后是可选的）则返回true
-        return !(endValue.isBefore(moment(start)) || endValue.isAfter(moment(end).add(1, 'days')));
+        return !(endValue.isBefore(moment(start)) || endValue.isAfter(moment(end).add(1, 'hours')));
       });
     }
     if (startDate && endValue && endValue.isBefore(startDate)) {
@@ -387,7 +387,7 @@ export default class Project extends Component {
         if (moment(data.start).isBefore(earlyDate) && moment(data.start).isAfter(startDate)) earlyDate = moment(data.start);
       });
     }
-    return !(endValue.isAfter(moment(startDate)) && endValue.isBefore(earlyDate));
+    return !(endValue.isAfter(moment(startDate).subtract(1, 'hours')) && endValue.isBefore(earlyDate));
   };
 
   /* 停用启用 */

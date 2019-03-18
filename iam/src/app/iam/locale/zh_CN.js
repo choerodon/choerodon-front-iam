@@ -480,7 +480,7 @@ const pageDetail = {
   'organization.application.edit.description': '您可以在此修改应用名称。如果此应用是组合应用，您可以在此查看此组合应用下子应用的信息，同时您还可以在此添加或删除此组合应用下的子应用。',
   'organization.application.count': '数量',
   'organization.application.add.title': '向组合应用"{name}"下添加应用',
-  'organization.application.add.description': '您可以在此修改组合应用下的子应用信息',
+  'organization.application.add.description': '您可以在此修改组合应用下的子应用信息。',
   'organization.application.sidebar.title': '添加子项目',
 
 

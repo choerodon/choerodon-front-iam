@@ -491,7 +491,7 @@ export default class Project extends Component {
     const { ProjectStore: { optionAgileData, groupProjects }, form } = this.props;
     return optionAgileData.filter(value => this.getSelectedProject().every(existProject =>
       existProject !== value.id || existProject === form.getFieldValue(current),
-    )).reduce((options, { id, name, enabled, code }) => {
+    )).filter(v => v.code).reduce((options, { id, name, enabled, code }) => {
       options.push(
         <Option value={id} key={id} title={name}>
           <Tooltip title={code} placement="right" align={{ offset: [20, 0] }}>

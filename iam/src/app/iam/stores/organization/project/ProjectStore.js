@@ -51,8 +51,12 @@ class ProjectStore {
 
   @action
   removeProjectFromGroup(index) {
-    const delId = this.groupProjects.splice(index, 1)[0].id;
-    if (delId) this.deleteProjectFromGroup(delId);
+    const delData = this.groupProjects.splice(index, 1)[0];
+    if (delData.id) {
+      this.deleteProjectFromGroup(delData.id);
+      this.optionAgileData.push({ ...delData, name: delData.projName, code: delData.projCode, id: delData.projectId });
+      this.optionAgileData = [...this.optionAgileData];
+    }
   }
 
   @action

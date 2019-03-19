@@ -16,7 +16,16 @@ class TreeData {
     }
   }
   dfsAdd = (rootId, data) => data.filter(v => (v.parentId === rootId)).map((v) => {
-    const children = this.dfsAdd(v.applicationId, data);
+    let children = this.dfsAdd(v.applicationId, data);
+    const st = new Set();
+    children = children.filter((item) => {
+      if (!st.has(item.applicationId)) {
+        st.add(item.applicationId);
+        return true;
+      } else {
+        return false;
+      }
+    });
     if (children.length > 0) {
       return ({ ...v, children });
     }

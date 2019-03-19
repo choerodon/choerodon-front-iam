@@ -308,6 +308,8 @@ class ApplicationStore {
 
   checkApplicationCode = codes => axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/check`, JSON.stringify(codes));
 
+  getDetailById = id => axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}`);
+
   /**
    * 添加到组合应用中
    * @param id {Number}

@@ -113,11 +113,17 @@ export default class Application extends Component {
   };
 
   refresh = () => {
-    const { ApplicationStore: { operation }, ApplicationStore } = this.props;
-    if (operation === 'edit') {
-      const { editData: { id } } = ApplicationStore;
-      ApplicationStore.loadTreeData(id);
-      ApplicationStore.loadListData(id);
+    const { ApplicationStore: { operation }, ApplicationStore, history } = this.props;
+    const editId = history.location.pathname.split('/').pop();
+    if (editId === '0') {
+      ApplicationStore.setOperation('create');
+    } else {
+      ApplicationStore.getDetailById(history.location.pathname.split('/').pop()).then((data) => {
+        ApplicationStore.setEditData(data);
+        ApplicationStore.setOperation('edit');
+        ApplicationStore.loadTreeData(editId);
+        ApplicationStore.loadListData(editId);
+      });
     }
   };
 

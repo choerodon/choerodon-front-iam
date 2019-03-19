@@ -481,6 +481,7 @@ export default class Project extends Component {
         return {
           code: `${intlPrefix}.config-sub-project`,
           values: {
+            app: this.state.projectDatas.category === 'ANALYTICAL' ? '分析型项目群' : '普通项目群',
             name: this.state.projectDatas.code,
           },
         };
@@ -612,7 +613,7 @@ export default class Project extends Component {
               initialValue: startDate && moment(startDate),
               rules: [{
                 required: true,
-                message: '请选择关联开始时间',
+                message: '请选择有效开始时间',
               }],
             })(
               <DatePicker

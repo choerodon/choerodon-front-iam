@@ -259,7 +259,7 @@ const pageDetail = {
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
   'organization.project.config-sub-project': '维护子项目',
-  'organization.project.config-sub-project.title': '在项目群"{name}"中维护子项目',
+  'organization.project.config-sub-project.title': '在{app}"{name}"中维护子项目',
   'organization.project.config-sub-project.description': '向项目群添加、修改子项目，便于对项目群下的各个子项目进行管理。',
 
   'organization.project.redirect': '跳转至项目"{name}"的主页',
@@ -481,7 +481,7 @@ const pageDetail = {
   'organization.application.count': '数量',
   'organization.application.add.title': '向组合应用"{name}"下添加应用',
   'organization.application.add.description': '您可以在此修改组合应用下的子应用信息。',
-  'organization.application.sidebar.title': '添加子项目',
+  'organization.application.sidebar.title': '添加子应用',
 
 
   // 项目信息

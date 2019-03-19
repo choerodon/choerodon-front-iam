@@ -55,7 +55,7 @@ export default class Application extends Component {
             code,
             name: name.trim(),
             projectId,
-            enabled: true,
+            // enabled: true,
           };
           ApplicationStore.setSubmitting(true);
           ApplicationStore.createApplication(data)
@@ -391,10 +391,10 @@ export default class Application extends Component {
       ),
     }, {
       title: <FormattedMessage id="status" />,
-      dataIndex: 'enabled',
+      dataIndex: 'applicationEnabled',
       width: '15%',
-      key: 'enabled',
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
+      key: 'applicationEnabled',
+      render: applicationEnabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: applicationEnabled ? 'enable' : 'disable' })} colorCode={applicationEnabled ? 'COMPLETED' : 'DISABLE'} />),
     }];
   };
 
@@ -410,7 +410,6 @@ export default class Application extends Component {
   }, {
     title: <FormattedMessage id={`${intlPrefix}.code`} />,
     dataIndex: 'code',
-    key: 'code',
     width: '15%',
     render: text => (
       <MouseOverWrapper text={text} width={0.1}>
@@ -437,7 +436,6 @@ export default class Application extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'code',
-      key: 'code',
       width: '15%',
       render: text => (
         <MouseOverWrapper text={text} width={0.1}>
@@ -490,7 +488,7 @@ export default class Application extends Component {
       pagination={false}
       columns={columns}
       dataSource={applicationTreeData}
-      rowKey={record => record.id}
+      rowKey={record => record.path}
       filters={listParams}
       loading={listLoading}
       filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}

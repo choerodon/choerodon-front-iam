@@ -7,25 +7,21 @@ const { AppState } = stores;
 
 class TreeData {
   treeDatas = [];
+  currentPath = '/';
   constructor(data) {
     if (data.length > 0) {
-      this.treeDatas.push({ ...data[0], children: null });
-      if (data.length > 1) {
-        this.treeDatas[0].children = this.dfsAdd(data[0].applicationId, data);
-      }
+      this.treeDatas = this.dfsAdd(null, data);
     }
   }
-  dfsAdd = (rootId, data) => data.filter(v => (v.parentId === rootId)).map((v) => {
-    let children = this.dfsAdd(v.applicationId, data);
-    const st = new Set();
-    children = children.filter((item) => {
-      if (!st.has(item.applicationId)) {
-        st.add(item.applicationId);
-        return true;
-      } else {
-        return false;
-      }
-    });
+  dfsAdd = (rootId, data) => data.filter(v => (v.parentId === rootId && v.path === `${this.currentPath}${v.applicationId}/`)).map((v) => {
+    // 保存原路径
+    const originPath = `${this.currentPath}`;
+    // 当前路径变为原路径+当前id
+    this.currentPath = `${this.currentPath}${v.applicationId}/`;
+    // 递归调用
+    const children = this.dfsAdd(v.applicationId, data);
+    // 还原现场
+    this.currentPath = `${originPath}`;
     if (children.length > 0) {
       return ({ ...v, children });
     }

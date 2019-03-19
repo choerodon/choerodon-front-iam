@@ -49,6 +49,11 @@
     overflow: visible;
     padding: 0;
   }
+  &-tree-table {
+    span {
+      display: inline-block;
+    }
+  }
   &-name {
     &-avatar {
       float: left;

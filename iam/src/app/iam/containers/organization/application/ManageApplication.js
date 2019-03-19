@@ -349,12 +349,8 @@ export default class Application extends Component {
     return [{
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'applicationName',
-      width: '20%',
-      render: text => (
-        <MouseOverWrapper text={text} width={0.11}>
-          {text}
-        </MouseOverWrapper>
-      ),
+      width: '30%',
+      render: (text, record) => (<StatusTag mode="icon" name={text} iconType={record.applicationCategory === 'application' ? 'application_-general' : 'grain'} />),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'applicationCode',
@@ -494,7 +490,8 @@ export default class Application extends Component {
       pagination={false}
       columns={columns}
       dataSource={applicationTreeData}
-      rowKey={record => record.path}
+      rowKey="path"
+      className="c7n-iam-application-tree-table"
       filters={listParams}
       loading={listLoading}
       filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
@@ -509,7 +506,7 @@ export default class Application extends Component {
       pagination={listPagination}
       columns={columns}
       dataSource={applicationListData}
-      rowKey={record => record.id}
+      rowKey="id"
       filters={listParams}
       onChange={this.handleListPageChange}
       loading={listLoading}

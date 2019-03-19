@@ -615,7 +615,7 @@ export default class Application extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
+          title={operation === 'create' ? '创建应用' : '修改应用'}
           backPath={`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(menuType.name)}&organizationId=${orgId}`}
         >
           {

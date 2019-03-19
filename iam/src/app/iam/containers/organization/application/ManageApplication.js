@@ -244,11 +244,11 @@ export default class Application extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('applicationType', {
-              initialValue: editData ? editData.applicationType : 'development-application',
+              initialValue: editData ? editData.applicationType : 'normal',
             })(
               <Select disabled={operation === 'edit'} getPopupContainer={that => that} label={<FormattedMessage id={`${intlPrefix}.type`} />} className="c7n-iam-application-radiogroup">
                 {
-                  ['development-application', 'test-application'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.type.${value.toLowerCase()}` })}</Option>)
+                  ['normal', 'test'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.type.${value.toLowerCase()}` })}</Option>)
                 }
               </Select>,
             )}

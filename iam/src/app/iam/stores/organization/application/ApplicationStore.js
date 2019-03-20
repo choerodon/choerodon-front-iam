@@ -218,28 +218,6 @@ class ApplicationStore {
     }));
   }
 
-  // @action
-  // loadAddListData(id, pagination = this.addListPagination) {
-  //   this.addListLoading = true;
-  //   return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/enabled_app?${queryString.stringify({
-  //     page: pagination.current - 1,
-  //     size: pagination.pageSize,
-  //   })}`).then(action(({ failed, content, totalElements, message }) => {
-  //     if (!failed) {
-  //       this.addListData = content;
-  //       this.applicationData = content;
-  //       this.addListPagination = {
-  //         ...pagination,
-  //         total: totalElements,
-  //       };
-  //       this.addListLoading = false;
-  //     } else {
-  //       Choerodon.prompt(message);
-  //     }
-  //   }));
-  // }
-
-
   @action
   loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params) {
     const { columnKey, order } = sort;
@@ -267,15 +245,17 @@ class ApplicationStore {
       return;
     }
 
-    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications?${queryString.stringify({
+    const queryObj = {
       page: pagination.current - 1,
       size: pagination.pageSize,
-      name: filters.name,
-      code: filters.code,
-      enabled: filters.enabled,
       params: params.join(','),
       sort: sorter.join(','),
-    })}`)
+    };
+    ['applicationCategory', 'applicationType', 'name', 'code', 'projectName', 'enabled'].forEach(((value) => {
+      if (filters[value] && filters[value].length > 0) queryObj[value] = filters[value];
+    }));
+
+    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications?${queryString.stringify(queryObj)}`)
       .then(action(({ failed, content, totalElements }) => {
         if (!failed) {
           this.applicationData = content;

@@ -492,7 +492,8 @@ export default class Application extends Component {
       dataSource={applicationTreeData}
       rowKey="path"
       className="c7n-iam-application-tree-table"
-      filters={listParams}
+      filters={false}
+      filterBar={false}
       loading={listLoading}
       filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
     />;
@@ -538,7 +539,7 @@ export default class Application extends Component {
       } else {
         this.refresh();
         ApplicationStore.closeSidebar();
-        Choerodon.prompt('保存成功');
+        Choerodon.prompt('添加成功');
       }
     });
   };
@@ -551,7 +552,7 @@ export default class Application extends Component {
       visible={sidebarVisible}
       onCancel={this.handleSidebarClose}
       onOk={this.handleAddSubmit}
-      okText={<FormattedMessage id="save" />}
+      okText={<FormattedMessage id="add" />}
       className="c7n-iam-project-sidebar"
     >
       {this.renderSidebarContent()}

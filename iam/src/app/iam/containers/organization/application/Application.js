@@ -83,13 +83,25 @@ export default class Application extends Component {
       dataIndex: 'applicationCategory',
       // width: '25%',
       render: category => (<StatusTag mode="icon" name={intl.formatMessage({ id: `${intlPrefix}.category.${category.toLowerCase()}` })} iconType={category === 'application' ? 'application_-general' : 'grain'} />),
-      // filters: filtersType,
-      // filteredValue: filters.typeName || [],
+      filters: [{
+        text: '组合应用',
+        value: 'combination-application',
+      }, {
+        text: '普通应用',
+        value: 'application',
+      }],
+      filteredValue: filters.applicationCategory || [],
     }, {
       title: <FormattedMessage id={`${intlPrefix}.application-type`} />,
       dataIndex: 'applicationType',
-      // filters: [],
-      // filteredValue: filters.name || [],
+      filters: [{
+        text: '开发应用',
+        value: 'normal',
+      }, {
+        text: '测试应用',
+        value: 'test',
+      }],
+      filteredValue: filters.applicationType || [],
       width: '20%',
       render: text => (
         <MouseOverWrapper text={text} width={0.2}>
@@ -100,7 +112,7 @@ export default class Application extends Component {
       title: <FormattedMessage id={`${intlPrefix}.project-name`} />,
       dataIndex: 'projectName',
       filters: [],
-      filteredValue: filters.name || [],
+      filteredValue: filters.projectName || [],
       width: '20%',
       render: (text, record) => (
         <div>
@@ -147,7 +159,7 @@ export default class Application extends Component {
                 shape="circle"
                 size="small"
                 onClick={e => this.handleopenTab(record, 'edit')}
-                icon="mode_edit"
+                icon={record.category === 'application' ? 'mode_edit' : 'predefine'}
               />
             </Tooltip>
           </Permission>

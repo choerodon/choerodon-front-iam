@@ -8,10 +8,10 @@ class SagaInstanceStore {
   @observable data = [];
   @observable taskData = [];
   @observable statistics = {
-    COMPLETED: 0,
-    FAILED: 0,
-    RUNNING: 0,
-    ROLLBACK: 0,
+    COMPLETED_COUNT: 0,
+    FAILED_COUNT: 0,
+    RUNNING_COUNT: 0,
+    ROLLBACK_COUNT: 0,
   };
 
   sagaInstanceType = null;
@@ -28,7 +28,13 @@ class SagaInstanceStore {
 
   @computed
   get getStatistics() {
-    return this.statistics;
+    // 旧的statistics字段数据后缀没有_COUNT 这里去掉，让新数据兼容旧的代码
+    return {
+      COMPLETED: this.statistics.COMPLETED_COUNT,
+      FAILED: this.statistics.FAILED_COUNT,
+      RUNNING: this.statistics.RUNNING_COUNT,
+      ROLLBACK: this.statistics.ROLLBACK_COUNT,
+    };
   }
 
   @computed

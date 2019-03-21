@@ -327,6 +327,7 @@ export default class Application extends Component {
                   return false;
                 }}
                 disabled={(editData && !!editData.projectId)}
+                allowClear
                 filter
               >
                 {
@@ -380,7 +381,7 @@ export default class Application extends Component {
         <div>
           { text && <div className="c7n-iam-application-name-avatar">
             {
-              record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+              record.projectImageUrl ? <img src={record.projectImageUrl} alt="avatar" style={{ width: '100%' }} /> :
               <React.Fragment>{text.split('')[0]}</React.Fragment>
             }
           </div>

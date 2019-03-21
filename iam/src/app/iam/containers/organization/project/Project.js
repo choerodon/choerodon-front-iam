@@ -200,6 +200,12 @@ export default class Project extends Component {
   };
 
   handleTabClose = () => {
+    if (this.state.isShowAvatar) {
+      this.setState({
+        isShowAvatar: false,
+      });
+      return;
+    }
     this.setState({
       sidebar: false,
       submitting: false,

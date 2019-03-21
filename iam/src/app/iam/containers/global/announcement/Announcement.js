@@ -207,12 +207,12 @@ export default class Announcement extends Component {
         title: <FormattedMessage id={`${intlPrefix}.content`} />,
         dataIndex: 'textContent',
         key: 'textContent',
-        width: '15%',
         className: 'nowarp',
       }, {
         title: <FormattedMessage id={'status'} />,
         dataIndex: 'status',
         key: 'status',
+        width: '12%',
         filters: Object.keys(iconType).map(value => ({
           text: intl.formatMessage({ id: `announcement.${value.toLowerCase()}` }),
           value,
@@ -228,9 +228,15 @@ export default class Announcement extends Component {
         title: <FormattedMessage id={`${intlPrefix}.send-time`} />,
         dataIndex: 'sendDate',
         key: 'sendDate',
+        width: '10%',
+        render: text => (
+          <MouseOverWrapper text={text} width={0.15}>
+            {text}
+          </MouseOverWrapper>
+        ),
       }, {
         title: '',
-        width: 150,
+        width: '14%',
         key: 'action',
         align: 'right',
         render: this.renderAction,

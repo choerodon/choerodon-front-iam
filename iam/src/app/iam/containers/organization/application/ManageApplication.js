@@ -61,10 +61,12 @@ export default class Application extends Component {
           ApplicationStore.createApplication(data)
             .then((value) => {
               ApplicationStore.setSubmitting(false);
-              if (value) {
+              if (!value.failed) {
                 this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(orgName)}`);
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 ApplicationStore.loadData();
+              } else {
+                Choerodon.prompt(value.message);
               }
             }).catch((error) => {
               Choerodon.handleResponseError(error);
@@ -90,11 +92,13 @@ export default class Application extends Component {
           ApplicationStore.updateApplication(data, editData.id)
             .then((value) => {
               ApplicationStore.setSubmitting(false);
-              if (value) {
+              if (!value.failed) {
                 this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(orgName)}`);
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
                 this.handleTabClose();
                 ApplicationStore.loadData();
+              } else {
+                Choerodon.prompt(value.message);
               }
             }).catch((error) => {
               this.handleTabClose();
@@ -119,10 +123,14 @@ export default class Application extends Component {
       ApplicationStore.setOperation('create');
     } else {
       ApplicationStore.getDetailById(history.location.pathname.split('/').pop()).then((data) => {
-        ApplicationStore.setEditData(data);
-        ApplicationStore.setOperation('edit');
-        ApplicationStore.loadTreeData(editId);
-        ApplicationStore.loadListData(editId);
+        if (!data.failed) {
+          ApplicationStore.setEditData(data);
+          ApplicationStore.setOperation('edit');
+          ApplicationStore.loadTreeData(editId);
+          ApplicationStore.loadListData(editId);
+        } else {
+          Choerodon.prompt(data.message);
+        }
       });
     }
   };

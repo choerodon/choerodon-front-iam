@@ -207,7 +207,7 @@ export default class OrganizationSetting extends Component {
                 {this.getAvatar()}
               </div>
               <div className="divider" />
-              <Permission service={['iam-service.project.update']}>
+              <Permission service={['iam-service.organization.updateOnOrganizationLevel']}>
                 <div className="btnGroup">
                   <Button
                     funcType="raised"

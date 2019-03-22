@@ -7,16 +7,21 @@ const { AppState } = stores;
 
 class TreeData {
   treeDatas = [];
+  currentPath = '/';
   constructor(data) {
     if (data.length > 0) {
-      this.treeDatas.push({ ...data[0], children: null });
-      if (data.length > 1) {
-        this.treeDatas[0].children = this.dfsAdd(data[0].applicationId, data);
-      }
+      this.treeDatas = this.dfsAdd(null, data);
     }
   }
-  dfsAdd = (rootId, data) => data.filter(v => (v.parentId === rootId)).map((v) => {
+  dfsAdd = (rootId, data) => data.filter(v => (v.parentId === rootId && v.path === `${this.currentPath}${v.applicationId}/`)).map((v) => {
+    // 保存原路径
+    const originPath = `${this.currentPath}`;
+    // 当前路径变为原路径+当前id
+    this.currentPath = `${this.currentPath}${v.applicationId}/`;
+    // 递归调用
     const children = this.dfsAdd(v.applicationId, data);
+    // 还原现场
+    this.currentPath = `${originPath}`;
     if (children.length > 0) {
       return ({ ...v, children });
     }
@@ -213,28 +218,6 @@ class ApplicationStore {
     }));
   }
 
-  // @action
-  // loadAddListData(id, pagination = this.addListPagination) {
-  //   this.addListLoading = true;
-  //   return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/enabled_app?${queryString.stringify({
-  //     page: pagination.current - 1,
-  //     size: pagination.pageSize,
-  //   })}`).then(action(({ failed, content, totalElements, message }) => {
-  //     if (!failed) {
-  //       this.addListData = content;
-  //       this.applicationData = content;
-  //       this.addListPagination = {
-  //         ...pagination,
-  //         total: totalElements,
-  //       };
-  //       this.addListLoading = false;
-  //     } else {
-  //       Choerodon.prompt(message);
-  //     }
-  //   }));
-  // }
-
-
   @action
   loadData(pagination = this.pagination, filters = this.filters, sort = this.sort, params = this.params) {
     const { columnKey, order } = sort;
@@ -262,15 +245,17 @@ class ApplicationStore {
       return;
     }
 
-    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications?${queryString.stringify({
+    const queryObj = {
       page: pagination.current - 1,
       size: pagination.pageSize,
-      name: filters.name,
-      code: filters.code,
-      enabled: filters.enabled,
       params: params.join(','),
       sort: sorter.join(','),
-    })}`)
+    };
+    ['applicationCategory', 'applicationType', 'name', 'code', 'projectName', 'enabled'].forEach(((value) => {
+      if (filters[value] && filters[value].length > 0) queryObj[value] = filters[value];
+    }));
+
+    return axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications?${queryString.stringify(queryObj)}`)
       .then(action(({ failed, content, totalElements }) => {
         if (!failed) {
           this.applicationData = content;
@@ -298,6 +283,8 @@ class ApplicationStore {
   disableApplication = id => axios.put(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}/disable`);
 
   checkApplicationCode = codes => axios.post(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/check`, JSON.stringify(codes));
+
+  getDetailById = id => axios.get(`/iam/v1/organizations/${AppState.currentMenuType.organizationId}/applications/${id}`);
 
   /**
    * 添加到组合应用中

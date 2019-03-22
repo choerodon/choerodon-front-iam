@@ -569,7 +569,7 @@ export default class LDAP extends Component {
             {getFieldDecorator('realNameField', {
               initialValue: ldapData.realNameField || undefined,
             })(
-              <Input label={intl.formatMessage({ id: `${intlPrefix}.realname` })} style={{ width: inputWidth }} suffix={this.getSuffix(tips.username)} autoComplete="off" />,
+              <Input label={intl.formatMessage({ id: `${intlPrefix}.realname` })} style={{ width: inputWidth }} autoComplete="off" />,
             )}
           </FormItem>
           <FormItem

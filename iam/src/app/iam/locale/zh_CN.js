@@ -259,7 +259,7 @@ const pageDetail = {
   'organization.project.modify.link': `${docServer}/user-guide/system-configuration/tenant/project/`,
 
   'organization.project.config-sub-project': '维护子项目',
-  'organization.project.config-sub-project.title': '在项目群"{name}"中维护子项目',
+  'organization.project.config-sub-project.title': '在{app}"{name}"中维护子项目',
   'organization.project.config-sub-project.description': '向项目群添加、修改子项目，便于对项目群下的各个子项目进行管理。',
 
   'organization.project.redirect': '跳转至项目"{name}"的主页',
@@ -274,23 +274,24 @@ const pageDetail = {
   'organization.project.end.time': '有效结束时间',
   'organization.project.add.project': '添加项目',
 
-  // 项目类别
-  'global.project-type.table.name': '类别名称',
-  'global.project-type.table.code': '类别编码',
-  'global.project-type.table.description': '类别说明',
+  // 项目类型
+  'global.project-type.table.name': '类型名称',
+  'global.project-type.table.code': '类型编码',
+  'global.project-type.table.description': '类型说明',
   'global.project-type.header.title': '项目类型',
-  'global.project-type.sidebar.edit.title': '修改类别',
+  'global.project-type.sidebar.edit.title': '修改类型',
   'global.project-type.title': '平台"{name}"的项目类型',
-  'global.project-type.description': '您可以在这里添加项目类型，便于项目的类别管理。',
-  'global.project-type.sidebar.create.title': '添加类别',
-  'global.project-type.edit.title': '修改项目类别',
-  'global.project-type.create.title': '在平台中添加项目类别',
-  'global.project-type.edit.description': '项目类别可以区分项目的作用，方便您管理不同的项目。',
-  'global.project-type.create.description': '项目类别可以区分项目的作用，方便您管理不同的项目。',
-  'global.project-type.name.required': '请输入类别名称',
-  'global.project-type.create': '添加类别',
-  'global.project-type.code.required': '请输入类别编码',
-  'global.project-type.code.exist.msg': '类别编码已存在',
+  'global.project-type.description': '您可以在这里添加项目类型，便于项目的类型管理。',
+  'global.project-type.sidebar.create.title': '添加类型',
+  'global.project-type.edit.title': '修改项目类型',
+  'global.project-type.create.title': '在平台中添加项目类型',
+  'global.project-type.edit.description': '项目类型可以区分项目的作用，方便您管理不同的项目。',
+  'global.project-type.create.description': '项目类型可以区分项目的作用，方便您管理不同的项目。',
+  'global.project-type.name.required': '请输入类型名称',
+  'global.project-type.create': '添加类型',
+  'global.project-type.code.required': '请输入类型编码',
+  'global.project-type.code.exist.msg': '类型编码已存在',
+  'global.project-type.code.pattern.msg': '类型编码只能由字母、数字、"."、"_"、"-"、"/"组成，且以字母开头。',
 
   // 组织角色分配
   'organization.memberrole.title': '向成员分配组织"{name}"的角色',
@@ -463,8 +464,8 @@ const pageDetail = {
   'organization.application.category.combination-application': '组合应用',
   'organization.application.project-name': '开发项目',
   'organization.application.category.application': '普通应用',
-  'organization.application.type.development-application': '开发应用',
-  'organization.application.type.test-application': '测试应用',
+  'organization.application.type.normal': '开发应用',
+  'organization.application.type.test': '测试应用',
   'organization.application.code': '应用编码',
   'organization.application.code.require.msg': '请输入应用编码',
   'organization.application.name.require.msg': '请输入应用名称',
@@ -481,7 +482,7 @@ const pageDetail = {
   'organization.application.count': '数量',
   'organization.application.add.title': '向组合应用"{name}"下添加应用',
   'organization.application.add.description': '您可以在此修改组合应用下的子应用信息。',
-  'organization.application.sidebar.title': '添加子项目',
+  'organization.application.sidebar.title': '添加子应用',
 
 
   // 项目信息

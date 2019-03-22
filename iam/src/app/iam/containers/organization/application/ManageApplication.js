@@ -55,18 +55,21 @@ export default class Application extends Component {
             code,
             name: name.trim(),
             projectId,
-            enabled: true,
+            // enabled: true,
           };
           ApplicationStore.setSubmitting(true);
           ApplicationStore.createApplication(data)
             .then((value) => {
               ApplicationStore.setSubmitting(false);
-              if (value) {
+              if (!value.failed) {
                 this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(orgName)}`);
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'create.success' }));
                 ApplicationStore.loadData();
+              } else {
+                Choerodon.prompt(value.message);
               }
             }).catch((error) => {
+              ApplicationStore.setSubmitting(false);
               Choerodon.handleResponseError(error);
             });
         }
@@ -90,11 +93,13 @@ export default class Application extends Component {
           ApplicationStore.updateApplication(data, editData.id)
             .then((value) => {
               ApplicationStore.setSubmitting(false);
-              if (value) {
+              if (!value.failed) {
                 this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(orgName)}`);
                 Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
                 this.handleTabClose();
                 ApplicationStore.loadData();
+              } else {
+                Choerodon.prompt(value.message);
               }
             }).catch((error) => {
               this.handleTabClose();
@@ -113,11 +118,21 @@ export default class Application extends Component {
   };
 
   refresh = () => {
-    const { ApplicationStore: { operation }, ApplicationStore } = this.props;
-    if (operation === 'edit') {
-      const { editData: { id } } = ApplicationStore;
-      ApplicationStore.loadTreeData(id);
-      ApplicationStore.loadListData(id);
+    const { ApplicationStore: { operation }, ApplicationStore, history } = this.props;
+    const editId = history.location.pathname.split('/').pop();
+    if (editId === '0') {
+      ApplicationStore.setOperation('create');
+    } else {
+      ApplicationStore.getDetailById(history.location.pathname.split('/').pop()).then((data) => {
+        if (!data.failed) {
+          ApplicationStore.setEditData(data);
+          ApplicationStore.setOperation('edit');
+          ApplicationStore.loadTreeData(editId);
+          ApplicationStore.loadListData(editId);
+        } else {
+          Choerodon.prompt(data.message);
+        }
+      });
     }
   };
 
@@ -238,11 +253,11 @@ export default class Application extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('applicationType', {
-              initialValue: editData ? editData.applicationType : 'development-application',
+              initialValue: editData ? editData.applicationType : 'normal',
             })(
               <Select disabled={operation === 'edit'} getPopupContainer={that => that} label={<FormattedMessage id={`${intlPrefix}.type`} />} className="c7n-iam-application-radiogroup">
                 {
-                  ['development-application', 'test-application'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.type.${value.toLowerCase()}` })}</Option>)
+                  ['normal', 'test'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.type.${value.toLowerCase()}` })}</Option>)
                 }
               </Select>,
             )}
@@ -321,6 +336,7 @@ export default class Application extends Component {
                   return false;
                 }}
                 disabled={(editData && !!editData.projectId)}
+                allowClear
                 filter
               >
                 {
@@ -343,12 +359,8 @@ export default class Application extends Component {
     return [{
       title: <FormattedMessage id={`${intlPrefix}.name`} />,
       dataIndex: 'applicationName',
-      width: '20%',
-      render: text => (
-        <MouseOverWrapper text={text} width={0.11}>
-          {text}
-        </MouseOverWrapper>
-      ),
+      width: '30%',
+      render: (text, record) => (<StatusTag mode="icon" name={text} iconType={record.applicationCategory === 'application' ? 'application_-general' : 'grain'} />),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'applicationCode',
@@ -378,7 +390,7 @@ export default class Application extends Component {
         <div>
           { text && <div className="c7n-iam-application-name-avatar">
             {
-              record.imageUrl ? <img src={record.imageUrl} alt="avatar" style={{ width: '100%' }} /> :
+              record.projectImageUrl ? <img src={record.projectImageUrl} alt="avatar" style={{ width: '100%' }} /> :
               <React.Fragment>{text.split('')[0]}</React.Fragment>
             }
           </div>
@@ -391,10 +403,10 @@ export default class Application extends Component {
       ),
     }, {
       title: <FormattedMessage id="status" />,
-      dataIndex: 'enabled',
+      dataIndex: 'applicationEnabled',
       width: '15%',
-      key: 'enabled',
-      render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
+      key: 'applicationEnabled',
+      render: applicationEnabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: applicationEnabled ? 'enable' : 'disable' })} colorCode={applicationEnabled ? 'COMPLETED' : 'DISABLE'} />),
     }];
   };
 
@@ -410,7 +422,6 @@ export default class Application extends Component {
   }, {
     title: <FormattedMessage id={`${intlPrefix}.code`} />,
     dataIndex: 'code',
-    key: 'code',
     width: '15%',
     render: text => (
       <MouseOverWrapper text={text} width={0.1}>
@@ -437,7 +448,6 @@ export default class Application extends Component {
     }, {
       title: <FormattedMessage id={`${intlPrefix}.code`} />,
       dataIndex: 'code',
-      key: 'code',
       width: '15%',
       render: text => (
         <MouseOverWrapper text={text} width={0.1}>
@@ -490,8 +500,10 @@ export default class Application extends Component {
       pagination={false}
       columns={columns}
       dataSource={applicationTreeData}
-      rowKey={record => record.id}
-      filters={listParams}
+      rowKey="path"
+      className="c7n-iam-application-tree-table"
+      filters={false}
+      filterBar={false}
       loading={listLoading}
       filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
     />;
@@ -505,7 +517,7 @@ export default class Application extends Component {
       pagination={listPagination}
       columns={columns}
       dataSource={applicationListData}
-      rowKey={record => record.id}
+      rowKey="id"
       filters={listParams}
       onChange={this.handleListPageChange}
       loading={listLoading}
@@ -516,7 +528,7 @@ export default class Application extends Component {
   renderTableTab = () => {
     const { operation, editData } = this.props.ApplicationStore;
     if (operation === 'edit' && editData.applicationCategory === 'combination-application') {
-      return <Tabs defaultActiveKey="1" animated={false}>
+      return <Tabs defaultActiveKey="1" animated={false} style={{ marginBottom: 24 }}>
         <TabPane tab="应用树" key="1">{this.renderApplicationTreeTable()}</TabPane>
         <TabPane tab="应用清单" key="2">{this.renderApplicationListTable()}</TabPane>
       </Tabs>;
@@ -531,27 +543,33 @@ export default class Application extends Component {
 
   handleAddSubmit = () => {
     const { ApplicationStore: { selectedRowKeys, editData }, ApplicationStore } = this.props;
+    ApplicationStore.setSubmitting(true);
     ApplicationStore.addToCombination(editData.id, selectedRowKeys).then((data) => {
+      ApplicationStore.setSubmitting(false);
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
         this.refresh();
         ApplicationStore.closeSidebar();
-        Choerodon.prompt('保存成功');
+        Choerodon.prompt('添加成功');
       }
+    }).catch((err) => {
+      ApplicationStore.setSubmitting(false);
+      Choerodon.handleResponseError(err);
     });
   };
 
   renderSidebar = () => {
     const { ApplicationStore } = this.props;
-    const { sidebarVisible } = ApplicationStore;
+    const { sidebarVisible, submitting } = ApplicationStore;
     return <Sidebar
       title={<FormattedMessage id={`${intlPrefix}.sidebar.title`} />}
       visible={sidebarVisible}
       onCancel={this.handleSidebarClose}
       onOk={this.handleAddSubmit}
-      okText={<FormattedMessage id="save" />}
+      okText={<FormattedMessage id="add" />}
       className="c7n-iam-project-sidebar"
+      confirmLoading={submitting}
     >
       {this.renderSidebarContent()}
     </Sidebar>;
@@ -614,7 +632,7 @@ export default class Application extends Component {
         ]}
       >
         <Header
-          title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
+          title={operation === 'create' ? '创建应用' : '修改应用'}
           backPath={`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(menuType.name)}&organizationId=${orgId}`}
         >
           {
@@ -639,7 +657,8 @@ export default class Application extends Component {
         >
           {this.renderContent()}
           {this.renderTableTab()}
-          <Button loading={submitting} onClick={this.handleSubmit} type="primary" funcType="raised"><FormattedMessage id={operation === 'create' ? 'create' : 'save'} /></Button>
+          <Button style={{ marginRight: 10 }} loading={submitting} onClick={this.handleSubmit} type="primary" funcType="raised"><FormattedMessage id={operation === 'create' ? 'create' : 'save'} /></Button>
+          <Button onClick={() => this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(menuType.name)}&organizationId=${orgId}`)} funcType="raised">取消</Button>
           {this.renderSidebar()}
         </Content>
       </Page>

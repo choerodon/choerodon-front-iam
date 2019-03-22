@@ -22,7 +22,7 @@ export default class InstanceExpandRow extends Component {
   }
 
   getCircle() {
-    const { completed, failed, running, waitToBePulled } = this.state.detail;
+    const { completedCount: completed, failedCount: failed, runningCount: running, waitToBePulledCount: waitToBePulled } = this.state.detail;
     const { intl, expand } = this.props;
     const sum = completed + failed + running + waitToBePulled;
     const { status } = this.props.record;

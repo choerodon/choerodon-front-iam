@@ -16,7 +16,7 @@
     - "system-setting":
         icon: settings
         Routes: /iam/system-setting
-        sort: 8
+        sort: 10
         permission:
           - 'iam-service.system-setting.addSetting'
           - 'iam-service.system-setting.updateSetting'
@@ -92,7 +92,7 @@
     - "project-type":
         icon: project_list
         Routes: /iam/project-type
-        sort: 10
+        sort: 8
         permission:
         - 'iam-service.project-type.pagingQuery'
         - 'iam-service.project-type.create'

@@ -528,7 +528,7 @@ export default class Application extends Component {
   renderTableTab = () => {
     const { operation, editData } = this.props.ApplicationStore;
     if (operation === 'edit' && editData.applicationCategory === 'combination-application') {
-      return <Tabs defaultActiveKey="1" animated={false}>
+      return <Tabs defaultActiveKey="1" animated={false} style={{ marginBottom: 24 }}>
         <TabPane tab="应用树" key="1">{this.renderApplicationTreeTable()}</TabPane>
         <TabPane tab="应用清单" key="2">{this.renderApplicationListTable()}</TabPane>
       </Tabs>;
@@ -657,7 +657,8 @@ export default class Application extends Component {
         >
           {this.renderContent()}
           {this.renderTableTab()}
-          <Button loading={submitting} onClick={this.handleSubmit} type="primary" funcType="raised"><FormattedMessage id={operation === 'create' ? 'create' : 'save'} /></Button>
+          <Button style={{ marginRight: 10 }} loading={submitting} onClick={this.handleSubmit} type="primary" funcType="raised"><FormattedMessage id={operation === 'create' ? 'create' : 'save'} /></Button>
+          <Button onClick={() => this.props.history.push(`/iam/application?type=organization&id=${orgId}&name=${encodeURIComponent(menuType.name)}&organizationId=${orgId}`)} funcType="raised">取消</Button>
           {this.renderSidebar()}
         </Content>
       </Page>

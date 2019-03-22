@@ -291,6 +291,7 @@ const pageDetail = {
   'global.project-type.create': '添加类型',
   'global.project-type.code.required': '请输入类型编码',
   'global.project-type.code.exist.msg': '类型编码已存在',
+  'global.project-type.code.pattern.msg': '类型编码只能由字母、数字、"."、"_"、"-"、"/"组成，且以字母开头。',
 
   // 组织角色分配
   'organization.memberrole.title': '向成员分配组织"{name}"的角色',

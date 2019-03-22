@@ -307,13 +307,13 @@ export default class MemberRole extends Component {
     const { MemberRoleStore } = this.props;
     const uploading = MemberRoleStore.getUploading;
     if (fileLoading === true) {
-      return '上传中...';
+      return '上传中';
     } else if (uploading) {
-      return '导入中...';
+      return '导入中';
     } else {
       return '上传';
     }
-  }
+  };
 
   renderUpload = () => (
     <Content

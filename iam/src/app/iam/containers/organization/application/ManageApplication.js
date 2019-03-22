@@ -69,6 +69,7 @@ export default class Application extends Component {
                 Choerodon.prompt(value.message);
               }
             }).catch((error) => {
+              ApplicationStore.setSubmitting(false);
               Choerodon.handleResponseError(error);
             });
         }
@@ -542,7 +543,9 @@ export default class Application extends Component {
 
   handleAddSubmit = () => {
     const { ApplicationStore: { selectedRowKeys, editData }, ApplicationStore } = this.props;
+    ApplicationStore.setSubmitting(true);
     ApplicationStore.addToCombination(editData.id, selectedRowKeys).then((data) => {
+      ApplicationStore.setSubmitting(false);
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -550,12 +553,15 @@ export default class Application extends Component {
         ApplicationStore.closeSidebar();
         Choerodon.prompt('添加成功');
       }
+    }).catch((err) => {
+      ApplicationStore.setSubmitting(false);
+      Choerodon.handleResponseError(err);
     });
   };
 
   renderSidebar = () => {
     const { ApplicationStore } = this.props;
-    const { sidebarVisible } = ApplicationStore;
+    const { sidebarVisible, submitting } = ApplicationStore;
     return <Sidebar
       title={<FormattedMessage id={`${intlPrefix}.sidebar.title`} />}
       visible={sidebarVisible}
@@ -563,6 +569,7 @@ export default class Application extends Component {
       onOk={this.handleAddSubmit}
       okText={<FormattedMessage id="add" />}
       className="c7n-iam-project-sidebar"
+      confirmLoading={submitting}
     >
       {this.renderSidebarContent()}
     </Sidebar>;

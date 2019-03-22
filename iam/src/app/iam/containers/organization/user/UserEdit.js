@@ -393,7 +393,7 @@ export default class UserEdit extends Component {
                   }, {
                     validator: this.checkRepassword,
                   }],
-                initialValue: (enablePassword && originalPassword) || AppState.getSiteInfo.defaultPassword,
+                initialValue: (enablePassword && originalPassword) || AppState.getSiteInfo.defaultPassword || 'abcd1234',
                 validateFirst: true,
               })(
                 <Input

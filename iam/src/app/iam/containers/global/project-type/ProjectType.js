@@ -86,8 +86,10 @@ export default class ProjectType extends Component {
   }
 
   checkCode = (rule, value, callback) => {
+    const { ProjectTypeStore: { editData } } = this.props;
     const validValue = this.props.form.getFieldValue('code');
     const params = { code: validValue };
+    if (validValue === editData.code) callback();
     axios.post('/iam/v1/projects/types/check', JSON.stringify(params)).then((mes) => {
       if (mes.failed) {
         const { intl } = this.props;
@@ -118,6 +120,9 @@ export default class ProjectType extends Component {
                     required: true,
                     whitespace: true,
                     message: intl.formatMessage({ id: `${intlPrefix}.code.required` }),
+                  }, {
+                    pattern: /^[a-zA-Z]([-_/a-zA-Z0-9.])*$/,
+                    message: intl.formatMessage({ id: `${intlPrefix}.code.pattern.msg` }),
                   }, {
                     validator: this.checkCode,
                   },

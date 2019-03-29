@@ -11,15 +11,22 @@
 "iam.site-statistics": "平台统计"
 "iam.project-type": "项目类型"
 
-"microservice": "微服务管理"
-"microservice.micro": "微服务"
+"microservice": "平台服务"
+"microservice.micro": "微服务管理"
 "microservice.route-management": "路由管理"
 "microservice.config-management": "配置管理"
 "microservice.instance-management": "实例管理"
+"microservice.api-management": "平台接口"
 
 "api": "API管理"
 "api.api-test": "API测试"
 "api.api-overview": "API概览"
+
+"statistics": "平台统计"
+"statistics.saga": "事务定义"
+"statistics.saga-instance": "事务实例"
+"statistics.menu-report": "菜单分析"
+"statistics.api-report": "API统计"
 
 "global-transaction": "全局事务"
 "global-transaction.saga": "事务定义"

@@ -397,27 +397,6 @@
           - 'iam-service.password-policy.create'
           - 'iam-service.password-policy.queryByOrganizationId'
           - 'iam-service.password-policy.update'
-    - "mail-template-organization":
-        icon: application_model
-        Routes: /iam/mail-template
-        sort: 7
-        delete: true
-        permission:
-          - 'notify-service.email-template-org.pageOrganization'
-          - 'notify-service.email-template-org.create'
-          - 'notify-service.email-template-org.update'
-          - 'notify-service.email-template-org.delete'
-          - 'notify-service.email-template-org.query'
-          - 'notify-service.send-setting-org.listNames'
-    - "announcement-organization":
-        icon: volume_up
-        Routes: /iam/announcement
-        delete: true
-        sort: 8
-        permission:
-          - 'asgard-service.system-notification.pagingQueryOrgNotificaton'
-          - 'asgard-service.system-notification.createNotificationOnOrg'
-          - 'asgard-service.system-notification.deleteOrgNotification'
     - "saga-instance-organization":
         icon: instance_outline
         Routes: /iam/saga-instance
@@ -433,39 +412,6 @@
         sort: 10
         permission:
           - 'iam-service.organization.queryOrgLevel'
-
-# 组织层消息中心
-"msg-center-organization":
-  icon: center
-  sort: 3
-  delete: true
-  organization:
-    - "send-setting-organization":
-        icon: mail_set
-        Routes: /iam/send-setting
-        sort: 1
-        delete: true
-        permission:
-          - 'notify-service.send-setting-org.pageOrganization'
-    - "mail-template-organization":
-        icon: application_model
-        Routes: /iam/mail-template
-        sort: 2
-        delete: true
-        permission:
-          - 'notify-service.email-template-org.pageOrganization'
-          - 'notify-service.email-template-org.create'
-          - 'notify-service.email-template-org.update'
-          - 'notify-service.email-template-org.delete'
-          - 'notify-service.email-template-org.query'
-          - 'notify-service.send-setting-org.listNames'
-    - "msg-record-organization":
-        icon: speaker_notes
-        Routes: /iam/msg-record
-        sort: 4
-        delete: true
-        permission:
-          - 'notify-service.message-record-org.pageEmail'
 
 # 组织层任务调度
 "task-dispatch-organization":
@@ -613,22 +559,6 @@
         permission:
           - 'iam-service.access-token.list'
           - 'iam-service.access-token.delete'
-    - "organization-info":
-        icon: domain
-        Routes: /iam/organization-info
-        delete: true
-        sort: 4
-        permission:
-          - 'iam-service.user.listOrganizationAndRoleById'
-          - 'iam-service.role.listPermissionById'
-    - "project-info":
-        icon: project
-        Routes: /iam/project-info
-        sort: 5
-        delete: true
-        permission:
-          - 'iam-service.user.listProjectAndRoleById'
-          - 'iam-service.role.listPermissionById'
     - "user-msg":
         icon: message_notification
         Routes: /iam/user-msg

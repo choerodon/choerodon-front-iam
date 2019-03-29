@@ -11,15 +11,22 @@
 "iam.site-statistics": "Site Statistics"
 "iam.project-type": "Project Type"
 
-"microservice": "Microservice"
-"microservice.micro": "Microservice"
+"microservice": "Site Service"
+"microservice.micro": "Microservice Management"
 "microservice.route-management": "Route Management"
 "microservice.config-management": "Config Management"
 "microservice.instance-management": "Instance Management"
+"microservice.api-management": "Api Management"
 
 "api": "API Manage"
 "api.api-test": "API Test"
 "api.api-overview": "API Overview"
+
+"statistics": "Site Statistics"
+"statistics.saga": "Saga"
+"statistics.saga-instance": "Saga Instance"
+"statistics.menu-report": "Menu Report"
+"statistics.api-report": "Api Overview"
 
 "global-transaction": "Global Transaction"
 "global-transaction.saga": "Saga"

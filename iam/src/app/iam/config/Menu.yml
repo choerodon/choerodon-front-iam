@@ -87,6 +87,7 @@
         icon: timeline
         Routes: /iam/site-statistics
         sort: 9
+        delete: true
         permission:
         - 'manager-service.statistic.queryMenuClick'
     - "project-type":
@@ -101,8 +102,8 @@
 
 # 微服务管理
 "microservice":
-  icon: micro
-  sort: 3
+  icon: pages
+  sort: 4
   site:
     - "micro":
         icon: microservice
@@ -138,16 +139,25 @@
           - 'manager-service.route.create'
           - 'manager-service.route.update'
           - 'manager-service.route.delete'
+    - "api-management":
+        icon: API
+        Routes: /iam/api-test
+        sort: 5
+        permission:
+        - 'manager-service.api.queryTreeMenu'
+        - 'manager-service.api.queryPathDetail'
 
 # api管理
 "api":
   icon: API
   sort: 2
+  delete: true
   site:
     - "api-test":
         icon: APItest
         Routes: /iam/api-test
         sort: 2
+        delete: true
         permission:
         - 'manager-service.api.queryTreeMenu'
         - 'manager-service.api.queryPathDetail'
@@ -155,6 +165,7 @@
         icon: dashboard
         Routes: /iam/api-overview
         sort: 1
+        delete: true
         permission:
         - 'manager-service.api.queryInstancesAndApiCount'
         - 'manager-service.api.queryApiInvoke'
@@ -163,7 +174,7 @@
 # 消息中心
 "msg-center":
   icon: center
-  sort: 6
+  sort: 2
   site:
     - "send-setting":
         icon: mail_set
@@ -218,7 +229,7 @@
 # 任务调度
 "task-dispatch":
   icon: task_schedule
-  sort: 5
+  sort: 3
   site:
     - "task-detail":
         icon: subject
@@ -249,6 +260,31 @@
 "global-transaction":
   icon: developer_board
   sort: 4
+  delete: true
+  site:
+    - "saga":
+        icon: saga_define
+        Routes: /iam/saga
+        sort: 1
+        delete: true
+        permission:
+          - 'asgard-service.saga.pagingQuery'
+          - 'asgard-service.saga.query'
+    - "saga-instance":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 2
+        delete: true
+        permission:
+          - 'asgard-service.saga-instance.pagingQuery'
+          - 'asgard-service.saga-instance.query'
+          - 'asgard-service.saga-instance.statistics'
+          - 'asgard-service.saga-instance.queryDetails'
+
+# 平台统计
+"statistics":
+  icon: bar_chart
+  sort: 5
   site:
     - "saga":
         icon: saga_define
@@ -266,6 +302,22 @@
           - 'asgard-service.saga-instance.query'
           - 'asgard-service.saga-instance.statistics'
           - 'asgard-service.saga-instance.queryDetails'
+    - "api-report":
+        icon: dashboard
+        Routes: /iam/api-overview
+        sort: 3
+        permission:
+        - 'manager-service.api.queryInstancesAndApiCount'
+        - 'manager-service.api.queryApiInvoke'
+        - 'manager-service.api.queryServiceInvoke'
+    - "menu-report":
+        icon: timeline
+        Routes: /iam/site-statistics
+        sort: 4
+        permission:
+        - 'manager-service.statistic.queryMenuClick'
+
+
 
 # 组织设置
 "rentsetting":

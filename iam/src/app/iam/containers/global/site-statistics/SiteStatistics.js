@@ -319,7 +319,7 @@ export default class SiteStatistics extends Component {
 
   getDownloadName = () => {
     const momentTime = moment(new Date().getTime());
-    return `平台菜单统计-${momentTime.format('YYYYMMDDHHmm')}`;
+    return `平台菜单统计-${momentTime.format('YYYYMMDDHHmm')}.csv`;
   };
 
 

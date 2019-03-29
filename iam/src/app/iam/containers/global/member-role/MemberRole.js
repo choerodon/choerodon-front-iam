@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import get from 'lodash/get';
 import { findDOMNode } from 'react-dom';
 import { inject, observer } from 'mobx-react';
 import { Button, Form, Modal, Progress, Select, Table, Tooltip, Upload, Spin, Radio } from 'choerodon-ui';
@@ -593,6 +594,7 @@ export default class MemberRole extends Component {
     const queryObj = {
       param: value,
       sort: 'id',
+      organization_id: get(this.props.AppState, 'currentMenuType.organizationId', 0),
     };
 
     if (timer) {

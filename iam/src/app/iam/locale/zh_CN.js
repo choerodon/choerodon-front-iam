@@ -740,6 +740,7 @@ const zh_CN = {
   'global.organization.codepatternmsg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾且不能连续出现两个"-"',
   'global.organization.namerequiredmsg': '请输入组织名称',
   'global.organization.project.count': '项目数量',
+  'global.organization.project.creationDate': '创建时间',
   'global.organization.detail': '组织信息',
   'global.organization.detail.title': '查看组织"{name}"的组织信息',
   'global.organization.detail.description': '您可以在此查看组织和组织管理员的基本信息。',

@@ -257,6 +257,9 @@ export default class Organization extends Component {
       key: formatMessage({ id: `${intlPrefix}.region` }),
       value: editData.address ? editData.address : '无',
     }, {
+      key: formatMessage({ id: `${intlPrefix}.project.creationDate` }),
+      value: editData.creationDate,
+    }, {
       key: formatMessage({ id: `${intlPrefix}.owner.login.name` }),
       value: partDetail.ownerLoginName,
     }, {
@@ -528,6 +531,10 @@ export default class Organization extends Component {
       }],
       filteredValue: filters.enabled || [],
       render: enabled => (<StatusTag mode="icon" name={intl.formatMessage({ id: enabled ? 'enable' : 'disable' })} colorCode={enabled ? 'COMPLETED' : 'DISABLE'} />),
+    }, {
+      title: <FormattedMessage id="global.organization.project.creationDate" />,
+      dataIndex: 'creationDate',
+      key: 'creationDate',
     }, {
       title: '',
       width: 150,

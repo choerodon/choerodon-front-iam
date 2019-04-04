@@ -52,7 +52,8 @@ const en_US = {
   'client.additionalInformation': 'Additional Information',
   'client.tokenType': 'TokenType',
 
-
+  'global.organization.project.creationDate': 'creatitonDate',
+  
   // passwordPolicy
   'policy.title': 'Password Policy',
   'policy.name': 'Name',

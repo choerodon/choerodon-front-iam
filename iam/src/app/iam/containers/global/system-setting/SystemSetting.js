@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer, trace } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Icon, Input, Select, Spin, InputNumber, Popover, Modal } from 'choerodon-ui';
+import { Button, Form, Icon, Input, Select, Spin, InputNumber, Popover, Modal, Radio } from 'choerodon-ui';
 import { axios, Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './SystemSetting.scss';
@@ -14,8 +14,10 @@ const prefixClas = 'c7n-iam-system-setting';
 const inputPrefix = 'organization.pwdpolicy';
 const limitSize = 1024;
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const confirm = Modal.confirm;
+const { TextArea } = Input;
 const dirty = false;
 const cardContentFavicon = (
   <div>
@@ -299,7 +301,7 @@ export default class SystemSetting extends Component {
     const { SystemSettingStore, intl, AppState } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { logoLoadingStatus, submitting, uploadLogoVisible } = this.state;
-    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle, maxPasswordLength, minPasswordLength } = SystemSettingStore.getUserSetting;
+    const { defaultLanguage = 'zh_CN', defaultPassword = 'abcd1234', systemName = 'Choerodon', systemTitle, maxPasswordLength, minPasswordLength, registerEnabled = false, registerUrl } = SystemSettingStore.getUserSetting;
     const systemLogo = SystemSettingStore.getLogo;
     const formItemLayout = {
       labelCol: {
@@ -460,6 +462,39 @@ export default class SystemSetting extends Component {
           </Select>,
           )}
         </FormItem>
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('registerEnabled', {
+            initialValue: registerEnabled,
+          })(
+            <RadioGroup label={<FormattedMessage id={`${intlPrefix}.registerEnabled`} />} className="radioGroup">
+              <Radio value><FormattedMessage id="yes" /></Radio>
+              <Radio value={false}><FormattedMessage id="no" /></Radio>
+            </RadioGroup>,
+          )}
+        </FormItem>
+        {
+          this.props.form.getFieldValue('registerEnabled') && <FormItem
+            {...formItemLayout}
+          >
+            <Input style={{ display: 'none' }} />
+            {getFieldDecorator('registerUrl', {
+              initialValue: registerUrl,
+              rules: [{
+                required: true,
+                message: intl.formatMessage({ id: `${intlPrefix}.registerUrl.error` }),
+              }],
+            })(
+              <TextArea
+                autoComplete="new-password"
+                label={<FormattedMessage id={`${intlPrefix}.registerUrl`} />}
+                ref={(e) => { this.editFocusInput = e; }}
+                autosize={{ minRows: 2, maxRows: 6 }}
+              />,
+            )}
+          </FormItem>
+        }
         <div className={`${prefixClas}-divider`} />
         <div>
           <Button

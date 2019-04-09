@@ -53,6 +53,10 @@ const en_US = {
   'client.tokenType': 'TokenType',
 
   'global.organization.project.creationDate': 'creatitonDate',
+
+  'global.system-setting.registerEnabled': 'registerEnabled',
+  'global.system-setting.registerUrl': 'registerUrl',
+  'global.system-setting.registerUrl.error': 'when registerEnabled is yes, the registerUrl is required.',
   
   // passwordPolicy
   'policy.title': 'Password Policy',

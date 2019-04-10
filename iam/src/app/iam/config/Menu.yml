@@ -495,7 +495,34 @@
         - 'asgard-service.saga-instance-project.statistics'
         - 'asgard-service.saga-instance-project.query'
         - 'asgard-service.saga-instance-project.queryDetails'
-
+# 项目群设置
+"program-setting":
+  icon: IAM
+  sort: 6
+  project:
+    - "member-role-program":
+        icon: person_add
+        Routes: /iam/member-role
+        sort: 1
+        category: PROGRAM
+        permission:
+          - 'iam-service.role-member.createOrUpdateOnSiteLevel'
+          - 'iam-service.role-member.deleteOnProjectLevel'
+          - 'iam-service.role-member.listRolesWithUserCountOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles'
+          - 'iam-service.role-member.listRolesWithClientCountOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryClientsWithProjectLevelRoles'
+          - 'iam-service.role-member.pagingQueryClientsByRoleIdOnProjectLevel'
+    - "program-manage":
+        icon: settings_applications
+        Routes: /iam/project-setting
+        sort: 2
+        category: PROGRAM
+        permission:
+          - 'iam-service.project.disableProject'
+          - 'iam-service.project.query'
+          - 'iam-service.project.update'
 # 项目层任务调度
 "task-dispatch-project":
   icon: task_schedule

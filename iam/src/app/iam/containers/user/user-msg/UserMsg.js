@@ -17,17 +17,19 @@ function timestampFormat(timestamp) {
   function zeroize(num) {
     return (String(num).length === 1 ? '0' : '') + num;
   }
-
+  
   const curTimestamp = parseInt(new Date().getTime() / 1000, 10); // 当前时间戳
   const timestampDiff = curTimestamp - timestamp; // 参数时间戳与当前时间戳相差秒数
 
   const curDate = new Date(curTimestamp * 1000); // 当前时间日期对象
   const tmDate = new Date(timestamp * 1000); // 参数时间戳转换成的日期对象
 
-  const Y = tmDate.getFullYear(); const m = tmDate.getMonth() + 1; const
-    d = tmDate.getDate();
-  const H = tmDate.getHours(); const i = tmDate.getMinutes(); const
-    s = tmDate.getSeconds();
+  const Y = tmDate.getFullYear();
+  const m = tmDate.getMonth() + 1;
+  const d = tmDate.getDate();
+  const H = tmDate.getHours();
+  const i = tmDate.getMinutes();
+  const s = tmDate.getSeconds();
 
   if (timestampDiff < 60) { // 一分钟以内
     return '刚刚';
@@ -107,7 +109,7 @@ export default class UserMsg extends Component {
         title={sendTime}
         placement="top"
       >
-        <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime).getTime() / 1000)}</span>
+        <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendTime.replace(/-/g, '/')).getTime() / 1000)}</span>
       </Tooltip>
       <Icon type={read ? 'drafts' : 'markunread'} onClick={() => { this.handleReadIconClick(id); }} />
     </div>
@@ -121,7 +123,7 @@ export default class UserMsg extends Component {
         title={sendDate}
         placement="top"
       >
-        <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendDate).getTime() / 1000)}</span>
+        <span className="c7n-iam-user-msg-unread">{timestampFormat(new Date(sendDate.replace(/-/g, '/')).getTime() / 1000)}</span>
       </Tooltip>
     </div>
   )

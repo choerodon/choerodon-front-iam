@@ -46,14 +46,14 @@ export default class PermissionInfo extends Component {
     return item;
   });
 
-  getRedirectURL({ id, name, level, projName }) {
+  getRedirectURL({ id, name, level, projName, organizationId }) {
     switch (level) {
       case 'site':
         return { pathname: '/' };
       case 'organization':
         return `/?type=${level}&id=${id}&name=${encodeURIComponent(name)}`;
       case 'project':
-        return `/?type=${level}&id=${id}&name=${encodeURIComponent(projName)}`;
+        return `/?type=${level}&id=${id}&name=${encodeURIComponent(projName)}&organizationId=${organizationId}`;
       default:
         return { pathname: '/', query: {} };
     }

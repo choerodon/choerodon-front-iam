@@ -251,7 +251,7 @@ export default class SystemSetting extends Component {
         favicon: SystemSettingStore.getFavicon,
         systemLogo: SystemSettingStore.getLogo,
       };
-      const { defaultLanguage, defaultPassword, systemName, systemTitle, favicon, systemLogo } = submitSetting;
+      const { defaultLanguage, defaultPassword, systemName, systemTitle, favicon, systemLogo, registerEnabled, registerUrl } = submitSetting;
       submitSetting.objectVersionNumber = prevSetting.objectVersionNumber;
       if (Object.keys(prevSetting).length) {
         if (this.dirty || Object.keys(prevSetting).some(v => prevSetting[v] !== submitSetting[v])) {
@@ -274,7 +274,7 @@ export default class SystemSetting extends Component {
             submitting: false,
           });
         }
-      } else if (!this.dirty && defaultLanguage === 'zh_CN' && systemName === 'Choerodon' && systemTitle === 'Choerodon | 企业数字化服务平台' && defaultPassword === 'abcd1234' && !favicon && !systemLogo) {
+      } else if (!this.dirty && defaultLanguage === 'zh_CN' && systemName === 'Choerodon' && systemTitle === 'Choerodon | 企业数字化服务平台' && defaultPassword === 'abcd1234' && !favicon && !systemLogo && !registerEnabled && !registerUrl) {
         Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.save.conflict` }));
         this.setState({
           submitting: false,

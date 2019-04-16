@@ -273,6 +273,7 @@ const pageDetail = {
   'organization.project.start.time': '有效开始时间',
   'organization.project.end.time': '有效结束时间',
   'organization.project.add.project': '添加项目',
+  'error.relationship.date.is.not.legal': '子项目有效开始时间或有效开始时间不合法',
 
   // 项目类型
   'global.project-type.table.name': '类型名称',

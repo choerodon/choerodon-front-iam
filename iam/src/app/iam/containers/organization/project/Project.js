@@ -300,8 +300,8 @@ export default class Project extends Component {
           ProjectStore.axiosDeleteProjectsFromGroup();
           ProjectStore.saveProjectGroup(rawData).then((savedData) => {
             if (savedData.failed) {
-              Choerodon.prompt(savedData.message);
-              this.setState({ submitting: false, buttonClicked: false, sidebar: false });
+              Choerodon.prompt(this.props.intl.formatMessage({ id: savedData.message }));
+              this.setState({ submitting: false, buttonClicked: false, sidebar: true });
             } else {
               Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
               this.setState({ submitting: false, buttonClicked: false, sidebar: false });

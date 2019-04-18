@@ -699,7 +699,7 @@ export default class Project extends Component {
               })(
                 <Select label={<FormattedMessage id={`${intlPrefix}.type.category`} />} style={{ width: 512 }}>
                   {
-                    ['AGILE', 'PROGRAM', 'ANALYTICAL'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Option>)
+                    ['AGILE', 'PROGRAM'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Option>)
                   }
                 </Select>,
               )}

@@ -611,7 +611,7 @@ export default class Project extends Component {
               </Select>,
             )}
           </FormItem>
-          <FormItem
+          {/* <FormItem
             {...formItemLayout}
             className="c7n-iam-project-inline-formitem"
           >
@@ -646,7 +646,7 @@ export default class Project extends Component {
                 format="YYYY-MM-DD"
               />,
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem
             {...formItemLayout}
             className="c7n-iam-project-inline-formitem c7n-iam-project-inline-formitem-checkbox"
@@ -689,7 +689,7 @@ export default class Project extends Component {
         {...contentInfo}
         className="sidebar-content"
       >
-        <Form layout="vertical" className="rightForm" style={{ width: 800 }}>
+        <Form layout="vertical" className="rightForm" style={{ width: operation === 'add' ? 512 : 800 }}>
           {operation === 'create' && operation !== 'add' && (
             <FormItem
               {...formItemLayout}

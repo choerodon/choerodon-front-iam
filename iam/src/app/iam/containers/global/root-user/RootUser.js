@@ -202,6 +202,7 @@ export default class RootUser extends Component {
     const queryObj = {
       param: value,
       sort: 'id',
+      organization_id: 0,
     };
 
     if (timer) {

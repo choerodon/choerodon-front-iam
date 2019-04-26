@@ -300,8 +300,8 @@ export default class Project extends Component {
           ProjectStore.axiosDeleteProjectsFromGroup();
           ProjectStore.saveProjectGroup(rawData).then((savedData) => {
             if (savedData.failed) {
-              Choerodon.prompt(savedData.message);
-              this.setState({ submitting: false, buttonClicked: false, sidebar: false });
+              Choerodon.prompt(this.props.intl.formatMessage({ id: savedData.message }));
+              this.setState({ submitting: false, buttonClicked: false, sidebar: true });
             } else {
               Choerodon.prompt(this.props.intl.formatMessage({ id: 'save.success' }));
               this.setState({ submitting: false, buttonClicked: false, sidebar: false });
@@ -611,7 +611,7 @@ export default class Project extends Component {
               </Select>,
             )}
           </FormItem>
-          <FormItem
+          {/* <FormItem
             {...formItemLayout}
             className="c7n-iam-project-inline-formitem"
           >
@@ -646,7 +646,7 @@ export default class Project extends Component {
                 format="YYYY-MM-DD"
               />,
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem
             {...formItemLayout}
             className="c7n-iam-project-inline-formitem c7n-iam-project-inline-formitem-checkbox"
@@ -689,7 +689,7 @@ export default class Project extends Component {
         {...contentInfo}
         className="sidebar-content"
       >
-        <Form layout="vertical" className="rightForm" style={{ width: 800 }}>
+        <Form layout="vertical" className="rightForm" style={{ width: operation === 'add' ? 512 : 800 }}>
           {operation === 'create' && operation !== 'add' && (
             <FormItem
               {...formItemLayout}
@@ -699,7 +699,7 @@ export default class Project extends Component {
               })(
                 <Select label={<FormattedMessage id={`${intlPrefix}.type.category`} />} style={{ width: 512 }}>
                   {
-                    ['AGILE', 'PROGRAM', 'ANALYTICAL'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Option>)
+                    ['AGILE', 'PROGRAM'].map(value => <Option value={value} key={value}>{intl.formatMessage({ id: `${intlPrefix}.${value.toLowerCase()}.project` })}</Option>)
                   }
                 </Select>,
               )}

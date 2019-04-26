@@ -1,4 +1,4 @@
-const docServer = 'http://v0-14.choerodon.io/zh/docs';
+const docServer = 'http://v0-16.choerodon.io/zh/docs';
 
 const pageDetail = {
   // menusetting
@@ -75,34 +75,34 @@ const pageDetail = {
   // 任务明细
   'global.taskdetail.title': '平台"{name}"的任务明细',
   'global.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
-  'global.taskdetail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'global.taskdetail.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   'global.taskdetail.create.title': '在平台"{name}"中创建任务',
   'global.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
-  'global.taskdetail.create.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'global.taskdetail.create.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   'global.taskdetail.detail.title': '"{name}"的任务详情',
   'global.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
-  'global.taskdetail.detail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'global.taskdetail.detail.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   // 执行记录
   'global.execution.title': '平台"{name}"的执行记录',
   'global.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
-  'global.execution.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+  'global.execution.link': `${docServer}/user-guide/platform-management/job/execution-record/`,
 
   // 可执行程序
   'global.executable.program.title': '平台"{name}"的可执行程序',
   'global.executable.program.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
-  'global.executable.program.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+  'global.executable.program.link': `${docServer}/user-guide/platform-management/job/job-class/`,
 
   'global.executable.program.class.title': '"{name}"的参数详情',
   'global.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
-  'global.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+  'global.executable.program.class.link': `${docServer}/user-guide/platform-management/job/job-class/`,
 
   // 微服务
   'global.microservice.title': '平台"{name}"的微服务',
   'global.microservice.description': '大型应用程序由一个或多个微服务组成。微服务可被独立部署，且为松耦合。每个微服务是专注于单一责任与功能的小型功能区块。',
-  'global.microservice.link': `${docServer}/user-guide/microservice-development/microservice-management/microservice/`,
+  'global.microservice.link': `${docServer}/user-guide/platform-management/platform-service/microservice/`,
 
   // 配置管理
   'global.configuration.title': '平台"{name}"的配置管理',
@@ -126,38 +126,38 @@ const pageDetail = {
   // 实例管理
   'global.instance.title': '平台"{name}"的实例管理',
   'global.instance.description': '实例属于一个微服务。请先选择一个微服务，查看该微服务下的实例信息。',
-  'global.instance.link': `${docServer}/user-guide/microservice-development/microservice-management/instance/`,
+  'global.instance.link': `${docServer}/user-guide/platform-management/platform-service/instance/`,
 
   'global.instance.detail.title': '实例"{name}"的实例详情',
   'global.instance.detail.description': '实例属于一个微服务。您可以在此查看实例的详细信息。',
-  'global.instance.detail.link': `${docServer}/user-guide/microservice-development/microservice-management/instance/`,
+  'global.instance.detail.link': `${docServer}/user-guide/platform-management/platform-service/instance/`,
 
 
   // 路由管理
   'global.route.title': '平台"{name}"的路由管理',
   'global.route.description': '路由发送请求到网关会访问服务。一个服务可以分配多个路径的路由，一个路由路径只指向一个服务。',
-  'global.route.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
+  'global.route.link': `${docServer}/user-guide/platform-management/platform-service/route/`,
 
   'global.route.create.title': '在平台"{name}"中创建路由',
   'global.route.create.description': '请在下面输入路由名称、路径、路径对应的微服务创建路由。其中，路由名称时全平台唯一的，路由创建后不能修改路由名称。',
-  'global.route.create.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
+  'global.route.create.link': `${docServer}/user-guide/platform-management/platform-service/route/`,
 
   'global.route.modify.title': '对路由"{name}"进行修改',
   'global.route.modify.description': '您可以在此修改路由的路径、路径对应的微服务以及配置路由前缀、重试、敏感头、Helper等信息。',
-  'global.route.modify.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
+  'global.route.modify.link': `${docServer}/user-guide/platform-management/platform-service/route/`,
 
   'global.route.detail.title': '查看路由"{name}"的详情',
   'global.route.detail.description': '预定义路由为平台初始化设置，您不能修改预定义路由。',
-  'global.route.detail.link': `${docServer}/user-guide/microservice-development/microservice-management/route/`,
+  'global.route.detail.link': `${docServer}/user-guide/platform-management/platform-service/route/`,
 
   // API测试
   'global.apitest.title': '平台"{name}"的API测试',
   'global.apitest.description': 'API属于一个微服务。请先选择一个微服务，查看该微服务下的API信息。',
-  'global.apitest.link': `${docServer}/user-guide/microservice-development/api-management/api-test/`,
+  'global.apitest.link': `${docServer}/user-guide/platform-management/platform-service/api-test/`,
 
   'global.apitest.detail.title': 'API"{name}"的测试',
   'global.apitest.detail.description': 'API测试需要与应用程序的API进行交互，测试时通过工具调用特定的API，获取输出，并记录系统的响应。',
-  'global.apitest.detail.link': `${docServer}/user-guide/microservice-development/api-management/api-test/`,
+  'global.apitest.detail.link': `${docServer}/user-guide/platform-management/platform-service/api-test/`,
   'global.apitest.version': '版本',
 
   // 发送设置
@@ -220,20 +220,20 @@ const pageDetail = {
   // 事务定义
   'global.saga.title': '平台"{name}"的事务定义',
   'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
-  'global.saga.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
+  'global.saga.link': `${docServer}/user-guide/platform-management/platform-statistics/saga/`,
 
   'global.saga.detail.title': '查看事务定义"{name}"的详情',
   'global.saga.detail.description': '您可以在此查看事务定义图、事务定义Json。',
-  'global.saga.detail.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
+  'global.saga.detail.link': `${docServer}/user-guide/platform-management/platform-statistics/saga/`,
 
   // 事务实例
   'global.saga-instance.title': '平台"{name}"的事务实例',
   'global.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
-  'global.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
+  'global.saga-instance.link': `${docServer}/user-guide/platform-management/platform-statistics/saga-instance/`,
 
   'global.saga-instance.detail.title': '查看事务实例"{name}"的详情',
   'global.saga-instance.detail.description': '您可以在此查看事务实例所包含任务的信息。',
-  'global.saga-instance.detail.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
+  'global.saga-instance.detail.link': `${docServer}/user-guide/platform-management/platform-statistics/saga-instance/`,
 
   // 仪表盘配置
   'global.dashboard-setting.title': '平台"{name}"的仪表盘配置',
@@ -273,6 +273,7 @@ const pageDetail = {
   'organization.project.start.time': '有效开始时间',
   'organization.project.end.time': '有效结束时间',
   'organization.project.add.project': '添加项目',
+  'error.relationship.date.is.not.legal': '子项目有效开始时间或有效开始时间不合法',
 
   // 项目类型
   'global.project-type.table.name': '类型名称',
@@ -318,7 +319,7 @@ const pageDetail = {
   'organization.saga-instance.header.title': '组织事务实例',
   'organization.saga-instance.title': '组织"{name}"的事务实例',
   'organization.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
-  'organization.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
+  'organization.saga-instance.link': `${docServer}/user-guide/platform-management/platform-statistics/saga-instance/`,
 
   // 客户端
   'organization.client.title': '组织"{name}"的客户端',
@@ -425,35 +426,35 @@ const pageDetail = {
   // 任务明细
   'organization.taskdetail.title': '组织"{name}"的任务明细',
   'organization.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
-  'organization.taskdetail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'organization.taskdetail.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   'organization.taskdetail.create.title': '在组织"{name}"中创建任务',
   'organization.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
-  'organization.taskdetail.create.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'organization.taskdetail.create.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   'organization.taskdetail.detail.title': '"{name}"的任务详情',
   'organization.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
-  'organization.taskdetail.detail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'organization.taskdetail.detail.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   // 执行记录
   'organization.execution.title': '组织"{name}"的执行记录',
   'organization.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
-  'organization.execution.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+  'organization.execution.link': `${docServer}/user-guide/platform-management/job/execution-record/`,
 
   // 可执行程序
   'organization.executable.program.title': '组织"{name}"的可执行程序',
   'organization.executable.program.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
-  'organization.executable.program.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+  'organization.executable.program.link': `${docServer}/user-guide/platform-management/job/job-class/`,
 
   'organization.executable.program.class.title': '"{name}"的参数详情',
   'organization.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
-  'organization.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+  'organization.executable.program.class.link': `${docServer}/user-guide/platform-management/job/job-class/`,
 
   // application 应用
   'organization.application.header.title': '应用',
   'organization.application.title': '组织"{name}"的应用',
   'organization.application.description': '应用是够供给市场，被人们使用和消费，并能满足人们某种需求的任何东西，包括有形的物品、无形的服务、组织、观念或它们的组合。您可以在这里创建普通应用或者组合应用、维护应用信息、启停用应用。',
-  // 'organization.application.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+  // 'organization.application.link': `${docServer}/user-guide/platform-management/job/execution-record/`,
 
   'organization.application.create': '创建应用',
   'organization.application.sidebar.title.create': '创建应用',
@@ -519,34 +520,34 @@ const pageDetail = {
   'project.saga-instance.header.title': '项目事务实例',
   'project.saga-instance.title': '项目"{name}"的事务实例',
   'project.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
-  'project.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
+  'project.saga-instance.link': `${docServer}/user-guide/platform-management/platform-statistics/saga-instance/`,
 
   // 任务调度
   'project.taskdetail.title': '项目"{name}"的任务明细',
   'project.taskdetail.description': '按时间点或者周期性执行的任务。在这里，您可以创建任务，管理任务。控制任务在何种时间状态下执行。',
-  'project.taskdetail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'project.taskdetail.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   'project.taskdetail.create.title': '在项目"{name}"中创建任务',
   'project.taskdetail.create.description': '自定义任务的工作内容、执行的时间触发规则。在这里。您可以自定义编辑任务的基本信息，配置触发器信息，任务类的参数信息。',
-  'project.taskdetail.create.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'project.taskdetail.create.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   'project.taskdetail.detail.title': '"{name}"的任务详情',
   'project.taskdetail.detail.description': '已创建任务的详细信息。在这里您可以查看任务的触发时间规则、job类名以及类的参数信息，此任务的执行记录。',
-  'project.taskdetail.detail.link': `${docServer}/user-guide/microservice-development/job/job-detail/`,
+  'project.taskdetail.detail.link': `${docServer}/user-guide/platform-management/job/job-detail/`,
 
   // 执行记录
   'project.execution.title': '项目"{name}"的执行记录',
   'project.execution.description': '所有任务执行的历史记录。你可以查看任务执行的状态，执行的时间信息，以及执行失败的原因。',
-  'project.execution.link': `${docServer}/user-guide/microservice-development/job/execution-record/`,
+  'project.execution.link': `${docServer}/user-guide/platform-management/job/execution-record/`,
 
   // 可执行程序
   'project.executable.program.title': '项目"{name}"的可执行程序',
   'project.executable.program.description': '业务场景需要调用的类。在这里，您可以看到任务执行可以调用的类及其详细信息。',
-  'project.executable.program.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+  'project.executable.program.link': `${docServer}/user-guide/platform-management/job/job-class/`,
 
   'project.executable.program.class.title': '"{name}"的参数详情',
   'project.executable.program.class.description': '任务类的参数信息。在这里，您可以了解此任务类的参数信息，包括参数名，参数类型，默认值。',
-  'project.executable.program.class.link': `${docServer}/user-guide/microservice-development/job/job-class/`,
+  'project.executable.program.class.link': `${docServer}/user-guide/platform-management/job/job-class/`,
 
 
   // 个人信息
@@ -871,7 +872,7 @@ const zh_CN = {
   'taskdetail.cron.expression': 'Cron表达式',
   'taskdetail.cron.expression.required': '请输入Cron表达式',
   'taskdetail.cron.tip': '请填写Cron表达式',
-  'taskdetail.cron.tip.link': `${docServer}/user-guide/microservice-development/job/cron-expression/`,
+  'taskdetail.cron.tip.link': `${docServer}/user-guide/platform-management/job/cron-expression/`,
   'taskdetail.cron.example': '示例',
   'taskdetail.cron.runtime': '第{time}次执行时间:',
   'taskdetail.cron.wrong': 'Cron表达式错误，请重新输入',

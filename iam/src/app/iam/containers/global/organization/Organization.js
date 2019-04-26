@@ -181,6 +181,7 @@ export default class Organization extends Component {
     const queryObj = {
       param: value,
       sort: 'id',
+      organization_id: 0,
     };
 
     if (timer) {

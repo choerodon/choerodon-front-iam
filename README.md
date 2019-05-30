@@ -1,5 +1,13 @@
 # Choerodon-front-iam 
 
+## 这个仓库已经归档，新的代码以被迁移至新的仓库。
+
+* IAM 管理 -> https://github.com/choerodon/iam-service/tree/master/react
+* 通知管理 -> https://github.com/choerodon/notify-service/tree/master/react
+* 事务管理/任务管理 -> https://github.com/choerodon/asgard-service/tree/master/react
+* 平台服务管理 -> https://github.com/choerodon/manager-service/tree/master/react
+
+
 The project is an overall front-end project that combines Choerodon Boot and Choerodon iam. The infrastructure Choerodon-front-iam module in the Choerodon front can be added selectively. The construction project can be used on `macOS`, `Windows` or `Linux`. Teams can be developed in modules, greatly speeding up development.
 
  * The project uses `webpack` for construction.
